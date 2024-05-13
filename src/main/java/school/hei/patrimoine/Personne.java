@@ -1,8 +1,9 @@
 package school.hei.patrimoine;
 
 public class Personne {
-    private String nom;
+    private final String nom;
 
-    public Personne(String ilo) {
+    public Personne(String nom) {
+        this.nom = nom;
     }
 }

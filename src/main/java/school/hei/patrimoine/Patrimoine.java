@@ -9,9 +9,8 @@ public class Patrimoine {
     private Instant t;
     private Set<Possession> possessions;
     private int valeurComptable;
-    private int valeurComptableActuelle;
 
-    public Patrimoine(Personne possesseur, Instant parse) {
+    public Patrimoine(Personne possesseur, Instant t) {
         this.possesseur = possesseur;
         this.possessions = new HashSet<>();
         this.t = t;
@@ -22,10 +21,10 @@ public class Patrimoine {
     }
 
     public int getValeurComptableActuelle() {
-        return valeurComptableActuelle;
+        return valeurComptable;
     }
 
     public void addPossession(Possession possession) {
-        possessions = possession
+        possessions.add(possession);
     }
 }
