@@ -2,6 +2,7 @@ package school.hei.patrimoine.possession;
 
 import school.hei.patrimoine.NotImplemented;
 
+import java.time.Duration;
 import java.time.Instant;
 
 public final class Materiel extends Possession {
@@ -14,6 +15,11 @@ public final class Materiel extends Possession {
 
   @Override
   public int valeurComptableFuture(Instant tFutur) {
-    throw new NotImplemented();
+    long duréeEnAnnée = Duration.between(t, tFutur).toDays() / 365;
+    double facteurDappréciation = 1;
+    for (int i = 0; i < duréeEnAnnée; i++) {
+      facteurDappréciation *= (1 + tauxDAppreciationAnnuelle);
+    }
+    return (int) Math.round(valeurComptable * facteurDappréciation);
   }
 }
