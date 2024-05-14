@@ -14,4 +14,9 @@ public sealed abstract class Possession permits
   protected final int valeurComptable;
 
   public abstract int valeurComptableFuture(Instant tFutur);
+
+  public int valeurComptable() {
+    return valeurComptable;
+  }
+
 }
