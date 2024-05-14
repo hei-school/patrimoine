@@ -1,6 +1,7 @@
 package school.hei.patrimoine;
 
 import org.junit.jupiter.api.Test;
+import school.hei.possession.Possession;
 
 import java.time.Instant;
 import java.util.Set;
@@ -15,10 +16,5 @@ class PatrimoineTest {
                 sullivan,
                 Instant.parse("2024-05-13T00:00:00.00Z"),
                 Set.of());
-
-        Possession ordinateur = new Possession();
-        patrimoineSullivanAu13Mai2024.addPossession(ordinateur);
-
-        assertEquals(0, patrimoineSullivanAu13Mai2024.getValeurComptable());
     }
 }

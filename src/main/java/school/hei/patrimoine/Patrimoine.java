@@ -1,7 +1,8 @@
 package school.hei.patrimoine;
 
+import school.hei.possession.Possession;
+
 import java.time.Instant;
-import java.util.HashSet;
 import java.util.Set;
 
 public record Patrimoine
