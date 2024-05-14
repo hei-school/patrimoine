@@ -2,7 +2,9 @@ package school.hei.patrimoine.possession;
 
 import school.hei.NotImplemented;
 
+import java.math.BigDecimal;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 
 public final class Materiel extends Possession {
     private  final double tauxDAppreciationAnnuel;
@@ -13,7 +15,15 @@ public final class Materiel extends Possession {
     }
 
     @Override
-    public int valeurComptableFuture(Instant tFutur){
-        throw new NotImplemented();
+    public int valeurComptableFuture(Instant tFutur) {
+        double tauxDAppreciationJournaliere = tauxDAppreciationAnnuel / 12 * 30;
+
+        double nombreDeJoursCumulesDepuisLAchat = ChronoUnit.DAYS.between(t, tFutur);
+        double tauxDAppreciationCumule = (tauxDAppreciationJournaliere * nombreDeJoursCumulesDepuisLAchat) + 1;
+
+        double valeurComptableFuture = valeurComptable * tauxDAppreciationCumule;
+
+        return (int) Math.round((valeurComptableFuture));
+
     }
 }
