@@ -2,9 +2,10 @@ package school.hei.patrimoine.possession;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.ToString;
 
 import java.time.Instant;
-
+@ToString
 @AllArgsConstructor
 @Getter
 public sealed abstract class Possession permits
