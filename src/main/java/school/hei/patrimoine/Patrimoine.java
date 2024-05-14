@@ -12,6 +12,6 @@ public record Patrimoine(
     if (possessions.isEmpty()) {
       return 0;
     }
-    throw new RuntimeException("TODO");
+    throw new NotImplemented();
   }
 }
