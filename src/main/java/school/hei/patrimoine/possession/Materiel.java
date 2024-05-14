@@ -13,7 +13,9 @@ public final class Materiel extends Possession {
   }
 
   @Override
-  public int valeurComptableFuture(Instant tFutur) {
-    throw new NotImplemented();
+  public int valeurComptableFuture(Instant tFutur)  {
+    long years = tFutur.getEpochSecond() - this.getT().getEpochSecond();
+    double appreciationFactor = Math.pow(1 + tauxDAppreciationAnnuelle, years / (60 * 60 * 24 * 365.25));
+    return (int) (this.getValeurComptable() * appreciationFactor);
   }
 }
