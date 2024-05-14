@@ -2,7 +2,6 @@ package school.hei.patrimoine.possession;
 
 
 import java.time.Instant;
-import java.time.LocalDate;
 import java.time.ZoneId;
 
 public final class Materiel extends Possession {
@@ -15,11 +14,10 @@ public final class Materiel extends Possession {
 
   @Override
   public int valeurComptableFuture(Instant tFutur) {
-    LocalDate datePossession = getT().atZone(ZoneId.systemDefault()).toLocalDate();
-    int anneeAcquisition = datePossession.getYear();
+    Instant datePossession = getT();
+    int anneeAcquisition = datePossession.atZone(ZoneId.systemDefault()).toLocalDate().getYear();
 
-    LocalDate dateFutur = tFutur.atZone(ZoneId.systemDefault()).toLocalDate();
-    int anneeFutur = dateFutur.getYear();
+    int anneeFutur = tFutur.atZone(ZoneId.systemDefault()).toLocalDate().getYear();
 
     int differenceAnnees = anneeFutur - anneeAcquisition;
     int reduction = differenceAnnees * 10;
