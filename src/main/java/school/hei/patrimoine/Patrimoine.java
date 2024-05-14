@@ -9,9 +9,12 @@ public record Patrimoine(
     Personne possesseur, Instant t, Set<Possession> possessions) {
 
   public int getValeurComptable() {
-    if (possessions.isEmpty()) {
-      return 0;
+    int sommeValeursComptables = 0;
+
+    for (Possession possession : possessions) {
+      sommeValeursComptables += possession.getValeurComptable();
     }
-    throw new NotImplemented();
+
+    return sommeValeursComptables;
   }
 }
