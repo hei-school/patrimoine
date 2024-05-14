@@ -14,6 +14,7 @@ public final class Materiel extends Possession {
 
   @Override
   public int valeurComptableFuture(Instant tFutur) {
+
     throw new NotImplemented();
   }
 }
