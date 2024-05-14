@@ -12,6 +12,10 @@ public record Patrimoine(
     if (possessions.isEmpty()) {
       return 0;
     }
-    throw new NotImplemented();
+
+    return this.possessions
+      .stream()
+      .mapToInt(Possession::getValeurComptable)
+      .sum();
   }
 }
