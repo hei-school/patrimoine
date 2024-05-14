@@ -1,7 +1,7 @@
 package school.hei.patrimoine;
 
 import school.hei.NotImplemented;
-import school.hei.possession.Possession;
+import school.hei.patrimoine.possession.Possession;
 
 import java.time.Instant;
 import java.util.Set;
