@@ -8,12 +8,15 @@ import java.util.Set;
 
 public record Patrimoine
         (Personne possesseur, Instant t, Set<Possession> possessions) {
-    //on supprime et on le met aec possession private int valeurComptable;
 
-    public int getValeurComptable(Instant t) {
+    public int getValeurComptable() {
         if (possessions.isEmpty()) {
             return 0;
         }
-        throw new NotImplemented();
+        int sommeDeToutesLesValeursComptables = 0;
+        for (Possession possession : possessions) {
+            sommeDeToutesLesValeursComptables += possession.getValeurComptable();
+        }
+        return sommeDeToutesLesValeursComptables;
     }
 }
