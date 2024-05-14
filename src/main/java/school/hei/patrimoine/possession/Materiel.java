@@ -17,7 +17,7 @@ public final class Materiel extends Possession {
   @Override
   public int valeurComptableFuture(Instant tFutur) {
     ZoneId zoneId = ZoneId.systemDefault();
-    long anneePassee = ChronoUnit.YEARS.between(t.atZone(zoneId), tFutur.atZone(zoneId));
+    double anneePassee = (double) ChronoUnit.DAYS.between(t.atZone(zoneId), tFutur.atZone(zoneId)) / 365;
     double valeurFuture = valeurComptable + (valeurComptable * tauxDAppreciationAnnuelle * anneePassee);
     return (int) valeurFuture;
   }
