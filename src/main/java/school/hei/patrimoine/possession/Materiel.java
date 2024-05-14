@@ -1,8 +1,7 @@
 package school.hei.patrimoine.possession;
 
-import school.hei.patrimoine.NotImplemented;
 
-import java.time.Instant;
+import java.time.*;
 
 public final class Materiel extends Possession {
   private final double tauxDAppreciationAnnuelle;
@@ -14,6 +13,13 @@ public final class Materiel extends Possession {
 
   @Override
   public int valeurComptableFuture(Instant tFutur) {
-    throw new NotImplemented();
+    int anneeDEnregistrement = LocalDateTime.ofInstant(getT(), ZoneId.systemDefault()).getYear();
+    int anneeFuture = LocalDateTime.ofInstant(tFutur, ZoneId.systemDefault()).getYear();
+    int valeurAReduire = 0;
+    int anneeDeDifference = anneeFuture - anneeDEnregistrement;
+    for (int i = 0; i < anneeDeDifference ; i++) {
+      valeurAReduire += (int) ((getValeurComptable() * this.tauxDAppreciationAnnuelle) / 100);
+    }
+    return getValeurComptable() + valeurAReduire;
   }
 }
