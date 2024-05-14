@@ -10,7 +10,7 @@ public final class Argent extends Possession {
   }
 
   @Override
-  public float valeurComptableFuture(Instant tFutur) {
+  public double valeurComptableFuture(Instant tFutur) {
     throw new NotImplemented();
   }
 }
