@@ -9,9 +9,14 @@ public record Patrimoine(
     Personne possesseur, Instant t, Set<Possession> possessions) {
 
   public int getValeurComptable() {
+    int valeurFinal = 0;
     if (possessions.isEmpty()) {
       return 0;
+    }else{
+      for (Possession possession : possessions) {
+        valeurFinal += possession.getValeurComptable();
+      }
     }
-    throw new NotImplemented();
+    return valeurFinal;
   }
 }
