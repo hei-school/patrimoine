@@ -11,6 +11,6 @@ public final class Argent extends Possession {
 
   @Override
   public int valeurComptableFuture(Instant tFutur) {
-    throw new NotImplemented();
+    return valeurComptable;
   }
 }
