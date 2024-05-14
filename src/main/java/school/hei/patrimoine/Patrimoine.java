@@ -1,5 +1,7 @@
 package school.hei.patrimoine;
 
+import school.hei.patrimoine.possession.Argent;
+import school.hei.patrimoine.possession.Materiel;
 import school.hei.patrimoine.possession.Possession;
 
 import java.time.Instant;
@@ -11,7 +13,12 @@ public record Patrimoine(
   public int getValeurComptable() {
     if (possessions.isEmpty()) {
       return 0;
+    } else {
+      int total = 0;
+      for (Possession possession : possessions) {
+        total += possession.valeurComptableFuture(t);
+      }
+      return total;
     }
-    throw new NotImplemented();
   }
 }
