@@ -1,30 +1,23 @@
 package school.hei.patrimoine;
 
 import java.time.Instant;
-import java.util.HashSet;
 import java.util.Set;
 
 public class Patrimoine {
   private final Personne possesseur;
-  private Instant t;
-  private Set<Possession> possessions;
-  private int valeurComptable;
+  private final Instant t;
+  private final Set<Possession> possessions;
 
-  public Patrimoine(Personne possesseur, Instant t) {
+  public Patrimoine(Personne possesseur, Instant t, Set<Possession> possessions) {
     this.possesseur = possesseur;
-    this.possessions = new HashSet<>();
     this.t = t;
+    this.possessions = possessions;
   }
 
-  public void addPossession(Possession possession) {
-    possessions.add(possession);
-  }
-
-  public int getValeurComptable(Instant t) {
-    return valeurComptable;
-  }
-
-  public int getValeurComptableActuelle() {
-    return valeurComptable;
+  public int getValeurComptable() {
+    if (possessions.isEmpty()) {
+      return 0;
+    }
+    throw new RuntimeException("TODO");
   }
 }
