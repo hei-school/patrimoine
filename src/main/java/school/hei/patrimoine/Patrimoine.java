@@ -6,9 +6,10 @@ import java.util.Set;
 
 public class Patrimoine {
     private final Personne possesseur;
-    private Instant t;
-    private Set<Possession> possessions;
-    private int valeurComptable;
+    private final Instant t;
+    //pour definir une possesion a un instant t pour ne plus y toucher on les mets en prive
+    private final Set<Possession> possessions;
+   //on supprime et on le met aec possession private int valeurComptable;
 
     public Patrimoine(Personne possesseur, Instant t) {
         this.possesseur = possesseur;
@@ -17,12 +18,12 @@ public class Patrimoine {
     }
 
     public int getValeurComptable(Instant t) {
-        return valeurComptable;
+        if(possessions.isEmpty()) {
+            return 0;
+        }
+        throw new  RuntimeException("TODO");
     }
 
-    public int getValeurComptableActuelle() {
-        return valeurComptable;
-    }
 
     public void addPossession(Possession possession) {
         possessions.add(possession);

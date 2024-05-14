@@ -3,20 +3,22 @@ package school.hei.patrimoine;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
+import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class PatrimoineTest {
     @Test
-    void patrimoine_vide_vaut_0(){
+    void patrimoine_vide_vaut_0() {
         var sullivan = new Personne("Sullivan");
-        var patrimoineSullivan = new Patrimoine(
+        var patrimoineSullivanAu13Mai2024 = new Patrimoine(
                 sullivan,
-                Instant.parse("2024-05-13T00:00:00.00Z"));
+                Instant.parse("2024-05-13T00:00:00.00Z"),
+                Set.of());
 
         Possession ordinateur = new Possession();
-        patrimoineSullivan.addPossession(ordinateur);
+        patrimoineSullivanAu13Mai2024.addPossession(ordinateur);
 
-        assertEquals(0, patrimoineSullivan.getValeurComptableActuelle());
+        assertEquals(0, patrimoineSullivanAu13Mai2024.getValeurComptable());
     }
 }
