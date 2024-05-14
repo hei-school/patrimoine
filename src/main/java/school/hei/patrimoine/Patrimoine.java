@@ -6,12 +6,13 @@ import java.time.Instant;
 import java.util.Set;
 
 public record Patrimoine(
-    Personne possesseur, Instant t, Set<Possession> possessions) {
+        Personne possesseur, Instant t, Set<Possession> possessions) {
 
   public int getValeurComptable() {
-    if (possessions.isEmpty()) {
-      return 0;
+    int total = 0;
+    for (Possession possession : possessions) {
+      total += possession.getValeurComptable();
     }
-    throw new NotImplemented();
+    return total;
   }
 }
