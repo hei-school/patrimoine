@@ -14,6 +14,7 @@ public final class Materiel extends Possession {
 
   @Override
   public int valeurComptableFuture(Instant tFutur){
-    throw new NotImplemented();
+    int valeurFutur=(int)(valeurComptable-(valeurComptable/((tFutur.getEpochSecond()-t.getEpochSecond())/31_536_000)));
+    return valeurFutur;
   }
 }
