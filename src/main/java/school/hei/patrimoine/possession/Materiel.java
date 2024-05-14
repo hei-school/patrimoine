@@ -19,7 +19,8 @@ public final class Materiel extends Possession {
         long jours = (differenceDansLeTempsEnMilliseconde / (1000 * 60 * 60 * 24)) % 365;
         long années = (differenceDansLeTempsEnMilliseconde / (1_000L * 60 * 60 * 24 * 365));
         double tauxDappreciationJournalier = (tauxDAppreciationAnnuelle / 12) / 30;
-        return (int) ((tauxDAppreciationAnnuelle * années) + (tauxDappreciationJournalier * jours));
+        double tauxTotal = Math.abs((tauxDAppreciationAnnuelle * années) + (tauxDappreciationJournalier * jours));
+        return (int) (valeurComptable * tauxTotal);
 
     }
 }
