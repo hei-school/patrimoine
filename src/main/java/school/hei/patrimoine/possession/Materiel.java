@@ -15,7 +15,9 @@ public final class Materiel extends Possession {
 
   @Override
   public int valeurComptableFuture(Instant tFutur) {
-      return 0;
+    double interval = Duration.between(this.t, tFutur).toDays();
+    double tauxParJour =  (valeurComptable * tauxDAppreciationAnnuelle) / 365;
+    return valeurComptable + (int) tauxParJour * (int) interval;
   }
 
 }
