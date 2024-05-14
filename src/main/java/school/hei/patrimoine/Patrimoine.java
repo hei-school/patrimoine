@@ -1,5 +1,6 @@
 package school.hei.patrimoine;
 
+import school.hei.NotImplemented;
 import school.hei.possession.Possession;
 
 import java.time.Instant;
@@ -13,6 +14,6 @@ public record Patrimoine
         if (possessions.isEmpty()) {
             return 0;
         }
-        throw new RuntimeException("TODO");
+        throw new NotImplemented();
     }
 }
