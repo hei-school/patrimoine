@@ -1,9 +1,5 @@
 package school.hei.patrimoine;
 
-public class Personne {
-    private final String nom;
+public record Personne(String nom) {
 
-    public Personne(String nom) {
-        this.nom = nom;
-    }
 }
