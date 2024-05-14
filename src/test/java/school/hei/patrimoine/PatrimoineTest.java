@@ -9,14 +9,14 @@ import static org.junit.jupiter.api.Assertions.*;
 class PatrimoineTest {
     @Test
     void patrimoine_vide_vaut_0(){
-        var ilo = new Personne("Ilo");
-        var patrimoineIlo = new Patrimoine(
-                ilo,
+        var sullivan = new Personne("Sullivan");
+        var patrimoineSullivan = new Patrimoine(
+                sullivan,
                 Instant.parse("2024-05-13T00:00:00.00Z"));
 
         Possession ordinateur = new Possession();
-        patrimoineIlo.addPossession(ordinateur);
+        patrimoineSullivan.addPossession(ordinateur);
 
-        assertEquals(0, patrimoineIlo.getValeurComptableActuelle());
+        assertEquals(0, patrimoineSullivan.getValeurComptableActuelle());
     }
 }
