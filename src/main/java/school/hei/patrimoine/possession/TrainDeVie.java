@@ -10,7 +10,7 @@ public final class TrainDeVie extends Possession {
   }
 
   @Override
-  public int valeurComptableFuture(Instant tFutur) {
+  public float valeurComptableFuture(Instant tFutur) {
     throw new NotImplemented();
   }
 }

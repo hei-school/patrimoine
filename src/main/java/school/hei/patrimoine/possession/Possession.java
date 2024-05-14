@@ -13,5 +13,5 @@ public sealed abstract class Possession permits
   protected final Instant t;
   protected final int valeurComptable;
 
-  public abstract int valeurComptableFuture(Instant tFutur);
+  public abstract float valeurComptableFuture(Instant tFutur);
 }
