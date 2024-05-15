@@ -14,6 +14,7 @@ public final class Materiel extends Possession {
   }
 
   @Override
+
   public int valeurComptableFuture(Instant tFutur) {
     Duration intervalD = Duration.between(this.t,tFutur);
     long intervalJ=intervalD.toDays();
@@ -22,6 +23,8 @@ public final class Materiel extends Possession {
     return (int) Math.round(vComptableFuture);
   }
   @Override
+
+
   public Possession projectionFuture(Instant tFutur) {
     throw new NotImplemented();
   }
