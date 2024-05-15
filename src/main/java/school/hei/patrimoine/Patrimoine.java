@@ -6,15 +6,19 @@ import java.time.Instant;
 import java.util.Set;
 
 public record Patrimoine(
-    Personne possesseur, Instant t, Set<Possession> possessions) {
-  public int getValeurComptable() {
-    if (possessions.isEmpty()) {
-      return 0;
-    }
-    throw new NotImplemented();
-  }
+        Personne possesseur, Instant t, Set<Possession> possessions) {
 
-  public Patrimoine projectionFuture(Instant tFutur) {
-    throw new NotImplemented();
-  }
+    public int getValeurComptable() {
+        int result = 0 ;
+        if (possessions.isEmpty()) {
+            return result ;
+        }
+        for(Possession possession : possessions){
+            int comptableValue = possession.getValeurComptable();
+            result += comptableValue ;
+        }
+        return result ;
+    }
 }
+
+
