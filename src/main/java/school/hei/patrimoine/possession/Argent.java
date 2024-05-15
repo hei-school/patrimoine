@@ -16,7 +16,7 @@ public final class Argent extends Possession {
       throw new NotImplemented();
   }
 
-  public Argent evolutionAuCoursDutemps(Instant tFutur){
-    throw new NotImplemented();
+  public Argent evolutionAuCoursDutemps(Instant tFutur,int depenseTotal){
+    return new Argent(nom,tFutur,valeurComptable-depenseTotal);
   }
 }

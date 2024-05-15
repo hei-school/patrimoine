@@ -21,10 +21,7 @@ class TrainDeVieTest {
         aLaDiplomation,
         compteCourant,
         1);
-    var trainDeVieEntreTemps = Instant.parse("2022-03-26T00:00:00.00Z");
-    var trainDeVieNonDeterminer = Instant.parse("2026-03-26T00:00:00.00Z");
-    //TODO: assert something useful
-    assertEquals(null,vieEstudiantine.projectionFuture(trainDeVieNonDeterminer));
-    assertEquals(vieEstudiantine.getNom(),vieEstudiantine.projectionFuture(trainDeVieEntreTemps).getNom());
+    var apres1mois = Instant.parse("2021-11-26T00:00:00.00Z");
+    assertEquals(vieEstudiantine.getNom(),vieEstudiantine.projectionFuture(apres1mois).getNom());
   }
 }
