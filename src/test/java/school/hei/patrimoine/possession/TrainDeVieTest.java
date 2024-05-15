@@ -21,6 +21,8 @@ class TrainDeVieTest {
         aLaDiplomation,
         compteCourant,
         1);
-    //TODO: assert something useful
+
+    var au26juin24 = Instant.parse("2024-06-26T00:00:00.00Z");
+    assertTrue(vieEstudiantine.getFinancePar().getValeurComptable() > vieEstudiantine.valeurComptableFuture(au26juin24));
   }
 }
