@@ -30,10 +30,11 @@ public final class TrainDeVie extends Possession {
 
   @Override
   public TrainDeVie projectionFuture(Instant tFutur) {
-    long nombreDePonction = Duration.between(debut, tFutur).toDays() / 31;
-    int depensesFutur = (int) (getDepensesMensuelle() * nombreDePonction);
     int valeurComptableFuturDuCompteCourant = (int) (getFinancePar().getValeurComptable() - (getDepensesMensuelle() * nombreDePonction));
     Argent financeFutur = new Argent(getFinancePar().nom, tFutur, valeurComptableFuturDuCompteCourant);
+
+    long nombreDePonction = Duration.between(debut, tFutur).toDays() / 31;
+    int depensesFutur = (int) (getDepensesMensuelle() * nombreDePonction);
     return new TrainDeVie(getNom(), depensesFutur, getDebut(), getFin(), financeFutur, getDateDePonction());
   }
 }
