@@ -7,10 +7,13 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 @Getter
 public final class Argent extends Possession {
-  public Argent(String nom, Instant t, int valeurComptable) {
+  private  final double tauxDinteret ;
+
+  public Argent(String nom, Instant t, int valeurComptable, double tauxDinteret) {
     super(nom, t, valeurComptable);
+      this.tauxDinteret = tauxDinteret;
   }
-private static final double tauxDinteret = 0.04 / 365;
+
   @Override
   public int valeurComptableFuture(Instant tFutur) {
     if (tFutur.isBefore(this.t)) {
