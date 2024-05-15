@@ -11,7 +11,6 @@ public final class Materiel extends Possession {
     super(nom, t, valeurComptable);
     this.tauxDAppreciationAnnuelle = tauxDAppreciationAnnuelle;
   }
-
   @Override
   public int valeurComptableFuture(Instant tFutur){
     int valeurFutur=(int)(valeurComptable-(valeurComptable/((tFutur.getEpochSecond()-t.getEpochSecond())/31_536_000)));
