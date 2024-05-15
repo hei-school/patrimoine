@@ -18,7 +18,7 @@ public final class TrainDeVie extends Possession {
       Instant fin,
       Argent financePar,
       int dateDePonction) {
-    super(nom, null, 0); //TODO: dirty, redesign
+    super(nom, debut, financePar.getValeurComptable());
     this.debut = debut;
     this.fin = fin;
     this.depensesMensuelle = depensesMensuelle;
@@ -28,6 +28,23 @@ public final class TrainDeVie extends Possession {
 
   @Override
   public Possession projectionFuture(Instant tFutur) {
-    throw new NotImplemented();
+    Instant EndingThink;
+    if (tFutur.isAfter(fin)) {
+      EndingThink = fin;
+    } else {
+      EndingThink = tFutur;
+    }
+
+    boolean MonthPonctionned = EndingThink.atZone(ZoneId.systemDefault()).getDayOfMonth() >= dateDePonction;
+    int numberofmonth = (int) ChronoUnit.MONTHS.between(this.debut.atZone(ZoneId.systemDefault()),EndingThink.atZone(ZoneId.systemDefault()));
+
+    if (!MonthPonctionned){
+      numberofmonth--;
+    }
+
+    int Depense = financePar.getValeurComptable() - (depensesMensuelle * numberofmonth);
+    Argent futureFinancePar = new Argent(this.financePar.getNom(), EndingThink, Depense);
+
+    return new TrainDeVie(this.nom, this.depensesMensuelle, this.debut, EndingThink, futureFinancePar, this.dateDePonction);
   }
 }
