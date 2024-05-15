@@ -1,8 +1,11 @@
 package school.hei.patrimoine.possession;
 
+import lombok.Getter;
 import school.hei.patrimoine.NotImplemented;
 
+import java.time.Duration;
 import java.time.Instant;
+@Getter
 
 public final class TrainDeVie extends Possession {
   private final Instant debut;
@@ -28,6 +31,8 @@ public final class TrainDeVie extends Possession {
 
   @Override
   public Possession projectionFuture(Instant tFutur) {
-    throw new NotImplemented();
+    long TotalDepenseDInstant = ((Duration.between(this.debut, tFutur).toDays()/ 30) * this.depensesMensuelle);
+    Argent projectFutur = new Argent(this.financePar.getNom(), tFutur, (int) (this.financePar.valeurComptable-TotalDepenseDInstant));
+    return new TrainDeVie(this.nom, this.depensesMensuelle, this.debut, this.fin, projectFutur, this.dateDePonction);
   }
 }

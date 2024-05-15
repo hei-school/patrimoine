@@ -22,5 +22,9 @@ class TrainDeVieTest {
         compteCourant,
         1);
     //TODO: assert something useful
+    var unMoisApresInstantDebut = Instant.parse("2021-11-26T00:00:00.00Z");
+    var TrainDevieApresUnMois = vieEstudiantine.projectionFuture(unMoisApresInstantDebut);
+
+    assertEquals(100_000,((TrainDeVie) TrainDevieApresUnMois).getFinancePar().valeurComptableFuture(unMoisApresInstantDebut));
   }
 }
