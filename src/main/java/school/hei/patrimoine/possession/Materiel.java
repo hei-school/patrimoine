@@ -1,8 +1,8 @@
 package school.hei.patrimoine.possession;
 
-import school.hei.patrimoine.NotImplemented;
-
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 
 public final class Materiel extends Possession {
@@ -15,9 +15,7 @@ public final class Materiel extends Possession {
 
   @Override
   public int valeurComptableFuture(Instant tFutur) {
-    if (tFutur.isBefore(this.t)){
-      return  this.getValeurComptable();
-    }
-    return (int) ( this.getValeurComptable() + tauxDAppreciationAnnuelle);
+    var yearsBetween = ChronoUnit.YEARS.between(LocalDateTime.ofInstant(this.t, ZoneId.of("UTC")), LocalDateTime.ofInstant(tFutur, ZoneId.of("UTC")));
+    return (int) (valeurComptable + valeurComptable * tauxDAppreciationAnnuelle * yearsBetween);
   }
 }
