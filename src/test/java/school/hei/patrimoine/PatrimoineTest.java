@@ -2,6 +2,7 @@ package school.hei.patrimoine;
 
 import org.junit.jupiter.api.Test;
 import school.hei.patrimoine.possession.Argent;
+import school.hei.patrimoine.possession.Materiel;
 import school.hei.patrimoine.possession.Possession;
 
 import java.time.Instant;
@@ -33,9 +34,9 @@ class PatrimoineTest {
         ilo,
         au13mai24,
         Set.of(
-            new Argent("Espèces", au13mai24, 400_000),
-            new Argent("Compte epargne", au13mai24, 200_000),
-            new Argent("Compte courant", au13mai24, 600_000)));
+            new Argent("Espèces", au13mai24, 400_000, 0.04),
+            new Argent("Compte epargne", au13mai24, 200_000, 0.04),
+            new Argent("Compte courant", au13mai24, 600_000, 0.04)));
 
     assertEquals(1_200_000, patrimoineIloAu13mai24.getValeurComptable());
   }
@@ -46,8 +47,14 @@ class PatrimoineTest {
     var au13mai24 = Instant.parse("2024-05-13T00:00:00.00Z");
     var au13mai29 = Instant.parse("2029-05-13T00:00:00.00Z");
 
-    var argent = new Argent("Compte epargne", au13mai24, 200_000);
+    var argent = new Argent("Compte epargne", au13mai24, 200_000, 0.04);
+    var materiel = new Materiel("ordinateur", au13mai24, 400_000, 0.1);
 
     assertEquals(200_000 * Math.pow(1 + 0.04 / 365, ChronoUnit.DAYS.between(au13mai24, au13mai29)),argent.valeurComptableFuture(au13mai29), 0.01);
+    long daysBetweenMateriel = ChronoUnit.DAYS.between(au13mai24, au13mai29);
+
+    double dailyDepreciationRate = Math.pow(1 - 0.1, 1.0 / 365);
+    double expectedMaterielValue = 400_000 * Math.pow(dailyDepreciationRate, daysBetweenMateriel);
+    assertEquals(expectedMaterielValue, materiel.valeurComptableFuture(au13mai29), 0.01);
   }
 }
