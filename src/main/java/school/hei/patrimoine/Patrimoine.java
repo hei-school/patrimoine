@@ -12,13 +12,9 @@ public record Patrimoine(
     if (possessions.isEmpty()) {
       return 0;
     }
-    int valeurComptable = 0;
-    Iterator<Possession> possessionIterator = possessions.iterator();
-    while (possessionIterator.hasNext()){
-      Possession possession = possessionIterator.next();
-      valeurComptable += possession.getValeurComptable();
-    }
-    return valeurComptable;
+    return possessions.stream()
+            .map(Possession::getValeurComptable)
+            .reduce(0, Integer::sum);
   }
 
   public Patrimoine projectionFuture(Instant tFutur) {
