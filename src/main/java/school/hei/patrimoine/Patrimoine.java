@@ -21,9 +21,9 @@ public record Patrimoine(
 
   public Patrimoine projectionFuture(Instant tFutur) {
     Set<Possession> futurePossessions = new HashSet<>();
-    for (Possession possession : possessions) {
-      futurePossessions.add(possession.projectionFuture(tFutur));
-    }
-    return new Patrimoine(possesseur, tFutur, futurePossessions);
+  for (Possession possession : possessions) {
+    futurePossessions.add(possession.projectionFuture(tFutur));
+  }
+  return new Patrimoine(possesseur, tFutur, futurePossessions);
   }
 }
