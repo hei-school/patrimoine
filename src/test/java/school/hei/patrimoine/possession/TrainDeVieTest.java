@@ -21,6 +21,6 @@ class TrainDeVieTest {
         aLaDiplomation,
         compteCourant,
         1);
-    //TODO: assert something useful
+    assertEquals(100_000, (compteCourant.getValeurComptable() - vieEstudiantine.getDepensesMensuelle()));
   }
 }
