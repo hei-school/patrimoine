@@ -27,7 +27,7 @@ public final class TrainDeVie extends Possession {
   }
 
   @Override
-  public int valeurComptableFuture(Instant tFutur) {
+  public Possession projectionFuture(Instant tFutur) {
     throw new NotImplemented();
   }
 }
