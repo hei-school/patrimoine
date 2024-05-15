@@ -20,4 +20,10 @@ public final class Materiel extends Possession {
         double differenceEnAnnee = duration.toDays() / nombreDeJourDansUneAnnee ;
         return (int) (tauxDAppreciationAnnuelle * valeurComptable * differenceEnAnnee) + valeurComptable;
     }
+
+  @Override
+  public Possession projectionFuture(Instant tFutur) {
+    throw new NotImplemented();
+  }
+
 }
