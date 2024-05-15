@@ -5,9 +5,7 @@ import school.hei.patrimoine.NotImplemented;
 import java.time.Instant;
 
 public final class TrainDeVie extends Possession {
-  private final Instant debut;
   private final Instant fin;
-  private final int depensesMensuelle;
   private final Argent financePar;
   private final int dateDePonction;
 
@@ -18,10 +16,8 @@ public final class TrainDeVie extends Possession {
       Instant fin,
       Argent financePar,
       int dateDePonction) {
-    super(nom, null, 0); //TODO: dirty, redesign
-    this.debut = debut;
+    super(nom, debut, depensesMensuelle);
     this.fin = fin;
-    this.depensesMensuelle = depensesMensuelle;
     this.financePar = financePar;
     this.dateDePonction = dateDePonction;
   }
