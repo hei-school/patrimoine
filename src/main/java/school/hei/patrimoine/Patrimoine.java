@@ -20,10 +20,10 @@ public record Patrimoine(
   }
 
   public Patrimoine projectionFuture(Instant tFutur) {
-    Set<Possession> futurePossessions = new HashSet<>();
+    Set<Possession> PossessionsFuture = new HashSet<>();
     for (Possession possession : possessions) {
-      futurePossessions.add(possession.projectionFuture(tFutur));
+      PossessionsFuture .add(possession.projectionFuture(tFutur));
     }
-    return new Patrimoine(possesseur, tFutur, futurePossessions);
+    return new Patrimoine(possesseur, tFutur, PossessionsFuture );
   }
 }
