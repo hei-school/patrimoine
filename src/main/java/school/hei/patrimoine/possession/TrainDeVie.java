@@ -1,14 +1,6 @@
 package school.hei.patrimoine.possession;
-
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-import org.w3c.dom.CDATASection;
-import school.hei.patrimoine.NotImplemented;
-
-import java.time.Duration;
 import java.time.Instant;
-@EqualsAndHashCode
-@ToString
+
 public final class TrainDeVie extends Possession {
   private final Instant debut;
   private final Instant fin;
@@ -38,9 +30,9 @@ public final class TrainDeVie extends Possession {
     if (tFutur.isAfter(debut) && tFutur.isBefore(fin)){
       return new TrainDeVie(nom,
               depensesMensuelle,
-              tFutur,
+              debut,
               fin,
-              financePar,
+              financePar.evolutionAuCoursDutemps(tFutur),
               dateDePonction
               );
     }

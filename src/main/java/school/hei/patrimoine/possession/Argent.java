@@ -15,4 +15,8 @@ public final class Argent extends Possession {
   public Possession projectionFuture(Instant tFutur) {
       throw new NotImplemented();
   }
+
+  public Argent evolutionAuCoursDutemps(Instant tFutur){
+    throw new NotImplemented();
+  }
 }
