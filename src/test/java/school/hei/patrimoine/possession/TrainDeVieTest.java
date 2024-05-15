@@ -14,6 +14,7 @@ class TrainDeVieTest {
 
     var aLOuvertureDeHEI = Instant.parse("2021-10-26T00:00:00.00Z");
     var aLaDiplomation = Instant.parse("2024-12-26T00:00:00.00Z");
+    var dateEntreDebutOuvertureEtDateCompteCourant = Instant.parse("2022-12-26T00:00:00.00Z");;
     var vieEstudiantine = new TrainDeVie(
         "Ma super(?) vie d'etudiant",
         500_000,
@@ -22,5 +23,8 @@ class TrainDeVieTest {
         compteCourant,
         1);
     //TODO: assert something useful
+    assertEquals(100_000,
+            compteCourant.valeurComptableFuture(dateEntreDebutOuvertureEtDateCompteCourant) -
+            vieEstudiantine.getValeurComptable());
   }
 }
