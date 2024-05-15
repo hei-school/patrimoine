@@ -30,6 +30,6 @@ public final class TrainDeVie extends Possession {
 
   @Override
   public TrainDeVie projectionFuture(Instant tFutur) {
-    throw new NotImplemented();
+    return new TrainDeVie(this.nom, this.depensesMensuelle, this.debut, this.fin, this.financePar, this.dateDePonction);
   }
 }
