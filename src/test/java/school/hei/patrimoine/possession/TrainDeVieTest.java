@@ -22,5 +22,7 @@ class TrainDeVieTest {
         compteCourant,
         1);
     //TODO: assert something useful
+
+    assertEquals(-2_900_000,vieEstudiantine.projectionFuture(aLaDiplomation).getValeurComptable());
   }
 }

@@ -1,8 +1,10 @@
 package school.hei.patrimoine.possession;
 
+import lombok.AllArgsConstructor;
 import school.hei.patrimoine.NotImplemented;
 
 import java.time.Instant;
+import java.time.ZonedDateTime;
 
 public final class TrainDeVie extends Possession {
   private final Instant debut;
@@ -10,15 +12,14 @@ public final class TrainDeVie extends Possession {
   private final int depensesMensuelle;
   private final Argent financePar;
   private final int dateDePonction;
-
-  public TrainDeVie(
+  public TrainDeVie (
       String nom,
       int depensesMensuelle,
       Instant debut,
       Instant fin,
       Argent financePar,
       int dateDePonction) {
-    super(nom, null, 0); //TODO: dirty, redesign
+    super(nom, financePar.getT(), financePar.getValeurComptable()); //TODO: dirty, redesign
     this.debut = debut;
     this.fin = fin;
     this.depensesMensuelle = depensesMensuelle;
@@ -28,6 +29,26 @@ public final class TrainDeVie extends Possession {
 
   @Override
   public Possession projectionFuture(Instant tFutur) {
-    throw new NotImplemented();
+    ZonedDateTime dateFuture = ZonedDateTime.parse(tFutur.toString());
+    ZonedDateTime  dateOld = ZonedDateTime.parse(financePar.getT().toString());
+
+    int differenceYear = 0;
+    differenceYear = dateFuture.getMonthValue() - dateOld.getMonthValue();
+
+    int newValeurComptable = financePar.getValeurComptable() - (depensesMensuelle * differenceYear);
+    Argent newArgent = new Argent(
+            getNom(),
+            financePar.getT(),
+            newValeurComptable
+    );
+
+    return new TrainDeVie(
+            getNom(),
+            depensesMensuelle,
+            financePar.getT(),
+            fin,
+            newArgent,
+            dateDePonction
+    );
   }
 }
