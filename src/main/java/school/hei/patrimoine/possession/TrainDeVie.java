@@ -1,7 +1,8 @@
 package school.hei.patrimoine.possession;
 
-import school.hei.patrimoine.NotImplemented;
-
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.ZoneId;
 import java.time.Instant;
 
 public final class TrainDeVie extends Possession {
@@ -28,6 +29,14 @@ public final class TrainDeVie extends Possession {
 
   @Override
   public Possession projectionFuture(Instant tFutur) {
-    throw new NotImplemented();
+
+    LocalDate moisDebut = debut.atZone(ZoneId.systemDefault()).toLocalDate();
+    LocalDate moisFin = fin.atZone(ZoneId.systemDefault()).toLocalDate();
+    Period duree = Period.between(moisDebut, moisFin);
+    int dureeEnMois = duree.getMonths();
+    int depenses = depensesMensuelle * dureeEnMois;
+
+    return new TrainDeVie(getNom(), depenses, debut, tFutur, financePar, dateDePonction);
   }
+
 }
