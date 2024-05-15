@@ -3,7 +3,7 @@ package school.hei.patrimoine.possession;
 import school.hei.patrimoine.NotImplemented;
 
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
+
 
 public final class Materiel extends Possession {
   private final double tauxDAppreciationAnnuelle;
@@ -18,9 +18,7 @@ public final class Materiel extends Possession {
   }
 
   @Override
-  public int valeurComptableFuture(Instant tFutur) {
-
-    double valeurFinal = getValeurComptable() * (1 + getTauxDAppreciationAnnuelle());
-    return  (int)valeurFinal;
+  public Possession projectionFuture(Instant tFutur) {
+    throw new NotImplemented();
   }
 }
