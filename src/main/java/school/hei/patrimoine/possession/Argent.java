@@ -9,6 +9,10 @@ public final class Argent extends Possession {
     super(nom, t, valeurComptable);
   }
 
+//  @Override
+//  public int valeurComptableFuture(Instant tFutur) {
+//    throw new NotImplemented();
+//  }
   @Override
   public Possession projectionFuture(Instant tFutur) {
     throw new NotImplemented();
