@@ -8,10 +8,10 @@ import java.time.Instant;
 @AllArgsConstructor
 @Getter
 public sealed abstract class Possession permits
-    Argent, Materiel, TrainDeVie {
-  protected final String nom;
-  protected final Instant t;
-  protected final int valeurComptable;
+        Argent, Materiel, TrainDeVie {
+    protected final String nom;
+    protected final Instant t;
+    protected final int valeurComptable;
 
-  public abstract int valeurComptableFuture(Instant tFutur);
+    public abstract int valeurComptableFuture(Instant tFutur);
 }
