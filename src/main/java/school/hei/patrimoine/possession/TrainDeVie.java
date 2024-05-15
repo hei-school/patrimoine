@@ -4,6 +4,8 @@ import school.hei.patrimoine.NotImplemented;
 
 import java.time.Instant;
 
+
+
 public final class TrainDeVie extends Possession {
   private final Instant debut;
   private final Instant fin;
@@ -30,4 +32,10 @@ public final class TrainDeVie extends Possession {
   public Possession projectionFuture(Instant tFutur) {
     throw new NotImplemented();
   }
+
+
 }
+
+
+
+
