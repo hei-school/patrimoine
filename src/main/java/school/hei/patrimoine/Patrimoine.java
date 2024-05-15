@@ -12,6 +12,10 @@ public record Patrimoine(
     if (possessions.isEmpty()) {
       return 0;
     }
-    throw new NotImplemented();
+    int sommeValeurComptable = 0;
+    for(Possession possession : possessions){
+      sommeValeurComptable += possession.getValeurComptable();
+    }
+    return sommeValeurComptable;
   }
 }
