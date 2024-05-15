@@ -15,7 +15,10 @@ public final class Materiel extends Possession {
 
   @Override
   public int valeurComptableFuture(Instant tFutur) {
-    var yearsBetween = ChronoUnit.YEARS.between(LocalDateTime.ofInstant(this.t, ZoneId.of("UTC")), LocalDateTime.ofInstant(tFutur, ZoneId.of("UTC")));
-    return (int) (valeurComptable + valeurComptable * tauxDAppreciationAnnuelle * yearsBetween);
+    var yearsBetween = ChronoUnit.YEARS.between(
+            LocalDateTime.ofInstant(this.t, ZoneId.of("UTC")),
+            LocalDateTime.ofInstant(tFutur, ZoneId.of("UTC"))
+    );
+    return (int) (valeurComptable + (valeurComptable * tauxDAppreciationAnnuelle * (yearsBetween + 1)));
   }
 }
