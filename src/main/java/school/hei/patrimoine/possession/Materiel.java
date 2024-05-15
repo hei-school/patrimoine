@@ -16,17 +16,7 @@ public final class Materiel extends Possession {
   }
 
   @Override
-  public int valeurComptableFuture(Instant tFutur) {
-    ZonedDateTime zdt1 = this.t.atZone(ZoneId.systemDefault());
-    ZonedDateTime zdt2 = tFutur.atZone(ZoneId.systemDefault());
-    long nombreDeMois = ChronoUnit.MONTHS.between(zdt1, zdt2);
-    double valeurActuelle = getValeurComptable();
-    double tauxMensuel = tauxDAppreciationAnnuelle / 12.0;
-
-    for (int mois = 1; mois <= nombreDeMois; mois++) {
-      valeurActuelle *= (1 + tauxMensuel);
-    }
-
-    return (int) Math.round(valeurActuelle);
+  public Possession projectionFuture(Instant tFutur) {
+    throw new NotImplemented();
   }
 }
