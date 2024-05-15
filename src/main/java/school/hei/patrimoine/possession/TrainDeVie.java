@@ -41,7 +41,7 @@ public final class TrainDeVie extends Possession {
             nombreDePonction += 1;
         }
 
-        int valeurComptableFuture = this.financePar.getValeurComptable()-(this.depensesMensuelle * nombreDePonction);
+        int valeurComptableFuture = this.financePar.getValeurComptable() - (this.depensesMensuelle * nombreDePonction);
         Argent financeParFutur = new Argent(
                 this.financePar.getNom(),
                 this.financePar.getT(),
