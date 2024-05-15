@@ -3,6 +3,7 @@ package school.hei.patrimoine.possession;
 import school.hei.patrimoine.NotImplemented;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 
 public final class TrainDeVie extends Possession {
   private final Instant debut;
@@ -28,6 +29,16 @@ public final class TrainDeVie extends Possession {
 
   @Override
   public Possession projectionFuture(Instant tFutur) {
-    throw new NotImplemented();
+    double dureeDuTrainDeVie = ChronoUnit.MONTHS.between(debut, fin);
+    int depensesTotalesDurantLeTrainDeVie = (int) (dureeDuTrainDeVie * depensesMensuelle);
+
+    return new TrainDeVie(
+            getNom(),
+            depensesTotalesDurantLeTrainDeVie,
+            debut,
+            fin,
+            financePar,
+            dateDePonction
+            );
   }
 }
