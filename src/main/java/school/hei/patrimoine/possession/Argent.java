@@ -15,6 +15,6 @@ public final class Argent extends Possession {
             this.nom,
             this.t,
             this.valeurComptable
-    )
+    );
   }
 }
