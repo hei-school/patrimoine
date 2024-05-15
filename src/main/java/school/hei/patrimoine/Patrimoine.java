@@ -4,6 +4,7 @@ import school.hei.patrimoine.possession.Possession;
 
 import java.time.Instant;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public record Patrimoine(
     Personne possesseur, Instant t, Set<Possession> possessions) {
@@ -15,6 +16,9 @@ public record Patrimoine(
   }
 
   public Patrimoine projectionFuture(Instant tFutur) {
-    throw new NotImplemented();
+    Set<Possession> futurePossessions = possessions.stream()
+            .map(possession -> possession.projectionFuture(tFutur))
+            .collect(Collectors.toSet());
+    return new Patrimoine(possesseur, tFutur, futurePossessions);
   }
 }
