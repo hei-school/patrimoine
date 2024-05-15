@@ -25,6 +25,6 @@ class TrainDeVieTest {
     //TODO: assert something useful
     assertEquals(100_000,
             compteCourant.valeurComptableFuture(dateEntreDebutOuvertureEtDateCompteCourant) -
-            vieEstudiantine.getValeurComptable());
+            vieEstudiantine.projectionFuture(dateEntreDebutOuvertureEtDateCompteCourant).getValeurComptable());
   }
 }
