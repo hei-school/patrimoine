@@ -21,6 +21,6 @@ class TrainDeVieTest {
         aLaDiplomation,
         compteCourant,
         1);
-    //TODO: assert something useful
+    assertNotEquals(vieEstudiantine,vieEstudiantine.projectionFuture(aLaDiplomation));
   }
 }
