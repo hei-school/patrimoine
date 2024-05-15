@@ -16,13 +16,20 @@ public final class Materiel extends Possession {
   }
 
   @Override
-  public int valeurComptableFuture(Instant tFutur) {
+  public Possession projectionFuture(Instant tFutur) {
     ZonedDateTime  dateFuture = ZonedDateTime.parse(tFutur.toString());
     ZonedDateTime  dateOld = ZonedDateTime.parse(t.toString());
-    int differenceYear =0;
-    Double gap = 0.10;
+
+    int differenceYear = 0;
     differenceYear = dateFuture.getYear() - dateOld.getYear();
-    gap *= differenceYear;
-    return (int) (valeurComptable * gap);
+
+    Double gap = 1 + (tauxDAppreciationAnnuelle * differenceYear);
+    int futureValeurComptable = (int) (valeurComptable * gap);
+    return new Materiel(
+            getNom(),
+            tFutur,
+            futureValeurComptable,
+            tauxDAppreciationAnnuelle
+    );
   }
 }
