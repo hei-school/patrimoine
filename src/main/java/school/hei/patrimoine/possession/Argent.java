@@ -21,4 +21,4 @@ public final class Argent extends Possession {
     return  new Argent(nom,t,valeurFuture);
   }
   }
-}
+

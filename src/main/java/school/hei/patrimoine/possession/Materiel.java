@@ -21,10 +21,10 @@ public final class Materiel extends Possession {
   public Possession projectionFuture(Instant tFutur) {
     Instant instant = Instant.now();
 
-    var datePresent = LocalDate.ofInstant(instant, ZoneId.systemDefault());
-    var future= LocalDate.ofInstant(tFutur,ZoneId.systemDefault());
+    LocalDate datePresent = LocalDate.ofInstant(instant, ZoneId.systemDefault());
+    LocalDate future= LocalDate.ofInstant(tFutur,ZoneId.systemDefault());
 
-    var annee = future.getYear() - datePresent.getYear();
+    int annee = future.getYear() - datePresent.getYear();
 
     double diminution = 0;
 
