@@ -22,5 +22,7 @@ class TrainDeVieTest {
         compteCourant,
         1);
     //TODO: assert something useful
+      Possession possessionFuture = vieEstudiantine.projectionFuture(aLaDiplomation);
+      assertEquals(500_000, possessionFuture.getValeurComptable());
   }
 }
