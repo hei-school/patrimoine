@@ -12,9 +12,8 @@ public record Patrimoine(
       return 0;
     }
     return this.possessions.stream()
-            .map(Possession::getValeurComptable)
-            .reduce(Integer::sum)
-            .orElse(0);
+            .mapToInt(Possession::getValeurComptable)
+            .sum();
   }
 
   public Patrimoine projectionFuture(Instant tFutur) {
