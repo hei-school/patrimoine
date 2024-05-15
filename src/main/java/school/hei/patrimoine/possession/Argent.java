@@ -11,6 +11,7 @@ public final class Argent extends Possession {
 
   @Override
   public Possession projectionFuture(Instant tFutur) {
+
     throw new NotImplemented();
   }
 }

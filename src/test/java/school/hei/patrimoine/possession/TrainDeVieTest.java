@@ -22,5 +22,11 @@ class TrainDeVieTest {
         compteCourant,
         1);
     //TODO: assert something useful
+    assertEquals("Ma super(?) vie d'etudiant",vieEstudiantine.getNom());
+    assertEquals(500_000,vieEstudiantine.getDepensesMensuelle());
+    assertEquals(aLOuvertureDeHEI,vieEstudiantine.getDebut());
+    assertEquals(aLaDiplomation,vieEstudiantine.getFin());
+    assertEquals(compteCourant,vieEstudiantine.getFinancePar());
+    assertEquals(1,vieEstudiantine.getDateDePonction());
   }
 }
