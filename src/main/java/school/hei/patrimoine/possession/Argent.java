@@ -21,15 +21,7 @@ public final class Argent extends Possession {
   }
 
   @Override
-  public Argent projectionFuture(Instant tFutur) {
-    return new Argent(
-        nom,
-        tFutur,
-        valeurComptable - financementsFutur(tFutur),
-        financés.stream().map(f -> f.projectionFuture(tFutur)).collect(toSet()));
-  }
-
-  private int financementsFutur(Instant tFutur) {
+  public Possession projectionFuture(Instant tFutur) {
     throw new NotImplemented();
   }
 
