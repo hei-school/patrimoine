@@ -2,7 +2,6 @@ package school.hei.patrimoine.possession;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import school.hei.patrimoine.NotImplemented;
 
 import java.time.Instant;
 
@@ -20,4 +19,7 @@ public sealed abstract class Possession permits
 
   public abstract Possession projectionFuture(Instant tFutur);
 
+  public Object getFinancePar() {
+    return this;
+  }
 }
