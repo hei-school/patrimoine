@@ -21,6 +21,11 @@ class TrainDeVieTest {
         compteCourant,
         1);
     //TODO: assert something useful
+
+    var unMoisApresLOuvertureDeHEI = Instant.parse("2021-11-26T00:00:00.00Z");
+    assertEquals(
+            100_000,
+            compteCourant.valeurComptableFuture(unMoisApresLOuvertureDeHEI));
   }
 
   @Test
