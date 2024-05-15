@@ -1,12 +1,11 @@
 package school.hei.patrimoine;
 
-import org.junit.jupiter.api.Test;
-import school.hei.patrimoine.possession.Argent;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.Instant;
 import java.util.Set;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Test;
+import school.hei.patrimoine.possession.Argent;
 
 class PatrimoineTest {
 

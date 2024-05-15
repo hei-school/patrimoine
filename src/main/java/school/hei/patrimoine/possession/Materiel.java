@@ -14,7 +14,8 @@ public final class Materiel extends Possession {
   @Override
   public Possession projectionFuture(Instant tFutur) {
     double joursDeDifference = Duration.between(t, tFutur).toDays();
-    int valeurAjoutee = (int) (valeurComptable * ((tauxDAppreciationAnnuelle * joursDeDifference) / 365));
+    int valeurAjoutee =
+        (int) (valeurComptable * ((tauxDAppreciationAnnuelle * joursDeDifference) / 365));
     return new Materiel(nom, tFutur, valeurComptable + valeurAjoutee, tauxDAppreciationAnnuelle);
   }
 }
