@@ -1,7 +1,6 @@
 package school.hei.patrimoine.possession;
 
 import lombok.Getter;
-import school.hei.patrimoine.NotImplemented;
 
 import java.time.Duration;
 import java.time.Instant;

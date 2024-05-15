@@ -14,7 +14,7 @@ public final class Materiel extends Possession {
 
   @Override
   public Possession projectionFuture(Instant tFutur) {
-    double nombreAnnees = tFutur.getEpochSecond() - this.getT().getEpochSecond();
+    double nombreAnnees = tFutur.getEpochSecond() - this.getT().getEpochSecond()/365;
     double valeurComptableFuture = getValeurComptable() * Math.pow((1 + tauxDAppreciationAnnuelle), nombreAnnees);
     return new Materiel(this.getNom(), tFutur, (int) valeurComptableFuture, tauxDAppreciationAnnuelle);
   }
