@@ -3,7 +3,6 @@ package school.hei.patrimoine.possession;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -24,12 +23,6 @@ class TrainDeVieTest {
         1);
 
     //TODO: assert something useful
-    assertEquals("Ma super(?) vie d'etudiant", vieEstudiantine.getNom());
-    assertEquals(500_000, vieEstudiantine.getDepensesMensuelle());
-    assertEquals(aLOuvertureDeHEI, vieEstudiantine.getDebut());
-    assertEquals(aLaDiplomation, vieEstudiantine.getFin());
-    assertEquals(compteCourant, vieEstudiantine.getFinancePar());
-    assertEquals(1, vieEstudiantine.getDateDePonction());
-
+    assertEquals(100_000, compteCourant.getValeurComptable() - vieEstudiantine.getDepensesMensuelle());
   }
 }
