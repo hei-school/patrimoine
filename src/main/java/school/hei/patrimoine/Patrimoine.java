@@ -16,5 +16,12 @@ public record Patrimoine(
       valeur += possession.getValeurComptable();
     }
     return valeur;
+
+    throw new NotImplemented();
+  }
+
+  public Patrimoine projectionFuture(Instant tFutur) {
+    throw new NotImplemented();
+  }
 }
     }

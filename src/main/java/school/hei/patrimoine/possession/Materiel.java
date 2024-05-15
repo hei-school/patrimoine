@@ -36,5 +36,8 @@ public final class Materiel extends Possession {
     double nouvelleValeurComptable = getValeurComptable()* Math.pow(tauxDAppreciationAnnuelle,differenceEnAnnees);
 
     return new Materiel(getNom(), tFutur, (int) nouvelleValeurComptable, tauxDAppreciationAnnuelle);
+
+  public Possession projectionFuture(Instant tFutur) {
+    throw new NotImplemented();
   }
 }

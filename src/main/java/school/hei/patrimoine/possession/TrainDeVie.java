@@ -42,6 +42,7 @@ public final class TrainDeVie extends Possession {
     int depenses = depensesMensuelle * dureeEnMois;
 
     return new TrainDeVie(getNom(), depenses, debut, tFutur, financePar, dateDePonction);
+    throw new NotImplemented();
   }
 
 }
