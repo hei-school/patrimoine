@@ -18,13 +18,12 @@ public final class Materiel extends Possession {
   }
 
   @Override
-  public int valeurComptableFuture(Instant tFutur) {
-
+  public Possession projectionFuture(Instant tFutur) {
     throw new NotImplemented();
     Duration duration = Duration.between(t, tFutur);
     long differenceEnJours = duration.toDays();
     double tauxDeDepreciation = Math.pow(1 - tauxDAppreciationAnnuelle, differenceEnJours / 365.0);
     double valeurFuture = getValeurComptable() * tauxDeDepreciation;
-    return (int) Math.round(valeurFuture);
+    return new Materiel(nom,tFutur,(int) valeurFuture,tauxDAppreciationAnnuelle);
   }
 }
