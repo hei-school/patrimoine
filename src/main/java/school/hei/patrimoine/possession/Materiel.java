@@ -2,6 +2,7 @@ package school.hei.patrimoine.possession;
 
 import school.hei.patrimoine.NotImplemented;
 
+import java.time.Duration;
 import java.time.Instant;
 
 public final class Materiel extends Possession {
@@ -14,6 +15,9 @@ public final class Materiel extends Possession {
 
   @Override
   public Possession projectionFuture(Instant tFutur) {
-    throw new NotImplemented();
+    long jourTotalEntreAchatDateEttFutur = Duration.between(this.t, tFutur).toDays();
+    double anneesTotales = (double) jourTotalEntreAchatDateEttFutur / 365;
+    double valeurFuture = this.valeurComptable * Math.pow(1 + tauxDAppreciationAnnuelle, anneesTotales);
+    return new Materiel(this.nom, tFutur, (int) valeurFuture, this.tauxDAppreciationAnnuelle);
   }
 }
