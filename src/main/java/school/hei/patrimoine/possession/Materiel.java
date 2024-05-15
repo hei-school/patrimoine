@@ -21,4 +21,8 @@ public final class Materiel extends Possession {
     double vComptableFuture = this.valeurComptable*(Math.pow(1+this.tauxDAppreciationAnnuelle,intervalA));
     return (int) Math.round(vComptableFuture);
   }
+  @Override
+  public Possession projectionFuture(Instant tFutur) {
+    throw new NotImplemented();
+  }
 }
