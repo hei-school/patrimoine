@@ -15,15 +15,7 @@ public final class Materiel extends Possession {
     this.tauxDAppreciationAnnuelle = tauxDAppreciationAnnuelle;
   }
 
-  @Override
-  public int valeurComptableFuture(Instant tFutur) {
-    int futurDate = LocalDateTime.ofInstant(tFutur, ZoneId.systemDefault()).getYear();
-    int ancienneDate = LocalDateTime.ofInstant(t, ZoneId.systemDefault()).getYear();
-    int differenceAnnee = futurDate - ancienneDate;
-    int valeur = 0;
-    for (int i=0; i<differenceAnnee; i++){
-      valeur += (int) ((getValeurComptable()*this.tauxDAppreciationAnnuelle) / 100);
-    }
-    return getValeurComptable() + valeur;
+  public Possession projectionFuture(Instant tFutur) {
+    throw new NotImplemented();
   }
 }
