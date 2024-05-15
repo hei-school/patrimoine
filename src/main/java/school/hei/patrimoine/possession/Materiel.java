@@ -14,9 +14,15 @@ public final class Materiel extends Possession {
   }
 
   @Override
+
   public int valeurComptableFuture(Instant tFutur) {
     long  differenceDAnnees = Duration.between(t, tFutur).toDays() /365;
     double valeurFuture = valeurComptable + ((valeurComptable * tauxDAppreciationAnnuelle) * differenceDAnnees);
     return (int) valeurFuture;
+  
+  
+  public Possession projectionFuture(Instant tFutur) {
+    throw new NotImplemented();
+  }
 }
 }
