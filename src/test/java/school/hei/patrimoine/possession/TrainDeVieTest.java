@@ -22,5 +22,8 @@ class TrainDeVieTest {
         compteCourant,
         1);
     //TODO: assert something useful
+     var MonthLater = Instant.parse("2021-11-26T00:00:00.00Z");
+     var afteronemonth = vieEstudiantine.projectionFuture(MonthLater);
+        assertEquals(100_000, afteronemonth.getValeurComptable());
   }
 }
