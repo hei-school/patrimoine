@@ -14,7 +14,7 @@ public final class TrainDeVie extends Possession {
   public TrainDeVie(
       String nom,
       int depensesMensuelle,
-      Instant debut,
+      Instant debut, 
       Instant fin,
       Argent financePar,
       int dateDePonction) {
