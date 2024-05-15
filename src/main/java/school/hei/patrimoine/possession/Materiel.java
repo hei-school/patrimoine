@@ -1,4 +1,6 @@
 package school.hei.patrimoine.possession;
+import school.hei.patrimoine.NotImplemented;
+
 import java.time.Duration;
 import java.time.Instant;
 
@@ -18,5 +20,8 @@ public final class Materiel extends Possession {
     double estimationTauxDAppreciation = Math.pow(1 + this.tauxDAppreciationAnnuelle, intervalAnnee);
     double valeurComptableFuture = this.valeurComptable * estimationTauxDAppreciation;
     return (int) Math.round(valeurComptableFuture);
+    
+  public Possession projectionFuture(Instant tFutur) {
+      return new Materiel(this.nom,tFutur,valeurComptableFuture,this.tauxDAppreciationAnnuelle)
   }
 }
