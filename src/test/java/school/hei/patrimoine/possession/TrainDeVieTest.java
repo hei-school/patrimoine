@@ -3,7 +3,8 @@ package school.hei.patrimoine.possession;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
-import java.util.Set;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 class TrainDeVieTest {
   @Test
