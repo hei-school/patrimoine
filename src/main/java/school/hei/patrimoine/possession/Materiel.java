@@ -1,7 +1,5 @@
 package school.hei.patrimoine.possession;
 
-import school.hei.patrimoine.NotImplemented;
-
 import java.time.Instant;
 
 public final class Materiel extends Possession {
@@ -14,6 +12,12 @@ public final class Materiel extends Possession {
 
   @Override
   public int valeurComptableFuture(Instant tFutur) {
-    throw new NotImplemented();
+      Materiel materiel = new Materiel(nom, t, valeurComptable, tauxDAppreciationAnnuelle);
+    int futur_valeur = 0;
+  if (materiel.getValeurComptable() == materiel.valeurComptableFuture(tFutur)){
+      futur_valeur = ( valeurComptable * 10) / 100;
+
+  }
+      return futur_valeur;
   }
 }
