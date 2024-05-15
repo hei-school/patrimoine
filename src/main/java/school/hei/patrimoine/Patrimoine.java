@@ -7,7 +7,6 @@ import java.util.Set;
 
 public record Patrimoine(
     Personne possesseur, Instant t, Set<Possession> possessions) {
-
   public int getValeurComptable() {
     if (possessions.isEmpty()) {
       return 0;
@@ -16,5 +15,9 @@ public record Patrimoine(
             .map(Possession::getValeurComptable)
             .reduce(Integer::sum)
             .orElse(0);
+  }
+
+  public Patrimoine projectionFuture(Instant tFutur) {
+    throw new NotImplemented();
   }
 }
