@@ -32,33 +32,21 @@ public final class TrainDeVie extends Possession {
 
   @Override
   public Possession projectionFuture(Instant tFutur) {
-    ZoneId zoneId = ZoneId.systemDefault();
+    int rest = financePar.getValeurComptable();
+    if (tFutur.isAfter(debut) && (financePar.getT().equals(debut) || financePar.getT().isAfter(debut)) && (financePar.getT().equals(fin) || financePar.getT().isBefore(fin))) {
 
-    LocalDate StartLocalDate;
-    if (debut.isBefore(financePar.getT())) {
-      StartLocalDate = financePar.getT().atZone(zoneId).toLocalDate();
-    } else {
-      StartLocalDate = debut.atZone(zoneId).toLocalDate();
+      LocalDate StartLocalDate = debut.atZone(ZoneId.of("UTC")).toLocalDate();
+      LocalDate FuturLocalDate = tFutur.atZone(ZoneId.of("UTC")).toLocalDate();
+
+      while (StartLocalDate.isBefore(FuturLocalDate)) {
+        if (StartLocalDate.getDayOfMonth() == dateDePonction) {
+          rest -= depensesMensuelle;
+        }
+        StartLocalDate = StartLocalDate.plusDays(1);
+      }
     }
 
-    LocalDate EndLocalDate = tFutur.atZone(zoneId).toLocalDate();
-
-    int MonthBetweenEndandStartLocalDate = (int) ChronoUnit.MONTHS.between(StartLocalDate, EndLocalDate);
-
-    int FuturValues = calculerValeurFuture(MonthBetweenEndandStartLocalDate);
-
-    Argent NewBalance = new Argent(financePar.getNom(),financePar.getT(),FuturValues);
-
-    Instant StartingDate = StartLocalDate.atStartOfDay(zoneId).toInstant();
-
-    return new TrainDeVie(nom,depensesMensuelle,StartingDate,fin,NewBalance,dateDePonction);
-  }
-
-  private int calculerValeurFuture(int MonthBetweenEndandStartLocalDate) {
-    int FutureValues = financePar.getValeurComptable();
-    for (int i = 0 ; i < MonthBetweenEndandStartLocalDate; i ++){
-      FutureValues -= depensesMensuelle;
-    }
-    return FutureValues;
+    Argent newFinancePar = new Argent(financePar.nom, tFutur, rest);
+    return new TrainDeVie(nom, depensesMensuelle, debut, fin, newFinancePar, dateDePonction);
   }
 }

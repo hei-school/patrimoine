@@ -22,6 +22,14 @@ class TrainDeVieTest {
         compteCourant,
         1);
     //TODO: assert something useful
+    assertNotEquals(vieEstudiantine,vieEstudiantine.projectionFuture(aLaDiplomation));
+    // If  depense mesuelle is not apply in train de vie :
+    var au10juil20 = Instant.parse("2020-07-10T00:00:00.00Z");
+    var projectionFutureAu10juil20 = vieEstudiantine.projectionFuture(au10juil20);
+    assertEquals( vieEstudiantine.getValeurComptable(), projectionFutureAu10juil20.getValeurComptable());
 
-  }
+
+
+
+    }
 }
