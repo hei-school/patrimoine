@@ -3,6 +3,8 @@ package school.hei.patrimoine.possession;
 import school.hei.patrimoine.NotImplemented;
 
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 
 public final class Argent extends Possession {
   public Argent(String nom, Instant t, int valeurComptable) {
@@ -11,6 +13,11 @@ public final class Argent extends Possession {
 
   @Override
   public Possession projectionFuture(Instant tFutur) {
-    throw new NotImplemented();
+    LocalDate datePresent = LocalDate.ofInstant(getT(), ZoneId.systemDefault());
+    LocalDate future = LocalDate.ofInstant(tFutur, ZoneId.systemDefault());
+    int Annee = future.getYear() - datePresent.getYear();
+    int FutureValeur = getValeurComptable(); // La valeur reste la même indépendamment des années
+    return new Argent(getNom(), tFutur, FutureValeur);
   }
-}
+  }
+
