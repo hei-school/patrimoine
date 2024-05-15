@@ -21,6 +21,8 @@ class TrainDeVieTest {
         aLaDiplomation,
         compteCourant,
         1);
-    //TODO: assert something useful
+
+    Instant tFutur = Instant.parse("2024-10-26T00:00:00.00Z");
+    assertEquals(-16900000,vieEstudiantine.projectionFuture(tFutur).getValeurComptable());
   }
 }
