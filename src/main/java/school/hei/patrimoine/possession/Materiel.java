@@ -1,10 +1,7 @@
 package school.hei.patrimoine.possession;
 
-import school.hei.patrimoine.NotImplemented;
-
 import java.time.Instant;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 
 public final class Materiel extends Possession {
@@ -16,15 +13,15 @@ public final class Materiel extends Possession {
   }
 
   @Override
-  public int valeurComptableFuture(Instant tFutur) {
-    double nombreDAnnnee = (double) getNombreDeMoisEcoullee(tFutur) / 12;
-    double croissance = Math.pow(1 + this.tauxDAppreciationAnnuelle, nombreDAnnnee);
-    return (int) Math.round(this.valeurComptable * croissance);
+  public Possession projectionFuture(Instant tFutur) {
+    long nombreDAnnnee = getNombreDAnneeEcoullee(tFutur);
+    double croissance = Math.pow(1 + tauxDAppreciationAnnuelle, nombreDAnnnee);
+    int valeurComptableFutur = (int) Math.round(valeurComptable * croissance);
+    return new Materiel(nom, tFutur, valeurComptableFutur, tauxDAppreciationAnnuelle);
   }
 
-  private long getNombreDeMoisEcoullee(Instant tFutur){
-    ZonedDateTime startTime = this.t.atZone(ZoneId.systemDefault());
-    ZonedDateTime endTime = tFutur.atZone(ZoneId.systemDefault());
-    return ChronoUnit.MONTHS.between(startTime, endTime);
+  private long getNombreDAnneeEcoullee(Instant tFutur){
+    ZoneId zoneId = ZoneId.systemDefault();
+    return ChronoUnit.YEARS.between(t.atZone(zoneId), tFutur.atZone(zoneId));
   }
 }
