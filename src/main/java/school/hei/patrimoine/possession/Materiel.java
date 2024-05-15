@@ -14,10 +14,11 @@ public final class Materiel extends Possession {
   }
 
   @Override
-  public int valeurComptableFuture(Instant tFutur) {
-    long differenceJour = ChronoUnit.DAYS.between(t, tFutur);
+  public Possession projectionFuture(Instant tFutur) {
+    long differenceJour = ChronoUnit.DAYS.between(getT(), tFutur);
     long anneeApprox = differenceJour / 365;
     double futureValue = getValeurComptable() * Math.pow(1 + tauxDAppreciationAnnuelle, anneeApprox);
-    return (int) futureValue;
+    Materiel materiel = new Materiel(getNom(), tFutur, (int) futureValue, tauxDAppreciationAnnuelle);
+    return materiel;
   }
 }
