@@ -21,6 +21,22 @@ class TrainDeVieTest {
         aLaDiplomation,
         compteCourant,
         1);
-    //TODO: assert something useful
+
+    // If date is equals debut or fin :
+    var projectionFutureALaDiplomation = vieEstudiantine.projectionFuture(aLaDiplomation);
+    assertTrue(
+            vieEstudiantine.getValeurComptable() > projectionFutureALaDiplomation.getValeurComptable());
+
+    // If date between debut and fin :
+    var au26mai22 = Instant.parse("2022-05-26T00:00:00.00Z");
+    var projectionFutureAu26Mai22 = vieEstudiantine.projectionFuture(au26mai22);
+    assertTrue(
+            vieEstudiantine.getValeurComptable() > projectionFutureAu26Mai22.getValeurComptable());
+
+    // If not apply depense mesuelle in train de vie :
+    var au26mai20 = Instant.parse("2020-05-26T00:00:00.00Z");
+    var projectionFutureAu26Mai20 = vieEstudiantine.projectionFuture(au26mai20);
+    assertEquals(
+            vieEstudiantine.getValeurComptable(), projectionFutureAu26Mai20.getValeurComptable());
   }
 }
