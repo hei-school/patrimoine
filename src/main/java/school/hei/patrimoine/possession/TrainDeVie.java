@@ -19,7 +19,7 @@ public final class TrainDeVie extends Possession {
           Instant fin,
           Argent financePar,
           int dateDePonction) {
-    super(nom, Instant.now(), depensesMensuelle * nbMoisEntre(debut, dateDePonction));
+    super(nom, Instant.now(), depensesMensuelle * nombreMoisEntre(debut, dateDePonction));
     this.debut = debut;
     this.fin = fin;
     this.depensesMensuelle = depensesMensuelle;
@@ -27,11 +27,11 @@ public final class TrainDeVie extends Possession {
     this.dateDePonction = dateDePonction;
   }
 
-  private static int nbMoisEntre(Instant debut, int dateDePonction) {
-    int moisDebut = debut.atZone(ZoneId.systemDefault()).getMonthValue();
-    int moisPonction = dateDePonction % 100;
+  private static int nombreMoisEntre(Instant debut, int dateDePonction) {
+    int mDebut = debut.atZone(ZoneId.systemDefault()).getMonthValue();
+    int mPonction = dateDePonction % 100;
 
-    int differenceMois = moisPonction - moisDebut;
+    int differenceMois = mPonction - mDebut;
 
     if (differenceMois < 0) {
       differenceMois += 12;
