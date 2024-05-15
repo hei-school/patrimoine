@@ -1,8 +1,8 @@
 package school.hei.patrimoine.possession;
 
-import school.hei.patrimoine.NotImplemented;
 
 import java.time.Instant;
+import java.time.ZoneId;
 
 public final class Materiel extends Possession {
   private final double tauxDAppreciationAnnuelle;
@@ -14,6 +14,9 @@ public final class Materiel extends Possession {
 
   @Override
   public Possession projectionFuture(Instant tFutur) {
-    throw new NotImplemented();
+    int nombreAnnees = ((tFutur.atZone(ZoneId.systemDefault()).getYear())-(t.atZone(ZoneId.systemDefault()).getYear()));
+    int valeurComptables = (int) (valeurComptable + (nombreAnnees * tauxDAppreciationAnnuelle));
+    Materiel materiel = new Materiel(nom,t,valeurComptables,tauxDAppreciationAnnuelle);
+    return materiel;
   }
 }
