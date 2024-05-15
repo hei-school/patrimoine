@@ -21,6 +21,6 @@ class TrainDeVieTest {
         aLaDiplomation,
         compteCourant,
         1);
-    assertTrue(vieEstudiantine.getDepensesMensuelle() < vieEstudiantine.getFinancePar().getValeurComptable());
+    assertTrue(compteCourant.getValeurComptable() - vieEstudiantine.getDepensesMensuelle() > 0);
   }
 }
