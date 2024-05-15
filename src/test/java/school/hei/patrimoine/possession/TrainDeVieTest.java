@@ -11,6 +11,7 @@ class TrainDeVieTest {
   void train_de_vie_est_finance_par_compte_courant() {
     var au13mai24 = Instant.parse("2024-05-13T00:00:00.00Z");
     var compteCourant = new Argent("Compte courant", au13mai24, 600_000);
+    var au13aout24 = Instant.parse("2024-08-13T00:00:00.00Z");
 
     var aLOuvertureDeHEI = Instant.parse("2021-10-26T00:00:00.00Z");
     var aLaDiplomation = Instant.parse("2024-12-26T00:00:00.00Z");
@@ -22,5 +23,6 @@ class TrainDeVieTest {
         compteCourant,
         1);
     //TODO: assert something useful
+    assertEquals(100_000, compteCourant.getValeurComptable() - vieEstudiantine.getDepensesMensuelle());
   }
 }
