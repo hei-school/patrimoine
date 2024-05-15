@@ -4,9 +4,12 @@ import org.junit.jupiter.api.Test;
 import school.hei.patrimoine.possession.Argent;
 import school.hei.patrimoine.possession.Materiel;
 import school.hei.patrimoine.possession.Possession;
+import school.hei.patrimoine.possession.TrainDeVie;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalAdjusters;
+import java.util.List;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -15,7 +18,7 @@ class PatrimoineTest {
 
   @Test
   void patrimoine_vide_vaut_0() {
-    var ilo = new Personne("Ilo");
+    var ilo = new Personne("Ilo", List.of());
 
     var patrimoineIloAu13mai24 = new Patrimoine(
         ilo,
@@ -27,7 +30,7 @@ class PatrimoineTest {
 
   @Test
   void patrimoine_a_de_l_argent() {
-    var ilo = new Personne("Ilo");
+    var ilo = new Personne("Ilo", List.of());
 
     var au13mai24 = Instant.parse("2024-05-13T00:00:00.00Z");
     var patrimoineIloAu13mai24 = new Patrimoine(
@@ -41,20 +44,32 @@ class PatrimoineTest {
     assertEquals(1_200_000, patrimoineIloAu13mai24.getValeurComptable());
   }
   @Test
-  void valeur_comptable_future(){
-    var ilo = new Personne("Ilo");
-
+  void testValeurComptableFutureArgent() {
     var au13mai24 = Instant.parse("2024-05-13T00:00:00.00Z");
     var au13mai29 = Instant.parse("2029-05-13T00:00:00.00Z");
 
     var argent = new Argent("Compte epargne", au13mai24, 200_000, 0.04);
+
+    long joursEntre = ChronoUnit.DAYS.between(au13mai24, au13mai29);
+    double tauxInteretQuotidien = 0.04 / 365;
+    double valeurAttendueArgent = Math.round(200_000 * Math.pow(1 + tauxInteretQuotidien, joursEntre));
+
+    double valeurComptableFutureArgent = argent.valeurComptableFuture(au13mai29);
+    assertEquals(valeurAttendueArgent, valeurComptableFutureArgent, 0.01);
+  }
+  @Test
+  void testValeurComptableFutureMateriel() {
+    var au13mai24 = Instant.parse("2024-05-13T00:00:00.00Z");
+    var au13mai29 = Instant.parse("2029-05-13T00:00:00.00Z");
+
     var materiel = new Materiel("ordinateur", au13mai24, 400_000, 0.1);
 
-    assertEquals(200_000 * Math.pow(1 + 0.04 / 365, ChronoUnit.DAYS.between(au13mai24, au13mai29)),argent.valeurComptableFuture(au13mai29), 0.01);
-    long daysBetweenMateriel = ChronoUnit.DAYS.between(au13mai24, au13mai29);
+    long joursEntre = ChronoUnit.DAYS.between(au13mai24, au13mai29);
+    double tauxAmortissementQuotidien = Math.pow(1 - 0.1, 1.0 / 365);
+    double valeurAttendueMateriel = Math.round(400_000 * Math.pow(tauxAmortissementQuotidien, joursEntre));
 
-    double dailyDepreciationRate = Math.pow(1 - 0.1, 1.0 / 365);
-    double expectedMaterielValue = 400_000 * Math.pow(dailyDepreciationRate, daysBetweenMateriel);
-    assertEquals(expectedMaterielValue, materiel.valeurComptableFuture(au13mai29), 0.01);
+    double valeurComptableFutureMateriel = materiel.valeurComptableFuture(au13mai29);
+    assertEquals(valeurAttendueMateriel, valeurComptableFutureMateriel, 0.01);
   }
+
 }

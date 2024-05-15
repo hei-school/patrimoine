@@ -7,11 +7,11 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 @Getter
 public final class Argent extends Possession {
-  private  final double tauxDinteret ;
+  private final double tauxDinteret;
 
   public Argent(String nom, Instant t, int valeurComptable, double tauxDinteret) {
     super(nom, t, valeurComptable);
-      this.tauxDinteret = tauxDinteret;
+    this.tauxDinteret = tauxDinteret;
   }
 
   @Override
@@ -19,8 +19,12 @@ public final class Argent extends Possession {
     if (tFutur.isBefore(this.t)) {
       return this.valeurComptable;
     }
+
     long joursEntre = ChronoUnit.DAYS.between(this.t, tFutur);
-    double valeureFuture = this.getValeurComptable()  * Math.pow(1 + tauxDinteret, joursEntre);
-    return (int) valeureFuture;
+    double tauxInteretQuotidien = this.tauxDinteret / 365;
+
+    double valeurFuture = this.valeurComptable * Math.pow(1 + tauxInteretQuotidien, joursEntre);
+
+    return (int) Math.round(valeurFuture);
   }
 }

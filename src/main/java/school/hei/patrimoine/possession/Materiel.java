@@ -16,8 +16,13 @@
 
       @Override
       public int valeurComptableFuture(Instant tFutur) {
-        long jourEntre = ChronoUnit.YEARS.between(this.t, tFutur);
-        double futureValue = this.valeurComptable * Math.pow(1 + tauxDAppreciationAnnuelle , jourEntre);
-        return (int) futureValue;
+          if (tFutur.isBefore(this.t)) {
+              return this.valeurComptable;
+          }
+          long joursEntre = ChronoUnit.DAYS.between(this.t, tFutur);
+          double tauxAmortissementQuotidien = Math.pow(1 - this.tauxDAppreciationAnnuelle, 1.0 / 365);
+
+          double valeurFuture = this.valeurComptable * Math.pow(tauxAmortissementQuotidien, joursEntre);
+          return (int) Math.round(valeurFuture);
       }
     }
