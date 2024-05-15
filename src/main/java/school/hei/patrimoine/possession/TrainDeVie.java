@@ -1,15 +1,20 @@
 package school.hei.patrimoine.possession;
 
+import lombok.Getter;
 import school.hei.patrimoine.NotImplemented;
 
 import java.time.Instant;
 
+
+@Getter
 public final class TrainDeVie extends Possession {
   private final Instant debut;
   private final Instant fin;
   private final int depensesMensuelle;
   private final Argent financePar;
   private final int dateDePonction;
+
+
 
   public TrainDeVie(
       String nom,
