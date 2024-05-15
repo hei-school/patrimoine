@@ -5,12 +5,18 @@ import school.hei.patrimoine.NotImplemented;
 import java.time.Instant;
 
 public final class Argent extends Possession {
+
   public Argent(String nom, Instant t, int valeurComptable) {
     super(nom, t, valeurComptable);
+
   }
 
   @Override
   public Possession projectionFuture(Instant tFutur) {
-    throw new NotImplemented();
+      throw new NotImplemented();
+  }
+
+  public Argent evolutionAuCoursDutemps(Instant tFutur,int depenseTotal){
+    return new Argent(nom,tFutur,valeurComptable-depenseTotal);
   }
 }
