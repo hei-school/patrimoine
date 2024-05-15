@@ -2,7 +2,9 @@ package school.hei.patrimoine.possession;
 
 import school.hei.patrimoine.NotImplemented;
 
+import java.time.Duration;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 
 public final class TrainDeVie extends Possession {
   private final Instant debut;
@@ -26,8 +28,37 @@ public final class TrainDeVie extends Possession {
     this.dateDePonction = dateDePonction;
   }
 
+  public Instant getDebut() {
+    return debut;
+  }
+
+  public Instant getFin() {
+    return fin;
+  }
+
+  public int getDepensesMensuelle() {
+    return depensesMensuelle;
+  }
+
+  public Argent getFinancePar() {
+    return financePar;
+  }
+
+  public int getDateDePonction() {
+    return dateDePonction;
+  }
+
   @Override
   public Possession projectionFuture(Instant tFutur) {
-    throw new NotImplemented();
+    if (tFutur.isBefore(debut)) {
+      return this;
+    } else if (tFutur.isAfter(fin)) {
+      return this;
+    } else {
+      long mois = ChronoUnit.MONTHS.between(debut, tFutur);
+      int nouvelleDateDePonction = dateDePonction + (int) mois;
+
+      return new TrainDeVie(nom, depensesMensuelle, debut, fin, financePar, nouvelleDateDePonction);
+    }
   }
 }
