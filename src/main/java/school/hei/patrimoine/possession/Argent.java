@@ -1,5 +1,6 @@
 package school.hei.patrimoine.possession;
 
+
 import school.hei.patrimoine.NotImplemented;
 
 import java.time.Instant;
@@ -11,6 +12,7 @@ public final class Argent extends Possession {
 
   @Override
   public Possession projectionFuture(Instant tFutur) {
-    throw new NotImplemented();
+
+    return new Argent(nom,tFutur,valeurComptable);
   }
 }
