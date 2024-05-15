@@ -2,10 +2,7 @@ package school.hei.patrimoine.possession;
 
 import school.hei.patrimoine.NotImplemented;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.time.*;
 
 public final class Materiel extends Possession {
   private final double tauxDAppreciationAnnuelle;
@@ -16,6 +13,12 @@ public final class Materiel extends Possession {
   }
 
   public Possession projectionFuture(Instant tFutur) {
-    throw new NotImplemented();
+    Duration difference = Duration.between(t, tFutur);
+    long differenceEnJours = difference.toDays();
+    double differenceEnAnnees = differenceEnJours / 365;
+
+    double nouvelleValeurComptable = getValeurComptable()* Math.pow(tauxDAppreciationAnnuelle,differenceEnAnnees);
+
+    return new Materiel(getNom(), tFutur, (int) nouvelleValeurComptable, tauxDAppreciationAnnuelle);
   }
 }
