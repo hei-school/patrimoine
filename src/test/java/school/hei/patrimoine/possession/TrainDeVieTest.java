@@ -22,5 +22,6 @@ class TrainDeVieTest {
         compteCourant,
         1);
     //TODO: assert something useful
+
   }
 }
