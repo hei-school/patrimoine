@@ -1,15 +1,19 @@
 package school.hei.patrimoine.possession;
 
-import school.hei.patrimoine.NotImplemented;
+import lombok.Getter;
 
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 
 public final class TrainDeVie extends Possession {
   private final Instant debut;
   private final Instant fin;
   private final int depensesMensuelle;
-  private final Argent financePar;
   private final int dateDePonction;
+  @Getter
+  private final Argent financePar;
 
   public TrainDeVie(
       String nom,
@@ -27,9 +31,36 @@ public final class TrainDeVie extends Possession {
     this.financePar = financePar;
     this.financePar.addFinancés(this);
   }
+  public static int calculRepetitionDeDate(LocalDate debut, LocalDate fin, int jour) {
+    int count = 0;
+    LocalDate current = debut;
+    while (!current.isAfter(fin)) {
+      if (current.getDayOfMonth() == jour) {
+        count++;
+      }
+      current = current.plusMonths(1);
+    }
+    return count;
+  }
 
   @Override
   public TrainDeVie projectionFuture(Instant tFutur) {
-    throw new NotImplemented();
+    LocalDate finDePonctionnement = LocalDate.ofInstant(tFutur.isAfter(fin) ? fin : tFutur, ZoneId.systemDefault());
+    long differenceDeMois = calculRepetitionDeDate(
+            LocalDate.ofInstant(debut, ZoneId.systemDefault()),
+            finDePonctionnement,
+            dateDePonction
+    );
+
+    if(finDePonctionnement.getDayOfMonth() > dateDePonction)
+      differenceDeMois++;
+
+    return new TrainDeVie(nom,tFutur.isAfter(fin) ? 0 : depensesMensuelle,debut,fin,
+            new Argent(
+                    financePar.nom,
+                    tFutur,
+                    financePar.valeurComptable - depensesMensuelle * (int) differenceDeMois),
+            dateDePonction
+    );
   }
 }
