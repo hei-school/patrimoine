@@ -30,7 +30,7 @@ public final class TrainDeVie extends Possession {
   }
 
   @Override
-  public Possession projectionFuture(Instant tFutur) {
+  public TrainDeVie projectionFuture(Instant tFutur) {
     long joursJusquAuFutur = Duration.between(this.debut, tFutur).toDays();
     long depensesTotales = ((joursJusquAuFutur / 30) * this.depensesMensuelle);
     Argent projectionFinanciereFutur = new Argent(this.financePar.getNom(), tFutur, (int) (this.financePar.valeurComptable-depensesTotales));

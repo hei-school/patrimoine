@@ -2,13 +2,16 @@ package school.hei.patrimoine.possession;
 
 
 import java.time.Instant;
+import java.util.HashSet;
 import java.util.Set;
+
+import static java.util.stream.Collectors.toSet;
 
 public final class Argent extends Possession {
   private final Set<TrainDeVie> financés;
 
   public Argent(String nom, Instant t, int valeurComptable) {
-    this(nom, t, valeurComptable, Set.of());
+    this(nom, t, valeurComptable, new HashSet<>());
   }
 
   private Argent(String nom, Instant t, int valeurComptable, Set<TrainDeVie> financés) {
@@ -17,8 +20,16 @@ public final class Argent extends Possession {
   }
 
   @Override
-  public Possession projectionFuture(Instant tFutur) {
-    return new Argent(this.nom, tFutur, this.valeurComptable);
+  public Argent projectionFuture(Instant tFutur) {
+    return new Argent(
+        nom,
+        tFutur,
+        valeurComptable - financementsFutur(tFutur),
+        financés.stream().map(f -> f.projectionFuture(tFutur)).collect(toSet()));
+  }
+
+  private int financementsFutur(Instant tFutur) {
+    throw new NotImplemented();
   }
 
   void addFinancés(TrainDeVie trainDeVie) {
