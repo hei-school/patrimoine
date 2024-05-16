@@ -1,8 +1,11 @@
 package school.hei.patrimoine;
 
+import school.hei.patrimoine.possession.Argent;
+import school.hei.patrimoine.possession.Materiel;
 import school.hei.patrimoine.possession.Possession;
 
 import java.time.Instant;
+import java.util.HashSet;
 import java.util.Set;
 
 public record Patrimoine(
@@ -11,10 +14,28 @@ public record Patrimoine(
     if (possessions.isEmpty()) {
       return 0;
     }
-    throw new NotImplemented();
+    int res = 0;
+    for (Possession possession : possessions) {
+       res += possession.getValeurComptable();
+    }
+    return res;
   }
 
   public Patrimoine projectionFuture(Instant tFutur) {
-    throw new NotImplemented();
+    var possessionsFutur = new HashSet<Possession>();
+    possessions.forEach(possession -> {
+      if (possession instanceof Argent){
+        possessionsFutur.add(possession.projectionFuture(tFutur));
+      } else if (possession instanceof Materiel){
+        possessionsFutur.add(possession.projectionFuture(tFutur));
+      }else {
+        possessionsFutur.add(possession.projectionFuture(tFutur));
+      }
+    });
+    return new Patrimoine(
+            possesseur,
+            t,
+            possessionsFutur
+    );
   }
 }
