@@ -2,6 +2,7 @@ package school.hei.patrimoine.possession;
 
 import java.time.Instant;
 import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 
 public final class TrainDeVie extends Possession {
   private final Instant debut;
@@ -29,12 +30,15 @@ public final class TrainDeVie extends Possession {
   public Possession projectionFuture(Instant tFutur) {
     Instant finProjetee = tFutur.isAfter(fin) ? fin : tFutur;
 
-    int nombreDeMois = finProjetee.atZone(ZoneId.systemDefault()).getMonthValue() -
-            this.debut.atZone(ZoneId.systemDefault()).getMonthValue();
+    boolean moisEstPonctionnee = finProjetee.atZone(ZoneId.systemDefault()).getDayOfMonth() >= (dateDePonction);
 
-    boolean moisEstPonctionnee = finProjetee.atZone(ZoneId.systemDefault()).getDayOfMonth() >= dateDePonction;
-    if (!moisEstPonctionnee){
+    int nombreDeMois = (int) ChronoUnit.MONTHS.between(this.debut.atZone(ZoneId.systemDefault()),
+            finProjetee.atZone(ZoneId.systemDefault()));
+
+    if (moisEstPonctionnee && nombreDeMois > 1){
       nombreDeMois--;
+    } else {
+      nombreDeMois = 1;
     }
 
     int depenseProjetee = financePar.getValeurComptable() - (depensesMensuelle * nombreDeMois);
