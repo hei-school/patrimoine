@@ -9,16 +9,16 @@ import java.util.stream.Collectors;
 public record Patrimoine(
         Personne possesseur, Instant t, Set<Possession> possessions) {
   public int getValeurComptable() {
-    if (possessions.isEmpty()) {
-      return 0;
-    }
-    throw new NotImplemented();
+    return possessions.stream().mapToInt(Possession::getValeurComptable).sum();
   }
 
   public Patrimoine projectionFuture(Instant tFutur) {
-    Set<Possession> futurPossessions = possessions
-            .stream().map(possession -> possession.projectionFuture(t))
-            .collect(Collectors.toSet());
-    return  new Patrimoine(possesseur, tFutur, futurPossessions);
+    return new Patrimoine(
+            possesseur,
+            tFutur,
+            possessions.stream()
+                    .map(v -> v.projectionFuture(tFutur))
+                    .collect(Collectors.toSet())
+    );
   }
 }
