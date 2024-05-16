@@ -1,12 +1,10 @@
 package school.hei.patrimoine.possession;
 
-import school.hei.patrimoine.NotImplemented;
+import static java.util.stream.Collectors.toSet;
 
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
-
-import static java.util.stream.Collectors.toSet;
 
 public final class Argent extends Possession {
   private final Set<TrainDeVie> financés;
@@ -30,7 +28,13 @@ public final class Argent extends Possession {
   }
 
   private int financementsFutur(Instant tFutur) {
-    throw new NotImplemented();
+    int financements = 0;
+    for (TrainDeVie trainDeVie : financés) {
+      if (!trainDeVie.getDebut().isAfter(tFutur) && !trainDeVie.getFin().isBefore(tFutur)) {
+        financements += trainDeVie.getDepensesMensuelle();
+      }
+    }
+    return financements;
   }
 
   void addFinancés(TrainDeVie trainDeVie) {

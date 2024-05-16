@@ -1,9 +1,9 @@
 package school.hei.patrimoine.possession;
 
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.Instant;
-import java.util.Set;
+import org.junit.jupiter.api.Test;
 
 class TrainDeVieTest {
   @Test
@@ -13,14 +13,16 @@ class TrainDeVieTest {
 
     var aLOuvertureDeHEI = Instant.parse("2021-10-26T00:00:00.00Z");
     var aLaDiplomation = Instant.parse("2024-12-26T00:00:00.00Z");
-    var vieEstudiantine = new TrainDeVie(
-        "Ma super(?) vie d'etudiant",
-        500_000,
-        aLOuvertureDeHEI,
-        aLaDiplomation,
-        compteCourant,
-        1);
-    //TODO: assert something useful
+    var vieEstudiantine =
+        new TrainDeVie(
+            "Ma super(?) vie d'etudiant",
+            500_000,
+            aLOuvertureDeHEI,
+            aLaDiplomation,
+            compteCourant,
+            1);
+    // TODO: assert something useful
+    assertEquals(compteCourant, vieEstudiantine.getFinancePar());
   }
 
   @Test
@@ -28,6 +30,24 @@ class TrainDeVieTest {
     var au13mai24 = Instant.parse("2024-05-13T00:00:00.00Z");
     var financeur = new Argent("Espèces", au13mai24, 400_000);
 
-    var trainDeVie = new TrainDeVie(null, 0, null, null, financeur, 0);
+    var debutTrainDeVie = Instant.parse("2024-05-01T00:00:00.00Z");
+    var finTrainDeVie = Instant.parse("2024-12-31T00:00:00.00Z");
+    var depensesMensuelles = 2000;
+    var dateDePonction = 1;
+
+    var trainDeVie =
+        new TrainDeVie(
+            "TrainDeVie",
+            depensesMensuelles,
+            debutTrainDeVie,
+            finTrainDeVie,
+            financeur,
+            dateDePonction);
+
+    assertEquals(financeur, trainDeVie.getFinancePar());
+    assertEquals(depensesMensuelles, trainDeVie.getDepensesMensuelle());
+    assertEquals(debutTrainDeVie, trainDeVie.getDebut());
+    assertEquals(finTrainDeVie, trainDeVie.getFin());
+    assertEquals(dateDePonction, trainDeVie.getDateDePonction());
   }
 }

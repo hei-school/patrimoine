@@ -1,20 +1,21 @@
 package school.hei.patrimoine;
 
-import school.hei.patrimoine.possession.Possession;
+import static java.util.stream.Collectors.toSet;
 
 import java.time.Instant;
 import java.util.Set;
-import java.util.stream.Collectors;
+import school.hei.patrimoine.possession.Possession;
 
-import static java.util.stream.Collectors.toSet;
-
-public record Patrimoine(
-    Personne possesseur, Instant t, Set<Possession> possessions) {
+public record Patrimoine(Personne possesseur, Instant t, Set<Possession> possessions) {
   public int getValeurComptable() {
     if (possessions.isEmpty()) {
       return 0;
     }
-    throw new NotImplemented();
+    int somme = 0;
+    for (Possession possession : possessions) {
+      somme += possession.getValeurComptable();
+    }
+    return somme;
   }
 
   public Patrimoine projectionFuture(Instant tFutur) {
