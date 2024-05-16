@@ -26,5 +26,9 @@ public record Patrimoine(
         possesseur,
         tFutur,
         possessions.stream().map(p -> p.projectionFuture(tFutur)).collect(toSet()));
+            possesseur,
+            tFutur,
+            possessions.stream().map(p -> p.projectionFuture(tFutur)).collect(toSet()));
+    }
   }
 }
