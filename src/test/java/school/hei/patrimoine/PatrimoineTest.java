@@ -22,7 +22,7 @@ class PatrimoineTest {
     assertEquals(0, patrimoineIloAu13mai24.getValeurComptable());
   }
   @Test
-  void patrimoine_a_de_l_argent(){
+  void patrimoine_a_de_l_argent_vaut_la_somme_de_valeur_comptable(){
     var ilo = new Personne("Ilo");
     var au13mai24 = Instant.parse("2024-05-13T00:00:00.00Z");
     var patrimoineIloAu13mai24 = new Patrimoine(
@@ -34,9 +34,8 @@ class PatrimoineTest {
             new Argent("Compte courant", au13mai24, 600_000)));
     assertEquals(1_200_000,patrimoineIloAu13mai24.getValeurComptable());
   }
-
   @Test
-  void patrimoine_possede_un_train_de_vie_financé_par_argent() {
+  void patrimoine_vide_possede_un_train_de_vie_financé_par_argent() {
     var ilo = new Personne("Ilo");
 
     var au13mai24 = Instant.parse("2024-05-13T00:00:00.00Z");
@@ -48,5 +47,18 @@ class PatrimoineTest {
         ilo,
         au13mai24,
         Set.of(financeur, trainDeVie));
+    assertEquals(400_000,patrimoineIloAu13mai24.getValeurComptable()-trainDeVie.getDepensesMensuelle());
+  }
+  @Test
+  void patrimoine_possede_un_train_de_vie_financé_par_argent() {
+    var ilo = new Personne("Ilo");
+    var au13mai24 = Instant.parse("2024-05-13T00:00:00.00Z");
+    var financeur = new Argent("Espèces", au13mai24, 400_000);
+    var trainDeVie = new TrainDeVie(null, 100_000, null, null, financeur, 0);
+    var patrimoineIloAu13mai24 = new Patrimoine(
+            ilo,
+            au13mai24,
+            Set.of(financeur, trainDeVie));
+    assertEquals(300_000,patrimoineIloAu13mai24.getValeurComptable()-trainDeVie.getDepensesMensuelle());
   }
 }

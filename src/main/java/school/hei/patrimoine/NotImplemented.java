@@ -9,9 +9,9 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.Set;
 
+import static java.util.stream.Collectors.toSet;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class NotImplemented extends RuntimeException {
-
 }

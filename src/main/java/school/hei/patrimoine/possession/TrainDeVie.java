@@ -27,7 +27,6 @@ public final class TrainDeVie extends Possession {
     this.financePar = financePar;
     this.financePar.addFinancés(this);
   }
-
   @Override
   public TrainDeVie projectionFuture(Instant tFutur) {
     throw new NotImplemented();

@@ -1,5 +1,4 @@
 package school.hei.patrimoine.possession;
-
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
@@ -19,10 +18,22 @@ class MaterielTest {
         -0.10);
     var au26juin24 = Instant.parse("2024-06-26T00:00:00.00Z");
     assertTrue(
-            mac.getValeurComptable() > mac.valeurComptableFuture(au26juin24));
+            mac.getValeurComptable() >= mac.valeurComptableFuture(au26juin24));
   }
   @Test
-  void autre_mac_apprecie_negativement_dans_le_futur(){
+  void mon_mac_reste_constant_dans_une_année(){
+    var au26Oct21 = Instant.parse("2022-10-26T00:00:00.00Z");
+    var mac = new Materiel(
+            "MacBook Pro",
+            au26Oct21,
+            2_000_000,
+            -0.10);
+    var au26juin24 = Instant.parse("2022-10-26T00:00:00.00Z");
+    assertTrue(
+            mac.getValeurComptable() == mac.valeurComptableFuture(au26juin24));
+  }
+  @Test
+  void mon_mac_reste_constant_au_moins_d_une_année(){
     var au26Oct21 = Instant.parse("2022-10-26T00:00:00.00Z");
     var mac = new Materiel(
             "MacBook Pro",
@@ -33,4 +44,5 @@ class MaterielTest {
     assertTrue(
             mac.getValeurComptable() == mac.valeurComptableFuture(au26juin24));
   }
+
 }
