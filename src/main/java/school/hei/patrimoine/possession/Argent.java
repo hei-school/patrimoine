@@ -31,8 +31,11 @@ public final class Argent extends Possession {
   }
 
   private int financementsFutur(Instant tFutur) {
-    throw new NotImplemented();
-
+    int totalDepense=0;
+    for(TrainDeVie trainDeVie:financés){
+      totalDepense+=trainDeVie.valeurComptable;
+    }
+return totalDepense;
   }
 
   void addFinancés(TrainDeVie trainDeVie) {
