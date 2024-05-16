@@ -23,9 +23,9 @@ class TrainDeVieTest {
         compteCourant,
         1);
 
-    var au26juin24 = Instant.parse("2024-11-26T00:00:00.00Z");
+    var au26juin24 = Instant.parse("2024-06-26T00:00:00.00Z");
     var compteCourantDansLeFuturDeVieEstudiantine = vieEstudiantine.projectionFuture(au26juin24);
-    assertTrue(-14_400_000 == compteCourantDansLeFuturDeVieEstudiantine.getFinancePar().getValeurComptable());
+    assertTrue(-15400000 == compteCourantDansLeFuturDeVieEstudiantine.getFinancePar().getValeurComptable());
   }
 
   @Test
