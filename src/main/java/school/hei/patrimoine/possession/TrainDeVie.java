@@ -24,8 +24,10 @@ public final class TrainDeVie extends Possession {
     this.debut = debut;
     this.fin = fin;
     this.depensesMensuelle = depensesMensuelle;
-    this.financePar = financePar;
     this.dateDePonction = dateDePonction;
+
+    this.financePar = financePar;
+    this.financePar.addFinancés(this);
   }
 
   @Override
