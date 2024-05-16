@@ -31,5 +31,12 @@ public final class TrainDeVie extends Possession {
   @Override
   public TrainDeVie projectionFuture(Instant tFutur) {
     throw new NotImplemented();
+    long duree = ChronoUnit.MONTHS.between(debut, fin);
+    int totalDepense = (int) (duree * depensesMensuelle);
+    return new TrainDeVie(nom,totalDepense,debut,tFutur,financePar,dateDePonction);
+  }
+
+  public Argent getFinancePar() {
+    return financePar;
   }
 }
