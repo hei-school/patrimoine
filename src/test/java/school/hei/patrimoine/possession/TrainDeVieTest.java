@@ -23,7 +23,6 @@ class TrainDeVieTest {
         1);
     var apresUnMoisDeLOuverture = Instant.parse("2021-11-26T00:00:00.00Z");
     var projectionApresUnMois = vieEstudiantine.projectionFuture(apresUnMoisDeLOuverture);
-    System.out.println(projectionApresUnMois);
     assertEquals(100_000, projectionApresUnMois.getValeurComptable());
   }
 }
