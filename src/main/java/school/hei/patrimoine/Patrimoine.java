@@ -3,8 +3,8 @@ package school.hei.patrimoine;
 import school.hei.patrimoine.possession.Possession;
 
 import java.time.Instant;
-import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public record Patrimoine(
     Personne possesseur, Instant t, Set<Possession> possessions) {
@@ -20,10 +20,17 @@ public record Patrimoine(
   }
 
   public Patrimoine projectionFuture(Instant tFutur) {
-    Set<Possession> futurePossessions = new HashSet<>();
-  for (Possession possession : possessions) {
-    futurePossessions.add(possession.projectionFuture(tFutur));
-  }
-  return new Patrimoine(possesseur, tFutur, futurePossessions);
+    return new Patrimoine(
+        possesseur,
+        tFutur,
+        possessions.stream().map(p -> p.projectionFuture(tFutur)).collect(Collectors.toSet()));
   }
 }
+/*
+ * Set<Possession> futurePossessions = new HashSet<>();
+ * for (Possession possession : possessions) {
+ * futurePossessions.add(possession.projectionFuture(tFutur));
+ * }
+ * return new Patrimoine(possesseur, tFutur, futurePossessions);
+ * }
+ */

@@ -12,7 +12,7 @@ public final class TrainDeVie extends Possession {
   private final int depensesMensuelle;
   private final Argent financePar;
   private final int dateDePonction;
-
+ 
   public TrainDeVie(
       String nom,
       int depensesMensuelle,
@@ -30,7 +30,7 @@ public final class TrainDeVie extends Possession {
 
   @Override
   public Possession projectionFuture(Instant tFutur) {
-    long NbMois = ChronoUnit.MONTHS.between(debut, tFutur.plus(1, ChronoUnit.MONTHS)) - 1;
+    long NbMois = ChronoUnit.MONTHS.between(debut, tFutur);
     int depensesTotales = (int) (NbMois * depensesMensuelle);
 
     return new TrainDeVie(nom, depensesTotales, debut, fin, financePar, dateDePonction);
