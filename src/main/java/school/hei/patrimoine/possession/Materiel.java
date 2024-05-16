@@ -8,7 +8,7 @@ import java.time.temporal.ChronoUnit;
 public final class Materiel extends Possession {
   private final double tauxDAppreciationAnnuelle;
 
-  public Materiel(String nom, Instant t, int valeurComptable, double tauxDAppreciationAnnuelle) {
+  public Materiel(String nom, Instant t, int valeurComptable, double tauxDAppreciationAnnuelle){
     super(nom, t, valeurComptable);
     this.tauxDAppreciationAnnuelle = tauxDAppreciationAnnuelle;
   }
