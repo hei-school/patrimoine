@@ -3,6 +3,9 @@ package school.hei.patrimoine.possession;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -21,6 +24,14 @@ class TrainDeVieTest {
         aLaDiplomation,
         compteCourant,
         1);
-    //TODO: assert something useful
+
+    var tFutur = Instant.parse("2024-05-13T00:00:00.00Z");
+
+    var expectedValeurDisponible = 600_000 - (500_000 * (int) ChronoUnit.MONTHS.between (
+            LocalDateTime.ofInstant(aLOuvertureDeHEI, ZoneId.of("UTC")),
+            LocalDateTime.ofInstant(aLaDiplomation, ZoneId.of("UTC"))
+    ));
+    var futurePossession = vieEstudiantine.projectionFuture(tFutur);
+    assertEquals(expectedValeurDisponible, futurePossession.getValeurComptable());
   }
 }

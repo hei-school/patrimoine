@@ -18,7 +18,7 @@ public final class Materiel extends Possession {
                 LocalDateTime.ofInstant(this.t, ZoneId.of("UTC")),
                 LocalDateTime.ofInstant(tFutur, ZoneId.of("UTC"))
         );
-      int nouvelleValeurComptable = (int) (valeurComptable + (valeurComptable * tauxDAppreciationAnnuelle * (anneesEntre + 1)));
+      var nouvelleValeurComptable = (int) (valeurComptable + (valeurComptable * tauxDAppreciationAnnuelle * (anneesEntre + 1)));
       return new Materiel(
               this.nom,
               tFutur,

@@ -13,7 +13,7 @@ public final class Argent extends Possession {
   public Possession projectionFuture(Instant tFutur) {
     return new Argent(
             this.nom,
-            this.t,
+            tFutur,
             this.valeurComptable
     );
   }
