@@ -2,9 +2,12 @@ package school.hei.patrimoine;
 
 import org.junit.jupiter.api.Test;
 import school.hei.patrimoine.possession.Argent;
+import school.hei.patrimoine.possession.Materiel;
+import school.hei.patrimoine.possession.Possession;
 import school.hei.patrimoine.possession.TrainDeVie;
 
 import java.time.Instant;
+import java.util.HashSet;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -53,4 +56,21 @@ class PatrimoineTest {
         au13mai24,
         Set.of(financeur, trainDeVie));
   }
+
+  @Test
+  void patrimoine_le_26_juin_2024() {
+    var ilo = new Personne("Ilo");
+    var au26juin24= Instant.parse("2024-06-26T00:00:00.00Z");
+    var possessions = Set.of(
+            new Argent("Espèces",au26juin24, 400_000),
+            new Argent("Compte epargne",au26juin24, 200_000),
+            new Argent("Compte courant",au26juin24, 600_000),
+            new Materiel("Ordinateur",au26juin24, 2_000_000, -0.10),
+            new Materiel("Vêtements",au26juin24, 1_000_000, -0.20),
+            new TrainDeVie("Train de vie", 500_000, Instant.parse("2021-10-26T00:00:00.00Z"),au26juin24,new Argent("Compte courant",au26juin24, 600_000), 1)
+    );
+    assertEquals(4_200_000, new Patrimoine(ilo,au26juin24, possessions).getValeurComptable());
+  }
+
+
 }
