@@ -23,7 +23,6 @@ class TrainDeVieTest {
         aLaDiplomation,
         compteCourant,
         1);
-    //TODO: assert something useful
     assertEquals(compteCourant, vieEstudiantine.getFinancePar());
     assertTrue(vieEstudiantine.getDebut().isBefore(vieEstudiantine.getFin()));
     assertEquals(100_000, compteCourant.getValeurComptable() - vieEstudiantine.getDepensesMensuelle());
