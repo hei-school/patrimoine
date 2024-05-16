@@ -11,7 +11,11 @@ public record Patrimoine(
     if (possessions.isEmpty()) {
       return 0;
     }
-    throw new NotImplemented();
+      int total_patrimoine = 0;
+      for (Possession possession : possessions) {
+          total_patrimoine += possession.getValeurComptable();
+      }
+      return total_patrimoine;
   }
 
   public Patrimoine projectionFuture(Instant tFutur) {
