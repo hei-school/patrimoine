@@ -21,6 +21,9 @@ public sealed abstract class Possession permits
   public final int getFinance(Argent argent1,Argent argent) {
     return (argent1.getValeurComptable()+argent.getValeurComptable());
   }
+  public final int getFinances(){
+    return valeurComptableFuture(t);
+  }
 
   public abstract Possession projectionFuture(Instant tFutur);
 }

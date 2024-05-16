@@ -7,7 +7,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MaterielTest {
-
   @Test
   void mon_mac_s_apprecie_negativement_dans_le_futur() {
     var au26Oct21 = Instant.parse("2022-10-26T00:00:00.00Z");

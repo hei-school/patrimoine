@@ -1,14 +1,12 @@
 package school.hei.patrimoine;
-
 import org.junit.jupiter.api.Test;
 import school.hei.patrimoine.possession.Argent;
+import school.hei.patrimoine.possession.Possession;
 import school.hei.patrimoine.possession.TrainDeVie;
-
 import java.time.Instant;
+import java.util.HashSet;
 import java.util.Set;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
-
 class PatrimoineTest {
   @Test
   void patrimoine_vide_vaut_0() {
@@ -60,5 +58,14 @@ class PatrimoineTest {
             au13mai24,
             Set.of(financeur, trainDeVie));
     assertEquals(300_000,patrimoineIloAu13mai24.getValeurComptable()-trainDeVie.getDepensesMensuelle());
+  }
+  @Test
+  void patrimoine_projection_futur(){
+    Personne ilo = new Personne("Ilo");
+    var au13mai24 = Instant.parse("2024-05-13T00:00:00.00Z");
+    var au26Oct21 = Instant.parse("2022-10-26T00:00:00.00Z");
+    Set<Possession> possessions=new HashSet<>();
+    Patrimoine patrimoine=new Patrimoine(ilo,au26Oct21,possessions);
+    assertEquals(new Patrimoine(ilo,au13mai24,possessions),patrimoine.projectionFuture(au13mai24));
   }
 }

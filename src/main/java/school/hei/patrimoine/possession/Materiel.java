@@ -26,11 +26,4 @@ public final class Materiel extends Possession {
       return new Materiel(nom, tFutur, (int) (getValeurComptable() - (getValeurComptable() * 0.10)),tauxDAppreciationAnnuelle);
     }
   }
-
-  public static void main(String[] args) {
-    Instant instant=Instant.parse("2024-06-26T00:00:00.00Z");
-
-    System.out.println();
-
-  }
 }

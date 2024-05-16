@@ -1,6 +1,7 @@
 package school.hei.patrimoine.possession;
 
 import org.junit.jupiter.api.Test;
+import school.hei.patrimoine.Patrimoine;
 
 import java.time.Instant;
 import java.util.Set;
@@ -34,8 +35,6 @@ class TrainDeVieTest {
     var aLOuvertureDeHEI = Instant.parse("2021-10-26T00:00:00.00Z");
     var aLaDiplomation = Instant.parse("2024-12-26T00:00:00.00Z");
     //TODO: assert something useful
-
     assertEquals(400_000,trainDeVie.getFinance(trainDeVie.getFinancePar(),compteCourant));
   }
-
 }
