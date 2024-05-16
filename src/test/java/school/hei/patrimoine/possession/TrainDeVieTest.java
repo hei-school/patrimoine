@@ -7,6 +7,7 @@ import java.time.Instant;
 import static org.junit.jupiter.api.Assertions.*;
 
 class TrainDeVieTest {
+
     @Test
     void train_de_vie_est_finance_par_compte_courant() {
         var au13mai24 = Instant.parse("2024-05-13T00:00:00.00Z");
@@ -21,7 +22,7 @@ class TrainDeVieTest {
                 aLaDiplomation,
                 compteCourant,
                 1);
-        //TODO: assert something useful
+
         assertEquals(compteCourant, vieEstudiantine.financePar());
     }
 }
