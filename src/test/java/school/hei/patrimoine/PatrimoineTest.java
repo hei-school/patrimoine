@@ -8,6 +8,7 @@ import java.time.Instant;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PatrimoineTest {
 
@@ -52,5 +53,10 @@ class PatrimoineTest {
         ilo,
         au13mai24,
         Set.of(financeur, trainDeVie));
+
+    assertEquals(financeur, trainDeVie.getFinancePar());
+    assertTrue(patrimoineIloAu13mai24.possessions().stream()
+                    .anyMatch(p -> p.equals(trainDeVie)));
   }
+
 }
