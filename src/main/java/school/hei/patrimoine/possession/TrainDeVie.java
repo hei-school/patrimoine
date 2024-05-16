@@ -3,6 +3,7 @@ package school.hei.patrimoine.possession;
 import school.hei.patrimoine.NotImplemented;
 
 import java.time.Instant;
+import java.time.ZoneOffset;
 
 public final class TrainDeVie extends Possession {
   private final Instant debut;
@@ -30,6 +31,20 @@ public final class TrainDeVie extends Possession {
 
   @Override
   public TrainDeVie projectionFuture(Instant tFutur) {
-    throw new NotImplemented();
+    if (tFutur.isBefore(debut) || tFutur.isAfter(fin)) {
+      System.out.println("L'instant futur n'est pas dans la plage de validité du train de vie: ");
+      return new TrainDeVie(nom, 0, debut, fin, financePar, dateDePonction);
+    }
+    int debutYear = financePar.getT().atZone(ZoneOffset.UTC).getYear();
+    int debutMonth = financePar.getT().atZone(ZoneOffset.UTC).getMonthValue();
+    int tFuturYear = tFutur.atZone(ZoneOffset.UTC).getYear();
+    int tFuturMonth = tFutur.atZone(ZoneOffset.UTC).getMonthValue();
+
+
+    long nombreDeMois = (tFuturYear - debutYear) * 12 + (tFuturMonth - debutMonth);
+    int depensesFutures = (int) nombreDeMois * depensesMensuelle;
+    var financeParFutures = new Argent(nom, tFutur, financePar.valeurComptable - depensesFutures);
+
+    return new TrainDeVie(nom, depensesFutures, debut, fin, financeParFutures, dateDePonction);
   }
 }
