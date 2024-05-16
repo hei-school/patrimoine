@@ -11,7 +11,8 @@ public record Patrimoine(
     if (possessions.isEmpty()) {
       return 0;
     }
-    throw new NotImplemented();
+    int valeurComptable = possessions.stream().mapToInt(Possession::getValeurComptable).sum();
+    return valeurComptable;
   }
 
   public Patrimoine projectionFuture(Instant tFutur) {
