@@ -33,6 +33,7 @@ public final class TrainDeVie extends Possession {
     this.financePar = financePar;
     this.financePar.addFinancés(this);
   }
+}
 
   @Override
 
