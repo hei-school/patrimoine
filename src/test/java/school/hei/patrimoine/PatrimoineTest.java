@@ -57,5 +57,29 @@ class PatrimoineTest {
         assertTrue(patrimoineIloAu13mai24.possessions().contains(financeur));
     }
 
+    @Test
+    void valeur_comptable_futur_de_la_patrimoine() {
+        var ilo = new Personne("Ilo");
 
+        var au13mai24 = Instant.parse("2024-05-13T00:00:00.00Z");
+        var financeur = new Argent("Espèces", au13mai24, 400_000);
+
+        var debut = Instant.parse("2024-03-23T00:00:00.00Z");
+        var fin = Instant.parse("2024-11-05T00:00:00.00Z");
+        var trainDeVie = new TrainDeVie(
+                "ma vie universitaire",
+                100_000,
+                debut,
+                fin,
+                financeur,
+                1);
+
+        var patrimoineIloAu13mai24 = new Patrimoine(
+                ilo,
+                au13mai24,
+                Set.of(financeur, trainDeVie));
+
+        var au15juillet24 = Instant.parse("2024-07-15T00:00:00.00Z");
+        assertEquals(200_000, patrimoineIloAu13mai24.projectionFuture(au15juillet24).getValeurComptable());
+    }
 }
