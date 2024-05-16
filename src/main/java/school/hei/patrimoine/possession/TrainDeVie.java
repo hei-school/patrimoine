@@ -1,9 +1,12 @@
 package school.hei.patrimoine.possession;
 
+import lombok.Getter;
+
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 
+@Getter
 public final class TrainDeVie extends Possession {
   private final Instant debut;
   private final Instant fin;
@@ -44,7 +47,7 @@ public final class TrainDeVie extends Possession {
     }
 
     int depenseProjetee = financePar.getValeurComptable() - (depensesMensuelle * nombreDeMois);
-    Argent futureFinancePar = new Argent(this.financePar.getNom(), finProjetee, depenseProjetee);
+    Argent futureFinancePar = new Argent(financePar.nom, finProjetee, depenseProjetee);
 
     return new TrainDeVie(this.nom, this.depensesMensuelle, this.debut, finProjetee, futureFinancePar, this.dateDePonction);
   }
