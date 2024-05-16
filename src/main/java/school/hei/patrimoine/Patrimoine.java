@@ -1,5 +1,7 @@
 package school.hei.patrimoine;
 
+import java.util.HashSet;
+import java.util.Iterator;
 import school.hei.patrimoine.possession.Possession;
 
 import java.time.Instant;
@@ -18,6 +20,13 @@ public record Patrimoine(
   }
 
   public Patrimoine projectionFuture(Instant tFutur) {
-    throw new NotImplemented();
+    Set<Possession> possessionsFutures = new HashSet<>();
+    Iterator<Possession> iterator = possessions.iterator();
+    while (iterator.hasNext()) {
+      Possession p = iterator.next();
+      possessionsFutures.add(p.projectionFuture(tFutur));
+    }
+    return new Patrimoine(possesseur, tFutur, possessionsFutures);
   }
+
 }
