@@ -22,10 +22,9 @@ public record Patrimoine(
         }
       }
       return valeurComptable;
-      //throw new NotImplemented();
     }
     public Patrimoine projectionFuture(Instant tFutur) {
-        return new Patrimoine(possesseur,tFutur,possessions);
+        return new Patrimoine(possesseur,tFutur,possessions.stream().map(p->p.projectionFuture(tFutur)).collect(Collectors.toSet()));
     }
 
 }
