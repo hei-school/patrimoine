@@ -1,5 +1,7 @@
 package school.hei.patrimoine.possession;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.time.Instant;
 import org.junit.jupiter.api.Test;
 
@@ -20,6 +22,7 @@ class TrainDeVieTest {
             compteCourant,
             1);
     // TODO: assert something useful
+    assertEquals(compteCourant, vieEstudiantine.getFinancePar());
   }
 
   @Test

@@ -3,7 +3,9 @@ package school.hei.patrimoine.possession;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import lombok.Getter;
 
+@Getter
 public final class TrainDeVie extends Possession {
   private final Instant debut;
   private final Instant fin;
