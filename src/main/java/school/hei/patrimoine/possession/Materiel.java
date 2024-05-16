@@ -14,6 +14,15 @@ public final class Materiel extends Possession {
 
   @Override
   public Possession projectionFuture(Instant tFutur) {
-    throw new NotImplemented();
+    long millisecondsParAnnee = 1000L * 60 * 60 * 24 * 365;
+
+    long anneesEcoulee = Math.round((tFutur.toEpochMilli() - t.toEpochMilli()) / (double) millisecondsParAnnee);
+    int valeurComptableDepreciee = valeurComptable;
+    for (int i = 0; i < anneesEcoulee; i++) {
+      valeurComptableDepreciee -= (int) (valeurComptableDepreciee * -tauxDAppreciationAnnuelle);
+      System.out.println(valeurComptableDepreciee);
+    }
+
+    return new Materiel(nom,t,valeurComptableDepreciee,tauxDAppreciationAnnuelle);
   }
 }
