@@ -22,5 +22,7 @@ class TrainDeVieTest {
         compteCourant,
         1);
     //TODO: assert something useful
+    var au13Juillet24 = Instant.parse("2024-07-14T00:00:00.00Z");
+    assertEquals(100_000, vieEstudiantine.projectionFuture(au13Juillet24).getValeurComptable());
   }
-}
+  }

@@ -4,6 +4,7 @@ import school.hei.patrimoine.NotImplemented;
 
 import java.time.Instant;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 
 public final class TrainDeVie extends Possession {
@@ -33,12 +34,12 @@ public final class TrainDeVie extends Possession {
     if (tFutur.isBefore(debut) || tFutur.isAfter(fin)) {
       throw new IllegalArgumentException("La date fournie doit être comprise entre le début et la fin du train de vie.");
     }
-    Instant datePonction = financePar.getT().plus(1, ChronoUnit.MONTHS)
-            .atZone(ZoneId.systemDefault())
-            .withDayOfMonth(dateDePonction)
-            .toInstant();
+    ZonedDateTime zonedDebut = debut.atZone(ZoneId.systemDefault());
+    ZonedDateTime zonedDatePonction = zonedDebut.plus(1, ChronoUnit.MONTHS)
+            .withDayOfMonth(dateDePonction);
     int soldeRestant = financePar.getValeurComptable() - depensesMensuelle;
-    Argent financeFutur = new Argent(financePar.getNom(), datePonction, soldeRestant);
+    Argent financeFutur = new Argent(financePar.getNom(), zonedDatePonction.toInstant(), soldeRestant);
     return new TrainDeVie(getNom(), depensesMensuelle, debut, fin, financeFutur, dateDePonction);
   }
+
 }
