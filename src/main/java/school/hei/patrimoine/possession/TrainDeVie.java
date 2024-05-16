@@ -36,4 +36,7 @@ public final class TrainDeVie extends Possession {
 
     return new TrainDeVie(nom,depensesMensuelle,debut,fin,financePar.projectionFuture(tFutur),dateDePonction);
   }
+  public Argent getFinancePar(){
+    return this.financePar;
+  }
 }
