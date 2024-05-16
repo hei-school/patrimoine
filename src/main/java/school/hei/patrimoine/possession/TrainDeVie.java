@@ -3,6 +3,8 @@ package school.hei.patrimoine.possession;
 import school.hei.patrimoine.NotImplemented;
 
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneOffset;
 
 public final class TrainDeVie extends Possession {
   private final Instant debut;
@@ -30,6 +32,18 @@ public final class TrainDeVie extends Possession {
 
   @Override
   public TrainDeVie projectionFuture(Instant tFutur) {
-    throw new NotImplemented();
+    LocalDate debutLocalDate = debut.atZone(ZoneOffset.UTC).toLocalDate();
+    LocalDate finLocalDate = tFutur.atZone(ZoneOffset.UTC).toLocalDate();
+
+    long nombreDePonctionsEffectuees = debutLocalDate
+            .datesUntil(finLocalDate.plusDays(1))
+            .filter(d -> d.getDayOfMonth() == dateDePonction)
+            .count();
+
+    int nouvelleValeurComptable = financePar.getValeurComptable() - (depensesMensuelle * (int) nombreDePonctionsEffectuees);
+    Argent financementRestant = new Argent(nom, tFutur, nouvelleValeurComptable);
+
+    Instant nouvelleDateFin = (tFutur.isAfter(fin)) ? tFutur : fin;
+    return new TrainDeVie(nom, depensesMensuelle, debut, nouvelleDateFin, financementRestant, dateDePonction);
   }
 }
