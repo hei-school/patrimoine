@@ -18,7 +18,6 @@ class MaterielTest {
         -0.10);
 
     var au26juin24 = Instant.parse("2024-06-26T00:00:00.00Z");
-    assertTrue(
-        mac.getValeurComptable() > mac.valeurComptableFuture(au26juin24));
+    assertTrue(mac.getValeurComptable() > mac.valeurComptableFuture(au26juin24));
   }
 }

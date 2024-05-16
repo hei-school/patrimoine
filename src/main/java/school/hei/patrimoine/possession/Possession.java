@@ -2,6 +2,7 @@ package school.hei.patrimoine.possession;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import school.hei.patrimoine.NotImplemented;
 
 import java.time.Instant;
 
@@ -12,7 +13,8 @@ public sealed abstract class Possession permits
   protected final String nom;
   protected final Instant t;
   protected final int valeurComptable;
-
-  public abstract int valeurComptableFuture(Instant tFutur);
-
+  public final int valeurComptableFuture(Instant tFutur) {
+    return projectionFuture(tFutur).getValeurComptable();
+  }
+  public abstract Possession projectionFuture(Instant tFutur);
 }

@@ -1,16 +1,54 @@
 package school.hei.patrimoine.possession;
 
+import lombok.Getter;
+import lombok.Setter;
 import school.hei.patrimoine.NotImplemented;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 
+@Getter
+@Setter
 public final class TrainDeVie extends Possession {
-  public TrainDeVie(String nom, Instant t, int valeurComptable) {
-    super(nom, t, valeurComptable);
+  private final Instant debut;
+  private final Instant fin;
+  private final int depensesMensuelle;
+  private final Argent financePar;
+  private final int dateDePonction;
+
+  public TrainDeVie(
+      String nom,
+      int depensesMensuelle,
+      Instant debut,
+      Instant fin,
+      Argent financePar,
+      int dateDePonction) {
+    super(nom, null, 0);
+    this.debut = debut;
+    this.fin = fin;
+    this.depensesMensuelle = depensesMensuelle;
+    this.dateDePonction = dateDePonction;
+
+    this.financePar = financePar;
+    this.financePar.addFinancés(this);
   }
 
   @Override
-  public int valeurComptableFuture(Instant tFutur) {
-    throw new NotImplemented();
+  public TrainDeVie projectionFuture(Instant tFutur) {
+    long differenceJour = ChronoUnit.DAYS.between(debut, tFutur);
+    long moisEntre = differenceJour / 30;
+    int depensesTotales = (int) (moisEntre * depensesMensuelle);
+    int valeurRestante = financePar.getValeurComptable() - depensesTotales;
+    Argent financeFuture = new Argent(financePar.getNom(), tFutur, valeurRestante);
+
+    return new TrainDeVie(
+            getNom(),
+            depensesMensuelle,
+            debut,
+            fin,
+            financeFuture,
+            dateDePonction
+    );
   }
+
 }
