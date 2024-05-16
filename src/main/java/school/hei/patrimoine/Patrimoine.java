@@ -7,6 +7,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toSet;
 
 public record Patrimoine(
     Personne possesseur, Instant t, Set<Possession> possessions) {
@@ -22,11 +25,11 @@ public record Patrimoine(
   }
 
   public Patrimoine projectionFuture(Instant tFutur) {
-      Set<Possession> futurePossessions=new HashSet<>();
 
-for(Possession possession:possessions){
-    futurePossessions.add(possession.projectionFuture(tFutur));
-}
-    return new Patrimoine(possesseur,tFutur,futurePossessions);
+    return new Patrimoine(
+        possesseur,
+        tFutur,
+        possessions.stream().map(p -> p.projectionFuture(tFutur)).collect(toSet()));
+
   }
 }

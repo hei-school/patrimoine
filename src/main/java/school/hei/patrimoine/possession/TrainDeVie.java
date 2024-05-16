@@ -18,7 +18,9 @@ public final class TrainDeVie extends Possession {
       Instant fin,
       Argent financePar,
       int dateDePonction) {
+
     super(nom);
+
     this.debut = debut;
     this.fin = fin;
     this.depensesMensuelle = depensesMensuelle;
