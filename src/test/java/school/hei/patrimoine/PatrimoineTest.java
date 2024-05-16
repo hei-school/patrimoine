@@ -55,6 +55,8 @@ class PatrimoineTest {
         ilo,
         au13mai24,
         Set.of(financeur, trainDeVie));
+    assertEquals("Espèces", trainDeVie.getFinancePar().getNom());
+    assertEquals(400_000, trainDeVie.getFinancePar().getValeurComptable());
   }
 
   @Test
@@ -71,6 +73,5 @@ class PatrimoineTest {
     );
     assertEquals(4_200_000, new Patrimoine(ilo,au26juin24, possessions).getValeurComptable());
   }
-
 
 }
