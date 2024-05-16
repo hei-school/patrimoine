@@ -13,6 +13,7 @@ public final class Materiel extends Possession {
     this.tauxDAppreciationAnnuelle = tauxDAppreciationAnnuelle;
   }
 
+
   @Override
   public int valeurComptableFuture(Instant tFutur) {
     Duration intervalD = Duration.between(this.t,tFutur);

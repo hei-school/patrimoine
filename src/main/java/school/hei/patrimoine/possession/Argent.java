@@ -5,16 +5,17 @@ import school.hei.patrimoine.NotImplemented;
 import java.time.Instant;
 
 public final class Argent extends Possession {
-  public Argent(String nom, Instant t, int valeurComptable) {
-    super(nom, t, valeurComptable);
-  }
+    public Argent(String nom, Instant t, int valeurComptable) {
+        super(nom, t, valeurComptable);
+    }
 
-//  @Override
-//  public int valeurComptableFuture(Instant tFutur) {
-//    throw new NotImplemented();
-//  }
-  @Override
-  public Possession projectionFuture(Instant tFutur) {
-    throw new NotImplemented();
-  }
+    @Override
+    public int valeurComptableFuture(Instant tFutur) {
+        throw new NotImplemented();
+    }
+
+    @Override
+    public Possession projectionFuture(Instant tFutur) {
+        throw new NotImplemented();
+    }
 }

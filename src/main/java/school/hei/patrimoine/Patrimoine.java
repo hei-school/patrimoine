@@ -8,6 +8,7 @@ import java.util.Set;
 public record Patrimoine(
     Personne possesseur, Instant t, Set<Possession> possessions) {
 
+
   public int getValeurComptable() {
     int sommVComptable=0;
     if (possessions.isEmpty()) {
@@ -15,7 +16,7 @@ public record Patrimoine(
     }
     //throw new NotImplemented();
     for (var possession:possessions){
-       sommVComptable += possession.getValeurComptable();
+      sommVComptable += possession.getValeurComptable();
     }
     return sommVComptable;
   }
