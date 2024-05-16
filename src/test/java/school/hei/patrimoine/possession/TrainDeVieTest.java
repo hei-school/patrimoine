@@ -1,9 +1,13 @@
 package school.hei.patrimoine.possession;
 
+import lombok.Getter;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
 import java.util.Set;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class TrainDeVieTest {
   @Test
@@ -20,7 +24,7 @@ class TrainDeVieTest {
         aLaDiplomation,
         compteCourant,
         1);
-    //TODO: assert something useful
+    assertEquals(100_000,compteCourant.getValeurComptable()-vieEstudiantine.getDepensesMensuelle());
   }
 
   @Test
