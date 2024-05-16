@@ -1,6 +1,6 @@
 package school.hei.patrimoine.possession;
 
-    import java.time.Duration;
+import java.time.Duration;
 import java.time.Instant;
 
 public final class Materiel extends Possession {
