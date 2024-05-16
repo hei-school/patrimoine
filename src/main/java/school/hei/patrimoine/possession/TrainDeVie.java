@@ -23,11 +23,20 @@ public final class TrainDeVie extends Possession {
           int dateDePonction
   ) {
     super(nom, debut, financePar.valeurComptable);
+      String nom,
+      int depensesMensuelle,
+      Instant debut,
+      Instant fin,
+      Argent financePar,
+      int dateDePonction) {
+    super(nom, null, 0);
     this.debut = debut;
     this.fin = fin;
     this.depensesMensuelle = depensesMensuelle;
-    this.financePar = financePar;
     this.dateDePonction = dateDePonction;
+
+    this.financePar = financePar;
+    this.financePar.addFinancés(this);
   }
 
   @Override
@@ -44,5 +53,7 @@ public final class TrainDeVie extends Possession {
   }
   public Argent getFinancePar() {
     return financePar;
+  public TrainDeVie projectionFuture(Instant tFutur) {
+    throw new NotImplemented();
   }
 }
