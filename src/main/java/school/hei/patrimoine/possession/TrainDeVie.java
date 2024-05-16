@@ -1,8 +1,7 @@
 package school.hei.patrimoine.possession;
 
-import school.hei.patrimoine.NotImplemented;
-
 import java.time.Instant;
+import school.hei.patrimoine.NotImplemented;
 
 public final class TrainDeVie extends Possession {
   private final Instant debut;

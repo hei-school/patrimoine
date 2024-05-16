@@ -1,4 +1,3 @@
 package school.hei.patrimoine;
 
-public record Personne(String nom) {
-}
+public record Personne(String nom) {}

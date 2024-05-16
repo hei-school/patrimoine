@@ -16,13 +16,9 @@ public final class Materiel extends Possession {
     long joursEcoules = TimeUnit.MILLISECONDS.toDays(tFutur.toEpochMilli() - getT().toEpochMilli());
     double anneesEcoulees = joursEcoules / 365.0;
 
-    double nouvelleValeurComptable = getValeurComptable() * Math.pow(1 + tauxDAppreciationAnnuelle, anneesEcoulees);
+    double nouvelleValeurComptable =
+        getValeurComptable() * Math.pow(1 + tauxDAppreciationAnnuelle, anneesEcoulees);
 
-    return new Materiel(
-            getNom(),
-            tFutur,
-            (int) nouvelleValeurComptable,
-            tauxDAppreciationAnnuelle
-    );
+    return new Materiel(getNom(), tFutur, (int) nouvelleValeurComptable, tauxDAppreciationAnnuelle);
   }
 }
