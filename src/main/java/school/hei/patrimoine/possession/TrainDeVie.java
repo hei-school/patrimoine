@@ -35,20 +35,16 @@ public final class TrainDeVie extends Possession {
   public TrainDeVie projectionFuture(Instant tFutur) {
     Instant finProjetee = tFutur.isAfter(fin) ? fin : tFutur;
 
-    boolean moisEstPonctionnee = finProjetee.atZone(ZoneId.systemDefault()).getDayOfMonth() >= (dateDePonction);
-
-    int nombreDeMois = (int) ChronoUnit.MONTHS.between(this.debut.atZone(ZoneId.systemDefault()),
+    int nombreDeMois = (int) ChronoUnit.MONTHS.between(this.debut.atZone(ZoneId.systemDefault()).plusMonths(1),
             finProjetee.atZone(ZoneId.systemDefault()));
 
-    if (moisEstPonctionnee && nombreDeMois > 1){
-      nombreDeMois--;
-    } else {
-      nombreDeMois = 1;
+    if (finProjetee.atZone(ZoneId.systemDefault()).getDayOfMonth() >= dateDePonction) {
+      nombreDeMois++;
     }
 
     int depenseProjetee = financePar.getValeurComptable() - (depensesMensuelle * nombreDeMois);
     Argent futureFinancePar = new Argent(financePar.nom, finProjetee, depenseProjetee);
 
-    return new TrainDeVie(this.nom, this.depensesMensuelle, this.debut, finProjetee, futureFinancePar, this.dateDePonction);
+    return new TrainDeVie(nom, depensesMensuelle, debut, finProjetee, futureFinancePar, dateDePonction);
   }
 }
