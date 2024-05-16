@@ -30,5 +30,7 @@ class TrainDeVieTest {
     var financeur = new Argent("Espèces", au13mai24, 400_000);
 
     var trainDeVie = new TrainDeVie(null, 0, null, null, financeur, 0);
+
+    assertEquals(financeur, trainDeVie.getFinancePar());
   }
 }
