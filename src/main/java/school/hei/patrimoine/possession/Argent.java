@@ -20,9 +20,24 @@ public final class Argent extends Possession {
     this.financés = financés;
   }
 
+  private int financeurFutur(Instant tFutur){
+    return financés.stream().mapToInt(f->this.valeurComptable - f.projectionFuture(tFutur).getFinancePar().getValeurComptable()).sum();
+  }
+
   @Override
-  public Possession projectionFuture(Instant tFutur) {
-    throw new NotImplemented();
+  public Argent projectionFuture(Instant tFutur) {
+    Set<TrainDeVie> nouvelleFinance = new HashSet<>();
+    for (TrainDeVie trainDeVie:financés){
+      if (!trainDeVie.getDebut().isAfter(tFutur) &&
+      !trainDeVie.getFin().isBefore(tFutur)){
+        nouvelleFinance.add(trainDeVie.projectionFuture(tFutur));
+      }
+    }
+    return new Argent(
+            nom,
+            tFutur,
+            valeurComptable - financeurFutur(tFutur),
+            nouvelleFinance);
   }
 
   void addFinancés(TrainDeVie trainDeVie) {
