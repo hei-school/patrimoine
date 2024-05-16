@@ -10,11 +10,21 @@ import static java.util.stream.Collectors.toSet;
 
 public record Patrimoine(
     Personne possesseur, Instant t, Set<Possession> possessions) {
+
+
+
+
+
   public int getValeurComptable() {
+    int sommVComptable=0;
     if (possessions.isEmpty()) {
       return 0;
     }
-    throw new NotImplemented();
+    //throw new NotImplemented();
+    for (var possession:possessions){
+      sommVComptable += possession.getValeurComptable();
+    }
+    return sommVComptable;
   }
 
   public Patrimoine projectionFuture(Instant tFutur) {

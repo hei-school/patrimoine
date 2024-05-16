@@ -9,6 +9,21 @@ import java.util.Set;
 import static java.util.stream.Collectors.toSet;
 
 public final class Argent extends Possession {
+
+    public Argent(String nom, Instant t, int valeurComptable) {
+        super(nom, t, valeurComptable);
+    }
+
+    @Override
+    public int valeurComptableFuture(Instant tFutur) {
+        throw new NotImplemented();
+    }
+
+    @Override
+    public Possession projectionFuture(Instant tFutur) {
+        throw new NotImplemented();
+    }
+
   private final Set<TrainDeVie> financés;
 
   public Argent(String nom, Instant t, int valeurComptable) {
@@ -36,4 +51,5 @@ public final class Argent extends Possession {
   void addFinancés(TrainDeVie trainDeVie) {
     financés.add(trainDeVie);
   }
+
 }
