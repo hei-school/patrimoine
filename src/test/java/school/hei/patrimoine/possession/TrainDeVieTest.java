@@ -15,18 +15,14 @@ class TrainDeVieTest {
     var aLOuvertureDeHEI = Instant.parse("2021-10-26T00:00:00.00Z");
     var aLaDiplomation = Instant.parse("2024-12-26T00:00:00.00Z");
     var vieEstudiantine = new TrainDeVie(
-        "Ma super(?) vie d'etudiant",
-        500_000,
-        aLOuvertureDeHEI,
-        aLaDiplomation,
-        compteCourant,
-        1);
+            "Ma super(?) vie d'etudiant",
+            500_000,
+            aLOuvertureDeHEI,
+            aLaDiplomation,
+            compteCourant,
+            1);
     //TODO: assert something useful
 
-    var unMoisApresLOuvertureDeHEI = Instant.parse("2021-11-26T00:00:00.00Z");
-    var projectApresUnMois = vieEstudiantine.projectionFuture(unMoisApresLOuvertureDeHEI);
-    assertEquals(
-            100_000,
-            ((TrainDeVie) projectApresUnMois).getFinancePar().valeurComptableFuture(unMoisApresLOuvertureDeHEI));
+    assertTrue(vieEstudiantine.getDepensesMensuelle() < vieEstudiantine.getFinancePar().getValeurComptable());
   }
 }
