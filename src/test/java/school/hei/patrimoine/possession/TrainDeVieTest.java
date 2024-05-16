@@ -34,4 +34,6 @@ class TrainDeVieTest {
 
     var trainDeVie = new TrainDeVie(null, 0, null, null, financeur, 0);
   }
+
+
 }
