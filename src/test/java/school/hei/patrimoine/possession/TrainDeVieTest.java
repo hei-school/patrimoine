@@ -22,6 +22,11 @@ class TrainDeVieTest {
         aLaDiplomation,
         compteCourant,
         1);
+
+    var test = Instant.parse("2022-12-12T00:00:00.00Z");
+    assertEquals(
+            100_000,
+            vieEstudiantine.projectionFuture(test).getFinancePar().getValeurComptable());
     //TODO: assert something useful
   }
 
