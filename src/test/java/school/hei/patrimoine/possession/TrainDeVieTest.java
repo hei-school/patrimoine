@@ -5,6 +5,9 @@ import org.junit.jupiter.api.Test;
 import java.time.Instant;
 import java.util.Set;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 class TrainDeVieTest {
   @Test
   void train_de_vie_est_finance_par_compte_courant() {
@@ -20,7 +23,9 @@ class TrainDeVieTest {
         aLaDiplomation,
         compteCourant,
         1);
-    //TODO: assert something useful
+    assertEquals(compteCourant, vieEstudiantine.getFinancePar());
+    assertTrue(vieEstudiantine.getDebut().isBefore(vieEstudiantine.getFin()));
+    assertEquals(100_000, compteCourant.getValeurComptable() - vieEstudiantine.getDepensesMensuelle());
   }
 
   @Test
