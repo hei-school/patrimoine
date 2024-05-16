@@ -26,11 +26,12 @@ public final class Argent extends Possession {
         nom,
         tFutur,
         valeurComptable - financementsFutur(tFutur),
-        financés.stream().map(f -> f.projectionFuture(tFutur)).collect(toSet()));
+        financés.stream().map(f -> f.projectionFuture(tFutur)).collect(toSet())
+    );
   }
 
   private int financementsFutur(Instant tFutur) {
-    throw new NotImplemented();
+    return financés.stream().mapToInt(f -> f.projectionFuture(tFutur).getValeurComptable()).sum();
   }
 
   void addFinancés(TrainDeVie trainDeVie) {
