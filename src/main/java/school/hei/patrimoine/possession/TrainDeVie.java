@@ -4,6 +4,10 @@ import lombok.Getter;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.temporal.ChronoField;
+import java.time.temporal.ChronoUnit;
 
 @Getter
 public final class TrainDeVie extends Possession {
@@ -30,11 +34,13 @@ public final class TrainDeVie extends Possession {
 
   @Override
   public TrainDeVie projectionFuture(Instant tFutur) {
-    int valeurComptableFuturDuCompteCourant = (int) (getFinancePar().getValeurComptable() - (getDepensesMensuelle() * nombreDePonction));
-    Argent financeFutur = new Argent(getFinancePar().nom, tFutur, valeurComptableFuturDuCompteCourant);
-
-    long nombreDePonction = Duration.between(debut, tFutur).toDays() / 31;
-    int depensesFutur = (int) (getDepensesMensuelle() * nombreDePonction);
-    return new TrainDeVie(getNom(), depensesFutur, getDebut(), getFin(), financeFutur, getDateDePonction());
+    Instant commencement = (LocalDate.ofInstant(debut, ZoneId.systemDefault()).getDayOfMonth() == getDateDePonction())
+            ? debut : debut.plus(1, ChronoUnit.MONTHS);
+    tFutur = (tFutur.isAfter(getFin())) ? tFutur : getFin();
+    long nombreDePonction = (ChronoUnit.DAYS.between(commencement, tFutur) / 31);
+    System.out.println(nombreDePonction);
+    int argentRestant = (int) (getFinancePar().getValeurComptable() - (getDepensesMensuelle() * nombreDePonction));
+    Argent financeFutur = new Argent(getFinancePar().nom, tFutur, argentRestant);
+    return new TrainDeVie(getNom(), getDepensesMensuelle(), getDebut(), getFin(), financeFutur, getDateDePonction());
   }
 }

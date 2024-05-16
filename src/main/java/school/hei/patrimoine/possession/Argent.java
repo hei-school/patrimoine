@@ -14,4 +14,5 @@ public final class Argent extends Possession {
   @Override
   public Argent projectionFuture(Instant tFutur) {
     return new Argent(getNom(), getT(), getValeurComptable());
+  }
 }
