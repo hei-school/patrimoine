@@ -3,7 +3,8 @@ package school.hei.patrimoine.possession;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
-import java.util.Set;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 class TrainDeVieTest {
   @Test
@@ -20,14 +21,17 @@ class TrainDeVieTest {
         aLaDiplomation,
         compteCourant,
         1);
-    //TODO: assert something useful
+    assertNotEquals(vieEstudiantine,vieEstudiantine.projectionFuture(aLaDiplomation));
   }
 
   @Test
   void un_train_de_vie_financé_par_argent() {
     var au13mai24 = Instant.parse("2024-05-13T00:00:00.00Z");
     var financeur = new Argent("Espèces", au13mai24, 400_000);
+    var dateDebut = Instant.parse("2021-10-26T00:00:00.00Z");
+    var dateFin = Instant.parse("2024-06-13T00:00:00.00Z");
 
-    var trainDeVie = new TrainDeVie(null, 0, null, null, financeur, 0);
+    var trainDeVie = new TrainDeVie(null, 300_000, dateDebut, dateFin, financeur, 1);
+    assertEquals(100_000,trainDeVie.projectionFuture(dateFin).getFinancePar().getValeurComptable());
   }
 }
