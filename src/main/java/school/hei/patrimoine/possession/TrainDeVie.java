@@ -5,12 +5,29 @@ import school.hei.patrimoine.NotImplemented;
 import java.time.Instant;
 
 public final class TrainDeVie extends Possession {
-  public TrainDeVie(String nom, Instant t, int valeurComptable) {
-    super(nom, t, valeurComptable);
+  private final Instant debut;
+  private final Instant fin;
+  private final int depensesMensuelle;
+  private final Argent financePar;
+  private final int dateDePonction;
+  public TrainDeVie(
+    String nom,
+    int depensesMensuelle,
+    Instant debut,
+    Instant fin,
+    Argent financePar,
+    int dateDePonction
+    ) {
+    super(nom, null, 0);
+    this.debut=debut;
+    this.fin=fin;
+    this.depensesMensuelle=depensesMensuelle;
+    this.financePar=financePar;
+    this.dateDePonction=dateDePonction;
   }
 
   @Override
-  public int valeurComptableFuture(Instant tFutur) {
-    throw new NotImplemented();
+  public Possession projectionFuture(Instant tFutur) {
+    throw new UnsupportedOperationException("Unimplemented method 'projectionFuture'");
   }
 }
