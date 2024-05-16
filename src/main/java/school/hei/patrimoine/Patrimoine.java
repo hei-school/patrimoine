@@ -11,10 +11,7 @@ import static java.util.stream.Collectors.toSet;
 public record Patrimoine(
     Personne possesseur, Instant t, Set<Possession> possessions) {
   public int getValeurComptable() {
-    if (possessions.isEmpty()) {
-      return 0;
-    }
-    throw new NotImplemented();
+    return possessions.isEmpty() ? 0 : possessions.stream().mapToInt(Possession::getValeurComptable).sum();
   }
 
   public Patrimoine projectionFuture(Instant tFutur) {
