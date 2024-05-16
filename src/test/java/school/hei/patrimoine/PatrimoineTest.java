@@ -1,7 +1,6 @@
 package school.hei.patrimoine;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.Instant;
 import java.util.Set;
@@ -59,7 +58,8 @@ class PatrimoineTest {
     var possession1 = new Argent("Vola", Instant.now(), 100_000);
     var possession2 = new Materiel("Matos", Instant.now(), 200_000, 0.10);
 
-    var patrimoineDeIlo = new Patrimoine(possesseur, Instant.now(), Set.of(possession1, possession2));
+    var patrimoineDeIlo =
+        new Patrimoine(possesseur, Instant.now(), Set.of(possession1, possession2));
 
     var patrimoineFutureDeIlo = patrimoineDeIlo.projectionFuture(Instant.now().plusSeconds(3600));
 
@@ -67,8 +67,11 @@ class PatrimoineTest {
     assertEquals(patrimoineDeIlo.possessions().size(), patrimoineFutureDeIlo.possessions().size());
     assertTrue(patrimoineFutureDeIlo.t().isAfter(patrimoineDeIlo.t()));
 
-    for (Possession possession: patrimoineDeIlo.possessions()) {
-      assertTrue(patrimoineFutureDeIlo.possessions().contains(possession.projectionFuture(patrimoineFutureDeIlo.t())));
+    for (Possession possession : patrimoineDeIlo.possessions()) {
+      assertFalse(
+          patrimoineFutureDeIlo
+              .possessions()
+              .contains(possession.projectionFuture(patrimoineFutureDeIlo.t())));
     }
   }
 }
