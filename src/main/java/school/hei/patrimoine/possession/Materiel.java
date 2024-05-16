@@ -3,6 +3,7 @@ package school.hei.patrimoine.possession;
 import school.hei.patrimoine.NotImplemented;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 
 public final class Materiel extends Possession {
   private final double tauxDAppreciationAnnuelle;
@@ -14,6 +15,16 @@ public final class Materiel extends Possession {
 
   @Override
   public Possession projectionFuture(Instant tFutur) {
-    throw new NotImplemented();
+
+    double valeurCompAnuelle = valeurComptable * tauxDAppreciationAnnuelle;
+    double nbAnnees = ChronoUnit.DAYS.between(t, tFutur) / 365.2425;
+    int valeurComptableFuture = (int) Math.max(valeurComptable - (valeurCompAnuelle * nbAnnees), 0);
+
+    Materiel materiel = new Materiel(
+            nom, tFutur, valeurComptableFuture, this.tauxDAppreciationAnnuelle
+    );
+
+    return materiel;
+
   }
 }
