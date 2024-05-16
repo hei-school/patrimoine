@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test;
 import java.time.Instant;
 import java.util.Set;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 class TrainDeVieTest {
   @Test
   void train_de_vie_est_finance_par_compte_courant() {
@@ -20,7 +22,9 @@ class TrainDeVieTest {
         aLaDiplomation,
         compteCourant,
         1);
-    //TODO: assert something useful
+    Instant tFutur = Instant.parse("2024-10-26T00:00:00.00Z");
+    assertEquals(-16900000,vieEstudiantine.projectionFuture(tFutur).getValeurComptable());
+
   }
 
   @Test
