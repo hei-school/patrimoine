@@ -1,6 +1,6 @@
 package school.hei.patrimoine.possession;
 
-import school.hei.patrimoine.NotImplemented;
+import lombok.Getter;
 
 import java.time.Instant;
 import java.util.HashSet;
@@ -8,6 +8,7 @@ import java.util.Set;
 
 import static java.util.stream.Collectors.toSet;
 
+@Getter
 public final class Argent extends Possession {
   private final Set<TrainDeVie> financés;
 
@@ -30,7 +31,10 @@ public final class Argent extends Possession {
   }
 
   private int financementsFutur(Instant tFutur) {
-    throw new NotImplemented();
+    int totalDepense = 0;
+    for (TrainDeVie trainDeVie : financés)
+      totalDepense += trainDeVie.projectionFuture(tFutur).getFinancePar().getValeurComptable();
+    return totalDepense;
   }
 
   void addFinancés(TrainDeVie trainDeVie) {
