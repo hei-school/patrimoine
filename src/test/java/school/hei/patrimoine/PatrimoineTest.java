@@ -1,11 +1,14 @@
 package school.hei.patrimoine;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.Instant;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
 import school.hei.patrimoine.possession.Argent;
+import school.hei.patrimoine.possession.Materiel;
+import school.hei.patrimoine.possession.Possession;
 import school.hei.patrimoine.possession.TrainDeVie;
 
 class PatrimoineTest {
@@ -47,5 +50,25 @@ class PatrimoineTest {
     var trainDeVie = new TrainDeVie(null, 0, null, null, financeur, 0);
 
     var patrimoineIloAu13mai24 = new Patrimoine(ilo, au13mai24, Set.of(financeur, trainDeVie));
+  }
+
+  @Test
+  void patrimoine_projeté_dans_une_heure() {
+    var possesseur = new Personne("Ilo");
+
+    var possession1 = new Argent("Vola", Instant.now(), 100_000);
+    var possession2 = new Materiel("Matos", Instant.now(), 200_000, 0.10);
+
+    var patrimoineDeIlo = new Patrimoine(possesseur, Instant.now(), Set.of(possession1, possession2));
+
+    var patrimoineFutureDeIlo = patrimoineDeIlo.projectionFuture(Instant.now().plusSeconds(3600));
+
+    assertEquals(patrimoineDeIlo.possesseur(), patrimoineFutureDeIlo.possesseur());
+    assertEquals(patrimoineDeIlo.possessions().size(), patrimoineFutureDeIlo.possessions().size());
+    assertTrue(patrimoineFutureDeIlo.t().isAfter(patrimoineDeIlo.t()));
+
+    for (Possession possession: patrimoineDeIlo.possessions()) {
+      assertTrue(patrimoineFutureDeIlo.possessions().contains(possession.projectionFuture(patrimoineFutureDeIlo.t())));
+    }
   }
 }
