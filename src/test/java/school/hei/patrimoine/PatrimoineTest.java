@@ -2,11 +2,13 @@ package school.hei.patrimoine;
 
 import org.junit.jupiter.api.Test;
 import school.hei.patrimoine.possession.Argent;
+import school.hei.patrimoine.possession.TrainDeVie;
 
 import java.time.Instant;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PatrimoineTest {
 
@@ -34,7 +36,22 @@ class PatrimoineTest {
             new Argent("Espèces", au13mai24, 400_000),
             new Argent("Compte epargne", au13mai24, 200_000),
             new Argent("Compte courant", au13mai24, 600_000)));
-
     assertEquals(1_200_000, patrimoineIloAu13mai24.getValeurComptable());
+  }
+  @Test
+  void patrimoine_possede_un_train_de_vie_financé_par_argent() {
+    var ilo = new Personne("Ilo");
+    var au13mai24 = Instant.parse("2024-05-13T00:00:00.00Z");
+    var financeur = new Argent("Espèces", au13mai24, 400_000);
+    var debut = Instant.parse("2024-04-01T00:00:00.00Z");
+    var fin = Instant.parse("2025-01-01T00:00:00.00Z");
+    var trainDeVie = new TrainDeVie("voyagé", 100_000, debut, fin, financeur, 1);
+    var patrimoineIloAu13mai24 = new Patrimoine(
+            ilo,
+            au13mai24,
+            Set.of(financeur, trainDeVie));
+    var dateDeProjectionFuture = Instant.parse("2024-10-15T00:00:00.00Z");
+    var patrimoineIloAuFuture = patrimoineIloAu13mai24.projectionFuture(dateDeProjectionFuture);
+    assertTrue(patrimoineIloAuFuture.getValeurComptable() < patrimoineIloAu13mai24.getValeurComptable());
   }
 }

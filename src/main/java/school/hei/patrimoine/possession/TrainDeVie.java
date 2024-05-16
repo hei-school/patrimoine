@@ -17,12 +17,14 @@ public final class TrainDeVie extends Possession {
       Instant fin,
       Argent financePar,
       int dateDePonction) {
-    super(nom, null, 0); //TODO: dirty, redesign
+    super(nom, null, 0);
     this.debut = debut;
     this.fin = fin;
     this.depensesMensuelle = depensesMensuelle;
-    this.financePar = financePar;
     this.dateDePonction = dateDePonction;
+
+    this.financePar = financePar;
+    this.financePar.addFinancés(this);
   }
   @Override
   public Possession projectionFuture(Instant tFutur) {
@@ -31,12 +33,13 @@ public final class TrainDeVie extends Possession {
     long dureeEnSecondes = duration.getSeconds();
     int nbDeMoisRestante = (int) Math.ceil((double) dureeEnSecondes / (30 * 24 * 60 * 60));
     int depensesTotalesFuture = depensesMensuelle * nbDeMoisRestante;
+    var financeur = new Argent(nom,debut, depensesTotalesFuture);
     return new TrainDeVie(
             getNom(),
             depensesTotalesFuture,
             debut,
             tFutur,
-            financePar,
+            financeur,
             dateDePonction);
   }
 }

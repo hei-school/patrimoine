@@ -26,4 +26,14 @@ class TrainDeVieTest {
     assertTrue(
             compteCourant.getValeurComptable() < futureProjection.depensesTotalesFuture);
   }
+  @Test
+  void un_train_de_vie_financé_par_argent() {
+    var au13mai24 = Instant.parse("2024-05-13T00:00:00.00Z");
+    var financeur = new Argent("Espèces", au13mai24, 500_000);
+    var debut = Instant.parse("2024-03-01T00:00:00.00Z");
+    var fin = Instant.parse("2024-12-31T23:59:59.00Z");
+    var trainDeVie = new TrainDeVie("vacance", 200_000, debut, fin, financeur, 2);
+    var projectionDate = Instant.parse("2024-12-31T00:00:00.00Z");
+    assertEquals(480_000, trainDeVie.projectionFuture(projectionDate).getFinancePar().getValeurComptable());
+  }
 }
