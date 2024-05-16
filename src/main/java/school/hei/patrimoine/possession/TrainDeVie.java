@@ -12,12 +12,12 @@ public final class TrainDeVie extends Possession {
   private final int dateDePonction;
 
   public TrainDeVie(
-      String nom,
-      int depensesMensuelle,
-      Instant debut,
-      Instant fin,
-      Argent financePar,
-      int dateDePonction) {
+          String nom,
+          int depensesMensuelle,
+          Instant debut,
+          Instant fin,
+          Argent financePar,
+          int dateDePonction) {
     super(nom, null, 0); //TODO: dirty, redesign
     this.debut = debut;
     this.fin = fin;
@@ -28,6 +28,6 @@ public final class TrainDeVie extends Possession {
 
   @Override
   public Possession projectionFuture(Instant tFutur) {
-    throw new NotImplemented();
+
   }
 }
