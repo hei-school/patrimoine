@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test;
 import java.time.Instant;
 import java.util.Set;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 class TrainDeVieTest {
   @Test
   void train_de_vie_est_finance_par_compte_courant() {
@@ -21,13 +23,37 @@ class TrainDeVieTest {
         compteCourant,
         1);
     //TODO: assert something useful
+    var au26juin24 = Instant.parse("2021-11-26T00:00:00.00Z");
+    assertEquals(0, vieEstudiantine.projectionFuture(au26juin24).getFinancePar().getValeurComptable());
   }
 
   @Test
   void un_train_de_vie_financé_par_argent() {
-    var au13mai24 = Instant.parse("2024-05-13T00:00:00.00Z");
-    var financeur = new Argent("Espèces", au13mai24, 400_000);
 
-    var trainDeVie = new TrainDeVie(null, 0, null, null, financeur, 0);
+      var au13mai24 = Instant.parse("2024-05-13T00:00:00.00Z");
+      var financeur = new Argent("Espèces", au13mai24, 400_000);
+
+      var trainDeVie = new TrainDeVie(
+              null,
+              0,
+              null,
+              null,
+              financeur,
+              0);
+
+      assertEquals(financeur, trainDeVie.getFinancePar());
+  }
+  @Test
+  void ChristmasGift(){
+    var au25dec24 = Instant.parse("2024-12-25T00:00:00.00Z");
+    var financeur = new Argent("Cadeau de noel" , au25dec24, 250_000);
+    var trainDeVie = new TrainDeVie(
+            null,
+            0,
+            null,
+            null,
+            financeur,
+            0);
+    assertEquals(financeur, trainDeVie.getFinancePar());
   }
 }

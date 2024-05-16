@@ -2,12 +2,15 @@ package school.hei.patrimoine;
 
 import org.junit.jupiter.api.Test;
 import school.hei.patrimoine.possession.Argent;
+import school.hei.patrimoine.possession.Materiel;
 import school.hei.patrimoine.possession.TrainDeVie;
 
 import java.time.Instant;
 import java.util.Set;
+import java.util.logging.Handler;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PatrimoineTest {
 
@@ -52,5 +55,27 @@ class PatrimoineTest {
         ilo,
         au13mai24,
         Set.of(financeur, trainDeVie));
+    assertTrue(patrimoineIloAu13mai24.possessions().contains(trainDeVie));
+    assertEquals(financeur, trainDeVie.getFinancePar());
+  }
+  @Test
+  void projection_patrimoine() {
+    var Ando = new Personne("Ando");
+
+    var au17oct24 = Instant.parse("2024-05-13T00:00:00.00Z");
+    var especes = new Argent("Reinscription", au17oct24, 300_000);
+    var courant = new Argent("Compte Courant", au17oct24, 600_000);
+
+    var au26Oct21 = Instant.parse("2021-10-26T00:00:00.00Z");
+    var mac = new Materiel("MacBook Pro", au26Oct21, 2_000_000, -0.10);
+
+    var aLOuvertureDeHEI = Instant.parse("2023-10-26T00:00:00.00Z");
+    var aLaDiplomation = Instant.parse("2024-12-26T00:00:00.00Z");
+    var trainDeVie = new TrainDeVie("Ma super(?) vie d'etudiant", 500_000, aLOuvertureDeHEI, aLaDiplomation, courant, 1);
+
+    var patrimoine = new Patrimoine(Ando, au17oct24, Set.of(especes, courant, mac, trainDeVie));
+
+    var au26juin24 = Instant.parse("2024-06-26T00:00:00.00Z");
+    assertTrue(patrimoine.projectionFuture(au26juin24).getValeurComptable() < patrimoine.getValeurComptable());
   }
 }
