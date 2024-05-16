@@ -21,6 +21,19 @@ class TrainDeVieTest {
         aLaDiplomation,
         compteCourant,
         1);
-    //TODO: assert something useful
+
+    var unMoisApresOuverturDeHEI = Instant.parse("2021-11-26T00:00:00.00Z");
+    var trainDeApresUnMoisDourvertureDEHEI = (TrainDeVie) vieEstudiantine.projectionFuture(unMoisApresOuverturDeHEI);
+    assertEquals(
+      100_000,
+      trainDeApresUnMoisDourvertureDEHEI.getFinancePar().getValeurComptable());
+    assertEquals(
+      vieEstudiantine.getDepensesMensuelle(),
+      trainDeApresUnMoisDourvertureDEHEI.getDepensesMensuelle());
+
+    var apresLaDiplomation = Instant.parse("2025-12-26T00:00:00.00Z");
+    assertEquals(
+      0,
+      ((TrainDeVie) vieEstudiantine.projectionFuture(apresLaDiplomation)).getDepensesMensuelle());
   }
 }

@@ -13,10 +13,12 @@ public record Patrimoine(
   }
 
   public Patrimoine projectionFuture(Instant tFutur) {
-    Set<Possession> futurPossessions = possessions
-            .stream()
-            .map(possession -> possession.projectionFuture(t))
-            .collect(Collectors.toSet());
-    return new Patrimoine(possesseur, tFutur, futurPossessions);
+    return new Patrimoine(
+      possesseur,
+      tFutur,
+      possessions.stream()
+        .map(v -> v.projectionFuture(tFutur))
+        .collect(Collectors.toSet())
+    );
   }
 }
