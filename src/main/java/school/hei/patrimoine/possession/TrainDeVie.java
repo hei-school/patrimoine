@@ -29,15 +29,14 @@ public final class TrainDeVie extends Possession {
 
   @Override
   public Possession projectionFuture(Instant tFutur) {
-    double monthsBetween = ChronoUnit.MONTHS.between(debut, tFutur);
-    int totalDepenses = (int) monthsBetween * depensesMensuelle;
-    int nouvelleValeur = financePar.getValeurComptable() - totalDepenses;
+    double dureeMois = ChronoUnit.MONTHS.between(debut, tFutur);
+    int totalDepenses = (int) dureeMois * depensesMensuelle;
 
-    if (nouvelleValeur < 0) {
-      throw new IllegalStateException("Insufficient funds in financePar account");
-    }
-
-    Argent futureFinancePar = new Argent(financePar.getNom(), tFutur, nouvelleValeur);
-    return new TrainDeVie(this.nom, this.depensesMensuelle, this.debut, this.fin, futureFinancePar, this.dateDePonction);
+    return new TrainDeVie(this.nom,
+            this.depensesMensuelle,
+            this.debut,
+            this.fin,
+            financePar,
+            this.dateDePonction);
   }
 }
