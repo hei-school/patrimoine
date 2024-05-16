@@ -3,6 +3,9 @@ package school.hei.patrimoine.possession;
 import school.hei.patrimoine.NotImplemented;
 
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 
 public final class TrainDeVie extends Possession {
   private final Instant debut;
@@ -30,6 +33,21 @@ public final class TrainDeVie extends Possession {
 
   @Override
   public TrainDeVie projectionFuture(Instant tFutur) {
-    throw new NotImplemented();
+
+    int totalDepense = 0;
+    LocalDate FinancedDay = LocalDate.ofInstant(financePar.getT(), ZoneId.systemDefault());
+    LocalDate StartingLocalate = LocalDate.ofInstant(debut, ZoneId.systemDefault());
+    LocalDate EndingLocalDate = LocalDate.ofInstant(fin, ZoneId.systemDefault());
+    while (FinancedDay.isBefore(LocalDate.ofInstant(tFutur, ZoneId.systemDefault()))) {
+      if (isBetweenTwoDate(FinancedDay, StartingLocalate, EndingLocalDate) && FinancedDay.getDayOfMonth() == dateDePonction && tFutur.isAfter(debut) && tFutur.isBefore(fin))
+        totalDepense += depensesMensuelle;
+      FinancedDay = FinancedDay.plusDays(1);
+    }
+    Argent financeFuture = new Argent(financePar.nom, tFutur, totalDepense);
+    return new TrainDeVie(nom, depensesMensuelle, debut, fin, financeFuture, dateDePonction);
+  }
+
+  private boolean isBetweenTwoDate(LocalDate toVerify, LocalDate startDate, LocalDate endDate) {
+    return (ChronoUnit.DAYS.between(startDate, toVerify) > 0) && (ChronoUnit.DAYS.between(toVerify, endDate) > 0);
   }
 }
