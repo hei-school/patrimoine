@@ -1,6 +1,6 @@
 package school.hei.patrimoine.possession;
 
-import school.hei.patrimoine.NotImplemented;
+import lombok.Getter;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -8,6 +8,7 @@ import java.time.temporal.ChronoUnit;
 public final class TrainDeVie extends Possession {
   private final Instant debut;
   private final Instant fin;
+  @Getter
   private final int depensesMensuelle;
   private final Argent financePar;
   private final int dateDePonction;
@@ -39,4 +40,5 @@ public final class TrainDeVie extends Possession {
             financePar,
             this.dateDePonction);
   }
+
 }
