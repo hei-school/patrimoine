@@ -52,5 +52,7 @@ class PatrimoineTest {
         ilo,
         au13mai24,
         Set.of(financeur, trainDeVie));
+
+    assertEquals(ilo.nom(), patrimoineIloAu13mai24.possesseur().nom());
   }
 }

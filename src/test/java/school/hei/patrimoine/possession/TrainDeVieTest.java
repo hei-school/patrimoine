@@ -5,6 +5,9 @@ import org.junit.jupiter.api.Test;
 import java.time.Instant;
 import java.util.Set;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 class TrainDeVieTest {
   @Test
   void train_de_vie_est_finance_par_compte_courant() {
@@ -20,14 +23,20 @@ class TrainDeVieTest {
         aLaDiplomation,
         compteCourant,
         1);
-    //TODO: assert something useful
+    assertTrue(compteCourant.getValeurComptable() > vieEstudiantine.getValeurComptable());
   }
 
   @Test
   void un_train_de_vie_financé_par_argent() {
     var au13mai24 = Instant.parse("2024-05-13T00:00:00.00Z");
+    var au18mai25 = Instant.parse("2024-05-18T00:00:00.00Z");
+
     var financeur = new Argent("Espèces", au13mai24, 400_000);
 
-    var trainDeVie = new TrainDeVie(null, 0, null, null, financeur, 0);
+    var trainDeVie = new TrainDeVie(null, 10_000, au13mai24, au18mai25, financeur, 0);
+
+    financeur.addFinancés(trainDeVie);
+    assertEquals(4166, trainDeVie.projectionFuture(au18mai25).getValeurComptable());
+
   }
 }
