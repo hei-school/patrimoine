@@ -1,9 +1,15 @@
 package school.hei.patrimoine.possession;
 
-import school.hei.patrimoine.NotImplemented;
+import lombok.Getter;
 
+import java.time.Duration;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.temporal.ChronoField;
+import java.time.temporal.ChronoUnit;
 
+@Getter
 public final class TrainDeVie extends Possession {
   private final Instant debut;
   private final Instant fin;
@@ -27,7 +33,14 @@ public final class TrainDeVie extends Possession {
   }
 
   @Override
-  public Possession projectionFuture(Instant tFutur) {
-    throw new NotImplemented();
+  public TrainDeVie projectionFuture(Instant tFutur) {
+    Instant commencement = (LocalDate.ofInstant(debut, ZoneId.systemDefault()).getDayOfMonth() == getDateDePonction())
+            ? debut : debut.plus(1, ChronoUnit.MONTHS);
+    tFutur = (tFutur.isAfter(getFin())) ? tFutur : getFin();
+    long nombreDePonction = (ChronoUnit.DAYS.between(commencement, tFutur) / 31);
+    System.out.println(nombreDePonction);
+    int argentRestant = (int) (getFinancePar().getValeurComptable() - (getDepensesMensuelle() * nombreDePonction));
+    Argent financeFutur = new Argent(getFinancePar().nom, tFutur, argentRestant);
+    return new TrainDeVie(getNom(), getDepensesMensuelle(), getDebut(), getFin(), financeFutur, getDateDePonction());
   }
 }
