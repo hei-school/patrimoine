@@ -23,12 +23,14 @@ public final class TrainDeVie extends Possession {
         this.debut = debut;
         this.fin = fin;
         this.depensesMensuelle = depensesMensuelle;
-        this.financePar = financePar;
         this.dateDePonction = dateDePonction;
+
+        this.financePar = financePar;
+        this.financePar.addFinancés(this);
     }
 
     @Override
-    public Possession projectionFuture(Instant tFutur) {
+    public TrainDeVie projectionFuture(Instant tFutur) {
         var anneesEntre = ChronoUnit.MONTHS.between(
                 LocalDateTime.ofInstant(this.debut, ZoneId.of("UTC")),
                 LocalDateTime.ofInstant(tFutur, ZoneId.of("UTC"))
