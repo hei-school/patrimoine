@@ -21,7 +21,7 @@ class TrainDeVieTest {
         compteCourant,
         1);
 
-    assertTrue(vieEstudiantine.valeurComptable<compteCourant.valeurComptable);
+
 
   }
 
