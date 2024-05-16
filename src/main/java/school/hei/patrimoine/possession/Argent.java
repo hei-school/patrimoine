@@ -9,6 +9,7 @@ import java.util.Set;
 import static java.util.stream.Collectors.toSet;
 
 public final class Argent extends Possession {
+
     private final Set<TrainDeVie> financés;
 
     public Argent(String nom, Instant t, int valeurComptable) {
@@ -42,3 +43,5 @@ public final class Argent extends Possession {
         financés.add(trainDeVie);
     }
 }
+
+

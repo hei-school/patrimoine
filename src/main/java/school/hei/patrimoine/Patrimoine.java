@@ -17,6 +17,7 @@ public record Patrimoine(
         throw new NotImplemented();
     }
 
+
     public Patrimoine projectionFuture(Instant tFutur) {
         return new Patrimoine(
                 possesseur,
@@ -24,3 +25,4 @@ public record Patrimoine(
                 possessions.stream().map(p -> p.projectionFuture(tFutur)).collect(toSet()));
     }
 }
+

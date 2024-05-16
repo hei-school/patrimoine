@@ -34,4 +34,5 @@ class TrainDeVieTest {
 
         assertTrue(financeur.valeurComptable >= depensesMensuellePourLaConnexion);
     }
+
 }
