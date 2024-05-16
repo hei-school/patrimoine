@@ -30,7 +30,12 @@ public final class Argent extends Possession {
   }
 
   private int financementsFutur(Instant tFutur) {
-    throw new NotImplemented();
+      int financement = 0;
+      for (var trainDeVie : financés) {
+        TrainDeVie projection = trainDeVie.projectionFuture(tFutur);
+        financement += projection.getValeurComptable();
+      }
+      return financement;
   }
 
   void addFinancés(TrainDeVie trainDeVie) {
