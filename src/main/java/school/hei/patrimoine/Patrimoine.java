@@ -13,7 +13,6 @@ public record Patrimoine(
             .mapToInt(Possession::getValeurComptable)
             .sum();
   }
-
   public Patrimoine projectionFuture(Instant tFutur) {
     Set<Possession> futurPossessions = possessions
             .stream()
