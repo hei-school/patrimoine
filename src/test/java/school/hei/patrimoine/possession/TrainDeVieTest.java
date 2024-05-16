@@ -1,9 +1,12 @@
 package school.hei.patrimoine.possession;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
 import java.util.Set;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class TrainDeVieTest {
   @Test
@@ -21,7 +24,7 @@ class TrainDeVieTest {
         compteCourant,
         1);
 
-
+assertTrue(compteCourant.valeurComptable>vieEstudiantine.getValeurComptable());
 
   }
 
