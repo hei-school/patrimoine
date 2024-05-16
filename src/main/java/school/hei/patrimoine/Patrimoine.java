@@ -3,6 +3,7 @@ package school.hei.patrimoine;
 import school.hei.patrimoine.possession.Possession;
 
 import java.time.Instant;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -14,13 +15,23 @@ public record Patrimoine(
     if (possessions.isEmpty()) {
       return 0;
     }
-    throw new NotImplemented();
+    int sommePossessions = 0;
+    for (Possession possessions : possessions) {
+      sommePossessions += possessions.getValeurComptable();
+    }
+    return sommePossessions;
   }
 
   public Patrimoine projectionFuture(Instant tFutur) {
+
+    Set<Possession> PossessionsFuture = new HashSet<>();
+    for (Possession possession : possessions) {
+      PossessionsFuture .add(possession.projectionFuture(tFutur));
+    }
     return new Patrimoine(
         possesseur,
         tFutur,
         possessions.stream().map(p -> p.projectionFuture(tFutur)).collect(toSet()));
+
   }
 }
