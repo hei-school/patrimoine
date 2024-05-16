@@ -32,6 +32,7 @@ public final class TrainDeVie extends Possession {
 
   @Override
   public Possession projectionFuture(Instant tFutur) {
+
     ZonedDateTime nombreDeJourDebut = debut.atZone(ZoneId.systemDefault());
     ZonedDateTime nombreDeJourFin = tFutur.atZone(ZoneId.systemDefault());
 
@@ -39,8 +40,8 @@ public final class TrainDeVie extends Possession {
 
     Argent argentFuture = new Argent(financePar.getNom(), tFutur, (financePar.valeurComptable-depensesMensuelle) / 30 * moyenneDebutFin);
     return new TrainDeVie(getNom(), depensesMensuelle, debut, fin, argentFuture, dateDePonction);
-  }
 
+  }
   public Argent getFinancePar() {
     return financePar;
   }
