@@ -5,6 +5,9 @@ import school.hei.patrimoine.NotImplemented;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.time.temporal.TemporalAmount;
+import java.util.Calendar;
+import java.util.Date;
 
 public final class TrainDeVie extends Possession {
   private final Instant debut;
@@ -41,7 +44,17 @@ public final class TrainDeVie extends Possession {
   }
 
   public int financementsFutur(Instant tFutur) {
-    long nombreDeMois = Duration.between(debut, tFutur).toDays() / 30;
-    return (int) (depensesMensuelle * nombreDeMois);
+    Calendar calendarDebut = Calendar.getInstance();
+    calendarDebut.setTime(Date.from(debut));
+
+    int nombreDeMois = 0;
+    while (calendarDebut.getTime().before(Date.from(tFutur))) {
+      if (calendarDebut.get(Calendar.DAY_OF_MONTH) == dateDePonction) {
+        nombreDeMois++;
+      }
+      calendarDebut.add(Calendar.DATE, 1);
+    }
+
+    return depensesMensuelle * nombreDeMois;
   }
 }
