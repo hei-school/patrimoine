@@ -7,7 +7,7 @@ import school.hei.patrimoine.possession.Possession;
 import school.hei.patrimoine.possession.TrainDeVie;
 
 import java.time.Instant;
-import java.util.HashSet;
+
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -73,5 +73,37 @@ class PatrimoineTest {
     );
     assertEquals(4_200_000, new Patrimoine(ilo,au26juin24, possessions).getValeurComptable());
   }
+  @Test
+  void patrimoine_le_14_juillet_2024() {
+    var ilo = new Personne("Ilo");
+    var au14juillet24 = Instant.parse("2024-07-14T00:00:00.00Z");
+    Set<Possession> possessions = Set.of(
+            new Argent("Espèces", au14juillet24, 400_000),
+            new Argent("Compte epargne", au14juillet24, 200_000),
+            new Argent("Compte courant", au14juillet24, 600_000),
+            new Materiel("Ordinateur", au14juillet24, 2_000_000, -0.10),
+            new Materiel("Vêtements", au14juillet24, 1_000_000, -0.20),
+            new TrainDeVie("Train de vie", 500_000, Instant.parse("2021-10-26T00:00:00.00Z"), au14juillet24, new Argent("Compte courant", au14juillet24, 600_000), 1)
+    );
+    assertEquals(4_200_000, new Patrimoine(ilo, au14juillet24, possessions).getValeurComptable());
+  }
 
+  @Test
+  void argent_sur_compte_courant_le_14_juillet_2024() {
+    var ilo = new Personne("Ilo");
+    var au14juillet24 = Instant.parse("2024-07-14T00:00:00.00Z");
+    Set<Possession> possessions = Set.of(
+            new Argent("Espèces", au14juillet24, 400_000),
+            new Argent("Compte epargne", au14juillet24, 200_000),
+            new Argent("Compte courant", au14juillet24, 600_000),
+            new Materiel("Ordinateur", au14juillet24, 2_000_000, -0.10),
+            new Materiel("Vêtements", au14juillet24, 1_000_000, -0.20),
+            new TrainDeVie("Train de vie", 500_000, Instant.parse("2021-10-26T00:00:00.00Z"), au14juillet24, new Argent("Compte courant", au14juillet24, 600_000), 1));
+    int argentSurCompteCourant = possessions.stream()
+            .filter(p -> p instanceof Argent)
+            .mapToInt(p -> p.getNom().equals("Compte courant") ? p.getValeurComptable() : 0)
+            .sum();
+
+    assertEquals(600_000, argentSurCompteCourant);
+  }
 }
