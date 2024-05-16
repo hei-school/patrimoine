@@ -13,6 +13,12 @@ public sealed abstract class Possession permits
   protected final String nom;
   protected final Instant t;
   protected final int valeurComptable;
+  public Possession(String nom){
+    this.t=null;
+    this.valeurComptable=0;
+    this.nom=nom;
+
+  }
 
   public final int valeurComptableFuture(Instant tFutur) {
     return projectionFuture(tFutur).getValeurComptable();

@@ -18,7 +18,7 @@ public final class TrainDeVie extends Possession {
       Instant fin,
       Argent financePar,
       int dateDePonction) {
-    super(nom, null, 0); //TODO: dirty, redesign
+    super(nom);
     this.debut = debut;
     this.fin = fin;
     this.depensesMensuelle = depensesMensuelle;
@@ -28,6 +28,8 @@ public final class TrainDeVie extends Possession {
 
   @Override
   public Possession projectionFuture(Instant tFutur) {
-    throw new NotImplemented();
+    Argent nouvelleValeurArgent=new Argent(financePar.getNom(), tFutur,financePar.valeurComptableFuture(tFutur));
+
+ return new TrainDeVie(getNom(),depensesMensuelle,debut,fin,nouvelleValeurArgent,dateDePonction);
   }
 }

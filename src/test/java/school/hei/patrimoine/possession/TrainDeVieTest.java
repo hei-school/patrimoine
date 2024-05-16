@@ -21,6 +21,8 @@ class TrainDeVieTest {
         aLaDiplomation,
         compteCourant,
         1);
-    //TODO: assert something useful
+
+    assertTrue(vieEstudiantine.valeurComptable<compteCourant.valeurComptable);
+
   }
 }
