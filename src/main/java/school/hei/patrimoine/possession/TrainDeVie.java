@@ -3,6 +3,9 @@ package school.hei.patrimoine.possession;
 import school.hei.patrimoine.NotImplemented;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 
 public final class TrainDeVie extends Possession {
   private final Instant debut;
@@ -28,6 +31,24 @@ public final class TrainDeVie extends Possession {
 
   @Override
   public Possession projectionFuture(Instant tFutur) {
-  return
+  var moinsEntre = ChronoUnit.MONTHS.between(
+          LocalDateTime.ofInstant(this.debut, ZoneId.of("UTC")),
+          LocalDateTime.ofInstant(tFutur, ZoneId.of("UTC"))
+  );
+  int totalDepenses = depensesMensuelle * (int) moinsEntre;
+  int valeurDisponible = financePar.getValeurComptable() - totalDepenses;
+
+  return new TrainDeVie(
+          this.getNom(),
+          depensesMensuelle,
+          debut,
+          fin,
+          new Argent(
+                  financePar.getNom(),
+                  tFutur,
+                  valeurDisponible
+          ),
+          dateDePonction
+  );
   }
 }
