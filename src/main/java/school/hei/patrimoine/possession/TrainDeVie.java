@@ -10,6 +10,7 @@ import java.time.temporal.ChronoUnit;
 public final class TrainDeVie extends Possession {
   private final Instant debut;
   private final Instant fin;
+  @Getter
   private final int depensesMensuelle;
   private final int dateDePonction;
   @Getter
