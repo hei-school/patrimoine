@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class TrainDeVieTest {
@@ -21,7 +22,7 @@ class TrainDeVieTest {
             compteCourant,
             1);
 
-    assertTrue(compteCourant.valeurComptable>vieEstudiantine.getValeurComptable());
+    assertTrue(compteCourant.getValeurComptable() > vieEstudiantine.getValeurComptable());
   }
 
   @Test
@@ -29,6 +30,17 @@ class TrainDeVieTest {
     var au13mai24 = Instant.parse("2024-05-13T00:00:00.00Z");
     var financeur = new Argent("Espèces", au13mai24, 400_000);
 
-    var trainDeVie = new TrainDeVie(null, 0, null, null, financeur, 0);
+    var trainDeVie = new TrainDeVie("Voyage en train", 200_000,
+            Instant.parse("2024-06-01T00:00:00.00Z"),
+            Instant.parse("2024-06-30T00:00:00.00Z"),
+            financeur,
+            15);
+
+    assertEquals("Voyage en train", trainDeVie.getNom());
+    assertEquals(200_000, trainDeVie.getDepensesMensuelle());
+    assertEquals(Instant.parse("2024-06-01T00:00:00.00Z"), trainDeVie.getDebut());
+    assertEquals(Instant.parse("2024-06-30T00:00:00.00Z"), trainDeVie.getFin());
+    assertEquals(financeur, trainDeVie.getFinancePar());
+    assertEquals(15, trainDeVie.getDateDePonction());
   }
 }
