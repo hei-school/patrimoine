@@ -3,6 +3,9 @@ package school.hei.patrimoine;
 import school.hei.patrimoine.possession.Possession;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public record Patrimoine(
@@ -19,6 +22,11 @@ public record Patrimoine(
   }
 
   public Patrimoine projectionFuture(Instant tFutur) {
-    throw new NotImplemented();
+      Set<Possession> futurePossessions=new HashSet<>();
+
+for(Possession possession:possessions){
+    futurePossessions.add(possession.projectionFuture(tFutur));
+}
+    return new Patrimoine(possesseur,tFutur,futurePossessions);
   }
 }
