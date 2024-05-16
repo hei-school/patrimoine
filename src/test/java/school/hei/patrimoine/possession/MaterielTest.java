@@ -21,4 +21,16 @@ class MaterielTest {
     assertTrue(
             mac.getValeurComptable() > mac.valeurComptableFuture(au26juin24));
   }
+  @Test
+  void autre_mac_apprecie_negativement_dans_le_futur(){
+    var au26Oct21 = Instant.parse("2022-10-26T00:00:00.00Z");
+    var mac = new Materiel(
+            "MacBook Pro",
+            au26Oct21,
+            2_000_000,
+            -0.10);
+    var au26juin24 = Instant.parse("2022-12-26T00:00:00.00Z");
+    assertTrue(
+            mac.getValeurComptable() == mac.valeurComptableFuture(au26juin24));
+  }
 }

@@ -9,7 +9,7 @@ import java.time.ZoneId;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
-
+import static java.util.stream.Collectors.toSet;
 public record Patrimoine(
     Personne possesseur, Instant t, Set<Possession> possessions) {
     public int getValeurComptable() {
@@ -24,9 +24,12 @@ public record Patrimoine(
       return valeurComptable;
     }
     public Patrimoine projectionFuture(Instant tFutur) {
-        return new Patrimoine(possesseur,tFutur,possessions.stream().map(p->p.projectionFuture(tFutur)).collect(Collectors.toSet()));
-    }
-
+    return new Patrimoine(
+        possesseur,
+        tFutur,
+        possessions.stream().map(p -> p.projectionFuture(tFutur)).collect(toSet()));
+  }
 }
+
 
 
