@@ -3,12 +3,17 @@ package school.hei.patrimoine;
 import org.junit.jupiter.api.Test;
 import school.hei.patrimoine.possession.Argent;
 import school.hei.patrimoine.possession.Materiel;
+import school.hei.patrimoine.possession.Possession;
+import school.hei.patrimoine.possession.TrainDeVie;
 
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+
 
 class PatrimoineTest {
 
@@ -54,4 +59,50 @@ class PatrimoineTest {
     assertEquals(valeurAttendueMateriel, valeurComptableFutureMateriel, 0.01);
   }
 
+  // Vérifie que la valeur comptable future avant le début reste égale à la valeur comptable initiale
+  @Test
+  void valeurComptableFuture_AvantDebut_RetourneValeurInitiale() {
+    Instant debut = Instant.parse("2024-01-01T00:00:00Z");
+    TrainDeVie trainDeVie = new TrainDeVie("Test", 1000, debut,
+            Instant.parse("2024-12-31T23:59:59Z"), new Argent("Finance", Instant.now(), 12000), 5);
+
+    int valeurComptable = trainDeVie.valeurComptableFuture(debut.minusSeconds(1));
+
+    assertEquals(trainDeVie.getValeurComptable(), valeurComptable);
+  }
+
+  // Vérifie que la valeur comptable future après le début retourne la valeur correcte après un certain délai
+  @Test
+  void valeurComptableFuture_ApresDebut_RetourneValeurCorrecte() {
+    LocalDate debut = Instant.parse("2024-01-01T00:00:00Z").atZone(ZoneOffset.UTC).toLocalDate();
+    TrainDeVie trainDeVie = new TrainDeVie("Test", 1000,
+            Instant.parse("2024-01-01T00:00:00Z"),
+            Instant.parse("2024-12-31T23:59:59Z"),
+            new Argent("Finance", Instant.now(), 12000),
+            5);
+
+    // Ajoute 3 mois à la date de début pour calculer la valeur comptable future
+    LocalDate futureDate = debut.plus(3, ChronoUnit.MONTHS);
+    int valeurComptable = trainDeVie.valeurComptableFuture(futureDate.atStartOfDay(ZoneOffset.UTC).toInstant());
+
+    assertEquals(9000, valeurComptable);
+  }
+
+  // Vérifie que la projection future retourne une nouvelle instance de TrainDeVie avec les mêmes attributs
+  @Test
+  void projectionFuture_RetourneNouvelleInstanceTrainDeVie() {
+    Instant debut = Instant.parse("2024-01-01T00:00:00Z");
+    TrainDeVie trainDeVie = new TrainDeVie("Test", 1000, debut,
+            Instant.parse("2024-12-31T23:59:59Z"), new Argent("Finance", Instant.now(), 12000), 5);
+
+    Instant futureDate = debut.plus(6, ChronoUnit.MONTHS);
+    Possession futureProjection = trainDeVie.projectionFuture(futureDate);
+
+    assertEquals(trainDeVie.getNom(), futureProjection.getNom());
+    assertEquals(trainDeVie.getDepensesMensuelle(), ((TrainDeVie) futureProjection).getDepensesMensuelle());
+    assertEquals(trainDeVie.getDebut(), ((TrainDeVie) futureProjection).getDebut());
+    assertEquals(trainDeVie.getFin(), ((TrainDeVie) futureProjection).getFin());
+    assertEquals(trainDeVie.getFinancePar(), ((TrainDeVie) futureProjection).getFinancePar());
+    assertEquals(trainDeVie.getDateDePonction(), ((TrainDeVie) futureProjection).getDateDePonction());
+  }
 }
