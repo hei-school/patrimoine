@@ -1,6 +1,7 @@
 package school.hei.patrimoine;
 
 import org.junit.jupiter.api.Test;
+import school.hei.patrimoine.Personne;
 import school.hei.patrimoine.possession.Argent;
 
 import java.time.Instant;

@@ -18,4 +18,8 @@ public record Patrimoine(
     }
     return possessionValeur;
   }
+
+  public Patrimoine projectionFuture(Instant tFutur) {
+    throw new NotImplemented();
+  }
 }

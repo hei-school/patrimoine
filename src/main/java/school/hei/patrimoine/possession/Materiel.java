@@ -22,5 +22,8 @@ public final class Materiel extends Possession {
    int moyenneAnnee = anneeFutur.getYear() - anneePresent.getYear();
 
    return (int) (valeurComptable*(moyenneAnnee*tauxDAppreciationAnnuelle));
+}
+  public Possession projectionFuture(Instant tFutur) {
+    throw new NotImplemented();
   }
 }
