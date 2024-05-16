@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test;
 import java.time.Instant;
 import java.util.Set;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 class TrainDeVieTest {
   @Test
   void train_de_vie_est_finance_par_compte_courant() {
@@ -21,6 +23,14 @@ class TrainDeVieTest {
         compteCourant,
         1);
     //TODO: assert something useful
+    var vieEstudiantines = new TrainDeVie(
+            "Ma super(?) vie d'etudiant",
+            500_000,
+            aLOuvertureDeHEI,
+            aLaDiplomation,
+            compteCourant,
+            1);
+    assertEquals(100_000, vieEstudiantine.projectionFuture(Instant.parse("2024-08-10T00:00:00.00Z")).getFinancePar().valeurComptable);
   }
 
   @Test

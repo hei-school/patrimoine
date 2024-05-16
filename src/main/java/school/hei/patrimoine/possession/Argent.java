@@ -9,31 +9,36 @@ import java.util.Set;
 import static java.util.stream.Collectors.toSet;
 
 public final class Argent extends Possession {
-  private final Set<TrainDeVie> financés;
+    private final Set<TrainDeVie> financés;
 
-  public Argent(String nom, Instant t, int valeurComptable) {
-    this(nom, t, valeurComptable, new HashSet<>());
-  }
+    public Argent(String nom, Instant t, int valeurComptable) {
+        this(nom, t, valeurComptable, new HashSet<>());
+    }
 
-  private Argent(String nom, Instant t, int valeurComptable, Set<TrainDeVie> financés) {
-    super(nom, t, valeurComptable);
-    this.financés = financés;
-  }
+    private Argent(String nom, Instant t, int valeurComptable, Set<TrainDeVie> financés) {
+        super(nom, t, valeurComptable);
+        this.financés = financés;
+    }
 
-  @Override
-  public Argent projectionFuture(Instant tFutur) {
-    return new Argent(
-        nom,
-        tFutur,
-        valeurComptable - financementsFutur(tFutur),
-        financés.stream().map(f -> f.projectionFuture(tFutur)).collect(toSet()));
-  }
+    @Override
+    public Argent projectionFuture(Instant tFutur) {
+        return new Argent(
+                nom,
+                tFutur,
+                valeurComptable - financementsFutur(tFutur),
+                financés.stream().map(f -> f.projectionFuture(tFutur)).collect(toSet()));
+    }
 
-  private int financementsFutur(Instant tFutur) {
-    throw new NotImplemented();
-  }
+    private int financementsFutur(Instant tFutur) {
+        //throw new NotImplemented();
+        int totalDepense = 0;
+        for(TrainDeVie trainDeVie: financés){
+            totalDepense = totalDepense + trainDeVie.getValeurComptable();
+        }
+        return totalDepense;
+    }
 
-  void addFinancés(TrainDeVie trainDeVie) {
-    financés.add(trainDeVie);
-  }
+    void addFinancés(TrainDeVie trainDeVie) {
+        financés.add(trainDeVie);
+    }
 }
