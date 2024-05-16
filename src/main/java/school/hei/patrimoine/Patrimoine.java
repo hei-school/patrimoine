@@ -7,7 +7,6 @@ import java.util.Set;
 
 public record Patrimoine(
     Personne possesseur, Instant t, Set<Possession> possessions) {
-
   public int getValeurComptable() {
     int sommeValeursComptables = 0;
 
@@ -16,5 +15,9 @@ public record Patrimoine(
     }
 
     return sommeValeursComptables;
+  }
+
+  public Patrimoine projectionFuture(Instant tFutur) {
+    throw new NotImplemented();
   }
 }
