@@ -1,19 +1,18 @@
 package school.hei.patrimoine.possession;
 
 import lombok.Getter;
-import school.hei.patrimoine.NotImplemented;
 
 import java.time.Instant;
-import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
 
 @Getter
 public final class TrainDeVie extends Possession {
   private final Instant debut;
   private final Instant fin;
+  @Getter
   private final int depensesMensuelle;
+  @Getter
   private final Argent financePar;
   private final int dateDePonction;
 
