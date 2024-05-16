@@ -22,15 +22,21 @@ public final class Argent extends Possession {
 
   @Override
   public Argent projectionFuture(Instant tFutur) {
+    int futureValue;
+    if (financementsFutur(tFutur) == 0) {
+      futureValue = 0;
+    } else {
+      futureValue = valeurComptable - financementsFutur(tFutur);
+    }
     return new Argent(
         nom,
         tFutur,
-        valeurComptable - financementsFutur(tFutur),
+        futureValue,
         financés.stream().map(f -> f.projectionFuture(tFutur)).collect(toSet()));
   }
 
   private int financementsFutur(Instant tFutur) {
-    throw new NotImplemented();
+    return financés.stream().mapToInt(financé -> financé.projectionFuture(tFutur).getFinancePar().getValeurComptable()).sum();
   }
 
   void addFinancés(TrainDeVie trainDeVie) {
