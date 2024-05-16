@@ -30,7 +30,8 @@ public final class Argent extends Possession {
   }
 
   private int financementsFutur(Instant tFutur) {
-    throw new NotImplemented();
+    int financementsFutursSomme = financés.stream().map(f -> f.valeurComptableFuture(tFutur)).reduce(0, Integer::sum);
+      return financementsFutursSomme;
   }
 
   void addFinancés(TrainDeVie trainDeVie) {
