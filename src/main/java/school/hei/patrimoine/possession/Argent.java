@@ -5,16 +5,36 @@ import school.hei.patrimoine.NotImplemented;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
+import java.util.HashSet;
+import java.util.Set;
+
+import static java.util.stream.Collectors.toSet;
 
 public final class Argent extends Possession {
+  private final Set<TrainDeVie> financés;
+
   public Argent(String nom, Instant t, int valeurComptable) {
-    super(nom, t, valeurComptable);
+    this(nom, t, valeurComptable, new HashSet<>());
   }
 
-  @Override
-  public Possession projectionFuture(Instant tFutur) {
-    ZoneId zoneId = ZoneId.systemDefault();
-    double anneePassee = (double) ChronoUnit.DAYS.between(t.atZone(zoneId), tFutur.atZone(zoneId)) / 365;
-    return new Argent(nom, tFutur, (int) (valeurComptable * anneePassee));
+  private Argent(String nom, Instant t, int valeurComptable, Set<TrainDeVie> financés) {
+    super(nom, t, valeurComptable);
+    this.financés = financés;
+  }
+
+  public Argent projectionFuture(Instant tFutur) {
+    return new Argent(
+        nom,
+        tFutur,
+        valeurComptable - financementsFutur(tFutur),
+        financés.stream().map(f -> f.projectionFuture(tFutur)).collect(toSet()));
+  }
+
+  private int financementsFutur(Instant tFutur) {
+    throw new NotImplemented();
+  }
+
+  void addFinancés(TrainDeVie trainDeVie) {
+    financés.add(trainDeVie);
   }
 }
