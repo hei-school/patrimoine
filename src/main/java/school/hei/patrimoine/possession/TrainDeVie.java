@@ -18,16 +18,19 @@ public final class TrainDeVie extends Possession {
       Instant fin,
       Argent financePar,
       int dateDePonction) {
-    super(nom, debut, depensesMensuelle);
+
+    super(nom, null, 0);
     this.debut = debut;
     this.fin = fin;
     this.depensesMensuelle = depensesMensuelle;
-    this.financePar = financePar;
     this.dateDePonction = dateDePonction;
+
+    this.financePar = financePar;
+    this.financePar.addFinancés(this);
   }
 
   @Override
-  public Possession projectionFuture(Instant tFutur) {
+  public TrainDeVie projectionFuture(Instant tFutur) {
     throw new NotImplemented();
   }
 }
