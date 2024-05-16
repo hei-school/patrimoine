@@ -10,6 +10,7 @@ public final class Argent extends Possession {
   }
 
   @Override
+
   public Possession projectionFuture(Instant tFutur) {
     return new Argent(nom,tFutur,valeurComptable);
 
