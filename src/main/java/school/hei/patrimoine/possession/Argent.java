@@ -1,11 +1,13 @@
 package school.hei.patrimoine.possession;
 
+import lombok.Getter;
+
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
 
 import static java.util.stream.Collectors.toSet;
-
+@Getter
 public final class Argent extends Possession {
   private final Set<TrainDeVie> financés;
 
