@@ -1,8 +1,9 @@
 package school.hei.patrimoine.possession;
 
-import school.hei.patrimoine.NotImplemented;
 
 import java.time.Instant;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 
 public final class TrainDeVie extends Possession {
     private final Instant debut;
@@ -18,7 +19,7 @@ public final class TrainDeVie extends Possession {
       Instant fin,
       Argent financePar,
       int dateDePonction) {
-    super(nom, null, 0);
+    super(nom, null, depensesMensuelle);
     this.debut = debut;
     this.fin = fin;
     this.depensesMensuelle = depensesMensuelle;
@@ -30,6 +31,8 @@ public final class TrainDeVie extends Possession {
 
   @Override
   public TrainDeVie projectionFuture(Instant tFutur) {
-      return new TrainDeVie(nom,depensesMensuelle,debut,fin,financePar.projectionFuture(tFutur),dateDePonction);
+      ZoneId zoneId = ZoneId.systemDefault();
+      double moisPassee = (double) ChronoUnit.DAYS.between(debut.atZone(zoneId), fin.atZone(zoneId)) / 12;
+      return new TrainDeVie(nom, (int) ((int) depensesMensuelle* (moisPassee)),debut,fin, financePar,dateDePonction);
   }
 }
