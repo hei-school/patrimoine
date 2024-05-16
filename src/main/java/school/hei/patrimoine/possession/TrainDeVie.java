@@ -1,12 +1,10 @@
 package school.hei.patrimoine.possession;
 
 import lombok.Getter;
-import school.hei.patrimoine.NotImplemented;
 
 import java.time.Duration;
 import java.time.Instant;
 @Getter
-
 public final class TrainDeVie extends Possession {
   private final Instant debut;
   private final Instant fin;
@@ -15,12 +13,12 @@ public final class TrainDeVie extends Possession {
   private final int dateDePonction;
 
   public TrainDeVie(
-      String nom,
-      int depensesMensuelle,
-      Instant debut,
-      Instant fin,
-      Argent financePar,
-      int dateDePonction) {
+          String nom,
+          int depensesMensuelle,
+          Instant debut,
+          Instant fin,
+          Argent financePar,
+          int dateDePonction) {
     super(nom, null, 0);
     this.debut = debut;
     this.fin = fin;
@@ -33,8 +31,9 @@ public final class TrainDeVie extends Possession {
 
   @Override
   public TrainDeVie projectionFuture(Instant tFutur) {
-    long TotalDepenseDInstant = ((Duration.between(this.debut, tFutur).toDays()/ 30) * this.depensesMensuelle);
-    Argent projectFutur = new Argent(this.financePar.getNom(), tFutur, (int) (this.financePar.valeurComptable-TotalDepenseDInstant));
-    return new TrainDeVie(this.nom, this.depensesMensuelle, this.debut, this.fin, projectFutur, this.dateDePonction);
+    long joursJusquAuFutur = Duration.between(this.debut, tFutur).toDays();
+    long depensesTotales = ((joursJusquAuFutur / 30) * this.depensesMensuelle);
+    Argent projectionFinanciereFutur = new Argent(this.financePar.getNom(), tFutur, (int) (this.financePar.valeurComptable-depensesTotales));
+    return new TrainDeVie(this.nom, this.depensesMensuelle, this.debut, this.fin, projectionFinanciereFutur, this.dateDePonction);
   }
 }
