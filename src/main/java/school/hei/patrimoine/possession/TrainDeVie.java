@@ -51,7 +51,6 @@ public final class TrainDeVie extends Possession {
       return 0;
     }
 
-
     long daysBetween = Duration.between(debut, endDate).toDays();
     int monthsBetween = (int) (daysBetween / 30);
     return monthsBetween * depensesMensuelle;
