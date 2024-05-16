@@ -1,11 +1,12 @@
 package school.hei.patrimoine.possession;
 
-import school.hei.patrimoine.NotImplemented;
+import lombok.Getter;
 
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 
+@Getter
 public final class TrainDeVie extends Possession {
   private final Instant debut;
   private final Instant fin;
@@ -37,10 +38,10 @@ public final class TrainDeVie extends Possession {
 
     int valeurPonction = 0;
 
-    while (debutPonction.isAfter(finPonction)) {
+    while (finPonction.isAfter(debutPonction)) {
       debutPonction = debutPonction.plusDays(1);
 
-      if (finPonction.getDayOfMonth() == dateDePonction) {
+      if (debutPonction.getDayOfMonth() == dateDePonction) {
         valeurPonction += depensesMensuelle;
       }
     }
