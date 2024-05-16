@@ -3,6 +3,9 @@ package school.hei.patrimoine.possession;
 import school.hei.patrimoine.NotImplemented;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 
 public final class TrainDeVie extends Possession {
   private final Instant debut;
@@ -30,6 +33,25 @@ public final class TrainDeVie extends Possession {
 
   @Override
   public TrainDeVie projectionFuture(Instant tFutur) {
-    throw new NotImplemented();
+    Instant tFinance = financePar.getT();
+
+    if (tFutur.isBefore(tFinance)) {
+      throw new RuntimeException("T future provided is before t finance");
+    }
+
+    int remainingCountableValue = financePar.getValeurComptable() - depensesMensuelle;
+
+    return new TrainDeVie(
+            getNom(),
+            depensesMensuelle,
+            debut,
+            fin,
+            new Argent(
+                    financePar.getNom(),
+                    tFutur,
+                    remainingCountableValue
+            ),
+            dateDePonction
+    );
   }
 }

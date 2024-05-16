@@ -15,7 +15,8 @@ class MaterielTest {
         "MacBook Pro",
         au26Oct21,
         2_000_000,
-        -0.10);
+        -0.10
+    );
 
     var au26juin24 = Instant.parse("2024-06-26T00:00:00.00Z");
     assertTrue(
