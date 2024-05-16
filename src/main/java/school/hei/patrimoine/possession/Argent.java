@@ -20,20 +20,22 @@ public final class Argent extends Possession {
     this.financés = financés;
   }
 
+  private int financementsFutur(Instant tFutur) {
+    return financés.stream().mapToInt(f -> this.valeurComptable - f.projectionFuture(tFutur).getFinancePar().getValeurComptable()).sum();
+  }
+
   @Override
   public Argent projectionFuture(Instant tFutur) {
     return new Argent(
-        nom,
-        tFutur,
-        valeurComptable - financementsFutur(tFutur),
-        financés.stream().map(f -> f.projectionFuture(tFutur)).collect(toSet()));
+            nom,
+            tFutur,
+            valeurComptable - financementsFutur(tFutur),
+            financés.stream().map(f->f.projectionFuture(tFutur)).collect(toSet())
+    );
+    }
+
+    void addFinancés (TrainDeVie trainDeVie){
+      financés.add(trainDeVie);
+    }
   }
 
-  private int financementsFutur(Instant tFutur) {
-    throw new NotImplemented();
-  }
-
-  void addFinancés(TrainDeVie trainDeVie) {
-    financés.add(trainDeVie);
-  }
-}
