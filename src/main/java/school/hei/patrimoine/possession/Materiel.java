@@ -13,7 +13,7 @@ public final class Materiel extends Possession {
   }
 
   @Override
-  public int valeurComptableFuture(Instant tFutur) {
+  public Possession projectionFuture(Instant tFutur) {
     throw new NotImplemented();
   }
 }
