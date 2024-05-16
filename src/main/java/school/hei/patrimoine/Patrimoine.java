@@ -15,7 +15,9 @@ public record Patrimoine(
       if (possessions.isEmpty()) {
         return 0;
       }
-      return possessions.stream().mapToInt(Possession::getValeurComptable).sum();
+      return possessions.stream()
+                        .mapToInt(Possession::getValeurComptable)
+                        .sum();
     }
     catch (Exception e){
       throw new NotImplemented();
