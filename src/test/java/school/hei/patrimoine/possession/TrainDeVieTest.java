@@ -3,7 +3,8 @@ package school.hei.patrimoine.possession;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
-import java.util.Set;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class TrainDeVieTest {
   @Test
@@ -20,7 +21,11 @@ class TrainDeVieTest {
         aLaDiplomation,
         compteCourant,
         1);
-    //TODO: assert something useful
+    var au1janvier26 = Instant.parse("2026-01-01T00:00:00.00Z");
+    assertTrue(compteCourant.getValeurComptable() > vieEstudiantine
+            .projectionFuture(au1janvier26)
+            .getFinancePar()
+            .getValeurComptable());
   }
 
   @Test
