@@ -46,9 +46,25 @@ class PatrimoineTest {
     var au13mai24 = Instant.parse("2024-05-13T00:00:00.00Z");
     var financeur = new Argent("Espèces", au13mai24, 400_000);
 
-    var trainDeVie = new TrainDeVie(null, 0, null, null, financeur, 0);
+    var debutTrainDeVie = Instant.parse("2024-05-01T00:00:00.00Z");
+    var finTrainDeVie = Instant.parse("2024-12-31T00:00:00.00Z");
+    var depensesMensuelles = 2000;
+    var dateDePonction = 1;
+
+    var trainDeVie =
+        new TrainDeVie(
+            "TrainDeVie",
+            depensesMensuelles,
+            debutTrainDeVie,
+            finTrainDeVie,
+            financeur,
+            dateDePonction);
 
     var patrimoineIloAu13mai24 = new Patrimoine(ilo, au13mai24, Set.of(financeur, trainDeVie));
+
+    assertTrue(patrimoineIloAu13mai24.possessions().contains(financeur));
+    assertTrue(patrimoineIloAu13mai24.possessions().contains(trainDeVie));
+    assertEquals(financeur, trainDeVie.getFinancePar());
   }
 
   @Test
