@@ -19,7 +19,7 @@ public final class Materiel extends Possession {
    ZonedDateTime anneeFutur = tFutur.atZone(ZoneId.systemDefault());
    ZonedDateTime anneePresent = t.atZone(ZoneId.systemDefault());
 
-   int moyenneAnnee = anneeFutur.getYear() - anneePresent.getYear();
+   double moyenneAnnee = anneeFutur.getYear() - anneePresent.getYear();
 
    return (int) (valeurComptable*(moyenneAnnee*tauxDAppreciationAnnuelle));
 }

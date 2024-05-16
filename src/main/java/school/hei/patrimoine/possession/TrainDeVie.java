@@ -38,8 +38,8 @@ public final class TrainDeVie extends Possession {
 
     int moyenneDebutFin = nombreDeJourFin.getDayOfMonth() - nombreDeJourDebut.getDayOfMonth();
 
-    Argent argentFuture = new Argent(financePar.getNom(), tFutur, (financePar.valeurComptable-depensesMensuelle) / 30 * moyenneDebutFin);
-    return new TrainDeVie(getNom(), depensesMensuelle, debut, fin, argentFuture, dateDePonction);
+    Argent argentFuture = new Argent(financePar.nom, tFutur, (financePar.valeurComptable-depensesMensuelle) / 30 * moyenneDebutFin);
+    return new TrainDeVie(nom, depensesMensuelle, debut, fin, argentFuture, dateDePonction);
 
   }
   public Argent getFinancePar() {
