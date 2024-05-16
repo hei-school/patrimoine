@@ -45,8 +45,9 @@ class PatrimoineTest {
 
     var au13mai24 = Instant.parse("2024-05-13T00:00:00.00Z");
     var financeur = new Argent("Espèces", au13mai24, 400_000);
+    var datePonction = Instant.parse("2024-06-13T00:00:00.00Z");
 
-    var trainDeVie = new TrainDeVie(null, 0, null, null, financeur, 0);
+    var trainDeVie = new TrainDeVie(null, 0, null, null, financeur, datePonction);
 
     var patrimoineIloAu13mai24 = new Patrimoine(
         ilo,

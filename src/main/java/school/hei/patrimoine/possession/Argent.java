@@ -30,7 +30,16 @@ public final class Argent extends Possession {
   }
 
   private int financementsFutur(Instant tFutur) {
-    throw new NotImplemented();
+    var argent_etudiant = new Argent(nom,t,valeurComptable);
+    var vie_etudiant = new TrainDeVie(
+            nom,
+            valeurComptable,
+            t,
+            tFutur,
+            argent_etudiant,
+            tFutur
+    );
+    return vie_etudiant.getDepensesMensuelle();
   }
 
   void addFinancés(TrainDeVie trainDeVie) {

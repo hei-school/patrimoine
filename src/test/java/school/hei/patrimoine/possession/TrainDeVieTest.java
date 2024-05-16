@@ -13,13 +13,14 @@ class TrainDeVieTest {
 
     var aLOuvertureDeHEI = Instant.parse("2021-10-26T00:00:00.00Z");
     var aLaDiplomation = Instant.parse("2024-12-26T00:00:00.00Z");
+    var datePonction = Instant.parse("2024-06-13T00:00:00.00Z");
     var vieEstudiantine = new TrainDeVie(
         "Ma super(?) vie d'etudiant",
         500_000,
         aLOuvertureDeHEI,
         aLaDiplomation,
         compteCourant,
-        1);
+        datePonction);
     //TODO: assert something useful
   }
 
@@ -27,7 +28,8 @@ class TrainDeVieTest {
   void un_train_de_vie_financé_par_argent() {
     var au13mai24 = Instant.parse("2024-05-13T00:00:00.00Z");
     var financeur = new Argent("Espèces", au13mai24, 400_000);
+    var datePonction = Instant.parse("2024-06-13T00:00:00.00Z");
 
-    var trainDeVie = new TrainDeVie(null, 0, null, null, financeur, 0);
+    var trainDeVie = new TrainDeVie(null, 0, null, null, financeur, datePonction);
   }
 }
