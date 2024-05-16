@@ -1,9 +1,12 @@
 package school.hei.patrimoine.possession;
 
 
+import lombok.Getter;
+
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
+@Getter
 public final class TrainDeVie extends Possession {
   private final Instant debut;
   private final Instant fin;
