@@ -1,6 +1,6 @@
 package school.hei.patrimoine.possession;
 
-import school.hei.patrimoine.NotImplemented;
+
 
 import java.time.Instant;
 import java.util.HashSet;
@@ -30,7 +30,9 @@ public final class Argent extends Possession {
   }
 
   private int financementsFutur(Instant tFutur) {
-    throw new NotImplemented();
+    return financés.stream()
+            .mapToInt(f -> f.projectionFuture(tFutur).getValeurComptable() - valeurComptable)
+            .sum();
   }
 
   void addFinancés(TrainDeVie trainDeVie) {
