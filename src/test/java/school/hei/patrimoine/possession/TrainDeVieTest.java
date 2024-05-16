@@ -37,7 +37,6 @@ class TrainDeVieTest {
     var trainDeVie = new TrainDeVie("Cours", 10_000, debut, fin, financeur, 1);
 
     var projectionDate = Instant.parse("2024-12-31T00:00:00.00Z");
-
     assertEquals(280_000, trainDeVie.projectionFuture(projectionDate).getFinancePar().getValeurComptable());
   }
 }

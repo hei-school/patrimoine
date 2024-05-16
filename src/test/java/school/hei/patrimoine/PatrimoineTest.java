@@ -8,6 +8,7 @@ import java.time.Instant;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PatrimoineTest {
 
@@ -45,12 +46,19 @@ class PatrimoineTest {
 
     var au13mai24 = Instant.parse("2024-05-13T00:00:00.00Z");
     var financeur = new Argent("Espèces", au13mai24, 400_000);
+    var debut = Instant.parse("2024-01-01T00:00:00.00Z");
+    var fin = Instant.parse("2025-01-01T00:00:00.00Z");
 
-    var trainDeVie = new TrainDeVie(null, 0, null, null, financeur, 0);
+    var trainDeVie = new TrainDeVie("Vacance tous les mois", 120_000, debut, fin, financeur, 1);
 
     var patrimoineIloAu13mai24 = new Patrimoine(
         ilo,
         au13mai24,
         Set.of(financeur, trainDeVie));
+
+    var projectionDate = Instant.parse("2024-12-01T00:00:00.00Z");
+    var patrimoineIloProjection = patrimoineIloAu13mai24.projectionFuture(projectionDate);
+
+    assertTrue(patrimoineIloProjection.getValeurComptable() < patrimoineIloAu13mai24.getValeurComptable());
   }
 }
