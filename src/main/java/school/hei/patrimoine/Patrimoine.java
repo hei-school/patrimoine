@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 import static java.util.stream.Collectors.toSet;
 
 public record Patrimoine(
-    Personne possesseur, Instant t, Set<Possession> possessions) {
+        Personne possesseur, Instant t, Set<Possession> possessions) {
 
   public int getValeurComptable() {
     if (possessions.isEmpty()) {
@@ -21,14 +21,11 @@ public record Patrimoine(
     }
     return possessionValeur;
   }
+
   public Patrimoine projectionFuture(Instant tFutur) {
     return new Patrimoine(
-        possesseur,
-        tFutur,
-        possessions.stream().map(p -> p.projectionFuture(tFutur)).collect(toSet()));
             possesseur,
             tFutur,
             possessions.stream().map(p -> p.projectionFuture(tFutur)).collect(toSet()));
-    }
   }
 }
