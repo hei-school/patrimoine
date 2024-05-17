@@ -1,12 +1,18 @@
 package school.hei.patrimoine.possession;
 
+import lombok.Getter;
 import school.hei.patrimoine.NotImplemented;
 
+import java.time.Duration;
 import java.time.Instant;
+import java.time.temporal.TemporalAmount;
+import java.util.Calendar;
+import java.util.Date;
 
 public final class TrainDeVie extends Possession {
   private final Instant debut;
   private final Instant fin;
+  @Getter
   private final int depensesMensuelle;
   private final Argent financePar;
   private final int dateDePonction;
@@ -30,6 +36,25 @@ public final class TrainDeVie extends Possession {
 
   @Override
   public TrainDeVie projectionFuture(Instant tFutur) {
-    throw new NotImplemented();
+    return new TrainDeVie(this.nom, this.depensesMensuelle, this.debut, this.fin, this.financePar, this.dateDePonction);
+  }
+
+  TrainDeVie projectionFuture(Instant tFutur, Argent nouveauFinancement) {
+    return new TrainDeVie(this.nom, this.depensesMensuelle, this.debut, this.fin, nouveauFinancement, this.dateDePonction);
+  }
+
+  public int financementsFutur(Instant tFutur) {
+    Calendar calendarDebut = Calendar.getInstance();
+    calendarDebut.setTime(Date.from(debut));
+
+    int nombreDeMois = 0;
+    while (calendarDebut.getTime().before(Date.from(tFutur))) {
+      if (calendarDebut.get(Calendar.DAY_OF_MONTH) == dateDePonction) {
+        nombreDeMois++;
+      }
+      calendarDebut.add(Calendar.DATE, 1);
+    }
+
+    return depensesMensuelle * nombreDeMois;
   }
 }
