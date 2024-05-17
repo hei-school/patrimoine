@@ -1,9 +1,11 @@
 package school.hei.patrimoine.possession;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.time.Duration;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
-import java.util.Set;
 
 class TrainDeVieTest {
   @Test
@@ -20,7 +22,28 @@ class TrainDeVieTest {
         aLaDiplomation,
         compteCourant,
         1);
-    //TODO: assert something useful
+
+    assertEquals(compteCourant, vieEstudiantine.getFinancePar());
+
+    assertTrue(compteCourant.getFinances().contains(vieEstudiantine));
+  }
+
+  @Test
+  void train_de_vie_projection_future() {
+    Instant debutActuel = Instant.parse("2024-05-01T00:00:00.00Z");
+    Instant finActuelle = Instant.parse("2024-06-01T00:00:00.00Z");
+    Argent compteCourant = new Argent("Compte courant", Instant.now(), 1000000);
+    TrainDeVie trainDeVie = new TrainDeVie("Voyage", 5000, debutActuel, finActuelle, compteCourant, 1);
+
+    Instant instantFutur = Instant.parse("2024-07-01T00:00:00.00Z");
+
+    TrainDeVie trainDeVieProjection = trainDeVie.projectionFuture(instantFutur);
+
+    Instant nouveauDebutAttendu = debutActuel.plus(Duration.between(debutActuel, instantFutur));
+    Instant nouveauFinAttendu = finActuelle.plus(Duration.between(finActuelle, instantFutur));
+
+    assertEquals(nouveauDebutAttendu, trainDeVieProjection.getDebut());
+    assertEquals(nouveauFinAttendu, trainDeVieProjection.getFin());
   }
 
   @Test
