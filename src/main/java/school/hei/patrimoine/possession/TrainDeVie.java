@@ -1,10 +1,14 @@
 package school.hei.patrimoine.possession;
 
+import lombok.Getter;
+import lombok.ToString;
+
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
-
+@ToString
+@Getter
 public final class TrainDeVie extends Possession {
     private final Instant debut;
     private final Instant fin;
@@ -35,8 +39,10 @@ public final class TrainDeVie extends Possession {
                 LocalDateTime.ofInstant(this.debut, ZoneId.of("UTC")),
                 LocalDateTime.ofInstant(tFutur, ZoneId.of("UTC"))
         );
-        var totalDepenses = depensesMensuelle * (int) anneesEntre;
+        var totalDepenses = depensesMensuelle * (int) (anneesEntre + 1);
         var valeurDisponible = financePar.getValeurComptable() - totalDepenses;
+
+
         var argent = new Argent(
                 financePar.getNom(),
                 tFutur,

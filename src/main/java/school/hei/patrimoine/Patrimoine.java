@@ -1,5 +1,6 @@
 package school.hei.patrimoine;
 
+import school.hei.patrimoine.possession.Argent;
 import school.hei.patrimoine.possession.Possession;
 
 import java.time.Instant;
@@ -26,4 +27,12 @@ public record Patrimoine(Personne possesseur, Instant t, Set<Possession> possess
                 possessions.stream().map(p -> p.projectionFuture(tFutur)).collect(toSet()));
     }
 
+    public int getMontantCompteCourant() {
+        for (var possession :possessions()) {
+            if (possession instanceof Argent && "Compte Courant".equals(possession.getNom())) {
+                return possession.getValeurComptable();
+            }
+        }
+        return 0;
+    }
 }
