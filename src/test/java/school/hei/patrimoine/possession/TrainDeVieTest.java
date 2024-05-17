@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
 import java.util.Set;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class TrainDeVieTest {
   @Test
@@ -24,10 +25,23 @@ class TrainDeVieTest {
   }
 
   @Test
-  void un_train_de_vie_financé_par_argent() {
+  void projectionFuture() {
     var au13mai24 = Instant.parse("2024-05-13T00:00:00.00Z");
-    var financeur = new Argent("Espèces", au13mai24, 400_000);
-
-    var trainDeVie = new TrainDeVie(null, 0, null, null, financeur, 0);
+    Instant aLOuvertureDeHEI = Instant.parse("2021-10-26T00:00:00.00Z");
+    Instant aLaDiplomation = Instant.parse("2024-12-26T00:00:00.00Z");
+    Instant apresLaDiplomation = Instant.parse("2025-12-26T00:00:00.00Z");
+    Instant unMoisApresOuvertureDeHEI = Instant.parse("2021-11-26T00:00:00.00Z");
+    Instant avantLaDateDePonction = Instant.parse("2021-11-01T00:00:00.00Z");
+    Argent compteCourant = new Argent("Compte courant", au13mai24, 600_000);
+    TrainDeVie vieEstudiantine = new TrainDeVie(
+            "Ma super(?) vie d'etudiant",
+            500_000,
+            aLOuvertureDeHEI,
+            aLaDiplomation,
+            compteCourant,
+            1);
+    assertEquals(0, vieEstudiantine.projectionFuture(apresLaDiplomation).getDepensesMensuelle());
+    assertEquals(100_000, vieEstudiantine.projectionFuture(unMoisApresOuvertureDeHEI).getFinancePar().getValeurComptable());
+    assertEquals(600_000, vieEstudiantine.projectionFuture(avantLaDateDePonction).getFinancePar().getValeurComptable());
   }
 }
