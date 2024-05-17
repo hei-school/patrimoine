@@ -30,6 +30,12 @@ public final class TrainDeVie extends Possession {
 
   @Override
   public TrainDeVie projectionFuture(Instant tFutur) {
-    throw new NotImplemented();
+    LocalDate moisDebut = debut.atZone(ZoneId.systemDefault()).toLocalDate();
+    LocalDate moisFin = fin.atZone(ZoneId.systemDefault()).toLocalDate();
+    Period duree = Period.between(moisDebut, moisFin);
+    int dureeEnMois = duree.getMonths();
+    int depenses = depensesMensuelle * dureeEnMois;
+
+    return new TrainDeVie(getNom(), depenses, debut, tFutur, financePar, dateDePonction);
   }
 }
