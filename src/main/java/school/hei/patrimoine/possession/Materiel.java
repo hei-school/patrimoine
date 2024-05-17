@@ -17,7 +17,8 @@ public final class Materiel extends Possession {
     ZonedDateTime dateFin = tFutur.atZone(ZoneId.systemDefault());
     int nombreDeJour = (int) ChronoUnit.DAYS.between(dateDebut, dateFin);
 
-    double facteurJournalier = 1 + (tauxDAppreciationAnnuelle / 365.2524);
+    double nombreDeJourDansLAnnee = 365.2524;
+    double facteurJournalier = 1 + (tauxDAppreciationAnnuelle / nombreDeJourDansLAnnee);
     double valeurFuture = getValeurComptable() * Math.pow(facteurJournalier, nombreDeJour);
     int valeurFinal = (int) Math.round(valeurFuture);
 
