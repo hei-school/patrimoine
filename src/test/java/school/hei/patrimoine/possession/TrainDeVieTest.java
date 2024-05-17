@@ -3,7 +3,6 @@ package school.hei.patrimoine.possession;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
@@ -16,12 +15,12 @@ class TrainDeVieTest {
     var aLOuvertureDeHEI = Instant.parse("2021-10-26T00:00:00.00Z");
     var aLaDiplomation = Instant.parse("2024-12-26T00:00:00.00Z");
     var vieEstudiantine = new TrainDeVie(
-        "Ma super(?) vie d'etudiant",
-        500_000,
-        aLOuvertureDeHEI,
-        aLaDiplomation,
-        compteCourant,
-        1);
+            "Ma super(?) vie d'etudiant",
+            500_000,
+            aLOuvertureDeHEI,
+            aLaDiplomation,
+            compteCourant,
+            1);
 
     //TODO: assert something useful
     assertEquals(100_000, compteCourant.getValeurComptable() - vieEstudiantine.getDepensesMensuelle());
@@ -31,9 +30,11 @@ class TrainDeVieTest {
   void un_train_de_vie_financé_par_argent() {
     var au13mai24 = Instant.parse("2024-05-13T00:00:00.00Z");
     var financeur = new Argent("Espèces", au13mai24, 400_000);
+    var debut = Instant.parse("2024-01-01T00:00:00.00Z");
+    var fin = Instant.parse("2025-01-01T00:00:00.00Z");
+    var trainDeVie = new TrainDeVie("Cours", 10_000, debut, fin, financeur, 1);
 
-    var trainDeVie = new TrainDeVie(null, 0, null, null, financeur, 0);
+    var projectionDate = Instant.parse("2024-12-31T00:00:00.00Z");
+    assertEquals(290_000, trainDeVie.projectionFuture(projectionDate).getFinancePar().getValeurComptable());
   }
-
-
 }

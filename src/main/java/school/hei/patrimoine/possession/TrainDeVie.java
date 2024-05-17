@@ -2,24 +2,28 @@ package school.hei.patrimoine.possession;
 
 import lombok.Getter;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 
-@Getter
 
 public final class TrainDeVie extends Possession {
   private final Instant debut;
   private final Instant fin;
+  @Getter
   private final int depensesMensuelle;
+  @Getter
   private final Argent financePar;
   private final int dateDePonction;
+  private static final ZoneId defaultZoneId = ZoneId.systemDefault();
 
   public TrainDeVie(
-      String nom,
-      int depensesMensuelle,
-      Instant debut,
-      Instant fin,
-      Argent financePar,
-      int dateDePonction) {
+          String nom,
+          int depensesMensuelle,
+          Instant debut,
+          Instant fin,
+          Argent financePar,
+          int dateDePonction) {
     super(nom, null, 0);
     this.debut = debut;
     this.fin = fin;
@@ -30,15 +34,28 @@ public final class TrainDeVie extends Possession {
     this.financePar.addFinancés(this);
   }
 
-    public TrainDeVie projectionFuture(Instant tFutur) {
-      double dureeMois = ChronoUnit.MONTHS.between(debut, tFutur);
-      int totalDepenses = (int) dureeMois * depensesMensuelle;
+  @Override
+  public TrainDeVie projectionFuture(Instant tFutur) {
+    LocalDate dateDebut = debut.atZone(defaultZoneId).toLocalDate();
+    LocalDate dateFin = tFutur.atZone(defaultZoneId).toLocalDate();
+    int totalMonths = (int) ChronoUnit.MONTHS.between(dateDebut, dateFin);
+    int totalDepenses = depensesMensuelle * totalMonths;
 
-      return new TrainDeVie(this.nom,
-              this.depensesMensuelle,
-              this.debut,
-              this.fin,
-              financePar,
-              this.dateDePonction);
-    }
+
+    Argent projectionFuturArgent = new Argent(
+            this.financePar.getNom(),
+            tFutur,
+            this.financePar.getValeurComptable() - totalDepenses
+    );
+
+
+    return new TrainDeVie(
+            this.nom,
+            this.depensesMensuelle,
+            this.debut,
+            this.fin,
+            projectionFuturArgent,
+            this.dateDePonction
+    );
   }
+}
