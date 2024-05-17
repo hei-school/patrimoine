@@ -1,9 +1,10 @@
 package school.hei.patrimoine.possession;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
-import java.util.Set;
 
 class TrainDeVieTest {
   @Test
@@ -20,7 +21,10 @@ class TrainDeVieTest {
         aLaDiplomation,
         compteCourant,
         1);
-    //TODO: assert something useful
+
+    assertEquals(compteCourant, vieEstudiantine.getFinancePar());
+
+    assertTrue(compteCourant.getFinances().contains(vieEstudiantine));
   }
 
   @Test
