@@ -1,6 +1,7 @@
 package school.hei.patrimoine;
 
 import org.junit.jupiter.api.Test;
+import school.hei.patrimoine.Personne;
 import school.hei.patrimoine.possession.Argent;
 import school.hei.patrimoine.possession.TrainDeVie;
 
@@ -36,7 +37,8 @@ class PatrimoineTest {
             new Argent("Compte epargne", au13mai24, 200_000),
             new Argent("Compte courant", au13mai24, 600_000)));
 
-    assertEquals(1_200_000, patrimoineIloAu13mai24.getValeurComptable());
+    assertEquals(1_200_000,
+            patrimoineIloAu13mai24.getValeurComptable());
   }
 
   @Test
