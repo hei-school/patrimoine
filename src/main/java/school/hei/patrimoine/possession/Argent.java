@@ -1,11 +1,8 @@
 package school.hei.patrimoine.possession;
 
-import school.hei.patrimoine.NotImplemented;
-
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
-
 import static java.util.stream.Collectors.toSet;
 
 public final class Argent extends Possession {
@@ -21,7 +18,7 @@ public final class Argent extends Possession {
   }
 
   @Override
-  public Argent projectionFuture(Instant tFutur) {
+  public Argent projectionFuture (Instant tFutur) {
     return new Argent(
         nom,
         tFutur,
@@ -30,10 +27,11 @@ public final class Argent extends Possession {
   }
 
   private int financementsFutur(Instant tFutur) {
-    throw new NotImplemented();
+    return financés.stream()
+            .mapToInt(f -> valeurComptable - f.projectionFuture(tFutur).getFinancePar().getValeurComptable())
+            .sum();
   }
-
-  void addFinancés(TrainDeVie trainDeVie) {
+  void addFinancés (TrainDeVie trainDeVie) {
     financés.add(trainDeVie);
   }
 }
