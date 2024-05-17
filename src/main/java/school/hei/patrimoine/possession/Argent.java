@@ -2,7 +2,11 @@ package school.hei.patrimoine.possession;
 
 import school.hei.patrimoine.NotImplemented;
 
+import java.time.Duration;
 import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -30,8 +34,19 @@ public final class Argent extends Possession {
   }
 
   private int financementsFutur(Instant tFutur) {
-    throw new NotImplemented();
+    int totalFinancements = 0;
+    for (TrainDeVie trainDeVie : financés) {
+      Instant end = trainDeVie.getFin().isBefore(tFutur) ? trainDeVie.getFin() : tFutur;
+
+      ZonedDateTime debutZoned = trainDeVie.getDebut().atZone(ZoneId.systemDefault());
+      ZonedDateTime finZoned = end.atZone(ZoneId.systemDefault());
+      int monthsBetween = (int) Duration.between(debutZoned, finZoned).toDays() / 30;
+
+      totalFinancements += trainDeVie.getDepensesMensuelle() * monthsBetween;
+    }
+    return totalFinancements;
   }
+
 
   void addFinancés(TrainDeVie trainDeVie) {
     financés.add(trainDeVie);
