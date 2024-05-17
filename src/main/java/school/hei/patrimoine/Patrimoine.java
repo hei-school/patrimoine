@@ -13,8 +13,11 @@ public record Patrimoine(
   public int getValeurComptable() {
     if (possessions.isEmpty()) {
       return 0;
+    }else {
+      return possessions.stream()
+              .mapToInt(Possession::getValeurComptable)
+              .sum();
     }
-    throw new NotImplemented();
   }
 
   public Patrimoine projectionFuture(Instant tFutur) {

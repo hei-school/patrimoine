@@ -11,6 +11,12 @@ public final class Materiel extends Possession {
     super(nom, t, valeurComptable);
     this.tauxDAppreciationAnnuelle = tauxDAppreciationAnnuelle;
   }
+  public int valeurComptableFuture(Instant tFutur) {
+    long monthsBetween = tFutur.toEpochMilli() - t.toEpochMilli();
+    double depreciation = Math.pow(tauxDAppreciationAnnuelle, monthsBetween / (30.0 * 24 * 60 * 60 * 1000));
+
+    return (int) (valeurComptable / depreciation);
+  }
 
   @Override
   public Possession projectionFuture(Instant tFutur) {
