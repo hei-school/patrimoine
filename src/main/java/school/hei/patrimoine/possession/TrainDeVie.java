@@ -32,7 +32,7 @@ public final class TrainDeVie extends Possession {
   }
 
   @Override
-  public Possession projectionFuture(Instant tFutur) {
+  public TrainDeVie projectionFuture(Instant tFutur) {
   var moinsEntre = ChronoUnit.MONTHS.between(
           LocalDateTime.ofInstant(this.debut, ZoneId.of("UTC")),
           LocalDateTime.ofInstant(tFutur, ZoneId.of("UTC"))

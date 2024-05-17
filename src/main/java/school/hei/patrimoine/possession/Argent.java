@@ -1,14 +1,15 @@
 package school.hei.patrimoine.possession;
 
+import lombok.Getter;
 import school.hei.patrimoine.NotImplemented;
 
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toSet;
 
+@Getter
 public final class Argent extends Possession {
   private final Set<TrainDeVie> financés;
 
@@ -23,12 +24,11 @@ public final class Argent extends Possession {
 
   @Override
   public Argent projectionFuture(Instant tFutur) {
-    Set<TrainDeVie> financéFuturs = new HashSet<>(financés);
     return new Argent(
             nom,
             tFutur,
             valeurComptable - financementsFutur(tFutur),
-            financéFuturs.stream().map(f -> f.projectionFuture(tFutur)).collect(toSet())
+            financés.stream().map(f -> f.projectionFuture(tFutur)).collect(toSet())
     );
   }
 
