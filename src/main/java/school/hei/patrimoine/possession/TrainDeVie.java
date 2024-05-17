@@ -1,6 +1,5 @@
 package school.hei.patrimoine.possession;
 
-import school.hei.patrimoine.NotImplemented;
 import lombok.Getter;
 
 import java.time.Instant;
@@ -25,16 +24,18 @@ public final class TrainDeVie extends Possession {
           Instant fin,
           Argent financePar,
           int dateDePonction) {
-    super(nom, null, 0); //TODO: dirty, redesign
+    super(nom, null, 0);
     this.debut = debut;
     this.fin = fin;
     this.depensesMensuelle = depensesMensuelle;
-    this.financePar = financePar;
     this.dateDePonction = dateDePonction;
+
+    this.financePar = financePar;
+    this.financePar.addFinancés(this);
   }
 
   @Override
-  public Possession projectionFuture(Instant tFutur) {
+  public TrainDeVie projectionFuture(Instant tFutur) {
     boolean tFuturEstApresFin = tFutur.isAfter(fin);
     LocalDate debutPonctionnement = LocalDate.ofInstant(debut, defaultZoneId);
     LocalDate finPonctionnement = LocalDate.ofInstant(tFuturEstApresFin ? fin : tFutur, defaultZoneId);
@@ -42,6 +43,7 @@ public final class TrainDeVie extends Possession {
             debutPonctionnement.withDayOfMonth(1),
             finPonctionnement.withDayOfMonth(1)
     );
+
     if(finPonctionnement.getDayOfMonth() < dateDePonction)
       nombreMoisEntreTetTFutur--;
 
