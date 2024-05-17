@@ -20,7 +20,10 @@ class TrainDeVieTest {
         aLaDiplomation,
         compteCourant,
         1);
-    //TODO: assert something useful
+    assertEquals("Compte courant", vieEstudiantine.getFinancePar().getNom());
+        assertEquals(600_000, vieEstudiantine.getFinancePar().getMontant());
+        assertEquals(aLOuvertureDeHEI, vieEstudiantine.getDebut());
+        assertEquals(500_000, vieEstudiantine.getDepensesMensuelle());
   }
 
   @Test
