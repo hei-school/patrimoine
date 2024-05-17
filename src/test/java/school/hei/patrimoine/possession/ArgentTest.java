@@ -2,6 +2,8 @@ package school.hei.patrimoine.possession;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.time.Instant;
+import java.util.HashSet;
+import java.util.Set;
 import org.junit.jupiter.api.Test;
 
 public class ArgentTest {
@@ -35,5 +37,26 @@ public class ArgentTest {
     assertEquals(valeurComptableAttendue, projetCompteurCourant.getValeurComptable());
   }
 
+  @Test
+  void testFinancementsFutur() {
+    Set<TrainDeVie> finances = new HashSet<>();
+
+    Argent argent = new Argent("Argent", Instant.now(), 5000);
+    TrainDeVie trainDeVie1 = new TrainDeVie("Train 1", 1000, Instant.parse("2022-01-01T00:00:00Z"), Instant.parse("2023-01-01T00:00:00Z"), argent, 0);
+    finances.add(trainDeVie1);
+
+    TrainDeVie trainDeVie2 = new TrainDeVie("Train 2", 2000, Instant.parse("2022-01-01T00:00:00Z"), Instant.parse("2022-12-31T00:00:00Z"), argent, 0);
+    finances.add(trainDeVie2);
+
+    Argent argentAvecFinances = new Argent("Argent avec finances", Instant.now(), 10000, finances);
+
+    Instant tFutur = Instant.parse("2025-01-01T00:00:00Z");
+
+    int sommeFinancements = argentAvecFinances.financementsFutur(tFutur);
+
+    int sommeAttendue = trainDeVie1.getDepensesMensuelle() + trainDeVie2.getDepensesMensuelle();
+
+    assertEquals(sommeAttendue, sommeFinancements);
+  }
 
 }
