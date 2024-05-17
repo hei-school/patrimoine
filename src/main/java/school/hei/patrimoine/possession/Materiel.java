@@ -1,8 +1,7 @@
 package school.hei.patrimoine.possession;
 
-import school.hei.patrimoine.NotImplemented;
-
-import java.time.Instant;
+import java.time.*;
+import java.time.temporal.ChronoUnit;
 
 public final class Materiel extends Possession {
   private final double tauxDAppreciationAnnuelle;
@@ -14,6 +13,15 @@ public final class Materiel extends Possession {
 
   @Override
   public Possession projectionFuture(Instant tFutur) {
-    throw new NotImplemented();
+    ZonedDateTime dateDebut = this.t.atZone(ZoneId.systemDefault());
+    ZonedDateTime dateFin = tFutur.atZone(ZoneId.systemDefault());
+    int nombreDeJour = (int) ChronoUnit.DAYS.between(dateDebut, dateFin);
+
+    double nombreDeJourDansLAnnee = 365.2524;
+    double facteurJournalier = 1 + (tauxDAppreciationAnnuelle / nombreDeJourDansLAnnee);
+    double valeurFuture = getValeurComptable() * Math.pow(facteurJournalier, nombreDeJour);
+    int valeurFinal = (int) Math.round(valeurFuture);
+
+    return new Materiel(this.nom, tFutur, valeurFinal, this.tauxDAppreciationAnnuelle);
   }
 }
