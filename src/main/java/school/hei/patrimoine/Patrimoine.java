@@ -1,26 +1,35 @@
 package school.hei.patrimoine;
 
+import school.hei.patrimoine.possession.Argent;
+import school.hei.patrimoine.possession.Materiel;
 import school.hei.patrimoine.possession.Possession;
-
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import static java.util.stream.Collectors.toSet;
-
 public record Patrimoine(
     Personne possesseur, Instant t, Set<Possession> possessions) {
-  public int getValeurComptable() {
-    if (possessions.isEmpty()) {
-      return 0;
+    public int getValeurComptable() {
+      int valeurComptable = 0;
+      if (possessions.isEmpty()) {
+        return 0;
+      }else {
+        for (Possession possession : possessions) {
+          valeurComptable += possession.getValeurComptable();
+        }
+      }
+      return valeurComptable;
     }
-    throw new NotImplemented();
-  }
-
-  public Patrimoine projectionFuture(Instant tFutur) {
+    public Patrimoine projectionFuture(Instant tFutur) {
     return new Patrimoine(
         possesseur,
         tFutur,
         possessions.stream().map(p -> p.projectionFuture(tFutur)).collect(toSet()));
   }
 }
+
+
+

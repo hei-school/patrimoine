@@ -21,13 +21,14 @@ class TrainDeVieTest {
         compteCourant,
         1);
     //TODO: assert something useful
+   // assertEquals(compteCourant,vieEstudiantine.getFinancePar());
+   //assertEquals(10_000,vieEstudiantine.getFinancePar());
   }
 
   @Test
   void un_train_de_vie_financé_par_argent() {
     var au13mai24 = Instant.parse("2024-05-13T00:00:00.00Z");
     var financeur = new Argent("Espèces", au13mai24, 400_000);
-
     var trainDeVie = new TrainDeVie(null, 0, null, null, financeur, 0);
   }
 }

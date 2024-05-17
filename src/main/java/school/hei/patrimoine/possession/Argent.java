@@ -3,12 +3,14 @@ package school.hei.patrimoine.possession;
 import school.hei.patrimoine.NotImplemented;
 
 import java.time.Instant;
+import java.util.Set;
 import java.util.HashSet;
 import java.util.Set;
 
 import static java.util.stream.Collectors.toSet;
 
 public final class Argent extends Possession {
+
   private final Set<TrainDeVie> financés;
 
   public Argent(String nom, Instant t, int valeurComptable) {
