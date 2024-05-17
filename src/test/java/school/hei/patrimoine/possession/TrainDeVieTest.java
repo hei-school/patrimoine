@@ -9,6 +9,7 @@ import java.time.temporal.ChronoUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+
 class TrainDeVieTest {
   @Test
   void train_de_vie_est_finance_par_compte_courant() {
@@ -18,19 +19,28 @@ class TrainDeVieTest {
     var aLOuvertureDeHEI = Instant.parse("2021-10-26T00:00:00.00Z");
     var aLaDiplomation = Instant.parse("2024-12-26T00:00:00.00Z");
     var vieEstudiantine = new TrainDeVie(
-        "Ma super(?) vie d'etudiant",
-        500_000,
-        aLOuvertureDeHEI,
-        aLaDiplomation,
-        compteCourant,
-        1);
-    var tFutur = Instant.parse("2024-05-13T00:00:00.00Z");
-    var projection = vieEstudiantine.projectionFuture(tFutur);
+            "Ma super(?) vie d'etudiant",
+            500_000,
+            aLOuvertureDeHEI,
+            aLaDiplomation,
+            compteCourant,
+            1);
 
-    int expectedValeurDisponible = 600_000 - (500_000 * (int) ChronoUnit.MONTHS.between(
-            LocalDateTime.ofInstant(aLaDiplomation, ZoneId.of("UTC")),
+    var tFutur = Instant.parse("2024-05-13T00:00:00.00Z");
+
+    var expectedValeurDisponible = 600_000 - (500_000 * (int) ChronoUnit.MONTHS.between (
+            LocalDateTime.ofInstant(aLOuvertureDeHEI, ZoneId.of("UTC")),
             LocalDateTime.ofInstant(aLaDiplomation, ZoneId.of("UTC"))
-    ) );
-    assertTrue(expectedValeurDisponible > projection.getValeurComptable());
+    ));
+    var futurePossession = vieEstudiantine.projectionFuture(tFutur);
+    assertTrue(expectedValeurDisponible < futurePossession.getValeurComptable());
+  }
+
+  @Test
+  void un_train_de_vie_financé_par_argent() {
+    var au13mai24 = Instant.parse("2024-05-13T00:00:00.00Z");
+    var financeur = new Argent("Espèces", au13mai24, 400_000);
+
+    var trainDeVie = new TrainDeVie(null, 0, null, null, financeur, 0);
   }
 }

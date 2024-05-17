@@ -1,7 +1,5 @@
 package school.hei.patrimoine.possession;
 
-import school.hei.patrimoine.NotImplemented;
-
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -15,16 +13,16 @@ public final class Materiel extends Possession {
     this.tauxDAppreciationAnnuelle = tauxDAppreciationAnnuelle;
   }
 
-  @Override
   public Possession projectionFuture(Instant tFutur) {
-    var ansEntree = ChronoUnit.YEARS.between(
+    long anneesEntre = ChronoUnit.YEARS.between(
             LocalDateTime.ofInstant(this.t, ZoneId.of("UTC")),
             LocalDateTime.ofInstant(tFutur, ZoneId.of("UTC"))
     );
+    int nouvelleValeurComptable = (int) (valeurComptable + (valeurComptable * tauxDAppreciationAnnuelle * (anneesEntre + 1)));
     return new Materiel(
             this.nom,
-            this.t,
-            (int) (valeurComptable + (valeurComptable * tauxDAppreciationAnnuelle * (ansEntree + 1))),
+            tFutur,
+            nouvelleValeurComptable,
             this.tauxDAppreciationAnnuelle
     );
   }
