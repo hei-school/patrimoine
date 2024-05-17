@@ -12,9 +12,10 @@ public final class TrainDeVie extends Possession {
   private final Instant fin;
   @Getter
   private final int depensesMensuelle;
-  private final int dateDePonction;
   @Getter
   private final Argent financePar;
+  private final int dateDePonction;
+  private static final ZoneId defaultZoneId = ZoneId.systemDefault();
 
   public TrainDeVie(
       String nom,
@@ -32,36 +33,28 @@ public final class TrainDeVie extends Possession {
     this.financePar = financePar;
     this.financePar.addFinancés(this);
   }
-  public static int calculRepetitionDeDate(LocalDate debut, LocalDate fin, int jour) {
-    int count = 0;
-    LocalDate current = debut;
-    while (!current.isAfter(fin)) {
-      if (current.getDayOfMonth() == jour) {
-        count++;
-      }
-      current = current.plusMonths(1);
-    }
-    return count;
-  }
 
   @Override
   public TrainDeVie projectionFuture(Instant tFutur) {
-    LocalDate finDePonctionnement = LocalDate.ofInstant(tFutur.isAfter(fin) ? fin : tFutur, ZoneId.systemDefault());
-    long differenceDeMois = calculRepetitionDeDate(
-            LocalDate.ofInstant(debut, ZoneId.systemDefault()),
-            finDePonctionnement,
-            dateDePonction
+    boolean tFuturEstApresFin = tFutur.isAfter(fin);
+    LocalDate jourDuPonctionnement = LocalDate.ofInstant(debut, defaultZoneId);
+    LocalDate finPonctionnement = LocalDate.ofInstant(tFuturEstApresFin ? fin : tFutur, defaultZoneId);
+    long nombreMoisEntreTetTFutur =  ChronoUnit.MONTHS.between(
+      jourDuPonctionnement.withDayOfMonth(1),
+      finPonctionnement.withDayOfMonth(1)
     );
 
-    if(finDePonctionnement.getDayOfMonth() > dateDePonction)
-      differenceDeMois++;
+    if(finPonctionnement.getDayOfMonth() < dateDePonction)
+      nombreMoisEntreTetTFutur--;
 
-    return new TrainDeVie(nom,tFutur.isAfter(fin) ? 0 : depensesMensuelle,debut,fin,
-            new Argent(
-                    financePar.nom,
-                    tFutur,
-                    financePar.valeurComptable - depensesMensuelle * (int) differenceDeMois),
-            dateDePonction
+    int totalDepense = depensesMensuelle * (int) nombreMoisEntreTetTFutur;
+    return new TrainDeVie(
+      nom,
+      tFuturEstApresFin ? 0 : depensesMensuelle,
+      debut,
+      fin,
+      new Argent(financePar.nom, tFutur, financePar.valeurComptable - totalDepense),
+      dateDePonction
     );
   }
 }
