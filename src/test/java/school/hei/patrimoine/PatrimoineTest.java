@@ -2,7 +2,7 @@ package school.hei.patrimoine;
 
 import org.junit.jupiter.api.Test;
 import school.hei.patrimoine.possession.Argent;
-import school.hei.patrimoine.possession.TrainDeVie;
+import school.hei.patrimoine.possession.FluxArgent;
 
 import java.time.Instant;
 import java.util.Set;
@@ -46,7 +46,7 @@ class PatrimoineTest {
     var au13mai24 = Instant.parse("2024-05-13T00:00:00.00Z");
     var financeur = new Argent("Espèces", au13mai24, 400_000);
 
-    var trainDeVie = new TrainDeVie(null, 0, null, null, financeur, 0);
+    var trainDeVie = new FluxArgent(null, 0, null, null, financeur, 0);
 
     var patrimoineIloAu13mai24 = new Patrimoine(
         ilo,

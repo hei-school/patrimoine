@@ -9,15 +9,15 @@ import java.util.Set;
 import static java.util.stream.Collectors.toSet;
 
 public final class Argent extends Possession {
-  private final Set<TrainDeVie> financés;
+  private final Set<FluxArgent> fluxArgents;
 
   public Argent(String nom, Instant t, int valeurComptable) {
     this(nom, t, valeurComptable, new HashSet<>());
   }
 
-  private Argent(String nom, Instant t, int valeurComptable, Set<TrainDeVie> financés) {
+  private Argent(String nom, Instant t, int valeurComptable, Set<FluxArgent> fluxArgents) {
     super(nom, t, valeurComptable);
-    this.financés = financés;
+    this.fluxArgents = fluxArgents;
   }
 
   @Override
@@ -26,14 +26,14 @@ public final class Argent extends Possession {
         nom,
         tFutur,
         valeurComptable - financementsFutur(tFutur),
-        financés.stream().map(f -> f.projectionFuture(tFutur)).collect(toSet()));
+        fluxArgents.stream().map(f -> f.projectionFuture(tFutur)).collect(toSet()));
   }
 
   private int financementsFutur(Instant tFutur) {
     throw new NotImplemented();
   }
 
-  void addFinancés(TrainDeVie trainDeVie) {
-    financés.add(trainDeVie);
+  void addFinancés(FluxArgent fluxArgent) {
+    fluxArgents.add(fluxArgent);
   }
 }
