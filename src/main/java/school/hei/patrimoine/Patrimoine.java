@@ -1,7 +1,9 @@
 package school.hei.patrimoine;
 
+import school.hei.patrimoine.possession.Materiel;
 import school.hei.patrimoine.possession.Possession;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -13,8 +15,13 @@ public record Patrimoine(
   public int getValeurComptable() {
     if (possessions.isEmpty()) {
       return 0;
+    }else {
+      int totalValeurComptable = 0;
+      for (Possession possession : possessions){
+        totalValeurComptable += possession.getValeurComptable();
+      }
+      return totalValeurComptable;
     }
-    throw new NotImplemented();
   }
 
   public Patrimoine projectionFuture(Instant tFutur) {
