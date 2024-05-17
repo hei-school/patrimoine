@@ -34,6 +34,9 @@ public final class TrainDeVie extends Possession {
 
     @Override
     public TrainDeVie projectionFuture(Instant tFutur) {
+        if (tFutur.isAfter(fin)){
+            tFutur = fin;
+        }
         LocalDate debutEnLocalDate = this.debut.atZone(ZoneId.systemDefault()).toLocalDate();
         LocalDate tFuturEnLocalDate = tFutur.atZone(ZoneId.systemDefault()).toLocalDate();
         int nombreDePonction = Period.between(debutEnLocalDate, tFuturEnLocalDate).getMonths();
