@@ -8,6 +8,7 @@ import java.time.Instant;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PatrimoineTest {
 
@@ -40,17 +41,16 @@ class PatrimoineTest {
   }
 
   @Test
-  void patrimoine_possede_un_train_de_vie_financé_par_argent() {
+  void patrimoine_possede_un_train_de_vie_finance_par_argent() {
     var ilo = new Personne("Ilo");
 
     var au13mai24 = Instant.parse("2024-05-13T00:00:00.00Z");
     var financeur = new Argent("Espèces", au13mai24, 400_000);
 
-    var trainDeVie = new TrainDeVie(null, 0, null, null, financeur, 0);
+    var debut = Instant.parse("2024-01-01T00:00:00.00Z");
+    var fin = Instant.parse("2024-12-31T00:00:00.00Z");
+    var trainDeVie = new TrainDeVie("Train de Vie", 10_000, debut, fin, financeur, 15);
 
-    var patrimoineIloAu13mai24 = new Patrimoine(
-        ilo,
-        au13mai24,
-        Set.of(financeur, trainDeVie));
   }
+
 }
