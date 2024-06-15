@@ -1,6 +1,6 @@
 package school.hei.patrimoine.possession;
 
-import java.time.Instant;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -9,17 +9,17 @@ import static java.util.stream.Collectors.toSet;
 public final class Argent extends Possession {
   private final Set<FluxArgent> fluxArgents;
 
-  public Argent(String nom, Instant t, int valeurComptable) {
+  public Argent(String nom, LocalDate t, int valeurComptable) {
     this(nom, t, valeurComptable, new HashSet<>());
   }
 
-  private Argent(String nom, Instant t, int valeurComptable, Set<FluxArgent> fluxArgents) {
+  private Argent(String nom, LocalDate t, int valeurComptable, Set<FluxArgent> fluxArgents) {
     super(nom, t, valeurComptable);
     this.fluxArgents = fluxArgents;
   }
 
   @Override
-  public Argent projectionFuture(Instant tFutur) {
+  public Argent projectionFuture(LocalDate tFutur) {
     return new Argent(
         nom,
         tFutur,
@@ -27,7 +27,7 @@ public final class Argent extends Possession {
         fluxArgents.stream().map(f -> f.projectionFuture(tFutur)).collect(toSet()));
   }
 
-  private int financementsFutur(Instant tFutur) {
+  private int financementsFutur(LocalDate tFutur) {
     return fluxArgents.stream().
         mapToInt(
             f -> valeurComptable - f.projectionFuture(tFutur).getArgent().getValeurComptable())

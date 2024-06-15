@@ -5,9 +5,10 @@ import school.hei.patrimoine.possession.Argent;
 import school.hei.patrimoine.possession.FluxArgent;
 import school.hei.patrimoine.possession.GroupePossession;
 
-import java.time.Instant;
+import java.time.LocalDate;
 import java.util.Set;
 
+import static java.time.Month.MAY;
 import static java.time.temporal.ChronoUnit.DAYS;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -19,7 +20,7 @@ class PatrimoineTest {
 
     var patrimoineIloAu13mai24 = new Patrimoine(
         ilo,
-        Instant.parse("2024-05-13T00:00:00.00Z"),
+        LocalDate.of(2024, MAY, 13),
         Set.of());
 
     assertEquals(0, patrimoineIloAu13mai24.getValeurComptable());
@@ -29,7 +30,7 @@ class PatrimoineTest {
   void patrimoine_a_de_l_argent() {
     var ilo = new Personne("Ilo");
 
-    var au13mai24 = Instant.parse("2024-05-13T00:00:00.00Z");
+    var au13mai24 = LocalDate.of(2024, MAY, 13);
     var patrimoineIloAu13mai24 = new Patrimoine(
         ilo,
         au13mai24,
@@ -44,7 +45,7 @@ class PatrimoineTest {
   @Test
   void patrimoine_possede_un_train_de_vie_financé_par_argent() {
     var ilo = new Personne("Ilo");
-    var au13mai24 = Instant.parse("2024-05-13T00:00:00.00Z");
+    var au13mai24 = LocalDate.of(2024, MAY, 13);
     var financeur = new Argent("Espèces", au13mai24, 600_000);
     var trainDeVie = new FluxArgent(
         "Vie courante",
@@ -66,7 +67,7 @@ class PatrimoineTest {
   @Test
   void patrimoine_possede__groupe_de_train_de_vie_et_d_argent() {
     var ilo = new Personne("Ilo");
-    var au13mai24 = Instant.parse("2024-05-13T00:00:00.00Z");
+    var au13mai24 = LocalDate.of(2024, MAY, 13);
     var financeur = new Argent("Espèces", au13mai24, 600_000);
     var trainDeVie = new FluxArgent(
         "Vie courante",
