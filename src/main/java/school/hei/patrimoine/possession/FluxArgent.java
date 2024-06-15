@@ -36,6 +36,10 @@ public final class FluxArgent extends Possession {
     var tFuturBorneParFin = (tFutur.isBefore(fin)) ? tFutur : fin;
     var dateDeFinOperation = tFuturBorneParFin.atZone(UTC).toLocalDate();
     var dateDeDebutOperation = argent.t.atZone(UTC).toLocalDate();
+    if (dateDeDebutOperation.isAfter(dateDeFinOperation)) {
+      return this;
+    }
+
     var nbOperations =
         (int)
             dateDeDebutOperation

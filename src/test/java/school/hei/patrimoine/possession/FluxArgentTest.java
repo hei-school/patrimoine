@@ -6,7 +6,6 @@ import java.time.Instant;
 
 import static java.time.temporal.ChronoUnit.DAYS;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class FluxArgentTest {
   @Test
@@ -23,12 +22,26 @@ class FluxArgentTest {
         aLaDiplomation,
         compteCourant,
         1);
+    var donsDePapaEtMamanAuDebut = new FluxArgent(
+        "La générosité des parents au début",
+        400_000,
+        aLOuvertureDeHEI,
+        aLOuvertureDeHEI.plus(100, DAYS),
+        compteCourant,
+        30);
+    var donsDePapaEtMamanALaFin = new FluxArgent(
+        "La générosité des parents à la fin",
+        400_000,
+        aLaDiplomation,
+        aLaDiplomation.minus(100, DAYS),
+        compteCourant,
+        30);
 
     var au26juin24 = Instant.parse("2024-06-26T00:00:00.00Z");
-    assertThrows(IllegalArgumentException.class, () -> compteCourant.projectionFuture(au13mai24.minus(100, DAYS)));
+    assertEquals(600_000, compteCourant.projectionFuture(au13mai24.minus(100, DAYS)).valeurComptable);
     assertEquals(600_000, compteCourant.projectionFuture(au13mai24).valeurComptable);
-    assertEquals(100_000, compteCourant.projectionFuture(au26juin24).valeurComptable);
-    assertEquals(-2_900_000, compteCourant.projectionFuture(aLaDiplomation).valeurComptable);
-    assertEquals(-2_900_000, compteCourant.projectionFuture(aLaDiplomation.plus(100, DAYS)).valeurComptable);
+    assertEquals(500_000, compteCourant.projectionFuture(au26juin24).valeurComptable);
+    assertEquals(-1_300_000, compteCourant.projectionFuture(aLaDiplomation).valeurComptable);
+    assertEquals(-1_300_000, compteCourant.projectionFuture(aLaDiplomation.plus(100, DAYS)).valeurComptable);
   }
 }
