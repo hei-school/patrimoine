@@ -24,10 +24,10 @@ public class EvolutionPatrimoine {
     this.patrimoine = patrimoine;
     this.debut = debut;
     this.fin = fin;
-    this.evolutionJournaliere = evolutionJournaliere(patrimoine, debut, fin);
+    this.evolutionJournaliere = evolutionJournaliere();
   }
 
-  private Map<LocalDate, Patrimoine> evolutionJournaliere(Patrimoine patrimoine, LocalDate debut, LocalDate fin) {
+  private Map<LocalDate, Patrimoine> evolutionJournaliere() {
     Map<LocalDate, Patrimoine> evolutionJournaliere = new HashMap<>();
     dates().forEach(date -> evolutionJournaliere.put(date, patrimoine.projectionFuture(date)));
     return evolutionJournaliere;
