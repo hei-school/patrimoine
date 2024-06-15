@@ -9,7 +9,6 @@ import java.time.LocalDate;
 import java.util.Set;
 
 import static java.time.Month.MAY;
-import static java.time.temporal.ChronoUnit.DAYS;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class PatrimoineTest {

@@ -8,7 +8,6 @@ import static java.time.Month.DECEMBER;
 import static java.time.Month.JUNE;
 import static java.time.Month.MAY;
 import static java.time.Month.OCTOBER;
-import static java.time.temporal.ChronoUnit.DAYS;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class FluxArgentTest {
