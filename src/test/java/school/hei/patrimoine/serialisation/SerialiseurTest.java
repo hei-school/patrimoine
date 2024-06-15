@@ -33,6 +33,14 @@ class SerialiseurTest {
     var serialiseur = new Serialiseur<Patrimoine>();
     var serialisé = serialiseur.serialise(patrimoineIloAu13mai24);
 
-    assertEquals(patrimoineIloAu13mai24, serialiseur.deserialise(serialisé));
+    var désérialisé = serialiseur.deserialise(serialisé);
+    assertEquals(patrimoineIloAu13mai24, désérialisé);
+    var argentDésérialisé = désérialisé.possessionParNom("Espèces");
+    assertEquals(
+        argentDésérialisé,
+        ((FluxArgent) désérialisé.possessionParNom("Vie courante")).getArgent());
+    assertEquals( // car Possession::equals est symbolique
+        argentDésérialisé,
+        patrimoineIloAu13mai24.possessionParNom("Espèces"));
   }
 }
