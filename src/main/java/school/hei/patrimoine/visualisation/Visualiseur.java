@@ -32,6 +32,16 @@ public class Visualiseur implements Function<EvolutionPatrimoine, File> {
         .height(600)
         .build();
     configureStyle(chart);
+    configureSeries(evolutionPatrimoine, chart);
+
+    var temp = createTempFile(randomUUID().toString(), ".png").toFile();
+    saveBitmapWithDPI(chart, temp.getAbsolutePath(), PNG, DPI);
+    System.out.println("Image générée: " + temp.getAbsolutePath());
+
+    return temp;
+  }
+
+  private static void configureSeries(EvolutionPatrimoine evolutionPatrimoine, XYChart chart) {
     var dates = evolutionPatrimoine.dates()
         .map(localDate -> Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant()))
         .toList();
@@ -42,12 +52,6 @@ public class Visualiseur implements Function<EvolutionPatrimoine, File> {
         "Patrimoine",
         dates,
         evolutionPatrimoine.serieValeursComptablesPatrimoine());
-
-    var temp = createTempFile(randomUUID().toString(), ".png").toFile();
-    saveBitmapWithDPI(chart, temp.getAbsolutePath(), PNG, DPI);
-    System.out.println("Image générée: " + temp.getAbsolutePath());
-
-    return temp;
   }
 
   private void configureStyle(XYChart chart) {
