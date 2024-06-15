@@ -1,9 +1,10 @@
 package school.hei.patrimoine.possession;
 
 import lombok.Getter;
-import school.hei.patrimoine.NotImplemented;
 
 import java.time.Instant;
+
+import static java.time.ZoneOffset.UTC;
 
 @Getter
 public final class FluxArgent extends Possession {
@@ -32,6 +33,18 @@ public final class FluxArgent extends Possession {
 
   @Override
   public FluxArgent projectionFuture(Instant tFutur) {
-    throw new NotImplemented();
+    var tFuturBorneParFin = (tFutur.isBefore(fin)) ? tFutur : fin;
+    var dateDeFinOperation = tFuturBorneParFin.atZone(UTC).toLocalDate();
+    var dateDeDebutOperation = argent.t.atZone(UTC).toLocalDate();
+    var nbOperations =
+        (int)
+            dateDeDebutOperation
+                .datesUntil(dateDeFinOperation.plusDays(1))
+                .filter(d -> d.getDayOfMonth() == dateOperation)
+                .count();
+    var argentFutur = new Argent(
+        nom, tFutur, argent.getValeurComptable() + fluxMensuel * nbOperations);
+
+    return new FluxArgent(nom, fluxMensuel, debut, tFuturBorneParFin, argentFutur, dateOperation);
   }
 }

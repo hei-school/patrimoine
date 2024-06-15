@@ -11,7 +11,7 @@ public record Patrimoine(
     Personne possesseur, Instant t, Set<Possession> possessions) {
 
   public int getValeurComptable() {
-    return possessions.stream().map(Possession::getValeurComptable).reduce(0, Integer::sum);
+    return possessions.stream().mapToInt(Possession::getValeurComptable).sum();
   }
 
   public Patrimoine projectionFuture(Instant tFutur) {
