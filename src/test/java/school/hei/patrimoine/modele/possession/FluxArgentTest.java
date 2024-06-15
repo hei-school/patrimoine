@@ -20,24 +20,15 @@ class FluxArgentTest {
     var aLaDiplomation = LocalDate.of(2024, DECEMBER, 26);
     var vieEstudiantine = new FluxArgent(
         "Ma super(?) vie d'etudiant",
-        -500_000,
-        aLOuvertureDeHEI,
-        aLaDiplomation,
-        compteCourant,
+        compteCourant, aLOuvertureDeHEI, aLaDiplomation, -500_000,
         1);
     var donsDePapaEtMamanAuDebut = new FluxArgent(
         "La générosité des parents au début",
-        400_000,
-        aLOuvertureDeHEI,
-        aLOuvertureDeHEI.plusDays(100),
-        compteCourant,
+        compteCourant, aLOuvertureDeHEI, aLOuvertureDeHEI.plusDays(100), 400_000,
         30);
     var donsDePapaEtMamanALaFin = new FluxArgent(
         "La générosité des parents à la fin",
-        400_000,
-        aLaDiplomation,
-        aLaDiplomation.minusDays(100),
-        compteCourant,
+        compteCourant, aLaDiplomation, aLaDiplomation.minusDays(100), 400_000,
         30);
 
     assertEquals(600_000, compteCourant.projectionFuture(au13mai24.minusDays(100)).valeurComptable);

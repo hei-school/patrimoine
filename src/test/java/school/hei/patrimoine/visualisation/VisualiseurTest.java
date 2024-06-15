@@ -20,6 +20,27 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class VisualiseurTest {
   private final Visualiseur visualiseur = new Visualiseur();
 
+  @SneakyThrows
+  public static boolean areImagesEqual(File image1, File image2) {
+    // https://stackoverflow.com/questions/8567905/how-to-compare-images-for-similarity-using-java
+    var biA = ImageIO.read(image1);
+    var dbA = biA.getData().getDataBuffer();
+    int sizeA = dbA.getSize();
+    var biB = ImageIO.read(image2);
+    var dbB = biB.getData().getDataBuffer();
+    int sizeB = dbB.getSize();
+
+    if (sizeA == sizeB) {
+      for (int i = 0; i < sizeA; i++) {
+        if (dbA.getElem(i) != dbB.getElem(i)) {
+          return false;
+        }
+      }
+      return true;
+    } else {
+      return false;
+    }
+  }
 
   private EvolutionPatrimoine evolutionPatrimoineEtudiant() {
     var ilo = new Personne("Ilo");
@@ -27,10 +48,11 @@ class VisualiseurTest {
     var financeur = new Argent("Espèces", au13mai24, 400_000);
     var trainDeVie = new FluxArgent(
         "Vie courante",
-        -100_000,
+        financeur,
         au13mai24.minusDays(100),
         au13mai24.plusDays(100),
-        financeur, 15);
+        -100_000,
+        15);
 
     var mac = new Materiel(
         "MacBook Pro",
@@ -57,27 +79,5 @@ class VisualiseurTest {
     assertTrue(areImagesEqual(
         new File("src/test/resources/patrimoine-etudiant.png"),
         imageGeneree));
-  }
-
-  @SneakyThrows
-  public static boolean areImagesEqual(File image1, File image2) {
-    // https://stackoverflow.com/questions/8567905/how-to-compare-images-for-similarity-using-java
-    var biA = ImageIO.read(image1);
-    var dbA = biA.getData().getDataBuffer();
-    int sizeA = dbA.getSize();
-    var biB = ImageIO.read(image2);
-    var dbB = biB.getData().getDataBuffer();
-    int sizeB = dbB.getSize();
-
-    if (sizeA == sizeB) {
-      for (int i = 0; i < sizeA; i++) {
-        if (dbA.getElem(i) != dbB.getElem(i)) {
-          return false;
-        }
-      }
-      return true;
-    } else {
-      return false;
-    }
   }
 }

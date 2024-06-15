@@ -19,10 +19,8 @@ class EvolutionPatrimoineTest {
     var financeur = new Argent("Espèces", au13mai24, 600_000);
     var trainDeVie = new FluxArgent(
         "Vie courante",
-        -100_000,
-        au13mai24.minusDays(100),
-        au13mai24.plusDays(100),
-        financeur, 15);
+        financeur, au13mai24.minusDays(100), au13mai24.plusDays(100), -100_000,
+        15);
     var patrimoineIloAu13mai24 = new Patrimoine(
         ilo,
         au13mai24,
