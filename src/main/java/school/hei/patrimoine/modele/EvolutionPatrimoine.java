@@ -1,4 +1,4 @@
-package school.hei.patrimoine;
+package school.hei.patrimoine.modele;
 
 import lombok.Getter;
 

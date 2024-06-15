@@ -1,4 +1,4 @@
-package school.hei.patrimoine.possession;
+package school.hei.patrimoine.modele.possession;
 
 import org.junit.jupiter.api.Test;
 
@@ -30,22 +30,22 @@ class FluxArgentTest {
         "La générosité des parents au début",
         400_000,
         aLOuvertureDeHEI,
-        aLOuvertureDeHEI.plus(100, DAYS),
+        aLOuvertureDeHEI.plusDays(100),
         compteCourant,
         30);
     var donsDePapaEtMamanALaFin = new FluxArgent(
         "La générosité des parents à la fin",
         400_000,
         aLaDiplomation,
-        aLaDiplomation.minus(100, DAYS),
+        aLaDiplomation.minusDays(100),
         compteCourant,
         30);
 
-    assertEquals(600_000, compteCourant.projectionFuture(au13mai24.minus(100, DAYS)).valeurComptable);
+    assertEquals(600_000, compteCourant.projectionFuture(au13mai24.minusDays(100)).valeurComptable);
     assertEquals(600_000, compteCourant.projectionFuture(au13mai24).valeurComptable);
     var au26juin24 = LocalDate.of(2024, JUNE, 26);
     assertEquals(500_000, compteCourant.projectionFuture(au26juin24).valeurComptable);
     assertEquals(-1_300_000, compteCourant.projectionFuture(aLaDiplomation).valeurComptable);
-    assertEquals(-1_300_000, compteCourant.projectionFuture(aLaDiplomation.plus(100, DAYS)).valeurComptable);
+    assertEquals(-1_300_000, compteCourant.projectionFuture(aLaDiplomation.plusDays(100)).valeurComptable);
   }
 }

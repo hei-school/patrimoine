@@ -1,8 +1,8 @@
-package school.hei.patrimoine;
+package school.hei.patrimoine.modele;
 
 import org.junit.jupiter.api.Test;
-import school.hei.patrimoine.possession.Argent;
-import school.hei.patrimoine.possession.FluxArgent;
+import school.hei.patrimoine.modele.possession.Argent;
+import school.hei.patrimoine.modele.possession.FluxArgent;
 
 import java.time.LocalDate;
 import java.util.Set;
@@ -21,8 +21,8 @@ class EvolutionPatrimoineTest {
     var trainDeVie = new FluxArgent(
         "Vie courante",
         -100_000,
-        au13mai24.minus(100, DAYS),
-        au13mai24.plus(100, DAYS),
+        au13mai24.minusDays(100),
+        au13mai24.plusDays(100),
         financeur, 15);
     var patrimoineIloAu13mai24 = new Patrimoine(
         ilo,

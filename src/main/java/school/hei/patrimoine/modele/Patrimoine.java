@@ -1,6 +1,6 @@
-package school.hei.patrimoine;
+package school.hei.patrimoine.modele;
 
-import school.hei.patrimoine.possession.Possession;
+import school.hei.patrimoine.modele.possession.Possession;
 
 import java.io.Serializable;
 import java.time.LocalDate;

@@ -1,4 +1,4 @@
-package school.hei.patrimoine.possession;
+package school.hei.patrimoine.modele.possession;
 
 import java.time.LocalDate;
 import java.util.HashSet;

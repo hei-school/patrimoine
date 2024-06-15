@@ -26,7 +26,7 @@ public class Serialiseur<T> {
   public T deserialise(String serialisé) {
     var bytes = Base64.getDecoder().decode(serialisé);
     try (var bis = new ByteArrayInputStream(bytes);
-         var ois = new ObjectInputStream(bis);) {
+         var ois = new ObjectInputStream(bis)) {
       return (T) ois.readObject();
     }
   }

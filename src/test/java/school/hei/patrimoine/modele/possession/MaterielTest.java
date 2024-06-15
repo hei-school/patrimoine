@@ -1,4 +1,4 @@
-package school.hei.patrimoine.possession;
+package school.hei.patrimoine.modele.possession;
 
 import org.junit.jupiter.api.Test;
 
