@@ -1,6 +1,7 @@
 package school.hei.patrimoine.visualisation;
 
 import lombok.SneakyThrows;
+import org.knowm.xchart.XYChart;
 import org.knowm.xchart.XYChartBuilder;
 import org.knowm.xchart.style.theme.MatlabTheme;
 import school.hei.patrimoine.modele.EvolutionPatrimoine;
@@ -30,6 +31,7 @@ public class Visualiseur implements Function<EvolutionPatrimoine, File> {
         .width(800)
         .height(600)
         .build();
+    configureStyle(chart);
     var dates = evolutionPatrimoine.dates()
         .map(localDate -> Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant()))
         .toList();
@@ -41,6 +43,14 @@ public class Visualiseur implements Function<EvolutionPatrimoine, File> {
         dates,
         evolutionPatrimoine.serieValeursComptablesPatrimoine());
 
+    var temp = createTempFile(randomUUID().toString(), ".png").toFile();
+    saveBitmapWithDPI(chart, temp.getAbsolutePath(), PNG, DPI);
+    System.out.println("Image générée: " + temp.getAbsolutePath());
+
+    return temp;
+  }
+
+  private void configureStyle(XYChart chart) {
     var styler = chart.getStyler();
     styler.setPlotBackgroundColor(WHITE);
     styler.setChartBackgroundColor(WHITE);
@@ -49,12 +59,6 @@ public class Visualiseur implements Function<EvolutionPatrimoine, File> {
     styler.setyAxisTickLabelsFormattingFunction(this::yFormatter);
     styler.setPlotMargin(0);
     styler.setTheme(new MatlabTheme());
-
-    var temp = createTempFile(randomUUID().toString(), ".png").toFile();
-    saveBitmapWithDPI(chart, temp.getAbsolutePath(), PNG, DPI);
-    System.out.println(temp.getAbsolutePath());
-
-    return temp;
   }
 
   private String yFormatter(Double valeurComptable) {
