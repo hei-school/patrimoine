@@ -1,4 +1,6 @@
 package school.hei.patrimoine;
 
-public record Personne(String nom) {
+import java.io.Serializable;
+
+public record Personne(String nom) implements Serializable/*note(no-serializable)*/ {
 }

@@ -1,13 +1,16 @@
 package school.hei.patrimoine.possession;
 
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
+import java.io.Serializable;
 import java.time.Instant;
 
+@EqualsAndHashCode
 @AllArgsConstructor
 @Getter
-public sealed abstract class Possession permits
+public sealed abstract class Possession implements Serializable /*note(no-serializable)*/ permits
     Argent, Materiel, FluxArgent, GroupePossession {
   protected final String nom;
   protected final Instant t;
