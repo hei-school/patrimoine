@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class MaterielTest {
 
@@ -18,7 +18,6 @@ class MaterielTest {
         -0.10);
 
     var au26juin24 = Instant.parse("2024-06-26T00:00:00.00Z");
-    assertTrue(
-        mac.getValeurComptable() > mac.valeurComptableFuture(au26juin24));
+    assertEquals(1_466_301, mac.valeurComptableFuture(au26juin24));
   }
 }
