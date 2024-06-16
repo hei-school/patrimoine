@@ -26,21 +26,21 @@ public final class FluxArgent extends Possession {
 
   @Override
   public FluxArgent projectionFuture(LocalDate tFutur) {
-    var tFuturBorneParFin = (tFutur.isBefore(fin)) ? tFutur : fin;
-    var debutOperation = argent.t;
-    if (debutOperation.isAfter(tFuturBorneParFin)) {
+    var tFuturMajoréParFin = (tFutur.isBefore(fin)) ? tFutur : fin;
+    var debutOperationMinoréParDebut = argent.t.isBefore(debut) ? debut : argent.t;
+    if (debutOperationMinoréParDebut.isAfter(tFuturMajoréParFin)) {
       return this;
     }
 
     var nbOperations =
         (int)
-            debutOperation
-                .datesUntil(tFuturBorneParFin.plusDays(1))
+            debutOperationMinoréParDebut
+                .datesUntil(tFuturMajoréParFin.plusDays(1))
                 .filter(d -> d.getDayOfMonth() == dateOperation)
                 .count();
     var argentFutur = new Argent(
         nom, tFutur, argent.getValeurComptable() + fluxMensuel * nbOperations);
 
-    return new FluxArgent(nom, argentFutur, debut, tFuturBorneParFin, fluxMensuel, dateOperation);
+    return new FluxArgent(nom, argentFutur, debut, tFuturMajoréParFin, fluxMensuel, dateOperation);
   }
 }

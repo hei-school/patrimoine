@@ -1,16 +1,15 @@
 package school.hei.patrimoine.visualisation.xchart;
 
-import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
+import school.hei.patrimoine.TestFileGetter;
 import school.hei.patrimoine.modele.EvolutionPatrimoine;
 import school.hei.patrimoine.modele.Patrimoine;
 import school.hei.patrimoine.modele.Personne;
 import school.hei.patrimoine.modele.possession.Argent;
 import school.hei.patrimoine.modele.possession.FluxArgent;
 import school.hei.patrimoine.modele.possession.Materiel;
+import school.hei.patrimoine.visualisation.AreImagesEqual;
 
-import javax.imageio.ImageIO;
-import java.io.File;
 import java.time.LocalDate;
 import java.util.Set;
 
@@ -18,32 +17,12 @@ import static java.time.Month.MAY;
 import static java.time.Month.NOVEMBER;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class VisualiseurTest {
+class VisualiseurPatrimoineEtudiantTest {
   private final Visualiseur visualiseur = new Visualiseur();
+  private final AreImagesEqual areImagesEqual = new AreImagesEqual();
+  private final TestFileGetter testFileGetter = new TestFileGetter();
 
-  @SneakyThrows
-  public static boolean areImagesEqual(File image1, File image2) {
-    // https://stackoverflow.com/questions/8567905/how-to-compare-images-for-similarity-using-java
-    var biA = ImageIO.read(image1);
-    var dbA = biA.getData().getDataBuffer();
-    int sizeA = dbA.getSize();
-    var biB = ImageIO.read(image2);
-    var dbB = biB.getData().getDataBuffer();
-    int sizeB = dbB.getSize();
-
-    if (sizeA == sizeB) {
-      for (int i = 0; i < sizeA; i++) {
-        if (dbA.getElem(i) != dbB.getElem(i)) {
-          return false;
-        }
-      }
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  private Patrimoine patrimoineEtudiant() {
+  private Patrimoine patrimoine() {
     var ilo = new Personne("Ilo");
     var au13mai24 = LocalDate.of(2024, MAY, 13);
     var financeur = new Argent("Espèces", au13mai24, 400_000);
@@ -61,12 +40,10 @@ class VisualiseurTest {
         500_000,
         -0.9);
 
-    var patrimoineIloAu13mai24 = new Patrimoine(
+    return new Patrimoine(
         ilo,
         au13mai24,
         Set.of(financeur, trainDeVie, mac));
-
-    return patrimoineIloAu13mai24;
 
   }
 
@@ -74,14 +51,14 @@ class VisualiseurTest {
   void visualise_sur_quelques_jours() {
     var patrimoine = new EvolutionPatrimoine(
         "Dummy",
-        patrimoineEtudiant(),
+        patrimoine(),
         LocalDate.of(2024, MAY, 12),
         LocalDate.of(2024, MAY, 17));
 
     var imageGeneree = visualiseur.apply(patrimoine);
 
-    assertTrue(areImagesEqual(
-        testFile("patrimoine-etudiant-sur-quelques-jours.png"),
+    assertTrue(areImagesEqual.apply(
+        testFileGetter.apply("patrimoine-etudiant-sur-quelques-jours.png"),
         imageGeneree));
   }
 
@@ -89,18 +66,29 @@ class VisualiseurTest {
   void visualise_sur_quelques_mois() {
     var patrimoine = new EvolutionPatrimoine(
         "Dummy",
-        patrimoineEtudiant(),
+        patrimoine(),
         LocalDate.of(2024, MAY, 12),
         LocalDate.of(2024, NOVEMBER, 5));
 
     var imageGeneree = visualiseur.apply(patrimoine);
 
-    assertTrue(areImagesEqual(
-        testFile("patrimoine-etudiant-sur-quelques-mois.png"),
+    assertTrue(areImagesEqual.apply(
+        testFileGetter.apply("patrimoine-etudiant-sur-quelques-mois.png"),
         imageGeneree));
   }
 
-  private File testFile(String fileName) {
-    return new File(this.getClass().getClassLoader().getResource(fileName).getFile());
+  @Test
+  void visualise_sur_quelques_annees() {
+    var patrimoine = new EvolutionPatrimoine(
+        "Dummy",
+        patrimoine(),
+        LocalDate.of(2024, MAY, 12),
+        LocalDate.of(2026, NOVEMBER, 5));
+
+    var imageGeneree = visualiseur.apply(patrimoine);
+
+    assertTrue(areImagesEqual.apply(
+        testFileGetter.apply("patrimoine-etudiant-sur-quelques-annees.png"),
+        imageGeneree));
   }
 }
