@@ -31,7 +31,7 @@ class FluxArgentTest {
         compteCourant, aLaDiplomation, aLaDiplomation.minusDays(100), 400_000,
         30);
 
-    assertEquals(600_000, compteCourant.projectionFuture(au13mai24.minusDays(100)).valeurComptable);
+    assertEquals(0, compteCourant.projectionFuture(au13mai24.minusDays(100)).valeurComptable);
     assertEquals(600_000, compteCourant.projectionFuture(au13mai24).valeurComptable);
     var au26juin24 = LocalDate.of(2024, JUNE, 26);
     assertEquals(100_000, compteCourant.projectionFuture(au26juin24).valeurComptable);

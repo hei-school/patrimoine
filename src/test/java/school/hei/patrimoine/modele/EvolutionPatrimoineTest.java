@@ -33,7 +33,7 @@ class EvolutionPatrimoineTest {
         LocalDate.of(2024, MAY, 17));
 
     var evolutionJournaliere = evolutionPatrimoine.getEvolutionJournaliere();
-    assertEquals(600_000, evolutionJournaliere.get(LocalDate.of(2024, MAY, 12)).getValeurComptable());
+    assertEquals(0, evolutionJournaliere.get(LocalDate.of(2024, MAY, 12)).getValeurComptable());
     assertEquals(600_000, evolutionJournaliere.get(LocalDate.of(2024, MAY, 13)).getValeurComptable());
     assertEquals(600_000, evolutionJournaliere.get(LocalDate.of(2024, MAY, 14)).getValeurComptable());
     assertEquals(500_000, evolutionJournaliere.get(LocalDate.of(2024, MAY, 15)).getValeurComptable());

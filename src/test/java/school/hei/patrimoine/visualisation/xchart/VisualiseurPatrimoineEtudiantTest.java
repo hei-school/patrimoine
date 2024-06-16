@@ -25,7 +25,7 @@ class VisualiseurPatrimoineEtudiantTest {
   private Patrimoine patrimoine() {
     var ilo = new Personne("Ilo");
     var au13mai24 = LocalDate.of(2024, MAY, 13);
-    var financeur = new Argent("Espèces", au13mai24, 400_000);
+    var financeur = new Argent("Espèces", au13mai24.minusDays(1), au13mai24, 400_000);
     var trainDeVie = new FluxArgent(
         "Vie courante",
         financeur,

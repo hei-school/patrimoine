@@ -10,6 +10,7 @@ import school.hei.patrimoine.modele.possession.Argent;
 import school.hei.patrimoine.modele.possession.FluxArgent;
 import school.hei.patrimoine.modele.possession.GroupePossession;
 import school.hei.patrimoine.modele.possession.Materiel;
+import school.hei.patrimoine.modele.possession.TransfertArgent;
 import school.hei.patrimoine.visualisation.AreImagesEqual;
 
 import java.time.LocalDate;
@@ -19,7 +20,9 @@ import static java.time.Month.DECEMBER;
 import static java.time.Month.JANUARY;
 import static java.time.Month.MAY;
 import static java.time.Month.NOVEMBER;
+import static java.util.Calendar.JULY;
 import static java.util.Calendar.JUNE;
+import static java.util.Calendar.SEPTEMBER;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class VisualiseurPatrimoineRicheTest {
@@ -30,7 +33,7 @@ class VisualiseurPatrimoineRicheTest {
   private Patrimoine patrimoine() {
     var ilo = new Personne("Ilo");
     var au13mai24 = LocalDate.of(2024, MAY, 13);
-    var compteCourant = new Argent("BP", au13mai24, 13_410);
+    var compteCourant = new Argent("BP", au13mai24.minusDays(1), au13mai24, 13_410);
     var salaire = new FluxArgent(
         "Salaire",
         compteCourant,
@@ -64,7 +67,6 @@ class VisualiseurPatrimoineRicheTest {
         22_450,
         -0.4,
         compteCourant);
-
     var mac = new Materiel(
         "MacBook Pro",
         au13mai24,
@@ -72,10 +74,20 @@ class VisualiseurPatrimoineRicheTest {
         au13mai24,
         -0.9);
 
+    var compteEpargne = new Argent("CE", LocalDate.of(2025, SEPTEMBER, 7), 0);
+    var transfertVersEpargne = new TransfertArgent(
+        "Salaire",
+        compteCourant,
+        compteEpargne,
+        LocalDate.of(2025, DECEMBER, 1),
+        LocalDate.of(2026, JULY, 27),
+        3_200,
+        3);
+
     return new Patrimoine(
         ilo,
         au13mai24,
-        Set.of(compteCourant, trainDeVie, voiture, mac));
+        Set.of(compteCourant, compteEpargne, trainDeVie, voiture, mac));
 
   }
 
