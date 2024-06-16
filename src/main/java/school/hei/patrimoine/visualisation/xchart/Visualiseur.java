@@ -53,6 +53,10 @@ public class Visualiseur implements Function<EvolutionPatrimoine, File> {
   }
 
   private static void addSerie(XYChart chart, String nom, List<LocalDate> localDates, List<Integer> values) {
+    if (values.stream().allMatch(value -> value == 0)) {
+      return;
+    }
+
     var dates = localDates.stream()
         .map(localDate -> Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant()))
         .toList();
