@@ -1,8 +1,5 @@
-package school.hei.patrimoine.visualisation.xchart;
+package school.hei.patrimoine.visualisation.swing.ihm;
 
-import org.junit.jupiter.api.Test;
-import school.hei.patrimoine.TestFileGetter;
-import school.hei.patrimoine.modele.EvolutionPatrimoine;
 import school.hei.patrimoine.modele.Patrimoine;
 import school.hei.patrimoine.modele.Personne;
 import school.hei.patrimoine.modele.possession.AchatMaterielAuComptant;
@@ -11,26 +8,21 @@ import school.hei.patrimoine.modele.possession.FluxArgent;
 import school.hei.patrimoine.modele.possession.GroupePossession;
 import school.hei.patrimoine.modele.possession.Materiel;
 import school.hei.patrimoine.modele.possession.TransfertArgent;
-import school.hei.patrimoine.visualisation.AreImagesEqual;
 
 import java.time.LocalDate;
 import java.util.Set;
+import java.util.function.Supplier;
 
 import static java.time.Month.DECEMBER;
 import static java.time.Month.JANUARY;
 import static java.time.Month.MAY;
-import static java.time.Month.NOVEMBER;
 import static java.util.Calendar.JULY;
 import static java.util.Calendar.JUNE;
 import static java.util.Calendar.SEPTEMBER;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class VisualiseurPatrimoineRicheTest {
-  private final Visualiseur visualiseur = new Visualiseur();
-  private final AreImagesEqual areImagesEqual = new AreImagesEqual();
-  private final TestFileGetter testFileGetter = new TestFileGetter();
-
-  private Patrimoine patrimoine() {
+public class SelecteurPatrimoineIHM implements Supplier<Patrimoine> {
+  @Override
+  public Patrimoine get() { //TODO: open a dialog to select serialized file, load it, return it
     var ilo = new Personne("Ilo");
     var au13mai24 = LocalDate.of(2024, MAY, 13);
     var compteCourant = new Argent("BP", au13mai24.minusDays(1), au13mai24, 13_410);
@@ -88,21 +80,5 @@ class VisualiseurPatrimoineRicheTest {
         ilo,
         au13mai24,
         Set.of(compteCourant, compteEpargne, trainDeVie, voiture, mac));
-
-  }
-
-  @Test
-  void visualise_sur_quelques_annees() {
-    var patrimoine = new EvolutionPatrimoine(
-        "Dummy",
-        patrimoine(),
-        LocalDate.of(2024, MAY, 12),
-        LocalDate.of(2026, NOVEMBER, 5));
-
-    var imageGeneree = visualiseur.apply(patrimoine);
-
-    assertTrue(areImagesEqual.apply(
-        testFileGetter.apply("patrimoine-riche-sur-quelques-annees.png"),
-        imageGeneree));
   }
 }

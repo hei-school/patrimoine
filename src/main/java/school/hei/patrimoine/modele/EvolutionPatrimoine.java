@@ -27,6 +27,14 @@ public class EvolutionPatrimoine {
     this.evolutionJournaliere = evolutionJournaliere();
   }
 
+  public EvolutionPatrimoine nouveauDebut(LocalDate nouveauDebut) {
+    return new EvolutionPatrimoine(nom, patrimoine, nouveauDebut, fin);
+  }
+
+  public EvolutionPatrimoine nouvelleFin(LocalDate nouvelleFin) {
+    return new EvolutionPatrimoine(nom, patrimoine, debut, nouvelleFin);
+  }
+
   private Map<LocalDate, Patrimoine> evolutionJournaliere() {
     Map<LocalDate, Patrimoine> evolutionJournaliere = new HashMap<>();
     dates().forEach(date -> evolutionJournaliere.put(date, patrimoine.projectionFuture(date)));

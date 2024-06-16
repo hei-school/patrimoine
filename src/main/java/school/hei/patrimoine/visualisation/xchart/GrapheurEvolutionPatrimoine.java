@@ -22,23 +22,9 @@ import static org.knowm.xchart.BitmapEncoder.saveBitmapWithDPI;
 import static org.knowm.xchart.style.Styler.LegendPosition.OutsideE;
 import static org.knowm.xchart.style.markers.SeriesMarkers.NONE;
 
-public class Visualiseur implements Function<EvolutionPatrimoine, File> {
+public class GrapheurEvolutionPatrimoine implements Function<EvolutionPatrimoine, File> {
 
   private static final int DPI = 300;
-
-  @SneakyThrows
-  @Override
-  public File apply(EvolutionPatrimoine evolutionPatrimoine) {
-    XYChart chart = new XYChartBuilder().width(800).height(600).build();
-    configureStyle(chart);
-    configureSeries(evolutionPatrimoine, chart);
-
-    var temp = createTempFile(randomUUID().toString(), ".png").toFile();
-    saveBitmapWithDPI(chart, temp.getAbsolutePath(), PNG, DPI);
-    System.out.println("Image générée: " + temp.getAbsolutePath());
-
-    return temp;
-  }
 
   private static void configureSeries(EvolutionPatrimoine evolutionPatrimoine, XYChart chart) {
     var dates = evolutionPatrimoine.dates().toList();
@@ -62,6 +48,20 @@ public class Visualiseur implements Function<EvolutionPatrimoine, File> {
         .toList();
     var serie = chart.addSeries(nom, dates, values);
     serie.setMarker(NONE);
+  }
+
+  @SneakyThrows
+  @Override
+  public File apply(EvolutionPatrimoine evolutionPatrimoine) {
+    XYChart chart = new XYChartBuilder().width(800).height(600).build();
+    configureStyle(chart);
+    configureSeries(evolutionPatrimoine, chart);
+
+    var temp = createTempFile(randomUUID().toString(), ".png").toFile();
+    saveBitmapWithDPI(chart, temp.getAbsolutePath(), PNG, DPI);
+    System.out.println("Image générée: " + temp.getAbsolutePath());
+
+    return temp;
   }
 
   private void configureStyle(XYChart chart) {

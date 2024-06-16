@@ -17,8 +17,8 @@ import static java.time.Month.MAY;
 import static java.time.Month.NOVEMBER;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class VisualiseurPatrimoineEtudiantTest {
-  private final Visualiseur visualiseur = new Visualiseur();
+class GrapheurEvolutionPatrimoinePatrimoineEtudiantTest {
+  private final GrapheurEvolutionPatrimoine grapheurEvolutionPatrimoine = new GrapheurEvolutionPatrimoine();
   private final AreImagesEqual areImagesEqual = new AreImagesEqual();
   private final TestFileGetter testFileGetter = new TestFileGetter();
 
@@ -56,7 +56,7 @@ class VisualiseurPatrimoineEtudiantTest {
         LocalDate.of(2024, MAY, 12),
         LocalDate.of(2024, MAY, 17));
 
-    var imageGeneree = visualiseur.apply(patrimoine);
+    var imageGeneree = grapheurEvolutionPatrimoine.apply(patrimoine);
 
     assertTrue(areImagesEqual.apply(
         testFileGetter.apply("patrimoine-etudiant-sur-quelques-jours.png"),
@@ -71,7 +71,7 @@ class VisualiseurPatrimoineEtudiantTest {
         LocalDate.of(2024, MAY, 12),
         LocalDate.of(2024, NOVEMBER, 5));
 
-    var imageGeneree = visualiseur.apply(patrimoine);
+    var imageGeneree = grapheurEvolutionPatrimoine.apply(patrimoine);
 
     assertTrue(areImagesEqual.apply(
         testFileGetter.apply("patrimoine-etudiant-sur-quelques-mois.png"),
@@ -86,7 +86,7 @@ class VisualiseurPatrimoineEtudiantTest {
         LocalDate.of(2024, MAY, 12),
         LocalDate.of(2026, NOVEMBER, 5));
 
-    var imageGeneree = visualiseur.apply(patrimoine);
+    var imageGeneree = grapheurEvolutionPatrimoine.apply(patrimoine);
 
     assertTrue(areImagesEqual.apply(
         testFileGetter.apply("patrimoine-etudiant-sur-quelques-annees.png"),
