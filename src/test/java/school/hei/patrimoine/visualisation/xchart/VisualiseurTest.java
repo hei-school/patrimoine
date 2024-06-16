@@ -42,7 +42,7 @@ class VisualiseurTest {
     }
   }
 
-  private EvolutionPatrimoine evolutionPatrimoineEtudiant() {
+  private Patrimoine patrimoineEtudiant() {
     var ilo = new Personne("Ilo");
     var au13mai24 = LocalDate.of(2024, MAY, 13);
     var financeur = new Argent("Espèces", au13mai24, 400_000);
@@ -65,19 +65,26 @@ class VisualiseurTest {
         au13mai24,
         Set.of(financeur, trainDeVie, mac));
 
-    return new EvolutionPatrimoine(
-        "Nom",
-        patrimoineIloAu13mai24,
-        LocalDate.of(2024, MAY, 12),
-        LocalDate.of(2024, MAY, 17));
+    return patrimoineIloAu13mai24;
 
   }
 
   @Test
-  void visualise() {
-    var imageGeneree = visualiseur.apply(evolutionPatrimoineEtudiant());
+  void visualise_sur_quelques_jours() {
+    var patrimoine = new EvolutionPatrimoine(
+        "Dummy",
+        patrimoineEtudiant(),
+        LocalDate.of(2024, MAY, 12),
+        LocalDate.of(2024, MAY, 17));
+
+    var imageGeneree = visualiseur.apply(patrimoine);
+
     assertTrue(areImagesEqual(
-        new File("src/test/resources/patrimoine-etudiant.png"),
+        testFile("patrimoine-etudiant-sur-quelques-jours.png"),
         imageGeneree));
+  }
+
+  private File testFile(String fileName) {
+    return new File(this.getClass().getClassLoader().getResource(fileName).getFile());
   }
 }
