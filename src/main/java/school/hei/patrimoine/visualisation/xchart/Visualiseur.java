@@ -8,8 +8,10 @@ import school.hei.patrimoine.modele.EvolutionPatrimoine;
 
 import java.io.File;
 import java.text.DecimalFormat;
+import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.List;
 import java.util.function.Function;
 
 import static java.awt.Color.WHITE;
@@ -17,8 +19,8 @@ import static java.nio.file.Files.createTempFile;
 import static java.util.UUID.randomUUID;
 import static org.knowm.xchart.BitmapEncoder.BitmapFormat.PNG;
 import static org.knowm.xchart.BitmapEncoder.saveBitmapWithDPI;
-import static org.knowm.xchart.XYSeries.XYSeriesRenderStyle.Line;
 import static org.knowm.xchart.style.Styler.LegendPosition.OutsideE;
+import static org.knowm.xchart.style.markers.SeriesMarkers.NONE;
 
 public class Visualiseur implements Function<EvolutionPatrimoine, File> {
 
@@ -27,10 +29,7 @@ public class Visualiseur implements Function<EvolutionPatrimoine, File> {
   @SneakyThrows
   @Override
   public File apply(EvolutionPatrimoine evolutionPatrimoine) {
-    var chart = new XYChartBuilder()
-        .width(800)
-        .height(600)
-        .build();
+    XYChart chart = new XYChartBuilder().width(800).height(600).build();
     configureStyle(chart);
     configureSeries(evolutionPatrimoine, chart);
 
@@ -42,16 +41,23 @@ public class Visualiseur implements Function<EvolutionPatrimoine, File> {
   }
 
   private static void configureSeries(EvolutionPatrimoine evolutionPatrimoine, XYChart chart) {
-    var dates = evolutionPatrimoine.dates()
-        .map(localDate -> Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant()))
-        .toList();
+    var dates = evolutionPatrimoine.dates().toList();
     var seriesParPossession = evolutionPatrimoine.serieValeursComptablesParPossession();
     seriesParPossession.keySet().forEach(
-        possession -> chart.addSeries(possession.getNom(), dates, seriesParPossession.get(possession)));
-    chart.addSeries(
+        possession -> addSerie(chart, possession.getNom(), dates, seriesParPossession.get(possession)));
+    addSerie(
+        chart,
         "Patrimoine",
         dates,
         evolutionPatrimoine.serieValeursComptablesPatrimoine());
+  }
+
+  private static void addSerie(XYChart chart, String nom, List<LocalDate> localDates, List<Integer> values) {
+    var dates = localDates.stream()
+        .map(localDate -> Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant()))
+        .toList();
+    var serie = chart.addSeries(nom, dates, values);
+    serie.setMarker(NONE);
   }
 
   private void configureStyle(XYChart chart) {
@@ -59,10 +65,11 @@ public class Visualiseur implements Function<EvolutionPatrimoine, File> {
     styler.setPlotBackgroundColor(WHITE);
     styler.setChartBackgroundColor(WHITE);
     styler.setLegendPosition(OutsideE);
-    styler.setDefaultSeriesRenderStyle(Line);
     styler.setyAxisTickLabelsFormattingFunction(this::yFormatter);
     styler.setPlotMargin(0);
     styler.setTheme(new MatlabTheme());
+
+    chart.getSeriesMap().values().forEach(serie -> serie.setMarker(NONE));
   }
 
   private String yFormatter(Double valeurComptable) {
