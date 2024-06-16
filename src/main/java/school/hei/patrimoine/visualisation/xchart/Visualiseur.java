@@ -1,4 +1,4 @@
-package school.hei.patrimoine.visualisation;
+package school.hei.patrimoine.visualisation.xchart;
 
 import lombok.SneakyThrows;
 import org.knowm.xchart.XYChart;
