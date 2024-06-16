@@ -17,6 +17,7 @@ class MaterielTest {
         "MacBook Pro",
         au26Oct21,
         2_000_000,
+        au26Oct21.minusDays(2),
         -0.10);
 
     var au26juin24 = LocalDate.of(2024, JUNE, 26);

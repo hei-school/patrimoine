@@ -71,12 +71,14 @@ class VisualiseurPatrimoineRicheTest {
                 "Mercedes",
                 LocalDate.of(2025, JUNE, 4),
                 20_000,
+                LocalDate.of(2025, JUNE, 4),
                 -0.4)));
 
     var mac = new Materiel(
         "MacBook Pro",
         au13mai24,
         2_000,
+        au13mai24,
         -0.9);
 
     return new Patrimoine(

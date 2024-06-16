@@ -38,6 +38,7 @@ class VisualiseurPatrimoineEtudiantTest {
         "MacBook Pro",
         au13mai24,
         500_000,
+        au13mai24.minusDays(3),
         -0.9);
 
     return new Patrimoine(
