@@ -15,6 +15,7 @@ import java.time.LocalDate;
 import java.util.Set;
 
 import static java.time.Month.MAY;
+import static java.time.Month.NOVEMBER;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class VisualiseurTest {
@@ -81,6 +82,21 @@ class VisualiseurTest {
 
     assertTrue(areImagesEqual(
         testFile("patrimoine-etudiant-sur-quelques-jours.png"),
+        imageGeneree));
+  }
+
+  @Test
+  void visualise_sur_quelques_mois() {
+    var patrimoine = new EvolutionPatrimoine(
+        "Dummy",
+        patrimoineEtudiant(),
+        LocalDate.of(2024, MAY, 12),
+        LocalDate.of(2024, NOVEMBER, 5));
+
+    var imageGeneree = visualiseur.apply(patrimoine);
+
+    assertTrue(areImagesEqual(
+        testFile("patrimoine-etudiant-sur-quelques-mois.png"),
         imageGeneree));
   }
 
