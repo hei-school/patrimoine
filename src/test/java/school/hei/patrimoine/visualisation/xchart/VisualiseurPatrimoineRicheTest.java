@@ -5,6 +5,7 @@ import school.hei.patrimoine.TestFileGetter;
 import school.hei.patrimoine.modele.EvolutionPatrimoine;
 import school.hei.patrimoine.modele.Patrimoine;
 import school.hei.patrimoine.modele.Personne;
+import school.hei.patrimoine.modele.possession.AchatMaterielAuComptant;
 import school.hei.patrimoine.modele.possession.Argent;
 import school.hei.patrimoine.modele.possession.FluxArgent;
 import school.hei.patrimoine.modele.possession.GroupePossession;
@@ -57,22 +58,12 @@ class VisualiseurPatrimoineRicheTest {
                 1)
         ));
 
-    var voiture = new GroupePossession(
+    var voiture = new AchatMaterielAuComptant(
         "Voiture",
-        au13mai24,
-        Set.of(new FluxArgent(
-                "Achat voiture",
-                compteCourant,
-                LocalDate.of(2025, JUNE, 4),
-                LocalDate.of(2025, JUNE, 4),
-                -22_450,
-                4),
-            new Materiel(
-                "Mercedes",
-                LocalDate.of(2025, JUNE, 4),
-                20_000,
-                LocalDate.of(2025, JUNE, 4),
-                -0.4)));
+        LocalDate.of(2025, JUNE, 4),
+        22_450,
+        -0.4,
+        compteCourant);
 
     var mac = new Materiel(
         "MacBook Pro",
