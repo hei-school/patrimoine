@@ -43,7 +43,7 @@ class GrapheurEvolutionPatrimoinePatrimoineRicheTest {
         "Dummy",
         new PatrimoineRicheMoyenCas().get(),
         LocalDate.of(2024, MAY, 12),
-        LocalDate.of(2026, MARCH, 5));
+        LocalDate.of(2025, MARCH, 5));
 
     var imageGeneree = grapheurEvolutionPatrimoine.apply(patrimoine);
 

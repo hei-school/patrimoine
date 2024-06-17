@@ -22,7 +22,8 @@ public class MainIHM extends JFrame implements Observer {
   private final PatrimoinesVisualisables patrimoinesVisualisables;
   private final SelecteurPatrimoineIHM selecteurPatrimoineIHM;
   private final SelecteurPeriodeIHM selecteurPeriodeIHM;
-  private final OperationsImpossiblesIHM operationsImpossiblesIHM;
+  private final FluxImpossiblesIHM fluxImpossiblesIHM;
+  private final FluxJournaliersIHM fluxJournaliersIHM;
   private final GrapheurEvolutionPatrimoineIHM grapheurEvolutionPatrimoineIHM;
 
   public MainIHM(List<Patrimoine> patrimoines) {
@@ -31,7 +32,8 @@ public class MainIHM extends JFrame implements Observer {
 
     this.selecteurPatrimoineIHM = new SelecteurPatrimoineIHM(patrimoinesVisualisables);
 
-    this.operationsImpossiblesIHM = new OperationsImpossiblesIHM(patrimoinesVisualisables);
+    this.fluxImpossiblesIHM = new FluxImpossiblesIHM(patrimoinesVisualisables);
+    this.fluxJournaliersIHM = new FluxJournaliersIHM(patrimoinesVisualisables);
 
     this.selecteurPeriodeIHM = new SelecteurPeriodeIHM(patrimoinesVisualisables);
     this.grapheurEvolutionPatrimoineIHM = new GrapheurEvolutionPatrimoineIHM(patrimoinesVisualisables);
@@ -63,7 +65,8 @@ public class MainIHM extends JFrame implements Observer {
     westPanel.setBorder(createEmptyBorder(westMargin, westMargin, westMargin, westMargin));
     westPanel.add(selecteurPatrimoineIHM);
     westPanel.add(selecteurPeriodeIHM);
-    westPanel.add(operationsImpossiblesIHM);
+    westPanel.add(fluxImpossiblesIHM);
+    westPanel.add(fluxJournaliersIHM);
     contentPane.add(westPanel, WEST);
 
     contentPane.add(grapheurEvolutionPatrimoineIHM, CENTER);
@@ -75,6 +78,7 @@ public class MainIHM extends JFrame implements Observer {
   }
 
   private void setTitle() {
-    setTitle("Patrimoine - " + patrimoinesVisualisables.getEvolutionPatrimoine().getPatrimoine().possesseur().nom());
+    var p = patrimoinesVisualisables.getEvolutionPatrimoine().getPatrimoine();
+    setTitle(String.format("Patrimoine : possesseur=%s, t=%s", p.possesseur().nom(), p.t()));
   }
 }

@@ -20,8 +20,8 @@ public class PatrimoinesVisualisables extends Observable {
     super();
     this.patrimoines = patrimoines;
     this.patrimoineSélectionné = patrimoines.get(0);
-    this.débutEvolution = now();
-    this.finEvolution = this.débutEvolution.plusMonths(1);
+    this.débutEvolution = patrimoineSélectionné.t();
+    this.finEvolution = now();
   }
 
   public List<String> noms() {

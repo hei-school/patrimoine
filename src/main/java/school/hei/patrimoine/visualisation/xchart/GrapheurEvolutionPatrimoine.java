@@ -5,13 +5,18 @@ import org.knowm.xchart.XYChart;
 import org.knowm.xchart.XYChartBuilder;
 import org.knowm.xchart.style.theme.MatlabTheme;
 import school.hei.patrimoine.modele.EvolutionPatrimoine;
+import school.hei.patrimoine.modele.possession.FluxArgent;
+import school.hei.patrimoine.modele.possession.Possession;
 
 import java.io.File;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
 import static java.awt.Color.WHITE;
@@ -28,14 +33,36 @@ public class GrapheurEvolutionPatrimoine implements Function<EvolutionPatrimoine
 
   private static void configureSeries(EvolutionPatrimoine evolutionPatrimoine, XYChart chart) {
     var dates = evolutionPatrimoine.dates().toList();
-    var seriesParPossession = evolutionPatrimoine.serieValeursComptablesParPossession();
+    var seriesParPossession = serieValeursComptablesParPossession(evolutionPatrimoine);
     seriesParPossession.keySet().forEach(
         possession -> addSerie(chart, possession.getNom(), dates, seriesParPossession.get(possession)));
     addSerie(
         chart,
         "Patrimoine",
         dates,
-        evolutionPatrimoine.serieValeursComptablesPatrimoine());
+        serieValeursComptablesPatrimoine(evolutionPatrimoine));
+  }
+
+  private static Map<Possession, List<Integer>> serieValeursComptablesParPossession(EvolutionPatrimoine ep) {
+    var map = new HashMap<Possession, List<Integer>>();
+
+    for (var possession : ep.getPatrimoine().possessions()) {
+      if (possession instanceof FluxArgent) {
+        continue; // valeur comptable toujours 0
+      }
+      var serie = new ArrayList<Integer>();
+
+      ep.dates().forEach(d -> serie.add(
+          ep.getEvolutionJournaliere().get(d).possessionParNom(possession.getNom()).getValeurComptable()));
+      map.put(possession, serie);
+    }
+    return map;
+  }
+
+  private static List<Integer> serieValeursComptablesPatrimoine(EvolutionPatrimoine ep) {
+    var serie = new ArrayList<Integer>();
+    ep.dates().forEach(d -> serie.add(ep.getEvolutionJournaliere().get(d).getValeurComptable()));
+    return serie;
   }
 
   private static void addSerie(XYChart chart, String nom, List<LocalDate> localDates, List<Integer> values) {

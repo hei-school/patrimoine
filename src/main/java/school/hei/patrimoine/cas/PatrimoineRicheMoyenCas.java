@@ -1,6 +1,5 @@
 package school.hei.patrimoine.cas;
 
-import static java.time.LocalDate.now;
 import static java.time.Month.APRIL;
 import static java.time.Month.AUGUST;
 import static java.time.Month.DECEMBER;
