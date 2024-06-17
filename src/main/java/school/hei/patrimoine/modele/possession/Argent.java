@@ -6,7 +6,7 @@ import java.util.Set;
 
 import static java.util.stream.Collectors.toSet;
 
-public final class Argent extends Possession {
+public sealed class Argent extends Possession permits Dette, Creance {
   private final LocalDate dateOuverture;
   private final Set<FluxArgent> fluxArgents;
 

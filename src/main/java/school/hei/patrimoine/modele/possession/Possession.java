@@ -11,7 +11,9 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Getter
 public sealed abstract class Possession implements Serializable /*note(no-serializable)*/ permits
-    Argent, Materiel, FluxArgent, GroupePossession, AchatMaterielAuComptant, TransfertArgent {
+    Argent, FluxArgent, TransfertArgent,
+    Materiel, AchatMaterielAuComptant,
+    GroupePossession {
   protected final String nom;
   protected final LocalDate t;
   protected final int valeurComptable;
