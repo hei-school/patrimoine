@@ -4,33 +4,28 @@ import school.hei.patrimoine.modele.EvolutionPatrimoine;
 import school.hei.patrimoine.modele.Patrimoine;
 
 import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Observable;
-import java.util.Set;
 
 import static java.time.LocalDate.now;
 
 public class PatrimoinesVisualisables extends Observable {
 
-  private final Map<String, Patrimoine> patrimoinesParNom;
+  private final List<Patrimoine> patrimoines;
   private Patrimoine patrimoineSélectionné;
   private LocalDate débutEvolution;
   private LocalDate finEvolution;
 
   public PatrimoinesVisualisables(List<Patrimoine> patrimoines) {
     super();
-    this.patrimoinesParNom = new HashMap<>();
-    patrimoines.forEach(patrimoine -> this.patrimoinesParNom.put(patrimoine.nom(), patrimoine));
-
+    this.patrimoines = patrimoines;
     this.patrimoineSélectionné = patrimoines.get(0);
     this.débutEvolution = now();
     this.finEvolution = this.débutEvolution.plusMonths(1);
   }
 
-  public Set<String> noms() {
-    return patrimoinesParNom.keySet();
+  public List<String> noms() {
+    return patrimoines.stream().map(Patrimoine::nom).toList();
   }
 
   public void setDébutEvolution(LocalDate date) {
@@ -44,7 +39,10 @@ public class PatrimoinesVisualisables extends Observable {
   }
 
   public Patrimoine selectionne(String nom) {
-    this.patrimoineSélectionné = this.patrimoinesParNom.get(nom);
+    this.patrimoineSélectionné = patrimoines.stream()
+        .filter(patrimoine -> nom.equals(patrimoine.nom()))
+        .findFirst()
+        .get();
 
     change();
     return this.patrimoineSélectionné;

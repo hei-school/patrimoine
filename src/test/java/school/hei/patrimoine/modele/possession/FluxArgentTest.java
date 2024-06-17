@@ -16,15 +16,15 @@ class FluxArgentTest {
     var au13mai24 = LocalDate.of(2024, MAY, 13);
     var compteCourant = new Argent("Compte courant", au13mai24, 600_000);
 
-    var aLOuvertureDeHEI = LocalDate.of(2021, OCTOBER, 26);
+    var aLOuvertureDeITM = LocalDate.of(2021, OCTOBER, 26);
     var aLaDiplomation = LocalDate.of(2024, DECEMBER, 26);
     var vieEstudiantine = new FluxArgent(
         "Ma super(?) vie d'etudiant",
-        compteCourant, aLOuvertureDeHEI, aLaDiplomation, -500_000,
+        compteCourant, aLOuvertureDeITM, aLaDiplomation, -500_000,
         1);
     var donsDePapaEtMamanAuDebut = new FluxArgent(
         "La générosité des parents au début",
-        compteCourant, aLOuvertureDeHEI, aLOuvertureDeHEI.plusDays(100), 400_000,
+        compteCourant, aLOuvertureDeITM, aLOuvertureDeITM.plusDays(100), 400_000,
         30);
     var donsDePapaEtMamanALaFin = new FluxArgent(
         "La générosité des parents à la fin",

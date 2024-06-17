@@ -34,7 +34,7 @@ public class PatrimoineEtudiantPireCas implements Supplier<Patrimoine> {
         -0.9);
 
     return new Patrimoine(
-        "Pauvre Ilo",
+        "Ilo (pire)",
         ilo,
         au13mai24,
         Set.of(financeur, trainDeVie, mac));

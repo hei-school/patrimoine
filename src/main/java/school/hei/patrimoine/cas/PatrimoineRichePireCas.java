@@ -19,11 +19,11 @@ import static java.time.Month.JANUARY;
 import static java.time.Month.MAY;
 import static java.util.Calendar.JUNE;
 
-public class PatrimoineRicheMeilleurCas implements Supplier<Patrimoine> {
+public class PatrimoineRichePireCas implements Supplier<Patrimoine> {
 
   @Override
   public Patrimoine get() {
-    var ilo = new Personne("Lou");
+    var ilo = new Personne("Cresus");
     var au13mai24 = LocalDate.of(2024, MAY, 13);
     var compteCourant = new Argent("BP", au13mai24.minusDays(1), au13mai24, 13_410);
     var salaire = new FluxArgent(
@@ -77,7 +77,7 @@ public class PatrimoineRicheMeilleurCas implements Supplier<Patrimoine> {
         3);
 
     return new Patrimoine(
-        "Riche Lou",
+        "Cresus (pire)",
         ilo,
         au13mai24,
         Set.of(compteCourant, compteEpargne, trainDeVie, voiture, mac));
