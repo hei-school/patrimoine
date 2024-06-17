@@ -33,10 +33,6 @@ public record Patrimoine(
     return possessions.stream().mapToInt(Possession::getValeurComptable).sum();
   }
 
-  public int getValeurComptable(Devise devise){
-    return possessions.stream().mapToInt(p -> p.getValeurComptable(devise, t)).sum();
-  }
-
   public Patrimoine projectionFuture(LocalDate tFutur) {
     return new Patrimoine(
         nom,
@@ -47,5 +43,9 @@ public record Patrimoine(
 
   public Possession possessionParNom(String nom) {
     return possessions.stream().filter(p -> nom.equals(p.getNom())).findFirst().orElseThrow();
+  }
+
+  public int getValeurComptable(Devise devise, LocalDate t) {
+    return possessions.stream().mapToInt(p -> p.getValeurComptable(devise, t)).sum();
   }
 }
