@@ -1,6 +1,8 @@
 package school.hei.patrimoine.visualisation.swing.ihm;
 
 import lombok.Getter;
+import lombok.SneakyThrows;
+import school.hei.patrimoine.ResourceFileGetter;
 import school.hei.patrimoine.modele.EvolutionPatrimoine;
 import school.hei.patrimoine.visualisation.swing.modele.EvolutionPatrimoineObservable;
 
@@ -36,11 +38,14 @@ public class MainIHM extends JFrame {
     invokeLater(MainIHM::new);
   }
 
+  @SneakyThrows
   private void configureFrame() {
     setTitle("Patrimoine - " + evolutionPatrimoineObservable.getEvolutionPatrimoine().getPatrimoine().possesseur().nom());
     setDefaultCloseOperation(EXIT_ON_CLOSE);
     pack();
     setSize(getDefaultToolkit().getScreenSize());
+    var coinFile = new ResourceFileGetter().apply("coin-dollar-2686.png");
+    setIconImage(new ImageIcon(coinFile.getAbsolutePath()).getImage());
     setResizable(true);
     setVisible(true);
     setLocationRelativeTo(null);

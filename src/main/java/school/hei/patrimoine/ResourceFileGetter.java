@@ -3,7 +3,7 @@ package school.hei.patrimoine;
 import java.io.File;
 import java.util.function.Function;
 
-public class TestFileGetter implements Function<String, File> {
+public class ResourceFileGetter implements Function<String, File> {
 
   @Override
   public File apply(String fileName) {

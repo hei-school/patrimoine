@@ -1,7 +1,7 @@
 package school.hei.patrimoine.visualisation.xchart;
 
 import org.junit.jupiter.api.Test;
-import school.hei.patrimoine.TestFileGetter;
+import school.hei.patrimoine.ResourceFileGetter;
 import school.hei.patrimoine.modele.EvolutionPatrimoine;
 import school.hei.patrimoine.modele.Patrimoine;
 import school.hei.patrimoine.modele.Personne;
@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class GrapheurEvolutionPatrimoinePatrimoineEtudiantTest {
   private final GrapheurEvolutionPatrimoine grapheurEvolutionPatrimoine = new GrapheurEvolutionPatrimoine();
   private final AreImagesEqual areImagesEqual = new AreImagesEqual();
-  private final TestFileGetter testFileGetter = new TestFileGetter();
+  private final ResourceFileGetter resourceFileGetter = new ResourceFileGetter();
 
   private Patrimoine patrimoine() {
     var ilo = new Personne("Ilo");
@@ -59,7 +59,7 @@ class GrapheurEvolutionPatrimoinePatrimoineEtudiantTest {
     var imageGeneree = grapheurEvolutionPatrimoine.apply(patrimoine);
 
     assertTrue(areImagesEqual.apply(
-        testFileGetter.apply("patrimoine-etudiant-sur-quelques-jours.png"),
+        resourceFileGetter.apply("patrimoine-etudiant-sur-quelques-jours.png"),
         imageGeneree));
   }
 
@@ -74,7 +74,7 @@ class GrapheurEvolutionPatrimoinePatrimoineEtudiantTest {
     var imageGeneree = grapheurEvolutionPatrimoine.apply(patrimoine);
 
     assertTrue(areImagesEqual.apply(
-        testFileGetter.apply("patrimoine-etudiant-sur-quelques-mois.png"),
+        resourceFileGetter.apply("patrimoine-etudiant-sur-quelques-mois.png"),
         imageGeneree));
   }
 
@@ -89,7 +89,7 @@ class GrapheurEvolutionPatrimoinePatrimoineEtudiantTest {
     var imageGeneree = grapheurEvolutionPatrimoine.apply(patrimoine);
 
     assertTrue(areImagesEqual.apply(
-        testFileGetter.apply("patrimoine-etudiant-sur-quelques-annees.png"),
+        resourceFileGetter.apply("patrimoine-etudiant-sur-quelques-annees.png"),
         imageGeneree));
   }
 }
