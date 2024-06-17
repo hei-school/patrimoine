@@ -27,6 +27,7 @@ class SerialiseurTest {
         -100_000,
         15);
     var patrimoineIloAu13mai24 = new Patrimoine(
+        "patrimoineIloAu13mai24",
         ilo,
         au13mai24,
         Set.of(financeur, trainDeVie));

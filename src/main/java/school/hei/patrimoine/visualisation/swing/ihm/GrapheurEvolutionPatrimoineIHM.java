@@ -1,7 +1,7 @@
 package school.hei.patrimoine.visualisation.swing.ihm;
 
 import lombok.SneakyThrows;
-import school.hei.patrimoine.visualisation.swing.modele.EvolutionPatrimoineObservable;
+import school.hei.patrimoine.visualisation.swing.modele.PatrimoinesVisualisables;
 import school.hei.patrimoine.visualisation.xchart.GrapheurEvolutionPatrimoine;
 
 import javax.imageio.ImageIO;
@@ -12,14 +12,14 @@ import java.util.Observer;
 
 public class GrapheurEvolutionPatrimoineIHM extends JPanel implements Observer {
   private final GrapheurEvolutionPatrimoine grapheurEvolutionPatrimoine;
-  private final EvolutionPatrimoineObservable evolutionPatrimoineObservable;
+  private final PatrimoinesVisualisables patrimoinesVisualisables;
 
-  public GrapheurEvolutionPatrimoineIHM(EvolutionPatrimoineObservable evolutionPatrimoineObservable) {
+  public GrapheurEvolutionPatrimoineIHM(PatrimoinesVisualisables patrimoinesVisualisables) {
     super();
     this.grapheurEvolutionPatrimoine = new GrapheurEvolutionPatrimoine();
 
-    this.evolutionPatrimoineObservable = evolutionPatrimoineObservable;
-    this.evolutionPatrimoineObservable.addObserver(this);
+    this.patrimoinesVisualisables = patrimoinesVisualisables;
+    this.patrimoinesVisualisables.addObserver(this);
   }
 
   @Override
@@ -31,7 +31,7 @@ public class GrapheurEvolutionPatrimoineIHM extends JPanel implements Observer {
   @Override
   public void paintComponent(Graphics g) {
     super.paintComponent(g);
-    var grapheFile = grapheurEvolutionPatrimoine.apply(evolutionPatrimoineObservable.getEvolutionPatrimoine());
+    var grapheFile = grapheurEvolutionPatrimoine.apply(patrimoinesVisualisables.getEvolutionPatrimoine());
     var grapheImage = ImageIO.read(grapheFile);
     g.drawImage(grapheImage, 0, 0, this.getWidth(), this.getHeight(), this);
   }

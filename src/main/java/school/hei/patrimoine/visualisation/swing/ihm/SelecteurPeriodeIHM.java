@@ -7,7 +7,7 @@ import org.jdatepicker.impl.JDatePickerImpl;
 import org.jdatepicker.impl.UtilDateModel;
 import school.hei.patrimoine.modele.EvolutionPatrimoine;
 import school.hei.patrimoine.visualisation.swing.ihm.jdatepicker.DateFormatter;
-import school.hei.patrimoine.visualisation.swing.modele.EvolutionPatrimoineObservable;
+import school.hei.patrimoine.visualisation.swing.modele.PatrimoinesVisualisables;
 
 import javax.swing.*;
 import java.awt.*;
@@ -20,36 +20,37 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.Properties;
 
-public class SpecifieurPatrimoineIHM extends JPanel implements Observer {
-  private final EvolutionPatrimoineObservable evolutionPatrimoineObservable;
+import static java.awt.FlowLayout.LEFT;
 
-  public SpecifieurPatrimoineIHM(EvolutionPatrimoineObservable evolutionPatrimoineObservable) {
-    super();
-    this.evolutionPatrimoineObservable = evolutionPatrimoineObservable;
-    this.evolutionPatrimoineObservable.addObserver(this);
+public class SelecteurPeriodeIHM extends JPanel implements Observer {
+  private final PatrimoinesVisualisables patrimoinesVisualisables;
 
-    configureStyle();
+  public SelecteurPeriodeIHM(PatrimoinesVisualisables patrimoinesVisualisables) {
+    super(new FlowLayout(LEFT));
+    this.patrimoinesVisualisables = patrimoinesVisualisables;
+    this.patrimoinesVisualisables.addObserver(this);
+
     configurePeriodeEvolution();
   }
 
   private void configurePeriodeEvolution() {
-    var ancienneEvolution = evolutionPatrimoineObservable.getEvolutionPatrimoine();
+    var ancienneEvolution = patrimoinesVisualisables.getEvolutionPatrimoine();
     this.add(((Component) datePicker(
         "De",
         ancienneEvolution.getDebut(),
-        e -> evolutionPatrimoineObservable.setEvolutionPatrimoine(
-            evolutionPatrimoine() //note(fresh-evolution-in-lambda): MUST use function to have fresh copy inside lambda
-                .nouveauDebut(toLocalDate(e))))));
+        e -> patrimoinesVisualisables.setDébutEvolution(
+            //note(fresh-evolution-in-lambda): MUST use function to have fresh copy inside lambda
+            toLocalDate(e)))));
     this.add(((Component) datePicker(
         "À",
         ancienneEvolution.getFin(),
-        e -> evolutionPatrimoineObservable.setEvolutionPatrimoine(
-            evolutionPatrimoine() //note(fresh-evolution-in-lambda)
-                .nouvelleFin(toLocalDate(e))))));
+        e -> patrimoinesVisualisables.setFinEvolution(
+            //note(fresh-evolution-in-lambda)
+            toLocalDate(e)))));
   }
 
   private EvolutionPatrimoine evolutionPatrimoine() {
-    return evolutionPatrimoineObservable.getEvolutionPatrimoine();
+    return patrimoinesVisualisables.getEvolutionPatrimoine();
   }
 
   private LocalDate toLocalDate(ActionEvent e) {
@@ -58,13 +59,6 @@ public class SpecifieurPatrimoineIHM extends JPanel implements Observer {
 
   private LocalDate toLocalDate(DateModel<?> model) {
     return LocalDate.of(model.getYear(), model.getMonth() + 1, model.getDay());
-  }
-
-  private void configureStyle() {
-    var size = new Dimension(500, 500);
-    this.setSize(size);
-    this.setMinimumSize(size);
-    this.setPreferredSize(size);
   }
 
   private JDatePicker datePicker(String label, LocalDate parDefaut, ActionListener actionListener) {

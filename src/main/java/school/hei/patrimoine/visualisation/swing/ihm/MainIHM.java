@@ -2,50 +2,47 @@ package school.hei.patrimoine.visualisation.swing.ihm;
 
 import lombok.Getter;
 import lombok.SneakyThrows;
-import school.hei.patrimoine.ResourceFileGetter;
-import school.hei.patrimoine.modele.EvolutionPatrimoine;
-import school.hei.patrimoine.visualisation.swing.modele.EvolutionPatrimoineObservable;
+import school.hei.patrimoine.modele.Patrimoine;
+import school.hei.patrimoine.visualisation.swing.modele.PatrimoinesVisualisables;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 
 import static java.awt.BorderLayout.CENTER;
 import static java.awt.BorderLayout.WEST;
-import static java.awt.EventQueue.invokeLater;
 import static java.awt.Toolkit.getDefaultToolkit;
-import static java.time.LocalDate.now;
+import static javax.swing.BorderFactory.createEmptyBorder;
+import static javax.swing.BoxLayout.Y_AXIS;
 
-public class MainIHM extends JFrame {
+public class MainIHM extends JFrame implements Observer {
   @Getter
-  private final EvolutionPatrimoineObservable evolutionPatrimoineObservable;
+  private final PatrimoinesVisualisables patrimoinesVisualisables;
   private final SelecteurPatrimoineIHM selecteurPatrimoineIHM;
-  private final SpecifieurPatrimoineIHM specifieurPatrimoineIHM;
+  private final SelecteurPeriodeIHM selecteurPeriodeIHM;
   private final GrapheurEvolutionPatrimoineIHM grapheurEvolutionPatrimoineIHM;
 
-  public MainIHM() {
-    this.selecteurPatrimoineIHM = new SelecteurPatrimoineIHM();
-    this.evolutionPatrimoineObservable = new EvolutionPatrimoineObservable();
-    this.evolutionPatrimoineObservable.setEvolutionPatrimoine(getEvolutionPatrimoine());
+  public MainIHM(List<Patrimoine> patrimoines) {
+    this.patrimoinesVisualisables = new PatrimoinesVisualisables(patrimoines);
+    patrimoinesVisualisables.addObserver(this);
 
-    this.specifieurPatrimoineIHM = new SpecifieurPatrimoineIHM(evolutionPatrimoineObservable);
-    this.grapheurEvolutionPatrimoineIHM = new GrapheurEvolutionPatrimoineIHM(evolutionPatrimoineObservable);
+    this.selecteurPatrimoineIHM = new SelecteurPatrimoineIHM(patrimoinesVisualisables);
+
+    this.selecteurPeriodeIHM = new SelecteurPeriodeIHM(patrimoinesVisualisables);
+    this.grapheurEvolutionPatrimoineIHM = new GrapheurEvolutionPatrimoineIHM(patrimoinesVisualisables);
 
     configureFrame();
     configureContentPane();
   }
 
-  public static void main(String[] args) {
-    invokeLater(MainIHM::new);
-  }
-
   @SneakyThrows
   private void configureFrame() {
-    setTitle("Patrimoine - " + evolutionPatrimoineObservable.getEvolutionPatrimoine().getPatrimoine().possesseur().nom());
+    setTitle();
     setDefaultCloseOperation(EXIT_ON_CLOSE);
     pack();
     setSize(getDefaultToolkit().getScreenSize());
-    var coinFile = new ResourceFileGetter().apply("coin-dollar-2686.png");
-    setIconImage(new ImageIcon(coinFile.getAbsolutePath()).getImage());
     setResizable(true);
     setVisible(true);
     setLocationRelativeTo(null);
@@ -56,16 +53,24 @@ public class MainIHM extends JFrame {
     setContentPane(contentPane);
     contentPane.setLayout(new BorderLayout(0, 0));
 
-    contentPane.add(specifieurPatrimoineIHM, WEST);
+    var westPanel = new JPanel();
+    westPanel.setLayout(new BoxLayout(westPanel, Y_AXIS));
+    westPanel.setAlignmentY(TOP_ALIGNMENT);
+    var westMargin = 5;
+    westPanel.setBorder(createEmptyBorder(westMargin, westMargin, westMargin, westMargin));
+    westPanel.add(selecteurPatrimoineIHM);
+    westPanel.add(selecteurPeriodeIHM);
+    contentPane.add(westPanel, WEST);
+
     contentPane.add(grapheurEvolutionPatrimoineIHM, CENTER);
   }
 
-  private EvolutionPatrimoine getEvolutionPatrimoine() {
-    var debut = now();
-    return new EvolutionPatrimoine(
-        "",
-        selecteurPatrimoineIHM.get(),
-        debut,
-        debut.plusDays(30));
+  @Override
+  public void update(Observable o, Object arg) {
+    setTitle();
+  }
+
+  private void setTitle() {
+    setTitle("Patrimoine - " + patrimoinesVisualisables.getEvolutionPatrimoine().getPatrimoine().possesseur().nom());
   }
 }

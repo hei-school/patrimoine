@@ -18,6 +18,7 @@ class PatrimoineTest {
     var ilo = new Personne("Ilo");
 
     var patrimoineIloAu13mai24 = new Patrimoine(
+        "patrimoineIloAu13mai24",
         ilo,
         LocalDate.of(2024, MAY, 13),
         Set.of());
@@ -31,6 +32,7 @@ class PatrimoineTest {
 
     var au13mai24 = LocalDate.of(2024, MAY, 13);
     var patrimoineIloAu13mai24 = new Patrimoine(
+        "patrimoineIloAu13mai24",
         ilo,
         au13mai24,
         Set.of(
@@ -52,6 +54,7 @@ class PatrimoineTest {
         15);
 
     var patrimoineIloAu13mai24 = new Patrimoine(
+        "patrimoineIloAu13mai24",
         ilo,
         au13mai24,
         Set.of(financeur, trainDeVie));
@@ -62,7 +65,7 @@ class PatrimoineTest {
   }
 
   @Test
-  void patrimoine_possede__groupe_de_train_de_vie_et_d_argent() {
+  void patrimoine_possede_groupe_de_train_de_vie_et_d_argent() {
     var ilo = new Personne("Ilo");
     var au13mai24 = LocalDate.of(2024, MAY, 13);
     var financeur = new Argent("Espèces", au13mai24, 600_000);
@@ -72,6 +75,7 @@ class PatrimoineTest {
         15);
 
     var patrimoineIloAu13mai24 = new Patrimoine(
+        "patrimoineIloAu13mai24",
         ilo,
         au13mai24,
         Set.of(new GroupePossession("Le groupe", au13mai24, Set.of(financeur, trainDeVie))));
