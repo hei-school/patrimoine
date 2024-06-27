@@ -20,6 +20,10 @@ public final class TransfertArgent extends Possession {
             new FluxArgent("Flux TransfertArgent entrant: " + nom, versArgent, debut, fin, fluxMensuel, dateOperation)));
   }
 
+  public TransfertArgent(String nom, Argent depuis, Argent vers, LocalDate date, int montant) {
+    this(nom, depuis, vers, date, date, montant, date.getDayOfMonth());
+  }
+
   @Override
   public Possession projectionFuture(LocalDate tFutur) {
     return transfertCommeGroupe.projectionFuture(tFutur);
