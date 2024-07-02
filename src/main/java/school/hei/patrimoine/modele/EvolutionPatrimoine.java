@@ -1,15 +1,14 @@
 package school.hei.patrimoine.modele;
 
-import lombok.Getter;
-import school.hei.patrimoine.modele.possession.FluxArgent;
-import school.hei.patrimoine.modele.possession.Possession;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
+import lombok.Getter;
+import school.hei.patrimoine.modele.possession.FluxArgent;
+import school.hei.patrimoine.modele.possession.Possession;
 
 @Getter
 public class EvolutionPatrimoine {
@@ -50,8 +49,14 @@ public class EvolutionPatrimoine {
       }
       var serie = new ArrayList<Integer>();
 
-      dates().forEach(d -> serie.add(
-          evolutionJournaliere.get(d).possessionParNom(possession.getNom()).getValeurComptable()));
+      dates()
+          .forEach(
+              d ->
+                  serie.add(
+                      evolutionJournaliere
+                          .get(d)
+                          .possessionParNom(possession.getNom())
+                          .getValeurComptable()));
       map.put(possession, serie);
     }
     return map;

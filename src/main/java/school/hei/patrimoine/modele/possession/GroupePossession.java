@@ -1,9 +1,9 @@
 package school.hei.patrimoine.modele.possession;
 
+import static java.util.stream.Collectors.toSet;
+
 import java.time.LocalDate;
 import java.util.Set;
-
-import static java.util.stream.Collectors.toSet;
 
 public final class GroupePossession extends Possession {
 
