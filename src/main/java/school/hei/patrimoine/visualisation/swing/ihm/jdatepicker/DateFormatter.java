@@ -1,9 +1,9 @@
 package school.hei.patrimoine.visualisation.swing.ihm.jdatepicker;
 
-import javax.swing.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import javax.swing.*;
 
 public class DateFormatter extends JFormattedTextField.AbstractFormatter {
 

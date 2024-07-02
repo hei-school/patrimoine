@@ -1,10 +1,9 @@
 package school.hei.patrimoine.visualisation;
 
-import lombok.SneakyThrows;
-
-import javax.imageio.ImageIO;
 import java.io.File;
 import java.util.function.BiFunction;
+import javax.imageio.ImageIO;
+import lombok.SneakyThrows;
 
 public class AreImagesEqual implements BiFunction<File, File, Boolean> {
   @SneakyThrows

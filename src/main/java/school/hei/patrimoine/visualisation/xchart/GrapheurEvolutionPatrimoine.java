@@ -1,19 +1,5 @@
 package school.hei.patrimoine.visualisation.xchart;
 
-import lombok.SneakyThrows;
-import org.knowm.xchart.XYChart;
-import org.knowm.xchart.XYChartBuilder;
-import org.knowm.xchart.style.theme.MatlabTheme;
-import school.hei.patrimoine.modele.EvolutionPatrimoine;
-
-import java.io.File;
-import java.text.DecimalFormat;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.Date;
-import java.util.List;
-import java.util.function.Function;
-
 import static java.awt.Color.WHITE;
 import static java.nio.file.Files.createTempFile;
 import static java.util.UUID.randomUUID;
@@ -22,6 +8,19 @@ import static org.knowm.xchart.BitmapEncoder.saveBitmapWithDPI;
 import static org.knowm.xchart.style.Styler.LegendPosition.OutsideE;
 import static org.knowm.xchart.style.markers.SeriesMarkers.NONE;
 
+import java.io.File;
+import java.text.DecimalFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Date;
+import java.util.List;
+import java.util.function.Function;
+import lombok.SneakyThrows;
+import org.knowm.xchart.XYChart;
+import org.knowm.xchart.XYChartBuilder;
+import org.knowm.xchart.style.theme.MatlabTheme;
+import school.hei.patrimoine.modele.EvolutionPatrimoine;
+
 public class GrapheurEvolutionPatrimoine implements Function<EvolutionPatrimoine, File> {
 
   private static final int DPI = 300;
@@ -29,23 +28,24 @@ public class GrapheurEvolutionPatrimoine implements Function<EvolutionPatrimoine
   private static void configureSeries(EvolutionPatrimoine evolutionPatrimoine, XYChart chart) {
     var dates = evolutionPatrimoine.dates().toList();
     var seriesParPossession = evolutionPatrimoine.serieValeursComptablesParPossession();
-    seriesParPossession.keySet().forEach(
-        possession -> addSerie(chart, possession.getNom(), dates, seriesParPossession.get(possession)));
-    addSerie(
-        chart,
-        "Patrimoine",
-        dates,
-        evolutionPatrimoine.serieValeursComptablesPatrimoine());
+    seriesParPossession
+        .keySet()
+        .forEach(
+            possession ->
+                addSerie(chart, possession.getNom(), dates, seriesParPossession.get(possession)));
+    addSerie(chart, "Patrimoine", dates, evolutionPatrimoine.serieValeursComptablesPatrimoine());
   }
 
-  private static void addSerie(XYChart chart, String nom, List<LocalDate> localDates, List<Integer> values) {
+  private static void addSerie(
+      XYChart chart, String nom, List<LocalDate> localDates, List<Integer> values) {
     if (values.stream().allMatch(value -> value == 0)) {
       return;
     }
 
-    var dates = localDates.stream()
-        .map(localDate -> Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant()))
-        .toList();
+    var dates =
+        localDates.stream()
+            .map(localDate -> Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant()))
+            .toList();
     var serie = chart.addSeries(nom, dates, values);
     serie.setMarker(NONE);
   }

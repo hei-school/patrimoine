@@ -1,16 +1,14 @@
 package school.hei.patrimoine.modele;
 
-import school.hei.patrimoine.modele.possession.Possession;
+import static java.util.stream.Collectors.toSet;
 
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Set;
+import school.hei.patrimoine.modele.possession.Possession;
 
-import static java.util.stream.Collectors.toSet;
-
-public record Patrimoine(
-    String nom, Personne possesseur, LocalDate t, Set<Possession> possessions)
-    implements Serializable/*note(no-serializable)*/ {
+public record Patrimoine(String nom, Personne possesseur, LocalDate t, Set<Possession> possessions)
+    implements Serializable /*note(no-serializable)*/ {
 
   public int getValeurComptable() {
     return possessions.stream().mapToInt(Possession::getValeurComptable).sum();

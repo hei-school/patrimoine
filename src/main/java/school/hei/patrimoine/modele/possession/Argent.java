@@ -1,10 +1,10 @@
 package school.hei.patrimoine.modele.possession;
 
+import static java.util.stream.Collectors.toSet;
+
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
-
-import static java.util.stream.Collectors.toSet;
 
 public sealed class Argent extends Possession permits Dette, Creance {
   private final LocalDate dateOuverture;
@@ -18,7 +18,12 @@ public sealed class Argent extends Possession permits Dette, Creance {
     this(nom, dateOuverture, t, valeurComptable, new HashSet<>());
   }
 
-  private Argent(String nom, LocalDate dateOuverture, LocalDate t, int valeurComptable, Set<FluxArgent> fluxArgents) {
+  private Argent(
+      String nom,
+      LocalDate dateOuverture,
+      LocalDate t,
+      int valeurComptable,
+      Set<FluxArgent> fluxArgents) {
     super(nom, t, valeurComptable);
     this.fluxArgents = fluxArgents;
     this.dateOuverture = dateOuverture;
@@ -39,8 +44,8 @@ public sealed class Argent extends Possession permits Dette, Creance {
   }
 
   private int financementsFutur(LocalDate tFutur) {
-    return fluxArgents.stream().
-        mapToInt(
+    return fluxArgents.stream()
+        .mapToInt(
             f -> valeurComptable - f.projectionFuture(tFutur).getArgent().getValeurComptable())
         .sum();
   }
