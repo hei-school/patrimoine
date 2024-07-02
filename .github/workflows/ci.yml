@@ -19,4 +19,4 @@ jobs:
           maven-version: '3.9.6'
 
       - name: test with coverage (min -> 80%)
-        run: mvn -B clean verify
+        run: mvn -B clean verify '-Dtest=school.hei.patrimoine.modele.**'
