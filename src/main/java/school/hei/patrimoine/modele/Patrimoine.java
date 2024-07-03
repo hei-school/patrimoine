@@ -27,4 +27,13 @@ public record Patrimoine(
   public Possession possessionParNom(String nom) {
     return possessions.stream().filter(p -> nom.equals(p.getNom())).findFirst().orElseThrow();
   }
+  public double getValeurEnDevise(String deviseCible, LocalDate dateReference) {
+    double tauxChange = 4800.0;
+
+    if ("EUR".equals(deviseCible)) {
+      return (double) getValeurComptable() / tauxChange;
+    } else {
+      return (double) getValeurComptable() / tauxChange;
+    }
+  }
 }
