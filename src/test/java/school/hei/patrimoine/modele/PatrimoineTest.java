@@ -17,10 +17,10 @@ class PatrimoineTest {
     var ilo = new Personne("Ilo");
 
     var patrimoineIloAu13mai24 = new Patrimoine(
-        "patrimoineIloAu13mai24",
-        ilo,
-        LocalDate.of(2024, MAY, 13),
-        Set.of());
+            "patrimoineIloAu13mai24",
+            ilo,
+            LocalDate.of(2024, MAY, 13),
+            Set.of());
 
     assertEquals(0, patrimoineIloAu13mai24.getValeurComptable());
   }
@@ -31,13 +31,13 @@ class PatrimoineTest {
 
     var au13mai24 = LocalDate.of(2024, MAY, 13);
     var patrimoineIloAu13mai24 = new Patrimoine(
-        "patrimoineIloAu13mai24",
-        ilo,
-        au13mai24,
-        Set.of(
-            new Argent("Espèces", au13mai24, 400_000),
-            new Argent("Compte epargne", au13mai24, 200_000),
-            new Argent("Compte courant", au13mai24, 600_000)));
+            "patrimoineIloAu13mai24",
+            ilo,
+            au13mai24,
+            Set.of(
+                    new Argent("Espèces", au13mai24, 400_000),
+                    new Argent("Compte epargne", au13mai24, 200_000),
+                    new Argent("Compte courant", au13mai24, 600_000)));
 
     assertEquals(1_200_000, patrimoineIloAu13mai24.getValeurComptable());
   }
@@ -48,15 +48,15 @@ class PatrimoineTest {
     var au13mai24 = LocalDate.of(2024, MAY, 13);
     var financeur = new Argent("Espèces", au13mai24, 600_000);
     var trainDeVie = new FluxArgent(
-        "Vie courante",
-        financeur, au13mai24.minusDays(100), au13mai24.plusDays(100), -100_000,
-        15);
+            "Vie courante",
+            financeur, au13mai24.minusDays(100), au13mai24.plusDays(100), -100_000,
+            15);
 
     var patrimoineIloAu13mai24 = new Patrimoine(
-        "patrimoineIloAu13mai24",
-        ilo,
-        au13mai24,
-        Set.of(financeur, trainDeVie));
+            "patrimoineIloAu13mai24",
+            ilo,
+            au13mai24,
+            Set.of(financeur, trainDeVie));
 
     assertEquals(500_000, patrimoineIloAu13mai24.projectionFuture(au13mai24.plusDays(10)).getValeurComptable());
     assertEquals(200_000, patrimoineIloAu13mai24.projectionFuture(au13mai24.plusDays(100)).getValeurComptable());
@@ -69,20 +69,21 @@ class PatrimoineTest {
     var au13mai24 = LocalDate.of(2024, MAY, 13);
     var financeur = new Argent("Espèces", au13mai24, 600_000);
     var trainDeVie = new FluxArgent(
-        "Vie courante",
-        financeur, au13mai24.minusDays(100), au13mai24.plusDays(100), -100_000,
-        15);
+            "Vie courante",
+            financeur, au13mai24.minusDays(100), au13mai24.plusDays(100), -100_000,
+            15);
 
     var patrimoineIloAu13mai24 = new Patrimoine(
-        "patrimoineIloAu13mai24",
-        ilo,
-        au13mai24,
-        Set.of(new GroupePossession("Le groupe", au13mai24, Set.of(financeur, trainDeVie))));
+            "patrimoineIloAu13mai24",
+            ilo,
+            au13mai24,
+            Set.of(new GroupePossession("Le groupe", au13mai24, Set.of(financeur, trainDeVie))));
 
     assertEquals(500_000, patrimoineIloAu13mai24.projectionFuture(au13mai24.plusDays(10)).getValeurComptable());
     assertEquals(200_000, patrimoineIloAu13mai24.projectionFuture(au13mai24.plusDays(100)).getValeurComptable());
     assertEquals(200_000, patrimoineIloAu13mai24.projectionFuture(au13mai24.plusDays(1_000)).getValeurComptable());
   }
+
   @Test
   void patrimoine_de_zety_au_17_septembre_2024() {
     var zety = new Personne("Zety");
@@ -124,6 +125,7 @@ class PatrimoineTest {
 
     assertEquals(valeurTotaleAttendue, patrimoineFuture.getValeurComptable());
   }
+
   @Test
   void patrimoine_zety_avec_dette_entre_17_et_18_septembre_2024() {
     var zety = new Personne("Zety");
@@ -198,14 +200,15 @@ class PatrimoineTest {
     }
     assertEquals(LocalDate.of(2024, DECEMBER, 1), dateEpuisementEspeces);
   }
+
   @Test
-  void valeurPatrimoine_le14Fevrier2025(){
+  void valeurPatrimoine_le14Fevrier2025() {
     var Zety = new Personne("Zety");
-    var au3juillet24 = LocalDate.of(2024,JULY,3);
-    var au13fevrier25 = LocalDate.of(2025,FEBRUARY,13);
-    var au1octobre24 = LocalDate.of(2024,OCTOBER,1);
-    var au21septembre24 = LocalDate.of(2024,SEPTEMBER,21);
-    var au14Fevrier2025 = LocalDate.of(2025,FEBRUARY,14);
+    var au3juillet24 = LocalDate.of(2024, JULY, 3);
+    var au13fevrier25 = LocalDate.of(2025, FEBRUARY, 13);
+    var au1octobre24 = LocalDate.of(2024, OCTOBER, 1);
+    var au21septembre24 = LocalDate.of(2024, SEPTEMBER, 21);
+    var au14Fevrier2025 = LocalDate.of(2025, FEBRUARY, 14);
 
     var ordinateur = new Materiel("Ordinateur", au3juillet24, 1_200_000, au3juillet24, -0.10);
     var vetements = new Materiel("Vêtements", au3juillet24, 1_500_000, au3juillet24, -0.50);
@@ -231,11 +234,42 @@ class PatrimoineTest {
     var paiementScolarite = new FluxArgent(
             "Paiement scolarité", compteBancaire, au21septembre24, au21septembre24, -2_500_000, 21);
 
-    var patrimoineZety = new Patrimoine("patrimoine zety",Zety,au14Fevrier2025,Set.of(ordinateur,vetements,argentEspeces,fraisScolarite,fraisTenueCompte,donParents,trainDeVie));
+    var patrimoineZety = new Patrimoine("patrimoine zety", Zety, au14Fevrier2025, Set.of(ordinateur, vetements, argentEspeces, fraisScolarite, fraisTenueCompte, donParents, trainDeVie));
 
     double valeurComptable = patrimoineZety.getValeurComptable();
 
-    assertEquals(3500000,valeurComptable);
+    assertEquals(3500000, valeurComptable);
   }
 
+  @Test
+  void patrimoine_zety_en_euros_le_26_octobre_2025() {
+    var zety = new Personne("Zety");
+    var au3juillet24 = LocalDate.of(2024, 7, 3);
+
+    var ordinateur = new Materiel("Ordinateur", au3juillet24, 1_200_000, au3juillet24, -0.10);
+    var vetements = new Materiel("Vêtements", au3juillet24, 1_500_000, au3juillet24, -0.50);
+    var argentEspeces = new Argent("Espèces", au3juillet24, 800_000);
+    var fraisScolarite = new FluxArgent("Frais de scolarité", argentEspeces, LocalDate.of(2023, 11, 27),
+            LocalDate.of(2024, 8, 27), -200_000, 27);
+    var compteBancaire = new Argent("Compte bancaire", au3juillet24, 100_000);
+    var fraisTenueCompte = new FluxArgent("Frais de tenue de compte", compteBancaire, au3juillet24.withDayOfMonth(25),
+            LocalDate.of(2024, 12, 25), -20_000, 25);
+    var donParents = new FluxArgent("Don des parents", argentEspeces, au3juillet24, LocalDate.of(2024, 12, 15),
+            100_000, 15);
+    var trainDeVie = new FluxArgent("Train de vie", argentEspeces, LocalDate.of(2024, 10, 1),
+            LocalDate.of(2025, 2, 13), -250_000, 1);
+
+    var patrimoineZetyAu26octobre25 = new Patrimoine("patrimoineZetyAu26octobre25", zety, LocalDate.of(2025, 10, 26),
+            Set.of(ordinateur, vetements, argentEspeces, fraisScolarite, compteBancaire, fraisTenueCompte,
+                    donParents, trainDeVie));
+
+    double tauxChange = 4821.0;
+    double appreciationAnnee = -10.0;
+
+    double valeurEnEuros = patrimoineZetyAu26octobre25.getValeurEnDevise("EUR", tauxChange, LocalDate.of(2025, 10, 26), appreciationAnnee);
+
+    double expectedValueInEuros = valeurEnEuros / tauxChange;
+
+    assertEquals(expectedValueInEuros, valeurEnEuros, 746.);
+  }
 }
