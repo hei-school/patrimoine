@@ -111,4 +111,43 @@ class PatrimoineTest {
 
     assertEquals(valeurComptableAttendue, patrimoineZetyAu17Sept27.getValeurComptable());
   }
+
+  @Test
+  void diminution_patrimoine_zety_entre_17_et_18_sept_2024(){
+    LocalDate dateDebut = LocalDate.of(2024, JULY, 3);
+    LocalDate dateFin = LocalDate.of(2024, SEPTEMBER, 17);
+
+    Possession ordinateur = new Materiel("Ordinateur", dateDebut, 1200000, dateDebut, -0.10);
+    Possession vetement = new Materiel("Vetement", dateDebut, 1500000, dateDebut, -0.50);
+    Possession argentEspece = new Argent("Espece", dateDebut, 800000);
+
+    Argent compteBancaire = new Argent("Compte bancaire", dateDebut, 100000);
+    FluxArgent fraisDeCompte = new FluxArgent("Frais de tenue de compte", compteBancaire, dateDebut, dateFin.plusMonths(1), -20000, 25);
+    TransfertArgent fraisScolaire = new TransfertArgent("Frais de scolarite", (Argent) argentEspece, compteBancaire, LocalDate.of(2023, 11, 27), LocalDate.of(2024, 8, 27), -200000, 27);
+
+    Personne zety = new Personne("Zety");
+
+    Patrimoine patrimoineAvantEndettement = new Patrimoine(
+            "Patrimoine de Zety",
+            zety,
+            dateDebut,
+            Set.of(ordinateur, vetement, argentEspece,compteBancaire, fraisDeCompte, fraisScolaire)
+    );
+
+    Argent empruntBancaire = new Argent("Emprunt bancaire", LocalDate.of(2024, SEPTEMBER, 18), 10000000);
+    Argent coutEmprunt = new Argent("Coût du prêt", LocalDate.of(2024, SEPTEMBER, 18), 1000000);
+
+    Patrimoine patrimoineApresEndettement = new Patrimoine(
+            "Patrimoine de Zety après endettement",
+            zety,
+            dateDebut,
+            Set.of(ordinateur, vetement, argentEspece, compteBancaire, fraisDeCompte, fraisScolaire, empruntBancaire, coutEmprunt)
+            );
+
+    int diminutionAttendue = patrimoineAvantEndettement.getValeurComptable() - patrimoineApresEndettement.getValeurComptable();
+
+    assertEquals(10000000, empruntBancaire.getValeurComptable());
+    assertEquals(1000000, coutEmprunt.getValeurComptable());
+    assertEquals(diminutionAttendue, -11000000);
+  }
 }
