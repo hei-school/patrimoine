@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import school.hei.patrimoine.modele.Patrimoine;
 import school.hei.patrimoine.modele.Personne;
 import school.hei.patrimoine.modele.possession.Argent;
+import school.hei.patrimoine.modele.possession.Dette;
 import school.hei.patrimoine.modele.possession.FluxArgent;
 import school.hei.patrimoine.modele.possession.Materiel;
 
@@ -13,7 +14,8 @@ import java.util.Set;
 public class ZetyPatrimoineTest {
 
     @Test
-    void zety_etudie_en_2023_2024(){
+    void zety(){
+        //Zety étudie en 2023-2024
         var zety = new Personne("Zety");
         var au07juillet2024 = LocalDate.of(2024, 07, 03);
 
@@ -33,7 +35,24 @@ public class ZetyPatrimoineTest {
                 au07juillet2024,
                 Set.of(ordinateur, vetements, argent, fraisScolaire, compteBancaire, tenueDeCompte));
 
-        System.out.println("Le patrimoine de Zety le 17 septembre 2024 vaut: " +
-                patrimoineZety.getValeurComptable());
+        var patrimoineLe17Septembre2024 = patrimoineZety.projectionFuture(LocalDate.of(2024,9,17)).getValeurComptable();
+        System.out.println("Le patrimoine de Zety le 17 septembre 2024 vaut: " + patrimoineLe17Septembre2024);
+
+
+        //Zety s’endette
+        var au18Septembre2024 = LocalDate.of(2024, 9, 18);
+        var frais2025 = new Dette("Frais 2024-2025", au18Septembre2024, -10000000);
+        var ncb = new FluxArgent("Compte bancaire", compteBancaire, au18Septembre2024, LocalDate.of(2025,9,18),10000000,18);
+        var coutPret = new Dette("coût du prêt", au18Septembre2024, -1000000);
+
+        var nouveauPatrimoine = new Patrimoine(
+                "patrimoine après dette", zety, au18Septembre2024, Set.of(frais2025, coutPret, compteBancaire)
+        );
+
+        var patrimoineLe18Septembre2024 = nouveauPatrimoine.projectionFuture(LocalDate.of(2024,9,18)).getValeurComptable();
+        System.out.println("Le patrimoine de Zety entre le 17 et le 18 septembre 2024 a diminué de: " +
+                (patrimoineLe17Septembre2024 - patrimoineLe18Septembre2024));
+
+        //
     }
 }
