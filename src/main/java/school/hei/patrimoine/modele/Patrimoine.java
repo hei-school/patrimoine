@@ -24,6 +24,10 @@ public record Patrimoine(
         possessions.stream().map(p -> p.projectionFuture(tFutur)).collect(toSet()));
   }
 
+  public void ajouterPossessions(Possession possession){
+    possessions.add(possession);
+  }
+
   public Possession possessionParNom(String nom) {
     return possessions.stream().filter(p -> nom.equals(p.getNom())).findFirst().orElseThrow();
   }
