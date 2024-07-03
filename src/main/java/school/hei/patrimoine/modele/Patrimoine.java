@@ -1,5 +1,7 @@
 package school.hei.patrimoine.modele;
 
+import school.hei.patrimoine.modele.Devise;
+import school.hei.patrimoine.modele.TauxDeChange;
 import school.hei.patrimoine.modele.possession.Possession;
 
 import java.io.Serializable;
@@ -9,8 +11,8 @@ import java.util.Set;
 import static java.util.stream.Collectors.toSet;
 
 public record Patrimoine(
-    String nom, Personne possesseur, LocalDate t, Set<Possession> possessions)
-    implements Serializable/*note(no-serializable)*/ {
+        String nom, Personne possesseur, LocalDate t, Set<Possession> possessions)
+        implements Serializable/*note(no-serializable)*/ {
 
   public int getValeurComptable() {
     return possessions.stream().mapToInt(Possession::getValeurComptable).sum();
@@ -18,10 +20,15 @@ public record Patrimoine(
 
   public Patrimoine projectionFuture(LocalDate tFutur) {
     return new Patrimoine(
-        nom,
-        possesseur,
-        tFutur,
-        possessions.stream().map(p -> p.projectionFuture(tFutur)).collect(toSet()));
+            nom,
+            possesseur,
+            tFutur,
+            possessions.stream().map(p -> p.projectionFuture(tFutur)).collect(toSet()));
+  }
+
+  public Patrimoine projectionFuture(LocalDate tFutur, Devise devise, TauxDeChange tauxDeChange){
+    //TODO: implement
+    return null;
   }
 
   public Possession possessionParNom(String nom) {
