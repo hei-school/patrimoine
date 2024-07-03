@@ -84,74 +84,45 @@ class PatrimoineTest {
     assertEquals(200_000, patrimoineIloAu13mai24.projectionFuture(au13mai24.plusDays(1_000)).getValeurComptable());
   }
   @Test
-  void patrimoine_a_de_l_argent_zety(){
-    var Zety = new Personne("Zety");
+  void patrimoine_de_zety_au_17_septembre_2024() {
+    var zety = new Personne("Zety");
+    var dateActuelle = LocalDate.of(2024, 7, 3);
 
-    var au3Juillet2024 = LocalDate.of(2024,JULY,3);
+    var ordinateur = new Materiel("Ordinateur", dateActuelle, 1_200_000, dateActuelle, -0.10);
+    var vetements = new Materiel("Vêtements", dateActuelle, 1_500_000, dateActuelle, -0.50);
+    var especes = new Argent("Espèces", dateActuelle, 800_000);
 
-    var patrimoineZetyau3Juillet2024 = new Patrimoine(
-            "patrimoine zety au 3 july",
-            Zety,
-            au3Juillet2024,
-            Set.of(
-                new Argent("especes",au3Juillet2024,800_000),
-                    new Argent("compte bancaire",au3Juillet2024,100_000)
-            )
-    );
-    assertEquals(900_000,patrimoineZetyau3Juillet2024.getValeurComptable());
-
-  }
-  @Test
-  void patrimoine_possede_un_train_de_vie_financé_par_argent_zety(){
-    var Zety = new Personne("Zety");
-    var au3Juillet2024 = LocalDate.of(2024,JULY,3);
-
-    var financeur = new Argent("especes",au3Juillet2024,800_000);
-
-    var trainDeVie = new FluxArgent(
-            "frais de scolarite",
-            financeur,LocalDate.of(2023,NOVEMBER,27),
-            LocalDate.of(2024,AUGUST,27),
+    var dateDebutScolarite = LocalDate.of(2023, 11, 27);
+    var dateFinScolarite = LocalDate.of(2024, 8, 27);
+    var fraisScolarite = new FluxArgent(
+            "Frais de scolarité",
+            especes,
+            dateDebutScolarite,
+            dateFinScolarite,
             -200_000,
-            27
-    );
+            27);
 
-   var patrimoineZetyAu17Septembre2024 = new Patrimoine(
-           "patrimoine Zety au 3 july",
-           Zety,
-           au3Juillet2024,
-           Set.of(financeur,trainDeVie)
-   );
-
-   assertEquals(800000,patrimoineZetyAu17Septembre2024.projectionFuture(au3Juillet2024.plusDays(20)).getValeurComptable());
-    assertEquals(400000,patrimoineZetyAu17Septembre2024.projectionFuture(au3Juillet2024.plusDays(200)).getValeurComptable());
-    assertEquals(400000,patrimoineZetyAu17Septembre2024.projectionFuture(au3Juillet2024.plusDays(1_220)).getValeurComptable());
-  }
-  @Test
-  void compte_bancaire_evolution(){
-    var au3July2024 = LocalDate.of(2024,JULY,3);
-    var Zety = new Personne("Zety");
-    var compteBancaire = new Argent("compte bancaire",au3July2024,100_000);
-
-    var FraisTenueCompte = new FluxArgent(
-            "frais tenue compte",
+    var compteBancaire = new Argent("Compte bancaire", dateActuelle, 100_000);
+    var fraisCompte = new FluxArgent(
+            "Frais de tenue de compte",
             compteBancaire,
-            LocalDate.of(2024,JULY,25),
-            au3July2024.plusDays(54654798),
+            dateActuelle.minusMonths(1),
+            LocalDate.MAX,
             -20_000,
-            30
-    );
-    var patrimoineZetyau3Juillet2024 = new Patrimoine(
-            "patrimoine zety au 3 july",
-            Zety,
-            au3July2024,
-            Set.of(
-                    compteBancaire,FraisTenueCompte
-            )
-    );
+            25);
 
-    assertEquals(100000,patrimoineZetyau3Juillet2024.projectionFuture(au3July2024.plusDays(20)).getValeurComptable());
-    assertEquals(-240000,patrimoineZetyau3Juillet2024.projectionFuture(au3July2024.plusDays(562)).getValeurComptable());
+    var patrimoineZety = new Patrimoine(
+            "Patrimoine de Zety",
+            zety,
+            dateActuelle,
+            Set.of(ordinateur, vetements, especes, fraisScolarite, compteBancaire, fraisCompte));
+
+    var dateFutur = LocalDate.of(2024, 9, 17);
+    var patrimoineFuture = patrimoineZety.projectionFuture(dateFutur);
+
+    int valeurTotaleAttendue = 2978848;
+
+    assertEquals(valeurTotaleAttendue, patrimoineFuture.getValeurComptable());
   }
   @Test
   void patrimoine_zety_avec_dette_entre_17_et_18_septembre_2024() {
