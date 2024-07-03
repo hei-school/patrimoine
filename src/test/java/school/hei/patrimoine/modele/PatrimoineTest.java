@@ -89,6 +89,8 @@ class PatrimoineTest {
   void valeurPatrimoineAu17Septembre2024() {
     var zety = new Personne("Zety");
     var au3juillet2024 = LocalDate.of(2024, Month.JULY, 3);
+
+    // Création des possessions de Zety
     var ordinateur = new Materiel(
             "Ordinateur",
             au3juillet2024,
@@ -104,6 +106,7 @@ class PatrimoineTest {
             -0.50);
 
     var argentEspeces = new Argent("Espèces", au3juillet2024, 800_000);
+
     var fraisScolarite = new FluxArgent(
             "Frais de scolarité",
             argentEspeces,
@@ -122,23 +125,29 @@ class PatrimoineTest {
             -20_000,
             30);
 
+    // Création du patrimoine de Zety
     var patrimoineZety = new Patrimoine(
             "Patrimoine de Zety",
             zety,
             au3juillet2024,
             Set.of(ordinateur, vetements, argentEspeces, fraisScolarite, compteBancaire, fraisTenueCompte));
 
+    // Projection de la valeur du patrimoine au 17 septembre 2024
     var valeurPatrimoineAu17Septembre2024 = patrimoineZety.projectionFuture(LocalDate.of(2024, Month.SEPTEMBER, 17)).getValeurComptable();
+
+    // Calcul de la valeur attendue du patrimoine
     var valeurOrdinateurAu17Septembre2024 = ordinateur.valeurComptableFuture(LocalDate.of(2024, Month.SEPTEMBER, 17));
     var valeurVetementsAu17Septembre2024 = vetements.valeurComptableFuture(LocalDate.of(2024, Month.SEPTEMBER, 17));
     var valeurEspecesAu17Septembre2024 = argentEspeces.valeurComptableFuture(LocalDate.of(2024, Month.SEPTEMBER, 17));
     var valeurCompteBancaireAu17Septembre2024 = compteBancaire.valeurComptableFuture(LocalDate.of(2024, Month.SEPTEMBER, 17));
-
     var valeurTotaleAttendue = valeurOrdinateurAu17Septembre2024 + valeurVetementsAu17Septembre2024 + valeurEspecesAu17Septembre2024 + valeurCompteBancaireAu17Septembre2024;
+
+    // Assertion
     assertEquals(valeurTotaleAttendue, valeurPatrimoineAu17Septembre2024);
   }
 
-// dimunition de la valeur du  patrimoine de Zety entre le 17 et le 18 septembre 2024
+
+  // dimunition de la valeur du  patrimoine de Zety entre le 17 et le 18 septembre 2024
   @Test
   void diminutionPatrimoineEntre17Et18Septembre2024() {
     var zety = new Personne("Zety");
@@ -158,6 +167,7 @@ class PatrimoineTest {
             -0.50);
 
     var argentEspeces = new Argent("Espèces", au3juillet2024, 800_000);
+
     var fraisScolarite = new FluxArgent(
             "Frais de scolarité",
             argentEspeces,
@@ -175,7 +185,6 @@ class PatrimoineTest {
             au3juillet2024.plusYears(1),
             -20_000,
             30);
-
     var patrimoineZety = new Patrimoine(
             "Patrimoine de Zety",
             zety,
@@ -184,15 +193,17 @@ class PatrimoineTest {
     var valeurPatrimoineAu17Septembre2024 = patrimoineZety.projectionFuture(LocalDate.of(2024, Month.SEPTEMBER, 17)).getValeurComptable();
     var valeurPatrimoineAu18Septembre2024 = patrimoineZety.projectionFuture(LocalDate.of(2024, Month.SEPTEMBER, 18)).getValeurComptable();
     var diminutionPatrimoine = valeurPatrimoineAu18Septembre2024 - valeurPatrimoineAu17Septembre2024;
-
     assertEquals(-2384, diminutionPatrimoine);
   }
+
 
   // la date sur la quelle Zety n’a plus d’espèces
   @Test
   void zety_n_a_plus_especes_apres_18_septembre_2024() {
     var zety = new Personne("Zety");
     var au3juillet2024 = LocalDate.of(2024, Month.JULY, 3);
+
+    // Création des possessions de Zety
     var argentEspeces = new Argent("Espèces", au3juillet2024, 800_000);
     var ordinateur = new Materiel(
             "Ordinateur",
@@ -226,6 +237,7 @@ class PatrimoineTest {
             -20_000,
             30);
 
+    // Création du patrimoine de Zety
     var patrimoineZety = new Patrimoine(
             "Patrimoine de Zety",
             zety,
@@ -233,6 +245,8 @@ class PatrimoineTest {
             Set.of(argentEspeces, ordinateur, vetements, fraisScolarite, compteBancaire, fraisTenueCompte));
 
     LocalDate dateProjection = au3juillet2024;
+
+    // Simulation des transactions jusqu'à ce que Zety n'ait plus d'espèces
     while (true) {
       if (dateProjection.equals(LocalDate.of(2024, Month.SEPTEMBER, 21))) {
         argentEspeces = new Argent("Espèces", dateProjection, argentEspeces.getValeurComptable() - 2_500_000);
@@ -250,8 +264,10 @@ class PatrimoineTest {
       dateProjection = dateProjection.plusDays(1);
     }
 
+    // Assertion sur la date à laquelle Zety n'a plus d'espèces
     assertEquals(LocalDate.of(2024, Month.SEPTEMBER, 21), dateProjection);
   }
+
   // la valeur de patrimoine de Zety à partir de 14 février 2025
   @Test
   void valeurPatrimoineAu14Fevrier2025() {
@@ -297,6 +313,4 @@ class PatrimoineTest {
     var valeurPatrimoineAu14Fevrier2025 = patrimoineZety.projectionFuture(LocalDate.of(2025, Month.FEBRUARY, 14)).getValeurComptable();
     assertEquals(2721314, valeurPatrimoineAu14Fevrier2025);
   }
-
-
 }
