@@ -14,7 +14,8 @@ public class VisualiseurCas {
         new PatrimoineRichePireCas().get(),
         new PatrimoineRicheMoyenCas().get(),
         new PatrimoineEtudiantZetyCas().get(),
-        new PatrimoineEtudiantZetyDetteCas().get()
+        new PatrimoineEtudiantZetyDetteCas().get(),
+        new PatrimoineEtudiantZetyCasAriary().get()
     )));
   }
 }
