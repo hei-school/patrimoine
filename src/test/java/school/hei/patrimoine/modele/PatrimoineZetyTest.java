@@ -4,6 +4,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.jupiter.api.Test;
 import school.hei.patrimoine.modele.possession.Argent;
+import school.hei.patrimoine.modele.possession.Dette;
 import school.hei.patrimoine.modele.possession.FluxArgent;
 import school.hei.patrimoine.modele.possession.Materiel;
 
@@ -86,5 +87,93 @@ public class PatrimoineZetyTest {
         log.info("Patrimoine de Zety le 17 septembre 2024: " + valeurComptablePatrimoineZetyAu17Septembre24 + "Ar");
 
         assertTrue(valeurComptablePatrimoineZetyAu3juillet24 > valeurComptablePatrimoineZetyAu17Septembre24);
+    }
+
+    @Test
+    public void diminution_du_patrimoine_de_zety_entre_17_et_18_septembre_2024() {
+        var zety = new Personne("Zety");
+        var au3Juillet24 = LocalDate.of(2024, JULY, 3);
+
+        var argentEnEspecesAu3Juillet24 = new Argent(
+                "Espèces",
+                au3Juillet24,
+                800_000
+        );
+        var argentEnBanqueAu3Juillet24 = new Argent(
+                "Compte en Banque",
+                au3Juillet24,
+                100_000
+        );
+
+        var novembre23 = LocalDate.of(2023, NOVEMBER, 1);
+        var aout24 = LocalDate.of(2024, AUGUST, 28);
+
+        var au17Septembre24 = LocalDate.of(2024, SEPTEMBER, 17);
+        var au18Septembre24 = au17Septembre24.plusDays(1);
+
+        var patrimoineZetyAu3juillet24 = new Patrimoine(
+                "patrimoineZetyAu13mai24",
+                zety,
+                au3Juillet24,
+                Set.of(
+                        argentEnEspecesAu3Juillet24,
+                        argentEnBanqueAu3Juillet24,
+                        new FluxArgent(
+                                "Frais de scolarité",
+                                argentEnEspecesAu3Juillet24,
+                                novembre23,
+                                aout24,
+                                -200_000,
+                                27
+                        ),
+                        new FluxArgent(
+                                "Frais de tenue du compte",
+                                argentEnBanqueAu3Juillet24,
+                                au3Juillet24,
+                                au17Septembre24,
+                                -20_000,
+                                25
+                        ),
+                        new FluxArgent(
+                                "Dette en banque",
+                                argentEnBanqueAu3Juillet24,
+                                au18Septembre24,
+                                au18Septembre24,
+                                10_000_000,
+                                18
+                        ),
+                        new Materiel(
+                                "Ordinateur",
+                                au3Juillet24,
+                                1_200_000,
+                                null,
+                                -0.10
+                        ),
+                        new Materiel(
+                                "Vêtements",
+                                au3Juillet24,
+                                1_500_000,
+                                null,
+                                -0.50
+                        ),
+                        new Dette(
+                                "Dette en banque",
+                                au18Septembre24,
+                                -11_000_000
+                        )
+                )
+        );
+
+        var valeurComptablePatrimoineZetyAu17Septembre24 = patrimoineZetyAu3juillet24
+                .projectionFuture(au17Septembre24)
+                .getValeurComptable();
+        var valeurComptablePatrimoineZetyAu18Septembre24 = patrimoineZetyAu3juillet24
+                .projectionFuture(au18Septembre24)
+                .getValeurComptable();
+        var difference = valeurComptablePatrimoineZetyAu17Septembre24 - valeurComptablePatrimoineZetyAu18Septembre24;
+        log.info("Patrimoine de Zety le 18 Septembre 2024: " + valeurComptablePatrimoineZetyAu18Septembre24 + "Ar\n" +
+                "      Valeur de diminution de patrimoine de Zety le 18 Septembre 2024: " + difference + "Ar");
+
+        assertTrue(valeurComptablePatrimoineZetyAu18Septembre24 < valeurComptablePatrimoineZetyAu17Septembre24);
     }
 }
