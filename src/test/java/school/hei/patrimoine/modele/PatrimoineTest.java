@@ -143,13 +143,13 @@ class PatrimoineTest {
     var ordinateur = new Materiel("ordinateur", au3Juillet24, 1_200_000, au3Juillet24.minusDays(1), -0.10);
     var vetements = new Materiel("vêtement", au3Juillet24, 1_500_000, au3Juillet24.minusDays(1), -0.50);
 
-    var fraisScolaire = new FluxArgent("frais de scolarité", argentEspece, FluxAu27Nov23, FluxAu27Aug24, -200_000, 27);
     var fraiCompte = new FluxArgent("frais de compte", compteBancaire, FluxCompteAu25Jul24, FluxCompteAu31Dec25, -20_000, 25);
 
     var dateDette = LocalDate.of(2024, SEPTEMBER, 18);
     var dette = new Dette("dette de scolarité 2024-2025", dateDette, -11_000_000);
+    var fraisScolaire = new FluxArgent("frais de scolarité", dette , FluxAu27Nov23, FluxAu27Aug24, -200_000, 27);
 
-    var financer = new Argent("Compte bancaire", au3Juillet24, 100_000);
+    //var financer = new Argent("Compte bancaire", au3Juillet24, 100_000);
 
     var patrimoineZetyAu3Juillet24 = new Patrimoine(
             "patrimoineZetyAu3Juillet24",
@@ -162,7 +162,6 @@ class PatrimoineTest {
 
     var patrimoineZetyAu17Sep24 = patrimoineZetyAu3Juillet24.projectionFuture(Au17Sept2024).getValeurComptable();
     var patrimoineZetyAu18Sep24 = patrimoineZetyAu3Juillet24.projectionFuture(dateDette).getValeurComptable();
-//
     var valeurPatrimoineEntre17Et18 = patrimoineZetyAu17Sep24 - patrimoineZetyAu18Sep24;
     assertEquals(2_384, valeurPatrimoineEntre17Et18);
   }
