@@ -7,9 +7,7 @@ import school.hei.patrimoine.modele.possession.*;
 
 import java.time.LocalDate;
 import java.time.Month;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 import static java.time.Month.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -160,5 +158,58 @@ class PatrimoineZetyTest {
 
         assertEquals(0, valeurEspeces, "Zety n'a plus d'espèces à partir du 1er mars 2025.");
     }
+    @Test
+    void zety_patrimoine_valeur_en_euro_le_26_octobre_2025() {
+        var zety = new Personne("Zety");
+        var au3juillet24 = LocalDate.of(2024, 7, 3);
 
+        // Initialisation du patrimoine de Zety au 3 juillet 2024
+        var especes = new Argent("Espèces", au3juillet24, 800_000);
+        var initialPossessions = new HashMap<>(Map.of(especes, "€"));
+
+        // Ajout des dons mensuels des parents à partir du 15 janvier 2024
+        for (int month = 1; month <= 9; month++) {
+            var donParent = new FluxArgent(
+                    "Don des parents",
+                    especes,
+                    LocalDate.of(2024, month, 15),
+                    LocalDate.of(2024, month, 15),
+                    100_000,
+                    15);
+            Argent.addFluxArgent(especes, donParent);
+            initialPossessions.put(donParent, "€");
+        }
+
+        // Ajout des dépenses pour le train de vie à partir du 1 octobre 2024
+        for (int month = 10; month <= 2; month++) {
+            var trainDeVie = new FluxArgent(
+                    "Train de vie",
+                    especes,
+                    LocalDate.of(2024, month, 1),
+                    LocalDate.of(2025, 2, 13),
+                    -250_000,
+                    1);
+            Argent.addFluxArgent(especes, trainDeVie);
+            initialPossessions.put(trainDeVie, "€");
+        }
+
+        var patrimoineZetyAu3juillet24 = new Patrimoine(
+                "patrimoineZetyAu3juillet24",
+                zety,
+                au3juillet24,
+                initialPossessions.entrySet().stream().map(e -> new Possession(e.getKey().getNom(), e.getKey().getValeurComptable(), e.getKey().getCURRENCY())).collect(toSet()));
+
+        // S'endetter de 7 000 € le 15 février 2025
+        var dette = new Argent("Dette Deutsche Bank", LocalDate.of(2025, 2, 15), 7000);
+        patrimoineZetyAu3juillet24.getPossessions().add(dette);
+
+        // Calcul de la valeur du patrimoine le 26 octobre 2025
+        Map<String, Double> exchangeRates = new HashMap<>();
+        exchangeRates.put("€", 1.0);
+        exchangeRates.put("Ar", 4821.0);
+        double annualAppreciationRate = -10;
+        double patrimoineValueInEuro = patrimoineZetyAu3juillet24.convertToEuro(LocalDate.of(2025, 10, 26), exchangeRates, annualAppreciationRate);
+
+        assertEquals(0, patrimoineValueInEuro, "La valeur du patrimoine de Zety doit être de 0 € le 26 octobre 2025.");
+    }
 }
