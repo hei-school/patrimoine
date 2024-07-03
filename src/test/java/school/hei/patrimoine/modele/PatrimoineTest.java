@@ -145,7 +145,39 @@ class PatrimoineTest {
 
     assertEquals(2_978_000 , patrimoineZetyAu17septembre2024.getValeurComptable());
 
+    // Zety s endette
 
+    LocalDate au18septembre2024 = LocalDate.of(2024, 9, 18);
+
+    Dette detteBanque = new Dette(
+            "dette banque",
+            au18septembre2024,
+            -11_000_000);
+
+    Argent pretBancaire = new Argent(
+            "pret bancaire",
+            au18septembre2024,
+            10_000_000
+    );
+
+    Patrimoine patrimoineZetyAu18septembre2024 = new Patrimoine(
+            "patrimoine de Zety au 18 septembre 2024",
+            Zety,
+            au18septembre2024,
+            Set.of(
+                    new GroupePossession("possession du 3 juillet 2024",
+                            au3juillet2024,
+                            Set.of(ordinateur, vetements, argentEspece, compteBancaire, fraisDeRetenueCompteBancaire, fraisDeScolarite)),
+                    new GroupePossession("possession du 18 septembre 2024", au18septembre2024, Set.of(pretBancaire, detteBanque)))
+    );
+
+
+
+    assertEquals(
+            (patrimoineZetyAu18septembre2024.getValeurComptable() - 1_000_000),
+            patrimoineZetyAu18septembre2024.getValeurComptable() - patrimoineZetyAu18septembre2024.projectionFuture(au18septembre2024).getValeurComptable());
+
+    // Zety étudie en 2024-2025
 
 
 
