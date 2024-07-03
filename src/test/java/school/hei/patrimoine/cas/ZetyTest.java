@@ -1,5 +1,6 @@
 package school.hei.patrimoine.cas;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import school.hei.patrimoine.modele.Patrimoine;
 import school.hei.patrimoine.modele.Personne;
@@ -15,9 +16,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ZetyTest {
 
-    @Test
-    void valeurPatrimoineZetyLe17Septembre2024() {
-        var zety = new Personne("Zety");
+    Personne zety;
+    Patrimoine patrimoineZety;
+    LocalDate au17Septembre24;
+
+    @BeforeEach
+    void patrimoineZety() {
+        zety = new Personne("Zety");
         var au3Juillet24 = LocalDate.of(2024, Month.JULY, 3);
 
         var ordinateur = new Materiel(
@@ -38,7 +43,7 @@ public class ZetyTest {
 
         var au27Novembre23 = LocalDate.of(2023, Month.NOVEMBER, 27);
         var au27Août24 = LocalDate.of(2024, Month.AUGUST, 27);
-        var au17Septembre24 = LocalDate.of(2024, Month.SEPTEMBER, 17);
+        au17Septembre24 = LocalDate.of(2024, Month.SEPTEMBER, 17);
         var fraisDeScolarité = new FluxArgent(
                 "Frais de scolarité",
                 espèces,
@@ -56,7 +61,7 @@ public class ZetyTest {
                 -20_000,
                 25);
 
-        var patrimoineZety = new Patrimoine(
+        patrimoineZety = new Patrimoine(
                 "Patrimoine de Zety",
                 zety,
                 au3Juillet24,
@@ -68,7 +73,10 @@ public class ZetyTest {
                         compteBanquaire,
                         fraisDeTenue
                 ));
+    }
 
+    @Test
+    void valeurPatrimoineZetyLe17Septembre2024() {
         assertEquals(patrimoineZety.projectionFuture(au17Septembre24).getValeurComptable(), 2_978_848);
     }
 
