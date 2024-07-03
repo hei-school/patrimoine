@@ -54,8 +54,7 @@ public class testPatrimoine {
                 au3juillet24,
                 -0.1);
         var depresciationParJourPc = (0.1 / 365) * 1_200_000 ;
-        var totalDepreciationPc = ChronoUnit.DAYS.between(au3juillet24 , au17sepembre24) * depresciationParJourPc;
-        var valeurpc = 1_500_000 - totalDepreciationPc;
+        var valeurpc = 1_500_000 - depresciationParJourPc * 76;
 
         var vetement = new Materiel(
                 "vetements",
@@ -66,15 +65,15 @@ public class testPatrimoine {
 
         );
 
+        var depresciationParJour = (0.5 / 365) * 1_500_000 ;
+        var totalDepreciation = 76 * depresciationParJour;
+        var valeurVetement = 1_500_000 - totalDepreciation;
         var dette = new Dette(
                 "dette pour frais de scolarite 2024-2025",
                 LocalDate.of(2024 , SEPTEMBER , 18),
                 -10_000_000
         );
 
-        var depresciationParJour = (0.5 /365) * 1_500_000 ;
-        var totalDepreciation = ChronoUnit.DAYS.between(au3juillet24 , au17sepembre24) * depresciationParJour;
-        var valeurVetement = 1_500_000 - totalDepreciation;
 
         var zetyPatrimoine = new Patrimoine(
               "zety etudiante",
@@ -93,9 +92,9 @@ public class testPatrimoine {
 
 
 
-       // Assertions.assertEquals(patrimoinzValeur , patrimoineAu17);
+        Assertions.assertEquals(patrimoinzValeur , patrimoineAu17);
         Assertions.assertEquals((int)patrimoineAu18 ,(int) (patrimoineAu17 - 10_000_000 - depresciationParJour - depresciationParJourPc));
-
-
+        System.out.println(patrimoineAu17);
+        System.out.println(patrimoinzValeur);
     }
 }
