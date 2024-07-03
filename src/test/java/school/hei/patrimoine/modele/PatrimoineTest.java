@@ -18,10 +18,10 @@ class PatrimoineTest {
     var ilo = new Personne("Ilo");
 
     var patrimoineIloAu13mai24 = new Patrimoine(
-        "patrimoineIloAu13mai24",
-        ilo,
-        LocalDate.of(2024, MAY, 13),
-        Set.of());
+            "patrimoineIloAu13mai24",
+            ilo,
+            LocalDate.of(2024, MAY, 13),
+            Set.of());
 
     assertEquals(0, patrimoineIloAu13mai24.getValeurComptable());
   }
