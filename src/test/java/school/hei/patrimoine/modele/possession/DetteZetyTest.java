@@ -60,23 +60,25 @@ public class DetteZetyTest {
                 25
         );
 
+        var dette = new Argent("dette", LocalDate.of(2024, 9, 17).plusDays(1), 10_000_000);
+
+        var detteDeZety = new FluxArgent(
+                "dette",
+                dette,
+                LocalDate.of(2024, 9, 17).plusDays(1),
+                LocalDate.of(2024, 9, 17).plusYears(1).plusDays(1),
+                -1_000_000,
+                18
+        );
+
         var patrimoine_de_zety = new Patrimoine(
                 "patrimoine_de_zety",
                 zety,
                 date3Juillet2024,
-                Set.of(ordinateur, vetement, argentEnEspece, compteBancaire, fluxArgentCompteBancaire, fluxArgentFraisDeScolarite)
+                Set.of(ordinateur, vetement, argentEnEspece, compteBancaire, fluxArgentCompteBancaire, fluxArgentFraisDeScolarite, detteDeZety)
         );
 
-        var detteDeZety = new Dette(
-                "frais_de_scolarite",
-                LocalDate.of(2024, 9, 18),
-                -11_000_000
-        );
-
-        var valeurDuPatrimoineFutur = patrimoine_de_zety.projectionFuture(LocalDate.of(2024, 9, 18));
-
-        int diminutionDePatrimoineDeZety = valeurDuPatrimoineFutur.getValeurComptable() + detteDeZety.getValeurComptable();
-
-        assertEquals(-7_598_549, diminutionDePatrimoineDeZety);
+        var valeurDuPatrimoineFutur18Septembre2024 = patrimoine_de_zety.projectionFuture(LocalDate.of(2024, 9, 18)).getValeurComptable();
+        assertEquals(3_401_451, valeurDuPatrimoineFutur18Septembre2024);
     }
 }
