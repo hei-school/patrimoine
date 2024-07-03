@@ -2,6 +2,7 @@ package school.hei.patrimoine.modele;
 
 import org.junit.jupiter.api.Test;
 import school.hei.patrimoine.modele.possession.Argent;
+import school.hei.patrimoine.modele.possession.Dette;
 import school.hei.patrimoine.modele.possession.FluxArgent;
 import school.hei.patrimoine.modele.possession.GroupePossession;
 
@@ -83,5 +84,36 @@ class PatrimoineTest {
     assertEquals(500_000, patrimoineIloAu13mai24.projectionFuture(au13mai24.plusDays(10)).getValeurComptable());
     assertEquals(200_000, patrimoineIloAu13mai24.projectionFuture(au13mai24.plusDays(100)).getValeurComptable());
     assertEquals(200_000, patrimoineIloAu13mai24.projectionFuture(au13mai24.plusDays(1_000)).getValeurComptable());
+  }
+
+  @Test
+  void testEndettementZety() {
+    Personne zety = new Personne("Zety");
+
+    LocalDate dateDebut = LocalDate.of(2024, 7, 3);
+
+    Argent compteBancaire = new Argent("Compte bancaire", dateDebut, 100_000);
+
+    Patrimoine patrimoineZety = new Patrimoine(
+            "PatrimoineZetyAu3Juillet2024",
+            zety,
+            dateDebut,
+            Set.of(compteBancaire));
+
+    LocalDate dateEndettement = LocalDate.of(2025, 2, 15);
+    int montantEndettementEUR = 7000; // Montant de la dette en euros
+    double tauxDeChangeEURtoAr = 4821; // Taux de change 1 € = 4821 Ar
+
+    Dette detteEuro = new Dette("Dette en euros", dateDebut, dateEndettement, montantEndettementEUR, tauxDeChangeEURtoAr);
+
+
+    LocalDate dateEvaluation = LocalDate.of(2025, 2, 15);
+    int valeurPatrimoineAttendue = patrimoineZety.getValeurComptableDevise("Ar");
+
+    int valeurCompteBancaireAr = compteBancaire.getValeurComptableDevise("Ar");
+    int valeurDetteAr = (int) (montantEndettementEUR * tauxDeChangeEURtoAr);
+    int valeurAttendue = valeurCompteBancaireAr + valeurDetteAr;
+
+    assertEquals(valeurAttendue, valeurPatrimoineAttendue);
   }
 }
