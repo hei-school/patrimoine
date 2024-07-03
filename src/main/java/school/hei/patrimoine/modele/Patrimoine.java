@@ -1,5 +1,6 @@
 package school.hei.patrimoine.modele;
 
+import school.hei.patrimoine.modele.possession.FluxArgent;
 import school.hei.patrimoine.modele.possession.Possession;
 
 import java.io.Serializable;
@@ -27,4 +28,5 @@ public record Patrimoine(
   public Possession possessionParNom(String nom) {
     return possessions.stream().filter(p -> nom.equals(p.getNom())).findFirst().orElseThrow();
   }
+
 }
