@@ -62,7 +62,11 @@ public class PatrimoineZetyTest {
         var emprunt = new Argent("Emprunt", au18Sept24, 10_000_000);
         var dette = new Argent("Dette", au18Sept24, -11_000_000);
         var patrimoine = new Patrimoine(
-                "patrimoine de zety 17 septembre 2024", Zety, au3Juillet24, Set.of(new GroupePossession("possession de Zety", au3Juillet24, Set.of(ordinateur, vetements, argentEnEspece, fraisDeScolarite, compteBancaire, emprunt, dette))
+                "patrimoine de zety 17 septembre 2024",
+                Zety,
+                au3Juillet24,
+                Set.of(new GroupePossession("possession de Zety", au3Juillet24,
+                        Set.of(ordinateur, vetements, argentEnEspece, fraisDeScolarite, compteBancaire, emprunt, dette))
                 )
         );
         //calcul de la valeur du patrimoine a date de 17 septembre
@@ -71,6 +75,32 @@ public class PatrimoineZetyTest {
         var patrimoineLe18Septembre = patrimoine.projectionFuture(au18Sept24).getValeurComptable();
         var diminutionPatimoine = patrimoineLe17Septembre - patrimoineLe18Septembre;
         assertEquals(1002384, diminutionPatimoine);
+    }
+    @Test
+    void epuisement_de_espece() {
+        var zety = new Personne("Zety");
+        var debutOctobre = LocalDate.of(2024, OCTOBER, 1);
+        var fin = LocalDate.of(2025, FEBRUARY, 13);
+        var debut2024 = LocalDate.of(2024, JANUARY, 1);
+        var argentMensuel = new Argent("Argent mensuel", debut2024, 100_000);
+        var trainDeVie = new FluxArgent("Train de vie mensuel", argentMensuel, debutOctobre,fin, -250_000, 1);
+        var patrimoineZety = new Patrimoine(
+                "Patrimoine de Zety",
+                zety,
+                debut2024,
+                Set.of(argentMensuel, trainDeVie)
+        );
+        LocalDate dateEpuisement = debutOctobre;
+        int montantEspeces = patrimoineZety.getValeurComptable();
+        for (;montantEspeces > 0; dateEpuisement = dateEpuisement.plusMonths(1)) {
+            montantEspeces += 100000;
+            // Vérifie si la date d'épuisement est après la date de début spécifiée
+            if (dateEpuisement.isAfter(debutOctobre)) {
+                montantEspeces -= 250000;
+            }
+        }
+        var debutJanvier2025 = LocalDate.of(2025, JANUARY, 1) ;
+        assertEquals(debutJanvier2025, dateEpuisement);
     }
 }
 
