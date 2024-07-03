@@ -48,7 +48,7 @@ public sealed class Argent extends Possession permits Dette, Creance {
   void addFinancés(FluxArgent fluxArgent) {
     fluxArgents.add(fluxArgent);
   }
-  
+
   public double convertirDevise(int montantAr, LocalDate dateConversion, LocalDate dateReference) {
     double tauxInitial = 4821.0;
     double appreciationAnnuelle = -0.10;
