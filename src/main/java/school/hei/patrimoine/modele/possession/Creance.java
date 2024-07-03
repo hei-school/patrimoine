@@ -9,4 +9,9 @@ public final class Creance extends Argent {
       throw new IllegalArgumentException();
     }
   }
+
+  @Override
+  public Creance projectionFuture(LocalDate tFutur) {
+    return new Creance(nom, tFutur, valeurComptable);
+  }
 }
