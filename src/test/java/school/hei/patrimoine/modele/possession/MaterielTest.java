@@ -8,7 +8,7 @@ import static java.time.Month.JUNE;
 import static java.time.Month.OCTOBER;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class MaterielTest {
+class jMaterielTest {
 
   @Test
   void mon_mac_s_apprecie_negativement_dans_le_futur() {
