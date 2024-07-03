@@ -53,4 +53,22 @@ public sealed class Argent extends Possession permits Dette, Creance {
   public void addFinances(FluxArgent fluxArgent) {
     fluxArgents.add(fluxArgent);
   }
+
+  public LocalDate dateSansEspece() {
+    LocalDate date = this.getT();
+    int valeur = this.getValeurComptable();
+
+    for (FluxArgent flux : this.fluxArgents) {
+      while (date.isBefore(flux.getFin()) && valeur > 0) {
+        valeur += flux.getFluxMensuel();
+        date = date.plusMonths(1);
+      }
+
+      if (valeur <= 0) {
+        return date;
+      }
+    }
+
+    return null;
+  }
 }

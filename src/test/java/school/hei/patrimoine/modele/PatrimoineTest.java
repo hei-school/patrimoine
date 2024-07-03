@@ -215,6 +215,60 @@ class PatrimoineTest {
     assertEquals(valeurPatrimoine17Septembre - valeurPatrimoine18Septembre, 11_002_384);
   }
 
+  @Test
+  void date_zety_sans_especes() {
+    var argentEspece = new Argent("Argent en espèces", LocalDate.of(2024, JULY, 3), 800_000);
+    var fraisCompte =
+        new FluxArgent(
+            "Frais de compte",
+            argentEspece,
+            LocalDate.of(2024, JULY, 25),
+            LocalDate.of(2024, SEPTEMBER, 17),
+            -20_000,
+            25);
+    var compteBancaire =
+        new Argent(
+            "Compte bancaire",
+            LocalDate.of(2024, JULY, 3),
+            LocalDate.of(2024, SEPTEMBER, 17),
+            100_000,
+            Set.of(fraisCompte));
+
+    var paiementFraisScolarite =
+        new FluxArgent(
+            "Paiement frais de scolarité",
+            compteBancaire,
+            LocalDate.of(2024, SEPTEMBER, 21),
+            LocalDate.of(2024, SEPTEMBER, 21),
+            -2_500_000,
+            21);
+    compteBancaire.addFinances(paiementFraisScolarite);
+
+    var donParents =
+        new FluxArgent(
+            "Don des parents",
+            argentEspece,
+            LocalDate.of(2024, JANUARY, 15),
+            LocalDate.of(2024, SEPTEMBER, 17),
+            100_000,
+            15);
+    argentEspece.addFinances(donParents);
+
+    var trainDeVie =
+        new FluxArgent(
+            "Train de vie",
+            argentEspece,
+            LocalDate.of(2024, OCTOBER, 1),
+            LocalDate.of(2025, FEBRUARY, 13),
+            -250_000,
+            1);
+    argentEspece.addFinances(trainDeVie);
+
+    LocalDate dateSansEspece = argentEspece.dateSansEspece();
+
+    assertEquals(LocalDate.of(2025, JANUARY, 3), dateSansEspece);
+  }
+
   private static Patrimoine getPatrimoine(LocalDate au13mai24, Personne ilo) {
     var financeur = new Argent("Espèces", au13mai24, 600_000);
     var trainDeVie =
