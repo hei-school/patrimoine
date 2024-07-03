@@ -86,4 +86,11 @@ class ZetyTest {
         
         assertEquals(LocalDate.of(2025, 2, 1), dateEpuisement);
     }
+    @Test
+    void testValeurPatrimoineLe14Fevrier2025() {
+        Patrimoine patrimoineFevrier2025 = zetyPatrimoine.projectionFuture(LocalDate.of(2025,02,14));
+        int valeurPatrimoineFevrier2025 = patrimoineFevrier2025.getValeurComptable();
+
+        assertEquals(2621314, valeurPatrimoineFevrier2025);
+    }
 }
