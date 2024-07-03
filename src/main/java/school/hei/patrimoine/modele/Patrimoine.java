@@ -1,6 +1,7 @@
 package school.hei.patrimoine.modele;
 
 import school.hei.patrimoine.modele.possession.Possession;
+import school.hei.patrimoine.modele.possession.TauxDeChange;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -22,6 +23,14 @@ public record Patrimoine(
         possesseur,
         tFutur,
         possessions.stream().map(p -> p.projectionFuture(tFutur)).collect(toSet()));
+  }
+
+  public Patrimoine projectionFuture(LocalDate tFutur, TauxDeChange tauxDeChange, String deviseCible) {
+    return new Patrimoine(
+            nom,
+            possesseur,
+            tFutur,
+            possessions.stream().map(p -> p.projectionFuture(tFutur, tauxDeChange, deviseCible)).collect(toSet()));
   }
 
   public Possession possessionParNom(String nom) {
