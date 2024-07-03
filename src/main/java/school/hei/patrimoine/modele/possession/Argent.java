@@ -18,14 +18,14 @@ public sealed class Argent extends Possession permits Dette, Creance {
     this(nom, dateOuverture, t, valeurComptable, new HashSet<>());
   }
 
-  public Argent(
+  private Argent(
       String nom,
       LocalDate dateOuverture,
       LocalDate t,
       int valeurComptable,
       Set<FluxArgent> fluxArgents) {
     super(nom, t, valeurComptable);
-    this.fluxArgents = new HashSet<>(fluxArgents);
+    this.fluxArgents = fluxArgents;
     this.dateOuverture = dateOuverture;
   }
 
@@ -50,25 +50,7 @@ public sealed class Argent extends Possession permits Dette, Creance {
         .sum();
   }
 
-  public void addFinances(FluxArgent fluxArgent) {
+  void addFinances(FluxArgent fluxArgent) {
     fluxArgents.add(fluxArgent);
-  }
-
-  public LocalDate dateSansEspece() {
-    LocalDate date = this.getT();
-    int valeur = this.getValeurComptable();
-
-    for (FluxArgent flux : this.fluxArgents) {
-      while (date.isBefore(flux.getFin()) && valeur > 0) {
-        valeur += flux.getFluxMensuel();
-        date = date.plusMonths(1);
-      }
-
-      if (valeur <= 0) {
-        return date;
-      }
-    }
-
-    return null;
   }
 }

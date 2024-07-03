@@ -30,7 +30,8 @@ public final class FluxArgent extends Possession {
 
   @Override
   public FluxArgent projectionFuture(LocalDate tFutur) {
-    var tFuturMajoréParFin = (tFutur.isBefore(fin)) ? tFutur : fin;
+    var tFinProjection = fin == null ? tFutur : fin;
+    var tFuturMajoréParFin = (tFutur.isBefore(tFinProjection)) ? tFutur : tFinProjection;
     var debutOperationMinoréParDebut = argent.t.isBefore(debut) ? debut : argent.t;
     if (debutOperationMinoréParDebut.isAfter(tFuturMajoréParFin)) {
       return this;

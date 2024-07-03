@@ -22,6 +22,19 @@ public record Patrimoine(String nom, Personne possesseur, LocalDate t, Set<Posse
         possessions.stream().map(p -> p.projectionFuture(tFutur)).collect(toSet()));
   }
 
+  public double valeurComptableFuture(
+      LocalDate tFutur,
+      Devise deviseSource,
+      Devise deviseDestination,
+      double tauxDAppreciationAnnuelle) {
+    return possessions.stream()
+        .mapToDouble(
+            possession ->
+                possession.valeurComptableFuture(
+                    tFutur, deviseSource, deviseDestination, tauxDAppreciationAnnuelle))
+        .sum();
+  }
+
   public Possession possessionParNom(String nom) {
     return possessions.stream().filter(p -> nom.equals(p.getNom())).findFirst().orElseThrow();
   }
