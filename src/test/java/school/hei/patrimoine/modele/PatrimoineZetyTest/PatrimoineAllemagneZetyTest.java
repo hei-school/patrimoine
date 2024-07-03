@@ -15,9 +15,7 @@ class PatrimoineAlleMagneZetyTest {
     @Test
 
     void zety_part_en_Allemagne() {
-        Devise euro = new Devise("euro", 4821, AU_3_JUILLET_2024, -0.1);
-        var patrimoineDeZetyLe14Fevrier2025 = patrimoineDeZetyAu3JuilletSupplier ;
-        // Not implemented
+
 
     }
 }
