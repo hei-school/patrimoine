@@ -186,7 +186,6 @@ public class PatrimoineZetyTest {
         var novembre23 = LocalDate.of(2023, NOVEMBER, 1);
         var aout24 = LocalDate.of(2024, AUGUST, 28);
 
-        var au17Septembre24 = LocalDate.of(2024, SEPTEMBER, 17);
 
         var debut2024 = LocalDate.of(2024, JANUARY, 1);
         var au1octobre24 = LocalDate.of(2024, OCTOBER, 1);
@@ -225,12 +224,114 @@ public class PatrimoineZetyTest {
         );
 
         var daysToAdd = 0;
-        while(argentEnEspecesAu3Juillet24.projectionFuture(au3Juillet24.plusDays(daysToAdd)).getValeurComptable() > 0) {
+        while (argentEnEspecesAu3Juillet24.projectionFuture(au3Juillet24.plusDays(daysToAdd)).getValeurComptable() > 0) {
             daysToAdd++;
         }
 
         var dateDeFinEspèces = au3Juillet24.plusDays(daysToAdd);
         log.info("La date où Zety n'a plus d'espèces: " + dateDeFinEspèces + "\n");
         assertTrue(dateDeFinEspèces.isAfter(au3Juillet24));
+    }
+
+    @Test
+    public void valeur_de_patrimoine_de_zety_au_14_fevrier_2025() {
+        var zety = new Personne("Zety");
+        var au3Juillet24 = LocalDate.of(2024, JULY, 3);
+
+        var argentEnEspecesAu3Juillet24 = new Argent(
+                "Espèces",
+                au3Juillet24,
+                800_000
+        );
+        var argentEnBanqueAu3Juillet24 = new Argent(
+                "Compte en Banque",
+                au3Juillet24,
+                100_000
+        );
+
+        var novembre23 = LocalDate.of(2023, NOVEMBER, 1);
+        var aout24 = LocalDate.of(2024, AUGUST, 28);
+
+        var au17Septembre24 = LocalDate.of(2024, SEPTEMBER, 17);
+        var au18Septembre24 = au17Septembre24.plusDays(1);
+
+        var debut2024 = LocalDate.of(2024, JANUARY, 1);
+        var au1octobre24 = LocalDate.of(2024, OCTOBER, 1);
+        var au13fevrier25 = LocalDate.of(2025, FEBRUARY, 13);
+        var au14evrier25 = au13fevrier25.plusDays(1);
+
+        var patrimoineZetyAu3juillet24 = new Patrimoine(
+                "patrimoineZetyAu13mai24",
+                zety,
+                au3Juillet24,
+                Set.of(
+                        argentEnEspecesAu3Juillet24,
+                        argentEnBanqueAu3Juillet24,
+                        new FluxArgent(
+                                "Frais de scolarité",
+                                argentEnEspecesAu3Juillet24,
+                                novembre23,
+                                aout24,
+                                -200_000,
+                                27
+                        ),
+                        new FluxArgent(
+                                "Frais de tenue du compte",
+                                argentEnBanqueAu3Juillet24,
+                                au3Juillet24,
+                                au17Septembre24,
+                                -20_000,
+                                25
+                        ),
+                        new FluxArgent(
+                                "Dette en banque",
+                                argentEnBanqueAu3Juillet24,
+                                au18Septembre24,
+                                au18Septembre24,
+                                10_000_000,
+                                18
+                        ),
+                        new Materiel(
+                                "Ordinateur",
+                                au3Juillet24,
+                                1_200_000,
+                                null,
+                                -0.10
+                        ),
+                        new Materiel(
+                                "Vêtements",
+                                au3Juillet24,
+                                1_500_000,
+                                null,
+                                -0.50
+                        ),
+                        new Dette(
+                                "Dette en banque",
+                                au18Septembre24,
+                                -11_000_000
+                        ),
+                        new FluxArgent(
+                                "Don parentaux",
+                                argentEnEspecesAu3Juillet24,
+                                debut2024,
+                                null,
+                                100_000,
+                                15
+                        ),
+                        new FluxArgent(
+                                "Train de vie",
+                                argentEnEspecesAu3Juillet24,
+                                au1octobre24,
+                                au13fevrier25,
+                                -250_000,
+                                1
+                        )
+                )
+        );
+
+        var valeurComptablePatrimoineZetyAu14fervier25 = patrimoineZetyAu3juillet24
+                .projectionFuture(au14evrier25)
+                .getValeurComptable();
+        log.info("Patrimoine de Zety le 14 Fevrier 2025: " + valeurComptablePatrimoineZetyAu14fervier25 + "Ar\n");
     }
 }
