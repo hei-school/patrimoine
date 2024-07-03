@@ -1,10 +1,13 @@
 package school.hei.patrimoine.modele.possession;
 
+import lombok.Getter;
+
 import java.time.LocalDate;
 import java.util.Set;
 
 import static java.util.stream.Collectors.toSet;
 
+@Getter
 public final class GroupePossession extends Possession {
 
   private final Set<Possession> possessions;
