@@ -54,21 +54,53 @@ public class PatrimoineZetyTest {
                         ordinateur, vetements, compteBancaire, fraisScolarite
                 ));
 
-        System.out.println(ordinateur.projectionFuture(au17septembre2024).getValeurComptable());
-        /*assertEquals(1_080_000, vetements.valeurComptableFuture(au17septembre2024));
-        assertEquals(400_000, fraisScolarite.valeurComptableFuture(au17septembre2024));
-        assertEquals(40_000, compteBancaire.valeurComptableFuture(au17septembre2024));*/
         assertEquals(2_978_848, patrimoine_de_zety.projectionFuture(au17septembre2024).getValeurComptable());
+
+
+
     }
 
+
     @Test
-    void patrimoine_de_zety_en_dette(){
-        Personne Zety = new Personne("Zety");
-        var debutDeDette = LocalDate.of(2024, SEPTEMBER, 18);
-        var finDeDette = debutDeDette.plusYears(1);
-        var au18septembre2024 = LocalDate.of(2024, SEPTEMBER, 18);
-        var ZetyArgent = new Argent("argent de zety", au18septembre2024, 10_000_000 );
-        var zetyFlux = new FluxArgent("flux d'argent de zety", ZetyArgent, debutDeDette, finDeDette, 83_333, 30);
-        var dette = new Dette("empreint pour l'etude", debutDeDette, 1_000_000);
+    void patrimoine_de_zety_en_dette() {
+        var zety = new Personne("Zety");
+        var au3juillet24 = LocalDate.of(2024, JULY, 3);
+        var au17septembre24 = LocalDate.of(2024, SEPTEMBER, 17);
+        var au18septembre24 = LocalDate.of(2024, SEPTEMBER, 18);
+
+        var ordinateur = new Materiel("Ordinateur", au3juillet24, 1_200_000, au3juillet24, -0.10);
+        var vetements = new Materiel("Vêtements", au3juillet24, 1_500_000, au3juillet24, -0.50);
+        var argentEspeces = new Argent("Espèces", au3juillet24, 800_000);
+
+        var fraisScolarite = new FluxArgent(
+                "Frais de scolarité", argentEspeces, LocalDate.of(2023, NOVEMBER, 27),
+                LocalDate.of(2024, AUGUST, 27), -200_000, 27);
+
+        var compteBancaire = new Argent("Compte bancaire", au3juillet24, 100_000);
+        var fraisTenueCompte = new FluxArgent(
+                "Frais de tenue de compte", compteBancaire, au3juillet24.withDayOfMonth(25),
+                LocalDate.of(2024, DECEMBER, 25), -20_000, 25);
+
+        var patrimoineDeZetyAu17septembre24 = new Patrimoine(
+                "patrimoineDeZetyAu17septembre24",
+                zety,
+                au3juillet24,
+                Set.of(ordinateur, vetements, argentEspeces, fraisScolarite, compteBancaire, fraisTenueCompte));
+
+        var fluxArgentPret = new FluxArgent(
+                "Prêt bancaire", compteBancaire, au18septembre24, au18septembre24.plusYears(1), 10_000_000, 18);
+        var dette = new Dette("Dette bancaire", au18septembre24, -11_000_000);
+
+        var patrimoineDeZetyAu18septembre24 = new Patrimoine(
+                "patrimoineDeZetyAu18septembre24",
+                zety,
+                au3juillet24,
+                Set.of(ordinateur, vetements, argentEspeces, fraisScolarite, compteBancaire, fraisTenueCompte, fluxArgentPret, dette));
+
+        int patrimoinePour17Septembre = patrimoineDeZetyAu17septembre24.projectionFuture(au17septembre24).getValeurComptable();
+        int patrimoinePour18Septembre = patrimoineDeZetyAu18septembre24.projectionFuture(au18septembre24).getValeurComptable();
+        int valeurDeDette = patrimoinePour18Septembre - patrimoinePour17Septembre ;
+
+        assertEquals(-1002384, valeurDeDette);
     }
 }
