@@ -1,10 +1,7 @@
 package school.hei.patrimoine.modele;
 
 import org.junit.jupiter.api.Test;
-import school.hei.patrimoine.modele.possession.Argent;
-import school.hei.patrimoine.modele.possession.FluxArgent;
-import school.hei.patrimoine.modele.possession.GroupePossession;
-import school.hei.patrimoine.modele.possession.Materiel;
+import school.hei.patrimoine.modele.possession.*;
 
 import java.time.LocalDate;
 import java.util.Set;
@@ -102,6 +99,37 @@ class PatrimoineTest {
 
     var projectionFuture = patrimoineZety.projectionFuture(au17Septembre);
     assertEquals(2_978_848, projectionFuture.getValeurComptable());
+  }
+  @Test
+  void patrimoine_de_zety_apres_emprunt() {
+    var zety = new Personne("Zety");
+    var au17septembre24 = LocalDate.of(2024, SEPTEMBER, 17);
+    var au18septembre24 = LocalDate.of(2024, SEPTEMBER, 18);
+
+    var patrimoineZetyAu18septembre24 = getPatrimoine(au17septembre24, au18septembre24, zety);
+
+    var evolutionPatrimoine = new EvolutionPatrimoine(
+            "Nom",
+            patrimoineZetyAu18septembre24,
+            au17septembre24,
+            au18septembre24);
+
+    var evolutionJournaliere = evolutionPatrimoine.getEvolutionJournaliere();
+    assertEquals(-1_000_000, evolutionJournaliere.get(au18septembre24).getValeurComptable() - evolutionJournaliere.get(au17septembre24).getValeurComptable());
+  }
+  private static Patrimoine getPatrimoine(LocalDate au17septembre24, LocalDate au18septembre24, Personne zety) {
+    var compteBancaire = new Argent("Compte bancaire", au17septembre24, 100_000);
+
+    var emprunt = new Dette("Emprunt bancaire", au18septembre24, -11_000_000);
+    var fluxEmprunt = new FluxArgent("Emprunt", compteBancaire, au18septembre24, au18septembre24, 10_000_000, au18septembre24.getDayOfMonth());
+
+
+    var patrimoineZetyAu18septembre24 = new Patrimoine(
+            "patrimoineZetyAu18septembre24",
+            zety,
+            au18septembre24,
+            Set.of(compteBancaire, emprunt, fluxEmprunt));
+    return patrimoineZetyAu18septembre24;
   }
 
 }
