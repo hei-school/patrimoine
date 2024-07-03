@@ -24,6 +24,7 @@ public class PatrimoineZetyAu3Juillet2024 implements Supplier<Patrimoine> {
 
 	public static final LocalDate AU_3_JUILLET_2024 = LocalDate.of(2024, JULY, 3);
 	public static final LocalDate AU_18_SEPTEMBRE_2024 = LocalDate.of(2024, SEPTEMBER, 18);
+	public static final LocalDate AU_14_FEVRIER_2025 = LocalDate.of(2025, FEBRUARY, 14);
 	public static final LocalDate AU_18_SEPTEMBRE_2025 = LocalDate.of(2025, SEPTEMBER, 18);
 
 	private Argent compteBancaire() {
@@ -104,5 +105,18 @@ public class PatrimoineZetyAu3Juillet2024 implements Supplier<Patrimoine> {
 		new GroupePossession("possessions ajoutées après le 18 Septembre", AU_18_SEPTEMBRE_2024, possessionsRajoutéesAprèsLe18Septembre2024(espèces, compteBancaire));
 
 		return espèces;
+	}
+
+	public Patrimoine patrimoineDeZetyLe14Fevrier2025() {
+		var zety = new Personne("zety");
+		var ordinateur = ordinateur();
+		var vêtements = vêtements();
+		var espèces = espèces();
+		var compteBancaire = compteBancaire();
+		GroupePossession possessionsDu3Juillet2024 = new GroupePossession("possessions du 3 Juillet", AU_3_JUILLET_2024, possessionsDu3Juillet2024(ordinateur, vêtements, espèces, compteBancaire));
+		GroupePossession possessionsRajoutéesLe18Septembre2024 = new GroupePossession("possessions ajoutées le 18 Septembre 2024", AU_18_SEPTEMBRE_2024, possessionsRajoutéesLe18Septembre2024(compteBancaire));
+		GroupePossession possessionsRajoutéesAprèsLe18Septembre2024 = new GroupePossession("possessions ajoutées après le 18 Septembre", AU_18_SEPTEMBRE_2024, possessionsRajoutéesAprèsLe18Septembre2024(espèces, compteBancaire));
+
+		return new Patrimoine("zety au 14 Février 2025", zety, AU_14_FEVRIER_2025, Set.of(possessionsDu3Juillet2024, possessionsRajoutéesLe18Septembre2024, possessionsRajoutéesAprèsLe18Septembre2024));
 	}
 }

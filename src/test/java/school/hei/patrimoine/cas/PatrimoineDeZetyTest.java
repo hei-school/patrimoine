@@ -3,6 +3,7 @@ package school.hei.patrimoine.cas;
 import static java.time.Month.JANUARY;
 import static java.time.Month.SEPTEMBER;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static school.hei.patrimoine.cas.zety.PatrimoineZetyAu3Juillet2024.AU_14_FEVRIER_2025;
 
 import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
@@ -23,6 +24,10 @@ class PatrimoineDeZetyTest {
 
 	private Argent argentEnEspècesDeZetyEn20242025() {
 		return patrimoineDeZetyAu3JuilletSupplier.argentEnEspècesDeZetyEn20242025();
+	}
+
+	private Patrimoine patrimoineDeZetyLe14Fev2025() {
+		return patrimoineDeZetyAu3JuilletSupplier.patrimoineDeZetyLe14Fevrier2025();
 	}
 
 
@@ -65,5 +70,13 @@ class PatrimoineDeZetyTest {
 		}
 
 		assertEquals(LocalDate.of(2025, JANUARY, 1), dayOfFailureFrom18September);
+	}
+
+	@Test
+	void zety_veut_partir_le_14_février_2025() {
+		var patrimoineDeZetyLe14Fevrier2025 = patrimoineDeZetyLe14Fev2025()
+			.projectionFuture(AU_14_FEVRIER_2025);
+
+		assertEquals(-1_528_686, patrimoineDeZetyLe14Fevrier2025.getValeurComptable());
 	}
 }
