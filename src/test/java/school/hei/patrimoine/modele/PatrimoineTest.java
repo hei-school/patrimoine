@@ -146,5 +146,28 @@ class PatrimoineTest {
 
     assertEquals(-1.0601152E7, diminutionPatrimoine);
   }
+  @Test
+  void patrimoine_de_Zety_le_14_février_2025() {
+    var zety = new Personne("Zety");
+    var au3juillet24 = LocalDate.of(2024, JULY, 3);
+    var au14fevrier25 = LocalDate.of(2025, FEBRUARY, 14);
+
+    var ordinateur = new Materiel("Ordinateur", au3juillet24, 1_200_000, au3juillet24, -0.10);
+    var vetements = new Materiel("Vêtements", au3juillet24, 1_500_000, au3juillet24, -0.50);
+    var argent = new Argent("Espèces", au3juillet24, 800_000);
+    var fraisScolarite = new FluxArgent("Frais de scolarité", argent, LocalDate.of(2023, NOVEMBER, 27), LocalDate.of(2024, AUGUST, 27), -200_000, 27);
+    var compteBancaire = new Argent("Compte bancaire", au3juillet24, 100_000);
+    var fraisTenueCompte = new FluxArgent("Frais de tenue de compte", compteBancaire, au3juillet24.withDayOfMonth(25), LocalDate.of(2024, JULY, 25), -20_000, 25);
+
+    var patrimoineZetyAu3juillet24 = new Patrimoine(
+            "patrimoineZetyAu3juillet24",
+            zety,
+            au3juillet24,
+            Set.of(ordinateur, vetements, argent, fraisScolarite, compteBancaire, fraisTenueCompte));
+
+    var patrimoineZetyAu14fevrier25 = patrimoineZetyAu3juillet24.projectionFuture(au14fevrier25);
+
+    assertEquals(2_641_314, patrimoineZetyAu14fevrier25.getValeurComptable());
+  }
 
 }
