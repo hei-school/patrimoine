@@ -1,13 +1,17 @@
-package school.hei.patrimoine.modele;
+package school.hei.patrimoine.modele.zety;
 
 import org.junit.jupiter.api.Test;
+import school.hei.patrimoine.modele.Patrimoine;
+import school.hei.patrimoine.modele.Personne;
 import school.hei.patrimoine.modele.possession.*;
 
 import java.time.LocalDate;
+import java.time.Month;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 
-import static java.time.Month.JULY;
-import static java.time.Month.SEPTEMBER;
+import static java.time.Month.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class PatrimoineZetyTest {
@@ -93,4 +97,68 @@ class PatrimoineZetyTest {
 
         assertEquals(-1_000_000, diminutionPatrimoine, "Le patrimoine de Zety devrait diminuer de 1 000 000 Ar après l'emprunt.");
     }
+    @Test
+    void zety_n_a_plus_d_especes_apres_1er_mars_2025() {
+        var zety = new Personne("Zety");
+        var au3juillet24 = LocalDate.of(2024, JULY, 3);
+
+        // Initialisation du patrimoine de Zety au 3 juillet 2024
+        var especes = new Argent("Especes", au3juillet24, 800_000);
+        Set<Possession> initialPossessions = new HashSet<>(Set.of(especes));
+
+        // Ajout des dons mensuels des parents à partir du 15 janvier 2024
+        for (int month = 1; month <= 9; month++) {
+            var donParent = new Argent(
+                    "Don des parents",
+                    LocalDate.of(2024, month, 15),
+                    100_000);
+            especes.addFinancés(new FluxArgent(
+                    "FluxArgent",
+                    donParent,
+                    LocalDate.of(2024, month, 15),
+                    LocalDate.of(2024, month, 15), // Fin doit être ajusté selon vos besoins
+                    100_000, // fluxMensuel doit être ajusté selon vos besoins
+                    15)); // dateOperation doit être ajusté selon vos besoins
+            initialPossessions.add(donParent);
+        }
+
+        // Ajout des dépenses pour le train de vie à partir du 1 octobre 2024
+        for (int month = 10; month <= 12; month++) {
+            var trainDeVie = new Argent(
+                    "Train de vie",
+                    LocalDate.of(2024, month, 1),
+                    -250_000);
+            especes.addFinancés(new FluxArgent(
+                    "FluxArgent",
+                    trainDeVie,
+                    LocalDate.of(2024, month, 1),
+                    LocalDate.of(2025, FEBRUARY, 13),
+                    -250_000,
+                    1));
+            initialPossessions.add(trainDeVie);
+        }
+
+        var patrimoineZetyAu3juillet24 = new Patrimoine(
+                "patrimoineZetyAu3juillet24",
+                zety,
+                au3juillet24,
+                initialPossessions);
+
+        // Calcul du patrimoine au 1 mars 2025
+        var patrimoineZetyAu1mars25 = patrimoineZetyAu3juillet24.projectionFuture(LocalDate.of(2025, MARCH, 1));
+
+        var valeurEspeces = patrimoineZetyAu1mars25.possessions().stream()
+                .filter(possession -> possession instanceof Argent && "Especes".equals(possession.getNom()))
+                .mapToInt(possession -> {
+                    if (possession instanceof Argent) {
+                        return ((Argent) possession).getValeurComptable();
+                    } else {
+                        return 0;
+                    }
+                })
+                .sum();
+
+        assertEquals(0, valeurEspeces, "Zety n'a plus d'espèces à partir du 1er mars 2025.");
+    }
+
 }
