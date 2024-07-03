@@ -28,7 +28,12 @@ public class PatrimoineZetyCas implements Supplier<Patrimoine> {
         new FluxArgent("Frais de scolarité", argentEspeces, LocalDate.of(2023, NOVEMBER, 27), LocalDate.of(2024, AUGUST, 27), -200000, 27);
         new FluxArgent("Frais de tenue de compte", compteBancaire, dateEtude, LocalDate.of(2024, SEPTEMBER, 17), -20000, 25);
 
-        var possessions = Set.of(ordinateur, vetements, argentEspeces, compteBancaire);
+        // Add debt
+        var dateDebt = LocalDate.of(2024, SEPTEMBER, 18);
+        var debtAmount = -10000000; // Negative value for debt
+        var dette = new Dette("Bank loan", dateDebt, debtAmount);
+
+        var possessions = Set.of(ordinateur, vetements, argentEspeces, compteBancaire, dette);
 
         return new Patrimoine("Patrimoine de Zety", zety, dateEtude, possessions);
     }
