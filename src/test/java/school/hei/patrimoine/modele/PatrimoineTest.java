@@ -111,4 +111,40 @@ class PatrimoineTest {
     assertEquals(2978848, patrimoineZetyAu17septembre24.getValeurComptable());
   }
 
+  @Test
+  void patrimoine_de_Zety_entre_17_et_18_septembre_2024() {
+    var zety = new Personne("Zety");
+    var au3juillet24 = LocalDate.of(2024, JULY, 3);
+    var au17septembre24 = LocalDate.of(2024, SEPTEMBER, 17);
+    var au18septembre24 = LocalDate.of(2024, SEPTEMBER, 18);
+
+    var ordinateur = new Materiel("Ordinateur", au3juillet24, 1_200_000, au3juillet24, -0.10);
+    var vetements = new Materiel("Vêtements", au3juillet24, 1_500_000, au3juillet24, -0.50);
+    var argent = new Argent("Espèce", au3juillet24, 800_000);
+    var fraisScolarite = new FluxArgent("Frais de scolarité", argent, LocalDate.of(2023, NOVEMBER, 27), LocalDate.of(2024, AUGUST, 27), -200_000, 27);
+    var compteBancaire = new Argent("Compte bancaire", au3juillet24, 100_000);
+    var fraisTenueCompte = new FluxArgent("Frais de tenue de compte", compteBancaire, au3juillet24.withDayOfMonth(25), LocalDate.of(2024, JULY, 25), -20_000, 25);
+
+    var patrimoineZetyAu3juillet24 = new Patrimoine(
+            "patrimoineZetyAu3juillet24",
+            zety,
+            au3juillet24,
+            Set.of(ordinateur, vetements, argent, fraisScolarite, compteBancaire, fraisTenueCompte));
+
+    var patrimoineZetyAu17septembre24 = patrimoineZetyAu3juillet24.projectionFuture(au17septembre24);
+
+    var banque = new Argent("Banque", au18septembre24, 10_000_000);
+    var dette = new FluxArgent("Dette", banque, au18septembre24, au18septembre24.plusYears(1), 11_000_000, 0);
+
+    var patrimoineZetyAu18septembre24 = new Patrimoine(
+            "patrimoineZetyAu18septembre24",
+            zety,
+            au18septembre24,
+            Set.of(ordinateur, vetements, argent, fraisScolarite, compteBancaire, fraisTenueCompte, banque, dette));
+
+    double diminutionPatrimoine = patrimoineZetyAu17septembre24.getValeurComptable() - patrimoineZetyAu18septembre24.getValeurComptable();
+
+    assertEquals(-1.0601152E7, diminutionPatrimoine);
+  }
+
 }
