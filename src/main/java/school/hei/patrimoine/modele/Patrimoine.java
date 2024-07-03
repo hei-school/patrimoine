@@ -27,4 +27,8 @@ public record Patrimoine(
   public Possession possessionParNom(String nom) {
     return possessions.stream().filter(p -> nom.equals(p.getNom())).findFirst().orElseThrow();
   }
+
+  public Set<Possession> getPossessions() {
+    return possessions;
+  }
 }
