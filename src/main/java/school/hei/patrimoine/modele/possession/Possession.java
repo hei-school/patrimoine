@@ -16,11 +16,16 @@ public sealed abstract class Possession implements Serializable /*note(no-serial
     GroupePossession {
   protected final String nom;
   protected final LocalDate t;
-  protected final int valeurComptable;
+  protected int valeurComptable;
 
   public final int valeurComptableFuture(LocalDate tFutur) {
     return projectionFuture(tFutur).getValeurComptable();
   }
 
   public abstract Possession projectionFuture(LocalDate tFutur);
+
+  public Possession convertirEnDevise(String nouvelleDevise) {
+    throw new UnsupportedOperationException("Conversion de devise non supportée pour cette possession.");
+  }
 }
+

@@ -13,6 +13,10 @@ public final class GroupePossession extends Possession {
     super(nom, t, possessions.stream().mapToInt(Possession::getValeurComptable).sum());
     this.possessions = possessions;
   }
+  public void ajouterPossession(Possession possession) {
+    possessions.add(possession);
+    this.valeurComptable += possession.getValeurComptable();
+  }
 
   @Override
   public Possession projectionFuture(LocalDate tFutur) {
