@@ -14,12 +14,9 @@ class PatrimoineZetyTest {
     @Test
     void valeur_patrimoine_zety_le_17_septembre_2024() {
         var ordinateur = new Materiel("Ordinateur", LocalDate.of(2024, 7, 3), 1_200_000, LocalDate.of(2024, 7, 3), -0.1);
-        var vetements = new GroupePossession("Vêtements", LocalDate.of(2024, 7, 3), Set.of(
-                new Materiel("Vêtement 1", LocalDate.of(2024, 7, 3), 500_000, LocalDate.of(2024, 7, 3), -0.5),
-                new Materiel("Vêtement 2", LocalDate.of(2024, 7, 3), 1_000_000, LocalDate.of(2024, 7, 3), -0.5)
-        ));
+        var vetements = new Materiel("Vêtements", LocalDate.of(2024, 7, 3), 1_500_000, LocalDate.of(2024, 7, 3), -0.5);
         var argentEspeces = new Argent("Espèces", LocalDate.of(2024, 7, 3), 800_000);
-        var fraisScolarite = new FluxArgent("Frais scolarité", argentEspeces, LocalDate.of(2023, 11, 27), LocalDate.of(2024, 8, 27), -200_000, 1);
+        var fraisScolarite = new FluxArgent("Frais scolarité", argentEspeces, LocalDate.of(2024, 7, 3), LocalDate.of(2024, 9, 17), -200_000, 1);
         var compteBancaire = new Argent("Compte bancaire", LocalDate.of(2024, 7, 3), 100_000);
         var fraisCompteBancaire = new FluxArgent("Frais compte bancaire", compteBancaire, LocalDate.of(2024, 7, 3), LocalDate.of(2024, 12, 31), -20_000, 1);
 
