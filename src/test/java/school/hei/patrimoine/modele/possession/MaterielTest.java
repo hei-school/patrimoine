@@ -4,8 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 
-import static java.time.Month.JUNE;
-import static java.time.Month.OCTOBER;
+import static java.time.Month.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class MaterielTest {
@@ -22,5 +21,31 @@ class MaterielTest {
 
     var au26juin24 = LocalDate.of(2024, JUNE, 26);
     assertEquals(1_466_301, mac.valeurComptableFuture(au26juin24));
+  }
+  @Test
+  void ordinateur_de_zety() {
+    var au3July24 = LocalDate.of(2024, JULY, 3);
+    var ordinateur = new Materiel(
+            "ordinateur",
+            au3July24,
+            1_200_000,
+            au3July24.minusDays(2),
+            -0.10);
+
+    var au17September24 = LocalDate.of(2024, SEPTEMBER, 17);
+    assertEquals(1_175_013, ordinateur.valeurComptableFuture(au17September24));
+  }
+  @Test
+  void vetêment_de_zety() {
+    var au3July24 = LocalDate.of(2024, JULY, 3);
+    var vetement = new Materiel(
+            "vetement",
+            au3July24,
+            1_500_000,
+            au3July24.minusDays(2),
+            -0.50);
+
+    var au17September24 = LocalDate.of(2024, SEPTEMBER, 17);
+    assertEquals(1_343_835, vetement.valeurComptableFuture(au17September24));
   }
 }

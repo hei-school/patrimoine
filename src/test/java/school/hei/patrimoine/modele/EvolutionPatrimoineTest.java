@@ -11,7 +11,6 @@ import static java.time.Month.MAY;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class EvolutionPatrimoineTest {
-
   @Test
   void patrimoine_evolue() {
     var ilo = new Personne("Ilo");
