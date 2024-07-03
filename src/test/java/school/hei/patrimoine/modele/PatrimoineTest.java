@@ -8,8 +8,7 @@ import school.hei.patrimoine.modele.possession.GroupePossession;
 import java.time.LocalDate;
 import java.util.Set;
 
-import static java.time.Month.JULY;
-import static java.time.Month.MAY;
+import static java.time.Month.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class PatrimoineTest {
@@ -102,5 +101,31 @@ class PatrimoineTest {
     );
     assertEquals(900_000,patrimoineZetyau3Juillet2024.getValeurComptable());
 
+  }
+  @Test
+  void patrimoine_possede_un_train_de_vie_financé_par_argent_zety(){
+    var Zety = new Personne("Zety");
+    var au3Juillet2024 = LocalDate.of(2024,JULY,3);
+
+    var financeur = new Argent("especes",au3Juillet2024,800_000);
+
+    var trainDeVie = new FluxArgent(
+            "frais de scolarite",
+            financeur,LocalDate.of(2023,NOVEMBER,27),
+            LocalDate.of(2024,AUGUST,27),
+            -200_000,
+            27
+    );
+
+   var patrimoineZetyAu17Septembre2024 = new Patrimoine(
+           "patrimoine Zety au 3 july",
+           Zety,
+           au3Juillet2024,
+           Set.of(financeur,trainDeVie)
+   );
+
+   assertEquals(800000,patrimoineZetyAu17Septembre2024.projectionFuture(au3Juillet2024.plusDays(20)).getValeurComptable());
+    assertEquals(400000,patrimoineZetyAu17Septembre2024.projectionFuture(au3Juillet2024.plusDays(200)).getValeurComptable());
+    assertEquals(400000,patrimoineZetyAu17Septembre2024.projectionFuture(au3Juillet2024.plusDays(1_220)).getValeurComptable());
   }
 }
