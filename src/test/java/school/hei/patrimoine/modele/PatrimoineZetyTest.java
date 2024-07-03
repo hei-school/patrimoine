@@ -95,7 +95,7 @@ public class PatrimoineZetyTest {
                 -10_000_000);
         var dettePour2024_2025 = new FluxArgent(
                 "Dette du frais de scolarite 2024-2025",
-                compteBancaire, dateDEmprunt, dateDeRendu, -1_000_000,
+                compteBancaire, dateDEmprunt, dateDeRendu, 1_000_000,
                 18);
 
         var patrimoineZetyAu3jul2024 = new Patrimoine(
@@ -106,28 +106,15 @@ public class PatrimoineZetyTest {
 
         var au17Sept2024 = LocalDate.of(2024, SEPTEMBER, 17);
         var au18Sept2024 = LocalDate.of(2024, SEPTEMBER, 18);
-        assertEquals(5_044_688,-(
-                patrimoineZetyAu3jul2024.projectionFuture(au17Sept2024).getValeurComptable()+
-                patrimoineZetyAu3jul2024.projectionFuture(au18Sept2024).getValeurComptable()));
+        assertEquals(9_002_384,
+                patrimoineZetyAu3jul2024.projectionFuture(au17Sept2024).getValeurComptable()-
+                patrimoineZetyAu3jul2024.projectionFuture(au18Sept2024).getValeurComptable());
     }
 
     @Test
     void patrimoine_zety_avec_don() {
         var zety = new Personne("Zety");
         var au03jul2024 = LocalDate.of(2024, JULY, 3);
-
-        var ordi = new Materiel(
-                "Ordinateur",
-                au03jul2024,
-                1_200_000,
-                au03jul2024.minusDays(1),
-                -0.10);
-        var vetments = new Materiel(
-                "Vetments",
-                au03jul2024,
-                1_500_000,
-                au03jul2024.minusDays(30),
-                -0.50);
 
         var argentEspeces = new Argent("Especes", au03jul2024, 800_000);
         var debutAnneeScolaire = LocalDate.of(2023, NOVEMBER, 1);
@@ -137,23 +124,11 @@ public class PatrimoineZetyTest {
                 argentEspeces, debutAnneeScolaire, finAnneeScolaire, -200_000,
                 27);
 
-        var compteBancaire = new Argent("Compte bancaire", au03jul2024, 100_000);
-        var fraisDeTenue = new FluxArgent(
-                "Frais de tenue du compte bancaire",
-                compteBancaire, au03jul2024, LocalDate.of(2054, JULY, 1), -20_000,
-                25);
-
         var debutAnnee2024 = LocalDate.of(2024, JANUARY, 1);
         var donDesParents = new FluxArgent(
                 "Transfert de don des parents",
                 argentEspeces, debutAnnee2024, LocalDate.of(2054, JANUARY, 1), 100_000,
                 15);
-
-        var au21Sept2024 = LocalDate.of(2024, SEPTEMBER, 21);
-        var fraisDeScolariteEnUneFois = new FluxArgent(
-                "Frais de scolarite 2024-2025",
-                compteBancaire, au21Sept2024, au21Sept2024, -2_500_000,
-                21);
 
         var au01Oct2024 = LocalDate.of(2024, OCTOBER, 1);
         var au13Fev2025 = LocalDate.of(2025, FEBRUARY, 13);
@@ -162,13 +137,7 @@ public class PatrimoineZetyTest {
                 argentEspeces, au01Oct2024, au13Fev2025, -250_000,
                 1);
 
-        var patrimoineZetyAu3jul2024 = new Patrimoine(
-                "patrimoineZetyAu3jul2024",
-                zety,
-                au03jul2024,
-                Set.of(new GroupePossession("Le groupe", au03jul2024, Set.of(ordi, vetments, argentEspeces, compteBancaire))));
-
-        var au01Fev2025 = LocalDate.of(2025, FEBRUARY, 1);
-        assertTrue(argentEspeces.projectionFuture(au01Fev2025).getValeurComptable() < 0);
+        // 2025-01-01
+        assertEquals(LocalDate.of(2025, 1, 1), argentEspeces.finFinancements(0));
     }
 }

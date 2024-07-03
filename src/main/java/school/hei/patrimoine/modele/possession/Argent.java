@@ -38,6 +38,15 @@ public sealed class Argent extends Possession permits Dette, Creance {
         fluxArgents.stream().map(f -> f.projectionFuture(tFutur)).collect(toSet()));
   }
 
+  public LocalDate finFinancements(int montant) {
+    int argentTotal = getValeurComptable();
+    LocalDate dateFinFinancement = dateOuverture;
+    while (argentTotal == montant) {
+      argentTotal = projectionFuture(dateFinFinancement.plusDays(1)).getValeurComptable();
+    }
+    return dateFinFinancement;
+  }
+
   private int financementsFutur(LocalDate tFutur) {
     return fluxArgents.stream().
         mapToInt(
