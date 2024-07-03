@@ -82,4 +82,5 @@ public class PatrimoineRichePireCas implements Supplier<Patrimoine> {
         au13mai24,
         Set.of(compteCourant, compteEpargne, trainDeVie, voiture, mac));
   }
+
 }
