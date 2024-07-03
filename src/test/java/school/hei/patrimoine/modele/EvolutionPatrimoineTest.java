@@ -7,7 +7,7 @@ import school.hei.patrimoine.modele.possession.FluxArgent;
 import java.time.LocalDate;
 import java.util.Set;
 
-import static java.time.Month.MAY;
+import static java.time.Month.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class EvolutionPatrimoineTest {
