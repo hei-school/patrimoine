@@ -8,62 +8,69 @@ import school.hei.patrimoine.modele.possession.*;
 import java.time.LocalDate;
 import java.util.Set;
 
+import static java.util.Calendar.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class TestZety {
 
     @Test
-    void valeurPatrimoineAu17Septembre2024() {
+
+    void zety_etudie_2023_2024(){
         var zety = new Personne("Zety");
-        var au3juillet2024 = LocalDate.of(2024, 7, 3);
+        var au3juillet24 = LocalDate.of(2024, JULY, 3);
+
         var ordinateur = new Materiel(
                 "Ordinateur",
-                au3juillet2024,
-                1200000,
-                au3juillet2024.minusDays(2),
+                au3juillet24,
+                1_200_000,
+                au3juillet24,
                 -0.10);
 
         var vetements = new Materiel(
                 "Vêtements",
-                au3juillet2024,
-                1500000,
-                au3juillet2024.minusDays(2),
+                au3juillet24,
+                1_500_000,
+                au3juillet24,
                 -0.50);
 
-        var argentEspeces = new Argent("Espèces", au3juillet2024, 800000);
-        var fraisScolarite = new FluxArgent(
-                "Frais de scolarité",
-                argentEspeces,
-                LocalDate.of(2023, 11, 27),
-                LocalDate.of(2024, 8, 27),
-                -200000,
-                30);
+        var espece = new Argent("espèce", au3juillet24, 800_000);
 
-        var compteBancaire = new Argent("Compte bancaire", au3juillet2024, 100000);
+        var debutScolarite = LocalDate.of(2023, NOVEMBER, 1);
+        var finScolarite = LocalDate.of(2024, AUGUST, 30);
+        var fraisDeScolarite = new FluxArgent(
+                "Frais de Scolarité",
+                espece,
+                debutScolarite,
+                finScolarite,
+                -200_000,
+                27);
 
-        var fraisTenueCompte = new FluxArgent(
-                "Frais de tenue de compte",
+        var compteBancaire = new Argent("CompteBancaire", au3juillet24, 100_000);
+        var fraisDuCompte = new FluxArgent(
+                "Frais de compte",
                 compteBancaire,
-                au3juillet2024.minusMonths(1),
-                au3juillet2024.plusYears(1),
-                -20000,
+                au3juillet24,
+                LocalDate.MAX,
+                -20_000,
                 25);
 
-        var patrimoineZety = new Patrimoine(
-                "Patrimoine de Zety",
+        var patrimoineZetyAu3juillet24 = new Patrimoine(
+                "patrimoineZetyAu3juillet24",
                 zety,
-                au3juillet2024,
-                Set.of(ordinateur, vetements, argentEspeces, fraisScolarite, compteBancaire, fraisTenueCompte));
+                au3juillet24,
+                Set.of(ordinateur,
+                        vetements,
+                        espece,
+                        fraisDeScolarite,
+                        compteBancaire,
+                        fraisDuCompte
+                )
+        );
 
-        var valeurPatrimoineAu17Septembre2024 = patrimoineZety.projectionFuture(LocalDate.of(2024, 9, 17)).getValeurComptable();
-        var valeurOrdinateurAu17Septembre2024 = ordinateur.valeurComptableFuture(LocalDate.of(2024, 9, 17));
-        var valeurVetementsAu17Septembre2024 = vetements.valeurComptableFuture(LocalDate.of(2024, 9, 17));
-        var valeurEspecesAu17Septembre2024 = argentEspeces.valeurComptableFuture(LocalDate.of(2024, 9, 17));
-        var valeurCompteBancaireAu17Septembre2024 = compteBancaire.valeurComptableFuture(LocalDate.of(2024, 9, 17));
-
-        var valeurTotaleAttendue = valeurOrdinateurAu17Septembre2024 + valeurVetementsAu17Septembre2024 + valeurEspecesAu17Septembre2024 + valeurCompteBancaireAu17Septembre2024;
-        assertEquals(valeurTotaleAttendue, valeurPatrimoineAu17Septembre2024);
-
-        System.out.println("la valeur comptable de zety sera : " + valeurTotaleAttendue);
+        var au17septembre24 = LocalDate.of(2024, SEPTEMBER, 17);
+        assertTrue(patrimoineZetyAu3juillet24.getValeurComptable() > patrimoineZetyAu3juillet24.projectionFuture(au17septembre24).getValeurComptable());
+        assertEquals(2_978_848, patrimoineZetyAu3juillet24.projectionFuture(au17septembre24).getValeurComptable());
     }
+
 }
