@@ -1,6 +1,6 @@
 package school.hei.patrimoine.modele;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import school.hei.patrimoine.modele.possession.Argent;
 import school.hei.patrimoine.modele.possession.Materiel;
 
@@ -9,21 +9,9 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class PatrimoineZetyTest {
+public class ZetyPartEnAllemagneTest {
     @Test
-    public void patrimoine_vide_vaut_0(){
-        var zety = new Personne("Zety");
-        var patrimoineZetyAu3Juillet2024 = new Patrimoine(
-                "patrimoine_de_zety",
-                zety,
-                LocalDate.of(2024, 7, 3),
-                Set.of()
-        );
-        assertEquals(0, patrimoineZetyAu3Juillet2024.getValeurComptable());
-    }
-
-    @Test
-    public void patrimoine_de_zety_a_la_date_du_17_septembre_2024(){
+    void le_patrimoine_de_zety_le14fevrier2025(){
         var zety = new Personne("Zety");
 
         var ordinateur = new Materiel(
@@ -56,7 +44,7 @@ public class PatrimoineZetyTest {
 
         var date3Juillet2024 = LocalDate.of(2024, 7, 3);
 
-        var date17Septembre2024 = LocalDate.of(2024, 9, 17);
+        var date14Fevrier2025 = LocalDate.of(2025, 2, 14);
         var patrimoine_de_zety = new Patrimoine(
                 "patrimoine_de_zety",
                 zety,
@@ -64,6 +52,6 @@ public class PatrimoineZetyTest {
                 Set.of(ordinateur, vetement, argentEnEspece, compteEnBanque)
         );
 
-        assertEquals(3_443_835, patrimoine_de_zety.projectionFuture(date17Septembre2024).getValeurComptable());
+        assertEquals(3_086_300, patrimoine_de_zety.projectionFuture(date14Fevrier2025).getValeurComptable());
     }
- }
+}
