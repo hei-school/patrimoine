@@ -3,6 +3,7 @@ package school.hei.patrimoine.modele.possession;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import school.hei.patrimoine.modele.devise.Devise;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -20,6 +21,14 @@ public sealed abstract class Possession implements Serializable /*note(no-serial
 
   public final int valeurComptableFuture(LocalDate tFutur) {
     return projectionFuture(tFutur).getValeurComptable();
+  }
+
+  public final double valeurComptableFuture(
+          LocalDate tFutur,
+          Devise deviseSource,
+          Devise deviseDestination,
+          double tauxDAppreciationAnnuelle) {
+    return deviseDestination.from(projectionFuture(tFutur).getValeurComptable(), deviseSource, tFutur, tauxDAppreciationAnnuelle);
   }
 
   public abstract Possession projectionFuture(LocalDate tFutur);
