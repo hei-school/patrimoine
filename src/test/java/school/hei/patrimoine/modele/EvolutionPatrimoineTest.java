@@ -16,11 +16,12 @@ class EvolutionPatrimoineTest {
   void patrimoine_evolue() {
     var ilo = new Personne("Ilo");
     var au13mai24 = LocalDate.of(2024, MAY, 13);
-    var financeur = new Argent("Espèces", au13mai24, 600_000);
+    var arriary = new Monnaie("arriary", 4_821, au13mai24, -.1);
+    var financeur = new Argent("Espèces", au13mai24, 600_000, arriary);
     var trainDeVie = new FluxArgent(
         "Vie courante",
         financeur, au13mai24.minusDays(100), au13mai24.plusDays(100), -100_000,
-        15);
+        15, arriary);
     var patrimoineIloAu13mai24 = new Patrimoine(
         "patrimoineIloAu13mai24",
         ilo,
