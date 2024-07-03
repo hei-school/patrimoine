@@ -12,7 +12,7 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class diminutionPatrimoineDeZety {
+public class DiminutionPatrimoineDeZety {
     @Test
     public void diminution_Patrimoine_Entre_17_et_18_Septembre2024() {
         var zety = new Personne("Zety");
