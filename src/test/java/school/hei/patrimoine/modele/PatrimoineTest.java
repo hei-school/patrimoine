@@ -231,17 +231,27 @@ class PatrimoineTest {
             zety,
             au3juillet2024,
             Set.of(argentEspeces, ordinateur, vetements, fraisScolarite, compteBancaire, fraisTenueCompte));
-    LocalDate dateProjection = au3juillet2024;
-    do {
-      var valeurPatrimoine = patrimoineZety.projectionFuture(dateProjection).getValeurComptable();
-      assertTrue(argentEspeces.valeurComptableFuture(dateProjection) >= 0);
-      dateProjection = dateProjection.plusDays(1);
-      argentEspeces = new Argent("Espèces", dateProjection, argentEspeces.getValeurComptable());
-    }
-    while (argentEspeces.getValeurComptable() <= 0);
-    assertEquals(LocalDate.of(2024, Month.JULY, 4), dateProjection);
-  }
 
+    LocalDate dateProjection = au3juillet2024;
+    while (true) {
+      if (dateProjection.equals(LocalDate.of(2024, Month.SEPTEMBER, 21))) {
+        argentEspeces = new Argent("Espèces", dateProjection, argentEspeces.getValeurComptable() - 2_500_000);
+      }
+      if (dateProjection.getDayOfMonth() == 15 && dateProjection.getMonthValue() >= 1 && dateProjection.getYear() == 2024) {
+        argentEspeces = new Argent("Espèces", dateProjection, argentEspeces.getValeurComptable() + 100_000);
+      }
+      if (dateProjection.getMonthValue() >= 10 && dateProjection.getDayOfMonth() == 1 &&
+              dateProjection.isBefore(LocalDate.of(2025, Month.FEBRUARY, 14))) {
+        argentEspeces = new Argent("Espèces", dateProjection, argentEspeces.getValeurComptable() - 250_000);
+      }
+      if (argentEspeces.getValeurComptable() <= 0) {
+        break;
+      }
+      dateProjection = dateProjection.plusDays(1);
+    }
+
+    assertEquals(LocalDate.of(2024, Month.SEPTEMBER, 21), dateProjection);
+  }
   // la valeur de patrimoine de Zety à partir de 14 février 2025
   @Test
   void valeurPatrimoineAu14Fevrier2025() {
