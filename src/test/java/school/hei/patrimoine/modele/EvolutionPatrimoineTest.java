@@ -218,8 +218,8 @@ class EvolutionPatrimoineTest {
       dateDebut = dateDebut.plusMonths(1);
     }
 
-    var patrimoineZetyAu3Juillet2025 = new Patrimoine(
-            "patrimoineZety2025",
+    var patrimoineZetyAu3Juillet2024 = new Patrimoine(
+            "patrimoineZety2024",
             zety,
             au3juillet24,
             Set.of(financeur, financeur2, ordinateur, vetement, fraisDeScolarite, fraisTenueCompte)
@@ -227,13 +227,13 @@ class EvolutionPatrimoineTest {
 
     var evolutionPatrimoine = new EvolutionPatrimoine(
             "Zety",
-            patrimoineZetyAu3Juillet2025,
-            LocalDate.of(2025, FEBRUARY, 13),
+            patrimoineZetyAu3Juillet2024,
+            LocalDate.of(2024, JULY, 3),
             LocalDate.of(2025, FEBRUARY, 14)
     );
 
     var evolutionJournaliere = evolutionPatrimoine.getEvolutionJournaliere();
 
-    assertEquals(100_000, financeur2.getValeurComptable());
+    assertEquals(161_314, evolutionJournaliere.get(LocalDate.of(2025, FEBRUARY, 14)).getValeurComptable());
   }
 }
