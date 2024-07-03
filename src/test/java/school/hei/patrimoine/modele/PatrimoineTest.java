@@ -31,14 +31,15 @@ class PatrimoineTest {
     var ilo = new Personne("Ilo");
 
     var au13mai24 = LocalDate.of(2024, MAY, 13);
+    var arriary = new Monnaie("arriary", 4_821, au13mai24, -.1);
     var patrimoineIloAu13mai24 = new Patrimoine(
         "patrimoineIloAu13mai24",
         ilo,
         au13mai24,
         Set.of(
-            new Argent("Espèces", au13mai24, 400_000),
-            new Argent("Compte epargne", au13mai24, 200_000),
-            new Argent("Compte courant", au13mai24, 600_000)));
+            new Argent("Espèces", au13mai24, 400_000, arriary),
+            new Argent("Compte epargne", au13mai24, 200_000, arriary),
+            new Argent("Compte courant", au13mai24, 600_000, arriary)));
 
     assertEquals(1_200_000, patrimoineIloAu13mai24.getValeurComptable());
   }
@@ -47,11 +48,12 @@ class PatrimoineTest {
   void patrimoine_possede_un_train_de_vie_financé_par_argent() {
     var ilo = new Personne("Ilo");
     var au13mai24 = LocalDate.of(2024, MAY, 13);
-    var financeur = new Argent("Espèces", au13mai24, 600_000);
+    var arriary = new Monnaie("arriary", 4_821, au13mai24, -.1);
+    var financeur = new Argent("Espèces", au13mai24, 600_000, arriary);
     var trainDeVie = new FluxArgent(
         "Vie courante",
         financeur, au13mai24.minusDays(100), au13mai24.plusDays(100), -100_000,
-        15);
+        15, arriary);
 
     var patrimoineIloAu13mai24 = new Patrimoine(
         "patrimoineIloAu13mai24",
@@ -68,17 +70,18 @@ class PatrimoineTest {
   void patrimoine_possede_groupe_de_train_de_vie_et_d_argent() {
     var ilo = new Personne("Ilo");
     var au13mai24 = LocalDate.of(2024, MAY, 13);
-    var financeur = new Argent("Espèces", au13mai24, 600_000);
+    var arriary = new Monnaie("arriary", 4_821, au13mai24, -.1);
+    var financeur = new Argent("Espèces", au13mai24, 600_000, arriary);
     var trainDeVie = new FluxArgent(
         "Vie courante",
         financeur, au13mai24.minusDays(100), au13mai24.plusDays(100), -100_000,
-        15);
+        15, arriary);
 
     var patrimoineIloAu13mai24 = new Patrimoine(
         "patrimoineIloAu13mai24",
         ilo,
         au13mai24,
-        Set.of(new GroupePossession("Le groupe", au13mai24, Set.of(financeur, trainDeVie))));
+        Set.of(new GroupePossession("Le groupe", au13mai24, Set.of(financeur, trainDeVie), arriary)));
 
     assertEquals(500_000, patrimoineIloAu13mai24.projectionFuture(au13mai24.plusDays(10)).getValeurComptable());
     assertEquals(200_000, patrimoineIloAu13mai24.projectionFuture(au13mai24.plusDays(100)).getValeurComptable());

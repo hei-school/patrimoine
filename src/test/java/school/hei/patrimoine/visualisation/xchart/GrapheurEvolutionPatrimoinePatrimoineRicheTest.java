@@ -9,9 +9,7 @@ import school.hei.patrimoine.visualisation.AreImagesEqual;
 
 import java.time.LocalDate;
 
-import static java.time.Month.MARCH;
-import static java.time.Month.MAY;
-import static java.time.Month.NOVEMBER;
+import static java.time.Month.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class GrapheurEvolutionPatrimoinePatrimoineRicheTest {

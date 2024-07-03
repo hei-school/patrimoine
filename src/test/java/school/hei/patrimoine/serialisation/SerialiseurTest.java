@@ -1,6 +1,7 @@
 package school.hei.patrimoine.serialisation;
 
 import org.junit.jupiter.api.Test;
+import school.hei.patrimoine.modele.Monnaie;
 import school.hei.patrimoine.modele.Patrimoine;
 import school.hei.patrimoine.modele.Personne;
 import school.hei.patrimoine.modele.possession.Argent;
@@ -13,19 +14,20 @@ import static java.time.Month.MAY;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class SerialiseurTest {
+  final Monnaie arriary = new Monnaie("arriary", 4_821, LocalDate.of(2024, MAY, 13), -.1);
 
   @Test
   void serialise_et_deserialise() {
     var ilo = new Personne("Ilo");
     var au13mai24 = LocalDate.of(2024, MAY, 13);
-    var financeur = new Argent("Espèces", au13mai24, 600_000);
+    var financeur = new Argent("Espèces", au13mai24, 600_000, arriary);
     var trainDeVie = new FluxArgent(
         "Vie courante",
         financeur,
         au13mai24.minusDays(100),
         au13mai24.plusDays(100),
         -100_000,
-        15);
+        15, arriary);
     var patrimoineIloAu13mai24 = new Patrimoine(
         "patrimoineIloAu13mai24",
         ilo,
