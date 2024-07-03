@@ -10,18 +10,18 @@ public final class TransfertArgent extends Possession {
       String nom,
       Argent depuisArgent, Argent versArgent,
       LocalDate debut, LocalDate fin,
-      int fluxMensuel, int dateOperation) {
-    super(nom, debut, 0);
+      int fluxMensuel, int dateOperation, Devise devise) {
+    super(nom, debut, 0, devise);
     this.transfertCommeGroupe = new GroupePossession(
         nom,
         debut,
         Set.of(
-            new FluxArgent("Flux TransfertArgent sortant: " + nom, depuisArgent, debut, fin, -1 * fluxMensuel, dateOperation),
-            new FluxArgent("Flux TransfertArgent entrant: " + nom, versArgent, debut, fin, fluxMensuel, dateOperation)));
+            new FluxArgent("Flux TransfertArgent sortant: " + nom, depuisArgent, debut, fin, -1 * fluxMensuel, dateOperation, devise),
+            new FluxArgent("Flux TransfertArgent entrant: " + nom, versArgent, debut, fin, fluxMensuel, dateOperation, devise)), devise);
   }
 
   @Override
-  public Possession projectionFuture(LocalDate tFutur) {
-    return transfertCommeGroupe.projectionFuture(tFutur);
+  public Possession projectionFuture(LocalDate tFutur, Devise devise) {
+    return transfertCommeGroupe.projectionFuture(tFutur, devise);
   }
 }

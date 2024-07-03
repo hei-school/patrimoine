@@ -2,6 +2,7 @@ package school.hei.patrimoine.modele;
 
 import org.junit.jupiter.api.Test;
 import school.hei.patrimoine.modele.possession.Argent;
+import school.hei.patrimoine.modele.possession.Devise;
 import school.hei.patrimoine.modele.possession.FluxArgent;
 
 import java.time.LocalDate;
@@ -14,13 +15,16 @@ class EvolutionPatrimoineTest {
 
   @Test
   void patrimoine_evolue() {
+    var euro = new Devise("euro", 4_821);
+    var ariary = new Devise("ariary", 1);
+
     var ilo = new Personne("Ilo");
     var au13mai24 = LocalDate.of(2024, MAY, 13);
-    var financeur = new Argent("Espèces", au13mai24, 600_000);
+    var financeur = new Argent("Espèces", au13mai24, 600_000, ariary);
     var trainDeVie = new FluxArgent(
         "Vie courante",
         financeur, au13mai24.minusDays(100), au13mai24.plusDays(100), -100_000,
-        15);
+        15, ariary);
     var patrimoineIloAu13mai24 = new Patrimoine(
         "patrimoineIloAu13mai24",
         ilo,
@@ -31,7 +35,7 @@ class EvolutionPatrimoineTest {
         "Nom",
         patrimoineIloAu13mai24,
         LocalDate.of(2024, MAY, 12),
-        LocalDate.of(2024, MAY, 17));
+        LocalDate.of(2024, MAY, 17), ariary);
 
     var evolutionJournaliere = evolutionPatrimoine.getEvolutionJournaliere();
     assertEquals(0, evolutionJournaliere.get(LocalDate.of(2024, MAY, 12)).getValeurComptable());

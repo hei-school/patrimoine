@@ -10,20 +10,23 @@ public final class Materiel extends Possession {
   private final double tauxDAppreciationAnnuelle;
 
   public Materiel(
-      String nom, LocalDate t, int valeurComptable, LocalDate dateAcquisition, double tauxDAppreciationAnnuelle) {
-    super(nom, t, valeurComptable);
+      String nom, LocalDate t, int valeurComptable, LocalDate dateAcquisition, double tauxDAppreciationAnnuelle, Devise devise) {
+    super(nom, t, valeurComptable, devise);
     this.dateAcquisition = dateAcquisition;
     this.tauxDAppreciationAnnuelle = tauxDAppreciationAnnuelle;
   }
 
   @Override
-  public Possession projectionFuture(LocalDate tFutur) {
+  public Possession projectionFuture(LocalDate tFutur, Devise devise) {
     if (tFutur.isBefore(dateAcquisition)) {
-      return new Materiel(nom, tFutur, 0, dateAcquisition, tauxDAppreciationAnnuelle);
+      return new Materiel(nom, tFutur, 0, dateAcquisition, tauxDAppreciationAnnuelle, devise);
     }
     var joursEcoules = DAYS.between(t, tFutur);
     double valeurAjouteeJournaliere = valeurComptable * (tauxDAppreciationAnnuelle / 365.);
     int valeurComptableFuture = max(0, (int) (valeurComptable + valeurAjouteeJournaliere * joursEcoules));
-    return new Materiel(nom, tFutur, valeurComptableFuture, dateAcquisition, tauxDAppreciationAnnuelle);
+    if (this.devise != devise){
+      valeurComptableFuture *= devise.valeurEnAriary();
+    }
+    return new Materiel(nom, tFutur, valeurComptableFuture, dateAcquisition, tauxDAppreciationAnnuelle, devise);
   }
 }

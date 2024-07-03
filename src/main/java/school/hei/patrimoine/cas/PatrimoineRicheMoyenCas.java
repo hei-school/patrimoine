@@ -2,15 +2,7 @@ package school.hei.patrimoine.cas;
 
 import school.hei.patrimoine.modele.Patrimoine;
 import school.hei.patrimoine.modele.Personne;
-import school.hei.patrimoine.modele.possession.AchatMaterielAuComptant;
-import school.hei.patrimoine.modele.possession.Argent;
-import school.hei.patrimoine.modele.possession.Creance;
-import school.hei.patrimoine.modele.possession.Dette;
-import school.hei.patrimoine.modele.possession.FluxArgent;
-import school.hei.patrimoine.modele.possession.GroupePossession;
-import school.hei.patrimoine.modele.possession.Materiel;
-import school.hei.patrimoine.modele.possession.Possession;
-import school.hei.patrimoine.modele.possession.TransfertArgent;
+import school.hei.patrimoine.modele.possession.*;
 
 import java.time.LocalDate;
 import java.util.Set;
@@ -36,33 +28,36 @@ public class PatrimoineRicheMoyenCas implements Supplier<Patrimoine> {
   private final LocalDate finSimulation = LocalDate.of(2028, MARCH, 31);
 
   private Set<Possession> possessionsCresus(Argent bp, Argent a2, Dette dette, Creance creance) {
-    new FluxArgent("Loyer", bp, dans1mois, finSimulation, -1600, 25);
-    new FluxArgent("Consommables", bp, dans1mois, finSimulation, -1000, 1);
+    var euro = new Devise("euro", 4_821);
+    var ariary = new Devise("ariary", 1);
+
+    new FluxArgent("Loyer", bp, dans1mois, finSimulation, -1600, 25, ariary);
+    new FluxArgent("Consommables", bp, dans1mois, finSimulation, -1000, 1, ariary);
     //note(verif)
-    new FluxArgent("Contribution Cesar", bp, LocalDate.of(2024, AUGUST, 30), LocalDate.of(2025, JULY, 30), 2000, 25);
+    new FluxArgent("Contribution Cesar", bp, LocalDate.of(2024, AUGUST, 30), LocalDate.of(2025, JULY, 30), 2000, 25, ariary);
 
     var finSalaire = LocalDate.of(2024, SEPTEMBER, 30);
-    new FluxArgent("Salaire 1", bp, ajd, finSalaire, 2100, 7);
-    new FluxArgent("Salaire 2", bp, finSalaire.plusMonths(1), LocalDate.of(2025, DECEMBER, 31), 3_200/*note(verif)*/, 7);
+    new FluxArgent("Salaire 1", bp, ajd, finSalaire, 2100, 7, ariary);
+    new FluxArgent("Salaire 2", bp, finSalaire.plusMonths(1), LocalDate.of(2025, DECEMBER, 31), 3_200/*note(verif)*/, 7, ariary);
 
-    new FluxArgent("Prêt BP", bp, dans1mois, LocalDate.of(2027, APRIL, 30), -702, 7);
-    new FluxArgent("O2", bp, ajd, finSalaire, -145, 20);
+    new FluxArgent("Prêt BP", bp, dans1mois, LocalDate.of(2027, APRIL, 30), -702, 7, ariary);
+    new FluxArgent("O2", bp, ajd, finSalaire, -145, 20, ariary);
 
     var dateRembPva = LocalDate.of(2024, JULY, 14); //note(verif)
-    new FluxArgent("Raliz", bp, dateRembPva, dateRembPva, -7_000, dateRembPva.getDayOfMonth());
-    new FluxArgent("Néri", bp, dateRembPva, dateRembPva, -5_000, dateRembPva.getDayOfMonth());
-    new FluxArgent("Hita", bp, dateRembPva, dateRembPva, -1_000, dateRembPva.getDayOfMonth());
+    new FluxArgent("Raliz", bp, dateRembPva, dateRembPva, -7_000, dateRembPva.getDayOfMonth(), ariary);
+    new FluxArgent("Néri", bp, dateRembPva, dateRembPva, -5_000, dateRembPva.getDayOfMonth(), ariary);
+    new FluxArgent("Hita", bp, dateRembPva, dateRembPva, -1_000, dateRembPva.getDayOfMonth(), ariary);
 
     var debutRembMyriade = LocalDate.of(2025, JANUARY, 30);
-    new FluxArgent("Raly remb. Myriade", a2, debutRembMyriade, debutRembMyriade.plusYears(3), 500, 25);
-    new FluxArgent("Rom remb. Myriade 1/2", a2, debutRembMyriade, debutRembMyriade.plusYears(1), 1050, 25);
-    new FluxArgent("Rom remb. Myriade 2/2", a2, debutRembMyriade.plusYears(1), debutRembMyriade.plusYears(2), 969, 25);
+    new FluxArgent("Raly remb. Myriade", a2, debutRembMyriade, debutRembMyriade.plusYears(3), 500, 25, ariary);
+    new FluxArgent("Rom remb. Myriade 1/2", a2, debutRembMyriade, debutRembMyriade.plusYears(1), 1050, 25, ariary);
+    new FluxArgent("Rom remb. Myriade 2/2", a2, debutRembMyriade.plusYears(1), debutRembMyriade.plusYears(2), 969, 25, ariary);
 
-    new FluxArgent("Graff & Pat", bp, ajd, LocalDate.of(2024, AUGUST, 30), -1400, 27);
-    new FluxArgent("Graff & Pat remb.", a2, LocalDate.of(2024, SEPTEMBER, 30), LocalDate.of(2025, AUGUST, 30), 1680, 7);
-    new FluxArgent("Mim remb.", a2, ajd, LocalDate.of(2026, MAY, 14), 500, 14);
-    new FluxArgent("Fano créance", creance, ajd, ajd, 500 * (int) LocalDate.of(2023, SEPTEMBER, 1).until(ajd, MONTHS), ajd.getDayOfMonth());
-    new FluxArgent("Fano remb.", a2, ajd, LocalDate.of(2024, JULY, 27), 500, 27);
+    new FluxArgent("Graff & Pat", bp, ajd, LocalDate.of(2024, AUGUST, 30), -1400, 27, ariary);
+    new FluxArgent("Graff & Pat remb.", a2, LocalDate.of(2024, SEPTEMBER, 30), LocalDate.of(2025, AUGUST, 30), 1680, 7, ariary);
+    new FluxArgent("Mim remb.", a2, ajd, LocalDate.of(2026, MAY, 14), 500, 14, ariary);
+    new FluxArgent("Fano créance", creance, ajd, ajd, 500 * (int) LocalDate.of(2023, SEPTEMBER, 1).until(ajd, MONTHS), ajd.getDayOfMonth(), ariary);
+    new FluxArgent("Fano remb.", a2, ajd, LocalDate.of(2024, JULY, 27), 500, 27, ariary);
 
     var tauxAppreciationByzance = 0.1;
     var dateEmpruntZanzEtCie = LocalDate.of(2024, JULY, 5);
@@ -72,22 +67,22 @@ public class PatrimoineRicheMoyenCas implements Supplier<Patrimoine> {
         "Byzance",
         LocalDate.of(2024, JANUARY, 1),
         Set.of(
-            new Materiel("Byzance 1/3", ajd, 60_000, LocalDate.of(2024, JANUARY, 1), tauxAppreciationByzance),
+            new Materiel("Byzance 1/3", ajd, 60_000, LocalDate.of(2024, JANUARY, 1), tauxAppreciationByzance, ariary),
 
-            new FluxArgent("Zanz&Cie prêt", bp, dateEmpruntZanzEtCie, dateEmpruntZanzEtCie, 30_000, dateEmpruntZanzEtCie.getDayOfMonth()),
-            new FluxArgent("Zanz&Cie dette creation", dette, dateEmpruntZanzEtCie, dateEmpruntZanzEtCie, -33_000, dateEmpruntZanzEtCie.getDayOfMonth()),
-            new FluxArgent("Zanz&Cie remb.", bp, dateRembZanzEtCie, dateRembZanzEtCie, -33_000, dateRembZanzEtCie.getDayOfMonth()),
-            new FluxArgent("Zanz&Cie dette annulation", dette, dateRembZanzEtCie, dateRembZanzEtCie, 33_000, dateRembZanzEtCie.getDayOfMonth()),
+            new FluxArgent("Zanz&Cie prêt", bp, dateEmpruntZanzEtCie, dateEmpruntZanzEtCie, 30_000, dateEmpruntZanzEtCie.getDayOfMonth(), ariary),
+            new FluxArgent("Zanz&Cie dette creation", dette, dateEmpruntZanzEtCie, dateEmpruntZanzEtCie, -33_000, dateEmpruntZanzEtCie.getDayOfMonth(), ariary),
+            new FluxArgent("Zanz&Cie remb.", bp, dateRembZanzEtCie, dateRembZanzEtCie, -33_000, dateRembZanzEtCie.getDayOfMonth(), ariary),
+            new FluxArgent("Zanz&Cie dette annulation", dette, dateRembZanzEtCie, dateRembZanzEtCie, 33_000, dateRembZanzEtCie.getDayOfMonth(), ariary),
 
-            new FluxArgent("Honoraires Villey Byzance", dette, ajd, ajd, -15_000, ajd.getDayOfMonth()),
+            new FluxArgent("Honoraires Villey Byzance", dette, ajd, ajd, -15_000, ajd.getDayOfMonth(), ariary),
 
-            new FluxArgent("PVA&Cie Byzance remb.", bp, dateRembPvaByzance, dateRembPvaByzance, -60_000, dateRembPvaByzance.getDayOfMonth()),
-            new FluxArgent("PVA&Cie Byzance Dette creation", dette, ajd, ajd, -60_000, ajd.getDayOfMonth()),
-            new FluxArgent("PVA&Cie Byzance Dette annulation", dette, dateRembPvaByzance, dateRembPvaByzance, 60_000, dateRembPvaByzance.getDayOfMonth()),
+            new FluxArgent("PVA&Cie Byzance remb.", bp, dateRembPvaByzance, dateRembPvaByzance, -60_000, dateRembPvaByzance.getDayOfMonth(), ariary),
+            new FluxArgent("PVA&Cie Byzance Dette creation", dette, ajd, ajd, -60_000, ajd.getDayOfMonth(), ariary),
+            new FluxArgent("PVA&Cie Byzance Dette annulation", dette, dateRembPvaByzance, dateRembPvaByzance, 60_000, dateRembPvaByzance.getDayOfMonth(), ariary),
 
-            new AchatMaterielAuComptant("Byzance 2/3", LocalDate.of(2024, JULY, 31), 30_000, tauxAppreciationByzance, bp),
-            new AchatMaterielAuComptant("Byzance 3/3", LocalDate.of(2025, JULY, 31), 30_000, tauxAppreciationByzance, bp)));
-    new FluxArgent("Achat Byzance 1/2", bp, ajd, LocalDate.of(2024, AUGUST, 30), -1400, 27);
+            new AchatMaterielAuComptant("Byzance 2/3", LocalDate.of(2024, JULY, 31), 30_000, tauxAppreciationByzance, bp, ariary),
+            new AchatMaterielAuComptant("Byzance 3/3", LocalDate.of(2025, JULY, 31), 30_000, tauxAppreciationByzance, bp, ariary)), ariary);
+    new FluxArgent("Achat Byzance 1/2", bp, ajd, LocalDate.of(2024, AUGUST, 30), -1400, 27, ariary);
 
     return Set.of(
         bp,
@@ -98,53 +93,59 @@ public class PatrimoineRicheMoyenCas implements Supplier<Patrimoine> {
   }
 
   private Set<Possession> possessionsMyriade(Argent myriadeFr, Creance creanceFr, Dette detteMyriadeFr, Argent myriadeMg, Argent bp) {
+    var euro = new Devise("euro", 4_821);
+    var ariary = new Devise("ariary", 1);
+
     //note(verif)
     var dateRembCAR = LocalDate.of(2024, JULY, 10);
-    new FluxArgent("CAR remb.", myriadeFr, dateRembCAR, dateRembCAR, 78_000, dateRembCAR.getDayOfMonth());
+    new FluxArgent("CAR remb.", myriadeFr, dateRembCAR, dateRembCAR, 78_000, dateRembCAR.getDayOfMonth(), ariary);
     var dateRembCCA = LocalDate.of(2024, JULY, 15);
-    new TransfertArgent("CCA remb.", myriadeFr, bp, dateRembCCA, dateRembCCA, 30_000, dateRembCCA.getDayOfMonth());
-    new FluxArgent("CAR 2024 créance", creanceFr, ajd, ajd, 45_000, ajd.getDayOfMonth());
+    new TransfertArgent("CCA remb.", myriadeFr, bp, dateRembCCA, dateRembCCA, 30_000, dateRembCCA.getDayOfMonth(), ariary);
+    new FluxArgent("CAR 2024 créance", creanceFr, ajd, ajd, 45_000, ajd.getDayOfMonth(), ariary);
     var dateRembCAR24 = LocalDate.of(2025, JULY, 10);
-    new TransfertArgent("CAR 2024 remb", creanceFr, myriadeFr, dateRembCAR24, dateRembCAR24, 45_000, dateRembCAR24.getDayOfMonth());
+    new TransfertArgent("CAR 2024 remb", creanceFr, myriadeFr, dateRembCAR24, dateRembCAR24, 45_000, dateRembCAR24.getDayOfMonth(), ariary);
 
-    new FluxArgent("Cesar dette", detteMyriadeFr, ajd, ajd, -3_700 * (int) LocalDate.of(2024, MARCH, 1).until(ajd, MONTHS), ajd.getDayOfMonth());
-    new FluxArgent("Cesar salaire", myriadeFr, ajd, LocalDate.of(2024, DECEMBER, 27), -3_700, 27);
-    new FluxArgent("SAFIR", myriadeFr, ajd, LocalDate.of(2024, DECEMBER, 27), -2_800, 16);
-    new FluxArgent("Manuhis", myriadeFr, ajd, LocalDate.of(2024, DECEMBER, 27), -1_400, 26);
-    new FluxArgent("Fitpal", myriadeFr, ajd, LocalDate.of(2024, DECEMBER, 27), -200, 20);
+    new FluxArgent("Cesar dette", detteMyriadeFr, ajd, ajd, -3_700 * (int) LocalDate.of(2024, MARCH, 1).until(ajd, MONTHS), ajd.getDayOfMonth(), ariary);
+    new FluxArgent("Cesar salaire", myriadeFr, ajd, LocalDate.of(2024, DECEMBER, 27), -3_700, 27, ariary);
+    new FluxArgent("SAFIR", myriadeFr, ajd, LocalDate.of(2024, DECEMBER, 27), -2_800, 16, ariary);
+    new FluxArgent("Manuhis", myriadeFr, ajd, LocalDate.of(2024, DECEMBER, 27), -1_400, 26, ariary);
+    new FluxArgent("Fitpal", myriadeFr, ajd, LocalDate.of(2024, DECEMBER, 27), -200, 20, ariary);
 
     var date1AvanceStratosphery = LocalDate.of(2024, JULY, 5);
-    new FluxArgent("Avance Stratosphery 6 mois 1/2", myriadeFr, date1AvanceStratosphery, date1AvanceStratosphery, (int) (12_500 * (1 - 0.05)), date1AvanceStratosphery.getDayOfMonth());
+    new FluxArgent("Avance Stratosphery 6 mois 1/2", myriadeFr, date1AvanceStratosphery, date1AvanceStratosphery, (int) (12_500 * (1 - 0.05)), date1AvanceStratosphery.getDayOfMonth(), ariary);
     var date2AvanceStratosphery = LocalDate.of(2024, AUGUST, 5);
-    new FluxArgent("Avance Stratosphery 6 mois 2/2", myriadeFr, date2AvanceStratosphery, date2AvanceStratosphery, (int) (12_500 * (1 - 0.05)), date2AvanceStratosphery.getDayOfMonth());
+    new FluxArgent("Avance Stratosphery 6 mois 2/2", myriadeFr, date2AvanceStratosphery, date2AvanceStratosphery, (int) (12_500 * (1 - 0.05)), date2AvanceStratosphery.getDayOfMonth(), ariary);
 
     var datePrestationVilley = LocalDate.of(2024, JULY, 30);
-    new FluxArgent("Prestation Villey", myriadeMg, datePrestationVilley, datePrestationVilley, -1_000, datePrestationVilley.getDayOfMonth());
+    new FluxArgent("Prestation Villey", myriadeMg, datePrestationVilley, datePrestationVilley, -1_000, datePrestationVilley.getDayOfMonth(), ariary);
 
     var dateRembITM = LocalDate.of(2025, JANUARY, 30);
-    new FluxArgent("Prêt ITM remb.", myriadeMg, dateRembITM, dateRembITM, -11_000, dateRembITM.getDayOfMonth());
+    new FluxArgent("Prêt ITM remb.", myriadeMg, dateRembITM, dateRembITM, -11_000, dateRembITM.getDayOfMonth(), ariary);
 
     var finDontBeFoe = LocalDate.of(2025, DECEMBER, 5);
-    new FluxArgent("DontBeFoe", myriadeFr, ajd, finDontBeFoe, 7_500, 3);
-    new TransfertArgent("Myriade Fr --> Mg", myriadeFr, myriadeMg, ajd, finDontBeFoe, 5_000, 27);
-    new FluxArgent("Charges Myriade Mg", myriadeMg, ajd, finDontBeFoe, -5_000, 27);
+    new FluxArgent("DontBeFoe", myriadeFr, ajd, finDontBeFoe, 7_500, 3, ariary);
+    new TransfertArgent("Myriade Fr --> Mg", myriadeFr, myriadeMg, ajd, finDontBeFoe, 5_000, 27, ariary);
+    new FluxArgent("Charges Myriade Mg", myriadeMg, ajd, finDontBeFoe, -5_000, 27, ariary);
 
     return Set.of(myriadeFr, creanceFr, detteMyriadeFr, myriadeMg);
   }
 
   @Override
   public Patrimoine get() {
+    var euro = new Devise("euro", 4_821);
+    var ariary = new Devise("ariary", 1);
+
     var cresus = new Personne("Cresus");
-    var bp = new Argent("BP Cresus & Cesar", ajd, 4_030);
-    var a2 = new Argent("A2", ajd, 500);
-    var creanceCresus = new Creance("Creance Cresus", ajd, 0);
-    var detteCresus = new Dette("Dette Cresus", ajd, 0);
+    var bp = new Argent("BP Cresus & Cesar", ajd, 4_030, ariary);
+    var a2 = new Argent("A2", ajd, 500, ariary);
+    var creanceCresus = new Creance("Creance Cresus", ajd, 0, ariary);
+    var detteCresus = new Dette("Dette Cresus", ajd, 0, ariary);
     Set<Possession> possessionsCresus = possessionsCresus(bp, a2, detteCresus, creanceCresus);
 
-    var myriadeFr = new Argent("Myriade Fr", ajd, 840);
-    var creanceMyriadeFr = new Creance("Creance Myriade Fr", ajd, 0);
-    var detteMyriadeFr = new Dette("Dette Myriade Fr", ajd, 0);
-    var myriadeMg = new Argent("Myriade Mg", ajd, 0);
+    var myriadeFr = new Argent("Myriade Fr", ajd, 840, ariary);
+    var creanceMyriadeFr = new Creance("Creance Myriade Fr", ajd, 0, ariary);
+    var detteMyriadeFr = new Dette("Dette Myriade Fr", ajd, 0, ariary);
+    var myriadeMg = new Argent("Myriade Mg", ajd, 0, ariary);
 
     return
         new Patrimoine(

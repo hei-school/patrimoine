@@ -13,8 +13,8 @@ public final class FluxArgent extends Possession {
   private final int dateOperation;
 
   public FluxArgent(
-      String nom, Argent argent, LocalDate debut, LocalDate fin, int fluxMensuel, int dateOperation) {
-    super(nom, null, 0);
+      String nom, Argent argent, LocalDate debut, LocalDate fin, int fluxMensuel, int dateOperation, Devise devise) {
+    super(nom, null, 0, devise);
     this.argent = argent;
     this.argent.addFinancés(this);
 
@@ -25,7 +25,7 @@ public final class FluxArgent extends Possession {
   }
 
   @Override
-  public FluxArgent projectionFuture(LocalDate tFutur) {
+  public FluxArgent projectionFuture(LocalDate tFutur, Devise devise) {
     var tFuturMajoréParFin = (tFutur.isBefore(fin)) ? tFutur : fin;
     var debutOperationMinoréParDebut = argent.t.isBefore(debut) ? debut : argent.t;
     if (debutOperationMinoréParDebut.isAfter(tFuturMajoréParFin)) {
@@ -38,9 +38,13 @@ public final class FluxArgent extends Possession {
                 .datesUntil(tFuturMajoréParFin.plusDays(1))
                 .filter(d -> d.getDayOfMonth() == dateOperation)
                 .count();
+    var valeurComptableFutur = argent.getValeurComptable() + fluxMensuel * nbOperations;
+    if (this.devise != devise){
+      valeurComptableFutur *= devise.valeurEnAriary();
+    }
     var argentFutur = new Argent(
-        nom, tFutur, argent.getValeurComptable() + fluxMensuel * nbOperations);
+        nom, tFutur, valeurComptableFutur, devise);
 
-    return new FluxArgent(nom, argentFutur, debut, tFuturMajoréParFin, fluxMensuel, dateOperation);
+    return new FluxArgent(nom, argentFutur, debut, tFuturMajoréParFin, fluxMensuel, dateOperation, devise);
   }
 }

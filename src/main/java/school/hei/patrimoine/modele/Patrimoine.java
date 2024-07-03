@@ -1,5 +1,6 @@
 package school.hei.patrimoine.modele;
 
+import school.hei.patrimoine.modele.possession.Devise;
 import school.hei.patrimoine.modele.possession.Possession;
 
 import java.io.Serializable;
@@ -16,12 +17,12 @@ public record Patrimoine(
     return possessions.stream().mapToInt(Possession::getValeurComptable).sum();
   }
 
-  public Patrimoine projectionFuture(LocalDate tFutur) {
+  public Patrimoine projectionFuture(LocalDate tFutur, Devise devise) {
     return new Patrimoine(
         nom,
         possesseur,
         tFutur,
-        possessions.stream().map(p -> p.projectionFuture(tFutur)).collect(toSet()));
+        possessions.stream().map(p -> p.projectionFuture(tFutur, devise)).collect(toSet()));
   }
 
   public Possession possessionParNom(String nom) {
