@@ -5,6 +5,7 @@ import school.hei.patrimoine.modele.possession.*;
 
 import java.time.LocalDate;
 import java.time.Month;
+import java.time.temporal.ChronoUnit;
 import java.util.Set;
 
 import static java.time.Month.MAY;
@@ -317,4 +318,35 @@ class PatrimoineTest {
     var valeurPatrimoineAu14Fevrier2025 = patrimoineZety.projectionFuture(LocalDate.of(2025, Month.FEBRUARY, 14)).getValeurComptable();
     assertEquals(2721314, valeurPatrimoineAu14Fevrier2025);
   }
+  @Test
+  void testValeurPatrimoineZetyEnEuroAu26Octobre2025() {
+    LocalDate dateCreation = LocalDate.of(2024, Month.JULY, 3);
+    Personne zety = new Personne("Zety");
+    Set<Possession> possessionsZety = Set.of(
+            new Materiel("Ordinateur", dateCreation, 1_200_000, dateCreation.minusDays(2), -0.10),
+            new Materiel("Vêtements", dateCreation, 1_500_000, dateCreation.minusDays(2), -0.50),
+            new Argent("Espèces", dateCreation, 800_000),
+            new FluxArgent("Frais de scolarité", new Argent("Espèces", dateCreation, 800_000), LocalDate.of(2023, Month.NOVEMBER, 27), LocalDate.of(2024, Month.AUGUST, 27), -200_000, 30),
+            new Argent("Compte bancaire", dateCreation, 100_000),
+            new FluxArgent("Frais de tenue de compte", new Argent("Compte bancaire", dateCreation, 100_000), dateCreation.minusMonths(1), dateCreation.plusYears(1), -20_000, 30)
+    );
+    Patrimoine patrimoineZety = new Patrimoine("Patrimoine de Zety", zety, dateCreation, possessionsZety);
+
+    double tauxChangeEURtoAr = 4821.0;
+    double tauxAppreciationAnnuel = -10.0;
+    LocalDate dateEvaluation = LocalDate.of(2025, Month.OCTOBER, 26);
+    double valeurPatrimoineEnEuro = calculerValeurPatrimoineEnDevise(patrimoineZety, dateEvaluation, "EUR", tauxChangeEURtoAr, tauxAppreciationAnnuel);
+    double expectedValueInEuros = 0.0;
+    assertEquals(expectedValueInEuros, valeurPatrimoineEnEuro, 0.01);
+  }
+
+  private double calculerValeurPatrimoineEnDevise(Patrimoine patrimoine, LocalDate date, String devise, double tauxChange, double tauxAppreciationAnnuel) {
+    double valeurTotale = 0.0;
+    for (Possession possession : patrimoine.possessions()) {
+      double valeurPossession = possession.getValeurComptable();
+      valeurTotale += valeurPossession * tauxChange * Math.pow(1 + tauxAppreciationAnnuel / 100.0, ChronoUnit.DAYS.between(patrimoine.t(), date));
+    }
+    return valeurTotale;
+  }
+
 }
