@@ -1,10 +1,7 @@
 package school.hei.patrimoine.modele;
 
 import org.junit.jupiter.api.Test;
-import school.hei.patrimoine.modele.possession.Argent;
-import school.hei.patrimoine.modele.possession.FluxArgent;
-import school.hei.patrimoine.modele.possession.GroupePossession;
-import school.hei.patrimoine.modele.possession.Materiel;
+import school.hei.patrimoine.modele.possession.*;
 
 import java.time.LocalDate;
 import java.util.Set;
@@ -132,18 +129,68 @@ class PatrimoineTest {
             "patrimoineZetyAu03Juillet2024",
             zety,
             au03Juillet2024,
-            Set.of(
-                ordinateur,
-                vetements,
-                espece,
-                fraisDeScolarite,
-                compteBancaire,
-                fraisDeTenueDeCompte));
+            Set.of(ordinateur, vetements, espece, compteBancaire));
     var au17Septembre2024 = LocalDate.of(2024, SEPTEMBER, 17);
 
-    int actual = 2978848;
-    assertEquals(
-        actual,
-        patrimoineZetyAu03Juillet2024.projectionFuture(au17Septembre2024).getValeurComptable());
+    int valeurComptableAttendue = 2978848;
+    int valeurComptableActuelle =
+        patrimoineZetyAu03Juillet2024.projectionFuture(au17Septembre2024).getValeurComptable();
+    assertEquals(valeurComptableAttendue, valeurComptableActuelle);
+  }
+
+  @Test
+  void zety_s_endette() {
+    var zety = new Personne("Zety");
+    var au03Juillet2024 = LocalDate.of(2024, JULY, 03);
+
+    var ordinateur = new Materiel("Ordinateur", au03Juillet2024, 1_200_000, au03Juillet2024, -0.1);
+    var vetements = new Materiel("Garde-Robe", au03Juillet2024, 1_500_000, au03Juillet2024, -0.5);
+
+    var espece = new Argent("Espèces", au03Juillet2024, 800_000);
+    var debutFraisScolarite = LocalDate.of(2023, NOVEMBER, 01);
+    var finFraisDeScolarite = LocalDate.of(2024, AUGUST, 28);
+    var fraisDeScolarite =
+        new FluxArgent(
+            "Frais de scolarité", espece, debutFraisScolarite, finFraisDeScolarite, -200_000, 27);
+
+    var compteBancaire = new Argent("Compte Bancaire", au03Juillet2024, 100_000);
+
+    var fraisDeTenueDeCompte =
+        new FluxArgent(
+            "Frais de tenue de compte",
+            compteBancaire,
+            au03Juillet2024,
+            LocalDate.MAX,
+            -20_000,
+            25);
+
+    var au18Septembre2024 = LocalDate.of(2024, SEPTEMBER, 18);
+    var empruntFraisDeScolarite =
+        new FluxArgent(
+            "Emprunt frais de scolarité",
+            compteBancaire,
+            au18Septembre2024,
+            au18Septembre2024,
+            10_000_000,
+            au18Septembre2024.getDayOfMonth());
+
+    var dette = new Dette("Dette emprunt frais de scolarités", au18Septembre2024, -11_000_000);
+
+    var patrimoineZetyAu03Juillet2024 =
+            new Patrimoine(
+                    "patrimoineZetyAu03Juillet2024",
+                    zety,
+                    au03Juillet2024,
+                    Set.of(ordinateur, vetements, espece, compteBancaire, dette));
+
+    var au17Septembre = LocalDate.of(2024, SEPTEMBER, 17);
+    var patrimoineZetyAu17Septembre = patrimoineZetyAu03Juillet2024.projectionFuture(au17Septembre);
+
+    var patrimoineZetyAu18Septembre = patrimoineZetyAu03Juillet2024.projectionFuture(au18Septembre2024);
+
+    var diminutionPatrimoineAttendue = 1002384;
+    var diminutionPatrimoineActuelle = patrimoineZetyAu17Septembre.getValeurComptable() - patrimoineZetyAu18Septembre.getValeurComptable();
+
+    assertEquals(diminutionPatrimoineAttendue, diminutionPatrimoineActuelle);
   }
 }
