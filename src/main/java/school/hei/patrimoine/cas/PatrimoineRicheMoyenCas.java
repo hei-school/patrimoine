@@ -28,6 +28,7 @@ import static java.time.Month.MAY;
 import static java.time.Month.SEPTEMBER;
 import static java.time.temporal.ChronoUnit.MONTHS;
 import static java.util.stream.Collectors.toSet;
+import static javax.xml.datatype.DatatypeConstants.MONTHS;
 
 public class PatrimoineRicheMoyenCas implements Supplier<Patrimoine> {
 
