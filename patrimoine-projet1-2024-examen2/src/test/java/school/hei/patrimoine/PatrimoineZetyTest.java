@@ -112,4 +112,48 @@ public class PatrimoineZetyTest {
     return (long) (end.toEpochDay() - start.toEpochDay()) / 30;
   }
 
+
+  @Test
+  void testDateZetyPlusDEspeces() {
+
+    LocalDate dateReference = LocalDate.of(2024, 7, 3);
+    LocalDate dateEvaluation = LocalDate.of(2024, 9, 17);
+    LocalDate dateEndettement = LocalDate.of(2024, 9, 18);
+    LocalDate datePaiementScolarite = LocalDate.of(2024, 9, 21);
+    LocalDate dateDebutTransferts = LocalDate.of(2024, 1, 15);
+    LocalDate dateDebutDepenses = LocalDate.of(2024, 10, 1);
+
+    // Création des possessions initiales
+    Materiel ordinateur = new Materiel("Ordinateur", dateReference, 1200000, dateReference, -0.10);
+    Materiel vetements = new Materiel("Vêtements", dateReference, 1500000, dateReference, -0.50);
+    Argent argentEspeces = new Argent("Espèces", dateReference, 800000);
+    Argent compteBancaire = new Argent("Compte Bancaire", dateReference, 100000);
+
+    Dette emprunt = new Dette("Emprunt", dateEndettement, -10000000);
+    Argent argentEmprunt = new Argent("Argent emprunté", dateEndettement, 10000000);
+    compteBancaire = new Argent("Compte Bancaire", dateEndettement, compteBancaire.getValeurComptable() + argentEmprunt.getValeurComptable());
+
+    // Paiement des frais de scolarité depuis le compte bancaire le 21 septembre 2024
+    compteBancaire = new Argent("Compte Bancaire", datePaiementScolarite, compteBancaire.getValeurComptable() - 2500000);
+
+    LocalDate currentDate = dateDebutTransferts;
+    while (!currentDate.isAfter(dateEvaluation)) {
+      argentEspeces = new Argent("Espèces", currentDate, argentEspeces.getValeurComptable() + 100000);
+      currentDate = currentDate.plusMonths(1);
+    }
+
+    currentDate = dateDebutDepenses;
+    LocalDate dateSansEspeces = null;
+    while (argentEspeces.getValeurComptable() > 0) {
+      argentEspeces = new Argent("Espèces", currentDate, argentEspeces.getValeurComptable() - 250000);
+      if (argentEspeces.getValeurComptable() <= 0) {
+        dateSansEspeces = currentDate;
+        break;
+      }
+      currentDate = currentDate.plusMonths(1);
+    }
+
+    LocalDate dateAttendue = LocalDate.of(2025, 4, 1);
+    assertEquals(dateAttendue, dateSansEspeces);
+  }
 }
