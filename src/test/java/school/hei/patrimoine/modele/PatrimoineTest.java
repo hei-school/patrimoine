@@ -120,4 +120,26 @@ class PatrimoineTest {
     var diminutionPatrimoine = projectionAu17Septembre.getValeurComptable() - projectionAu18Septembre.getValeurComptable();
     assertEquals(1002384, diminutionPatrimoine);
   }
+  @Test
+  void zety_n_a_plus_d_espèces_en_janvier() {
+    int argentInitial = 0;
+    int fraisScolarite = 2_500_000;
+    int donMensuel = 100_000;
+    int trainDeVieMensuel = 250_000;
+
+    int argentDisponible = argentInitial;
+    argentDisponible -= fraisScolarite;
+    argentDisponible += donMensuel;
+    argentDisponible += donMensuel;
+    argentDisponible -= trainDeVieMensuel;
+    argentDisponible += donMensuel;
+    argentDisponible -= trainDeVieMensuel;
+    argentDisponible += donMensuel;
+    argentDisponible -= trainDeVieMensuel;
+
+    argentDisponible += donMensuel;
+    argentDisponible -= trainDeVieMensuel;
+
+    assertEquals(-3_000_000, argentDisponible, "Zety should have -3,000,000 cash in January");
+  }
 }
