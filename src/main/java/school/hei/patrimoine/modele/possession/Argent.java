@@ -9,9 +9,15 @@ import static java.util.stream.Collectors.toSet;
 public sealed class Argent extends Possession permits Dette, Creance {
   private final LocalDate dateOuverture;
   private final Set<FluxArgent> fluxArgents;
+  private final Devise devise;
 
   public Argent(String nom, LocalDate t, int valeurComptable) {
     this(nom, t, t, valeurComptable);
+  }
+
+  public Argent(String nom, LocalDate t, int valeurComptable, Devise devise) {
+    super(nom, t, valeurComptable);
+    this.devise = devise;
   }
 
   public Argent(String nom, LocalDate dateOuverture, LocalDate t, int valeurComptable) {

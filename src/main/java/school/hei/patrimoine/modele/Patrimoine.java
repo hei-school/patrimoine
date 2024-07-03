@@ -27,4 +27,10 @@ public record Patrimoine(
   public Possession possessionParNom(String nom) {
     return possessions.stream().filter(p -> nom.equals(p.getNom())).findFirst().orElseThrow();
   }
+
+  public double valeur(LocalDate date, Devise devise) {
+    return possessions.stream()
+      .mapToDouble(p -> p.valeur(date, devise))
+      .sum();
+    }
 }
