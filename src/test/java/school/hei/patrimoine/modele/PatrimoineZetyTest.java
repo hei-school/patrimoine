@@ -1,10 +1,7 @@
 package school.hei.patrimoine.modele;
 
 import org.junit.jupiter.api.Test;
-import school.hei.patrimoine.modele.possession.Argent;
-import school.hei.patrimoine.modele.possession.Dette;
-import school.hei.patrimoine.modele.possession.FluxArgent;
-import school.hei.patrimoine.modele.possession.Materiel;
+import school.hei.patrimoine.modele.possession.*;
 
 import java.time.LocalDate;
 import java.util.Set;
@@ -12,6 +9,7 @@ import java.util.Set;
 import static java.time.Month.*;
 import static java.time.Month.SEPTEMBER;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class PatrimoineZetyTest {
     @Test
@@ -150,5 +148,67 @@ public class PatrimoineZetyTest {
         assertEquals(LocalDate.of(2024, 12, 1), dateEpuisementEspeces);
     }
 
+    @Test
+    void testEvaluationPatrimoineZety() {
+        var individuZ = new Personne("Zety");
+        var dateEvaluation = LocalDate.of(2024, JULY, 3);
+
+        var ordiPortable = new Materiel(
+                "Ordinateur portable",
+                dateEvaluation,
+                1_200_000,
+                dateEvaluation.minusDays(1),
+                -0.10);
+        var habillementZ = new Materiel(
+                "Habillement",
+                dateEvaluation,
+                1_500_000,
+                dateEvaluation.minusDays(30),
+                -0.50);
+
+        var espèces = new Argent("Espèces", dateEvaluation, 800_000);
+        var débutAnnéeScolaire = LocalDate.of(2023, NOVEMBER, 1);
+        var finAnnéeScolaire = LocalDate.of(2024, AUGUST, 30);
+        var fraisScolarité = new FluxArgent(
+                "Frais de scolarité 2023-2024",
+                espèces, débutAnnéeScolaire, finAnnéeScolaire, -200_000,
+                27);
+
+        var compteBancaire = new Argent("Compte bancaire", dateEvaluation, 100_000);
+        var fraisCompte = new FluxArgent(
+                "Frais de gestion de compte",
+                compteBancaire, dateEvaluation, LocalDate.of(2054, JULY, 1), -20_000,
+                25);
+
+        var début2024 = LocalDate.of(2024, JANUARY, 1);
+        var donFamille = new FluxArgent(
+                "Don familial",
+                espèces, début2024, LocalDate.of(2054, JANUARY, 1), 100_000,
+                15);
+
+        var datePaiementScolaire = LocalDate.of(2024, SEPTEMBER, 21);
+        var fraisScolaritéUnique = new FluxArgent(
+                "Frais de scolarité 2024-2025",
+                compteBancaire, datePaiementScolaire, datePaiementScolaire, -2_500_000,
+                21);
+
+        var débutOctobre2024 = LocalDate.of(2024, OCTOBER, 1);
+        var finFévrier2025 = LocalDate.of(2025, FEBRUARY, 13);
+        var modeDeVieZ = new FluxArgent(
+                "Mode de vie de Zety",
+                espèces, débutOctobre2024, finFévrier2025, -250_000,
+                1);
+
+        var patrimoineZetyAu3jul2024 = new Patrimoine(
+                "Patrimoine de Zety au 3 juillet 2024",
+                individuZ,
+                dateEvaluation,
+                Set.of(new GroupePossession("Le groupe de Zety", dateEvaluation, Set.of(ordiPortable, habillementZ, espèces, compteBancaire))));
+
+        var dateÉvaluationFév2025 = LocalDate.of(2025, FEBRUARY, 1);
+        assertTrue(espèces.projectionFuture(dateÉvaluationFév2025).getValeurComptable() < 0);
+    }
 
 }
+
+
