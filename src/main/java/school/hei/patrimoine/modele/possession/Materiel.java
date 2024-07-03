@@ -18,7 +18,7 @@ public final class Materiel extends Possession {
 
   @Override
   public Possession projectionFuture(LocalDate tFutur) {
-    if (tFutur.isBefore(dateAcquisition)) {
+    if (dateAcquisition != null && tFutur.isBefore(dateAcquisition)) {
       return new Materiel(nom, tFutur, 0, dateAcquisition, tauxDAppreciationAnnuelle);
     }
     var joursEcoules = DAYS.between(t, tFutur);
