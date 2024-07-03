@@ -86,10 +86,11 @@ class EvolutionPatrimoineTest {
     var don = new FluxArgent("don", compteBancaire, LocalDate.of(2024, JANUARY, 1), LocalDate.of(2025, DECEMBER, 12), 100_000, 15);
     var trainDeVie = new FluxArgent("train de vie", argentEnEspèces, LocalDate.of(2024, OCTOBER, 1), LocalDate.of(2024, FEBRUARY, 13), 250_000, 1);
 
-    var patrimoineDeZety = new Patrimoine("patrimoine de zety au 3 juillet 2024",
+    var patrimoineDeZetyAu14fevrier2025 = new Patrimoine("patrimoine de zety au 3 juillet 2024",
             zety,
             au3Juillet2024,
             Set.of(ordinateur, vêtements, argentEnEspèces, compteBancaire, fraisDeScolarité, fraisCompteBancaire, dette, fraisAnnuel, trainDeVie, don));
     assertEquals(0, argentEnEspèces.projectionFuture(LocalDate.of(2024, JANUARY, 1)).getValeurComptable());
+    assertEquals(-5278686, patrimoineDeZetyAu14fevrier2025.projectionFuture(LocalDate.of(2025, FEBRUARY, 14)).getValeurComptable());
   }
 }
