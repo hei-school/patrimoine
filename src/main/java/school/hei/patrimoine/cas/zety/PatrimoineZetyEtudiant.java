@@ -72,6 +72,8 @@ public class PatrimoineZetyEtudiant {
                 18
         );
 
+
+
         return new Patrimoine(
                 "zety etduiant",
                 zety,
