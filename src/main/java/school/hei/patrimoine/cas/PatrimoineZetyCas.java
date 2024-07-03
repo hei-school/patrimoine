@@ -2,9 +2,7 @@ package school.hei.patrimoine.cas;
 
 import school.hei.patrimoine.modele.Patrimoine;
 import school.hei.patrimoine.modele.Personne;
-import school.hei.patrimoine.modele.possession.Argent;
-import school.hei.patrimoine.modele.possession.FluxArgent;
-import school.hei.patrimoine.modele.possession.Materiel;
+import school.hei.patrimoine.modele.possession.*;
 
 import java.time.LocalDate;
 import java.util.Set;
@@ -45,6 +43,11 @@ public class PatrimoineZetyCas implements Supplier<Patrimoine> {
                 null ,
                 -20000,
                 25);
+        var detteZety = new Dette(
+                "Dette pour frais scolarité",
+                au3juillet2024,
+                11000000 // Montant total de la dette (10 000 000 + 1 000 000)
+        );
         return new Patrimoine(
                 "Patrimoine de Zety",
                 zety,
