@@ -192,4 +192,49 @@ class PatrimoineTest {
 
     assertEquals(diminutionAttendue, diminutionPatrimoine, 100,"La diminution du patrimoine de Zety devrait être d'environ 11 000 000 Ar");
   }
+
+  @Test
+  public void testDateSansEspeces() {
+    LocalDate dateDebut = LocalDate.of(2024, 1, 1);
+    LocalDate dateFin = LocalDate.of(2025, 12, 31);
+
+    Argent compteBancaire = new Argent("Compte bancaire", dateDebut, 3600000);
+    Argent especes = new Argent("Espèces", dateDebut, 0);
+
+    LocalDate dateEmprunt = LocalDate.of(2024, 9, 18);
+    FluxArgent emprunt = new FluxArgent("Emprunt", compteBancaire, dateEmprunt, dateEmprunt, 10000000, dateEmprunt.getDayOfMonth());
+
+    LocalDate datePaiementScolarite = LocalDate.of(2024, 9, 21);
+    FluxArgent paiementScolarite = new FluxArgent("Frais de scolarité", compteBancaire, datePaiementScolarite, datePaiementScolarite, -2500000, datePaiementScolarite.getDayOfMonth());
+
+    TransfertArgent donParents = new TransfertArgent("Don parents", compteBancaire, especes, dateDebut, dateFin, 100000, 15);
+
+    LocalDate dateDebutDepenses = LocalDate.of(2024, 1, 1);  // Commence dès le début
+    LocalDate dateFinDepenses = LocalDate.of(2025, 12, 31);  // Jusqu'à la fin
+    FluxArgent depensesMensuelles = new FluxArgent("Dépenses mensuelles", especes, dateDebutDepenses, dateFinDepenses, -300000, 1);  // Augmentation du montant
+
+    GroupePossession patrimoine = new GroupePossession("Patrimoine Zety", dateDebut, Set.of(compteBancaire, especes, emprunt, paiementScolarite, donParents, depensesMensuelles));
+
+    LocalDate dateSansEspeces = null;
+    for (LocalDate date = dateDebut; date.isBefore(dateFin) || date.isEqual(dateFin); date = date.plusDays(1)) {
+        Possession patrimoineProjection = patrimoine.projectionFuture(date);
+        if (patrimoineProjection instanceof GroupePossession) {
+            GroupePossession groupeProjection = (GroupePossession) patrimoineProjection;
+            Argent especesProjection = (Argent) groupeProjection.getPossessions().stream()
+                    .filter(p -> p.getNom().equals("Espèces"))
+                    .findFirst()
+                    .orElseThrow();
+
+            System.out.println("Date: " + date + ", Solde espèces: " + especesProjection.getValeurComptable());
+
+            if (especesProjection.getValeurComptable() < 0) {
+                dateSansEspeces = date;
+                break;
+            }
+        }
+    }
+
+    assertNotNull(dateSansEspeces, "Zety devrait se retrouver sans espèces à un moment donné");
+    System.out.println("Zety n'a plus d'espèces à partir du : " + dateSansEspeces);
+  }
 }
