@@ -137,7 +137,7 @@ class PatrimoineTest {
     assertEquals(valeurTotaleAttendue, valeurPatrimoineAu17Septembre2024);
   }
   @Test
-  void diminution_Patrimoine_de_Zety() {
+  void diminution_Patrimoine_de_Zety(){
     var zety = new Personne("Zety");
     var au3juillet2024 = LocalDate.of(2024, Month.JULY, 3);
     var ordinateur = new Materiel(
@@ -186,5 +186,63 @@ class PatrimoineTest {
     var valeurPatrimoineAu18Septembre2024 = patrimoineZety.projectionFuture(au18Septembre2024).getValeurComptable();
     var diminutionPatrimoine = valeurPatrimoineAu18Septembre2024 - valeurPatrimoineAu17Septembre2024;
     assertEquals(-2384, diminutionPatrimoine);
+  }
+  @Test
+  void zety_date_faillite() {
+    var zety = new Personne("Zety");
+    var dateDebut = LocalDate.of(2024, Month.JULY, 3);
+    var argentEspeces = new Argent("Espèces", dateDebut, 800_000);
+    var ordinateur = new Materiel(
+            "Ordinateur",
+            dateDebut,
+            1_200_000,
+            dateDebut.minusDays(2),
+            -0.10);
+    var vetements = new Materiel(
+            "Vêtements",
+            dateDebut,
+            1_500_000,
+            dateDebut.minusDays(2),
+            -0.50);
+    var fraisScolarite = new FluxArgent(
+            "Frais de scolarité",
+            argentEspeces,
+            LocalDate.of(2023, Month.NOVEMBER, 27),
+            LocalDate.of(2024, Month.AUGUST, 27),
+            -200_000,
+            30);
+    var compteBancaire = new Argent("Compte bancaire", dateDebut, 100_000);
+    var fraisTenueCompte = new FluxArgent(
+            "Frais tenue de compte",
+            compteBancaire,
+            dateDebut.minusMonths(1),
+            dateDebut.plusYears(1),
+            -20_000,
+            30);
+
+    var patrimoineZety = new Patrimoine(
+            "Patrimoine de Zety",
+            zety,
+            dateDebut,
+            Set.of(argentEspeces, ordinateur, vetements, fraisScolarite, compteBancaire, fraisTenueCompte));
+
+    LocalDate dateSimulation = dateDebut;
+    while (true) {
+      if (dateSimulation.equals(LocalDate.of(2024, Month.SEPTEMBER, 21))) {
+        argentEspeces = new Argent("Espèces", dateSimulation, argentEspeces.getValeurComptable() - 2_500_000);
+      }
+      if (dateSimulation.getDayOfMonth() == 15 && dateSimulation.getMonthValue() >= 1 && dateSimulation.getYear() == 2024) {
+        argentEspeces = new Argent("Espèces", dateSimulation, argentEspeces.getValeurComptable() + 100_000);
+      }
+      if (dateSimulation.getMonthValue() >= 10 && dateSimulation.getDayOfMonth() == 1 &&
+              dateSimulation.isBefore(LocalDate.of(2025, Month.FEBRUARY, 14))) {
+        argentEspeces = new Argent("Espèces", dateSimulation, argentEspeces.getValeurComptable() - 250_000);
+      }
+      if (argentEspeces.getValeurComptable() <= 0) {
+        break;
+      }
+      dateSimulation = dateSimulation.plusDays(1);
+    }
+    assertEquals(LocalDate.of(2024, Month.SEPTEMBER, 21), dateSimulation);
   }
 }
