@@ -82,5 +82,54 @@ public class PatrimoineZetyCas implements Supplier<Patrimoine> {
         return patrimoineZetyAu17Sept24;
     }
 
+    public static Patrimoine patrimoineZetyAvecEtudes2024_2025() {
+        var zety = new Personne("Zety");
+        var au21Sept24 = LocalDate.of(2024, 9, 21);
+        Set<Possession> possessions = new HashSet<>();
+        Materiel ordinateur = new Materiel("Ordinateur", au21Sept24, 1_200_000, au21Sept24, -0.10);
+        possessions.add(ordinateur);
 
+        Materiel vetements = new Materiel("Vêtements", au21Sept24, 1_500_000, au21Sept24, -0.50);
+        possessions.add(vetements);
+        var especes = new Argent("Espèces", au21Sept24, 800_000);
+        possessions.add(especes);
+        var compteBancaire = new Argent("Compte bancaire", au21Sept24, 100_000);
+        possessions.add(compteBancaire);
+
+        FluxArgent fraisScolarite = new FluxArgent(
+                "Frais de scolarité",
+                compteBancaire,
+                au21Sept24,
+                au21Sept24,
+                -2_500_000,
+                21);
+        possessions.add(fraisScolarite);
+
+        FluxArgent donMensuelParents = new FluxArgent(
+                "Don mensuel des parents",
+                especes,
+                LocalDate.of(2024, 1, 15),
+                LocalDate.of(2025, 1, 15),
+                100_000,
+                15);
+        possessions.add(donMensuelParents);
+
+        FluxArgent trainDeVieMensuel = new FluxArgent(
+                "Train de vie mensuel",
+                especes,
+                LocalDate.of(2024, 10, 1),
+                LocalDate.of(2025, 2, 13),
+                -250_000,
+                1);
+        possessions.add(trainDeVieMensuel);
+
+        var patrimoineZetyAu21Sept24 = new Patrimoine(
+                "patrimoineZetyAvecEtudes2024_2025",
+                zety,
+                au21Sept24,
+                possessions
+        );
+
+        return patrimoineZetyAu21Sept24;
+    }
 }
