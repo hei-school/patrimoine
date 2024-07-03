@@ -158,4 +158,30 @@ class PatrimoineTest {
 
     assertEquals(2_978_848, patrimoine_de_zety.projectionFuture(au17septembre2024).getValeurComptable());
   }
+
+  @Test
+  public void testPatrimoineZetyAu14Fevrier2025() {
+    var patrimoine = initPatrimoineAu13Fevrier2025();
+
+    var dateFin = LocalDate.of(2025, FEBRUARY, 14);
+    patrimoine = patrimoine.projectionFuture(dateFin);
+
+    var valeurPatrimoineAttendue = 0;
+    var valeurPatrimoineActuelle = patrimoine.getValeurComptable();
+    assertEquals(valeurPatrimoineAttendue, valeurPatrimoineActuelle);
+  }
+
+  // Initialisation du patrimoine de Zety au 13 février 2025
+  private Patrimoine initPatrimoineAu13Fevrier2025() {
+    var argent = new Argent(
+            "Espèces",
+            LocalDate.of(2025, FEBRUARY, 13),
+            0);
+
+    return new Patrimoine(
+            "Zety",
+            new Personne("Zety"),
+            LocalDate.of(2025,FEBRUARY, 13),
+            Set.of(argent));
+  }
 }
