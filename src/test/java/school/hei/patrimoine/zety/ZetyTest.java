@@ -52,9 +52,9 @@ class ZetyTest {
     @Test
     void testDiminutionPatrimoineDeZety() {
         FluxArgent ajoutCompteBancaire = new FluxArgent("Ajout au compte bancaire", compteBancaire, LocalDate.of(2024, 9, 18), LocalDate.of(2024, 9, 18), 10000000, 18);
+        possessions.add(ajoutCompteBancaire);
         Argent dette = new Dette("Dette bancaire", LocalDate.of(2024, 9, 18), -11000000);
         possessions.add(dette);
-        possessions.add(ajoutCompteBancaire);
 
         Patrimoine patrimoineApresDette = zetyPatrimoine.projectionFuture(LocalDate.of(2024, 9, 18));
 
@@ -66,6 +66,24 @@ class ZetyTest {
 
     @Test
     void testDateFinEspèces() {
+        FluxArgent paiementFraisScolarite = new FluxArgent("Paiement des frais de scolarité", compteBancaire, LocalDate.of(2024, 9, 21), LocalDate.of(2024, 9, 21), -2500000, 21);
+        possessions.add(paiementFraisScolarite);
 
+        FluxArgent donMensuelParents = new FluxArgent("Don mensuel des parents", argentEspece, LocalDate.of(2024, 1, 15), LocalDate.of(2025, 2, 15), 100000, 15);
+        possessions.add(donMensuelParents);
+
+        LocalDate debutDepensesMensuelles = LocalDate.of(2024, 10, 1);
+        LocalDate finDepensesMensuelles = LocalDate.of(2025, 2, 13);
+        int montantDepensesMensuelles = 250000;
+
+        int argentRestant = argentEspece.getValeurComptable();
+        LocalDate dateEpuisement = debutDepensesMensuelles;
+
+        while (argentRestant > 0 && !dateEpuisement.isAfter(finDepensesMensuelles)) {
+            argentRestant -= montantDepensesMensuelles;
+            dateEpuisement = dateEpuisement.plusMonths(1);
+        }
+        
+        assertEquals(LocalDate.of(2025, 2, 1), dateEpuisement);
     }
 }
