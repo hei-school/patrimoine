@@ -170,11 +170,13 @@ class PatrimoineTest {
             dateDebut,
             Set.of(argentEspece, compteBancaire, fraisScolarite, donMensuel, trainDeVie)
     );
+
     LocalDate dateActuelle = dateDebut;
     boolean plusDEspece = false;
-    while (dateActuelle.isBefore(dateFin) || dateActuelle.equals(dateFin)){
-      Patrimoine patrimoineFutur= patrimoineZety.projectionFuture(dateActuelle);
-      if (patrimoineFutur.getValeurComptable() <= 0){
+
+    while (dateActuelle.isBefore(dateFin) || dateActuelle.equals(dateFin)) {
+      Patrimoine patrimoineFutur = patrimoineZety.projectionFuture(dateActuelle);
+      if (patrimoineFutur.getValeurComptable() <= 0) {
         plusDEspece = true;
         break;
       }
