@@ -150,4 +150,37 @@ class PatrimoineTest {
     assertEquals(1000000, coutEmprunt.getValeurComptable());
     assertEquals(diminutionAttendue, -11000000);
   }
+
+  @Test
+  void date_fin_espece_zety_24_25(){
+    LocalDate dateDebut = LocalDate.of(2024, JULY, 3);
+    LocalDate dateFin = LocalDate.of(2025, FEBRUARY, 13);
+
+    Argent argentEspece = new Argent("Espèces", dateDebut, 800000);
+    Argent compteBancaire = new Argent("Compte bancaire", dateDebut, 100000);
+    FluxArgent fraisScolarite = new FluxArgent("Frais de scolarité 2024-2025", compteBancaire, LocalDate.of(2024, 9, 21), null, -2500000, 0);
+    TransfertArgent donMensuel = new TransfertArgent("Don mensuel des parents", argentEspece, compteBancaire, LocalDate.of(2024, 1, 15), null, 100000, 30);
+    FluxArgent trainDeVie = new FluxArgent("Train de vie mensuel", argentEspece, LocalDate.of(2024, 10, 1), LocalDate.of(2025, 2, 13), -250000, 30);
+
+    Personne zety = new Personne("Zety");
+
+    Patrimoine patrimoineZety = new Patrimoine(
+            "patrimoine de zety",
+            zety,
+            dateDebut,
+            Set.of(argentEspece, compteBancaire, fraisScolarite, donMensuel, trainDeVie)
+    );
+    LocalDate dateActuelle = dateDebut;
+    boolean plusDEspece = false;
+    while (dateActuelle.isBefore(dateFin) || dateActuelle.equals(dateFin)){
+      Patrimoine patrimoineFutur= patrimoineZety.projectionFuture(dateActuelle);
+      if (patrimoineFutur.getValeurComptable() <= 0){
+        plusDEspece = true;
+        break;
+      }
+      dateActuelle = dateActuelle.plusDays(1);
+    }
+
+    assertEquals(LocalDate.of(2025, JANUARY, 31), dateActuelle);
+  }
 }
