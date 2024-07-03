@@ -17,10 +17,11 @@ public sealed abstract class Possession implements Serializable /*note(no-serial
   protected final String nom;
   protected final LocalDate t;
   protected final int valeurComptable;
+  protected final Devise devise;
 
-  public final int valeurComptableFuture(LocalDate tFutur) {
-    return projectionFuture(tFutur).getValeurComptable();
+  public final int valeurComptableFuture(LocalDate tFutur, Devise devise) {
+    return projectionFuture(tFutur, devise).getValeurComptable();
   }
 
-  public abstract Possession projectionFuture(LocalDate tFutur);
+  public abstract Possession projectionFuture(LocalDate tFutur, Devise devise);
 }

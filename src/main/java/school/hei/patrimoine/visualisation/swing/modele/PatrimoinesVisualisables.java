@@ -2,6 +2,7 @@ package school.hei.patrimoine.visualisation.swing.modele;
 
 import school.hei.patrimoine.modele.EvolutionPatrimoine;
 import school.hei.patrimoine.modele.Patrimoine;
+import school.hei.patrimoine.modele.possession.Devise;
 
 import java.time.LocalDate;
 import java.util.List;

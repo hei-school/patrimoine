@@ -1,6 +1,7 @@
 package school.hei.patrimoine.modele;
 
 import lombok.Getter;
+import school.hei.patrimoine.modele.possession.Devise;
 import school.hei.patrimoine.modele.possession.FluxArgent;
 import school.hei.patrimoine.modele.possession.Possession;
 
@@ -19,25 +20,25 @@ public class EvolutionPatrimoine {
   private final LocalDate fin;
   private final Map<LocalDate, Patrimoine> evolutionJournaliere;
 
-  public EvolutionPatrimoine(String nom, Patrimoine patrimoine, LocalDate debut, LocalDate fin) {
+  public EvolutionPatrimoine(String nom, Patrimoine patrimoine, LocalDate debut, LocalDate fin, Devise devise) {
     this.nom = nom;
     this.patrimoine = patrimoine;
     this.debut = debut;
     this.fin = fin;
-    this.evolutionJournaliere = evolutionJournaliere();
+    this.evolutionJournaliere = evolutionJournaliere(devise);
   }
 
-  public EvolutionPatrimoine nouveauDebut(LocalDate nouveauDebut) {
-    return new EvolutionPatrimoine(nom, patrimoine, nouveauDebut, fin);
+  public EvolutionPatrimoine nouveauDebut(LocalDate nouveauDebut, Devise devise) {
+    return new EvolutionPatrimoine(nom, patrimoine, nouveauDebut, fin, devise);
   }
 
-  public EvolutionPatrimoine nouvelleFin(LocalDate nouvelleFin) {
-    return new EvolutionPatrimoine(nom, patrimoine, debut, nouvelleFin);
+  public EvolutionPatrimoine nouvelleFin(LocalDate nouvelleFin, Devise devise) {
+    return new EvolutionPatrimoine(nom, patrimoine, debut, nouvelleFin, devise);
   }
 
-  private Map<LocalDate, Patrimoine> evolutionJournaliere() {
+  private Map<LocalDate, Patrimoine> evolutionJournaliere(Devise devise) {
     Map<LocalDate, Patrimoine> evolutionJournaliere = new HashMap<>();
-    dates().forEach(date -> evolutionJournaliere.put(date, patrimoine.projectionFuture(date)));
+    dates().forEach(date -> evolutionJournaliere.put(date, patrimoine.projectionFuture(date, devise)));
     return evolutionJournaliere;
   }
 
