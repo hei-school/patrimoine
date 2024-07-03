@@ -10,9 +10,15 @@ import java.util.function.Supplier;
 
 public class ZetyEtudieEn2023 implements Supplier<Patrimoine> {
     private final LocalDate ajd = LocalDate.of(2024, 7, 3);
+
     private final LocalDate novembre2023 = LocalDate.of(2023, 11, 1);
     private final LocalDate août2024 = LocalDate.of(2024, 8, 31);
+
     private final LocalDate debutDette = LocalDate.of(2024, 9, 18);
+
+    private final LocalDate paiementFraisScolarite = LocalDate.of(2024, 9, 21);
+    private final LocalDate debutTrainDeVie = LocalDate.of(2024, 10, 1);
+    private final LocalDate finTrainDeVie = LocalDate.of(2025, 2, 13);
 
     private Set<Possession> possessionsZety(Argent compteBancaire) {
         var ordinateur = new Materiel(
@@ -29,9 +35,9 @@ public class ZetyEtudieEn2023 implements Supplier<Patrimoine> {
                 ajd.minusDays(1),
                 -0.5
         );
-        var argent = new Argent("Argent en espèces", ajd, 800_000);
-        var fraisScolaire = new FluxArgent(
-                "Frais de scolarité",
+        var argent = new Argent("Espèces", ajd, 800_000);
+        var fraisScolaire2023 = new FluxArgent(
+                "Frais de scolarité 2023-2024",
                 argent,
                 novembre2023,
                 août2024,
@@ -55,15 +61,44 @@ public class ZetyEtudieEn2023 implements Supplier<Patrimoine> {
                 10_000_000,
                 debutDette.getDayOfMonth()
         );
+        var fraisScolaire2024 = new FluxArgent(
+                "Frais de scolarité 2024-2025",
+                compteBancaire,
+                paiementFraisScolarite,
+                paiementFraisScolarite,
+                -2_500_000,
+                paiementFraisScolarite.getDayOfMonth()
+        );
+
+        var donParents = new FluxArgent(
+                "Don des parents",
+                argent,
+                LocalDate.of(2024, 1, 15),
+                LocalDate.of(2025, 12, 31),
+                100_000,
+                15
+        );
+
+        var trainDeVie = new FluxArgent(
+                "Train de vie",
+                argent,
+                debutTrainDeVie,
+                finTrainDeVie,
+                -250_000,
+                1
+        );
 
         return Set.of(
                 ordinateur,
                 vetements,
                 argent,
-                fraisScolaire,
+                fraisScolaire2023,
                 compteBancaire,
                 tenueCompteBancaire,
-                emprunt, dette
+                emprunt, dette,
+                fraisScolaire2024,
+                donParents,
+                trainDeVie
         );
     }
 

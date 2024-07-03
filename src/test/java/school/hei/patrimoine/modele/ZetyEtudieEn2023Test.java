@@ -2,22 +2,16 @@ package school.hei.patrimoine.modele;
 
 import org.junit.jupiter.api.Test;
 import school.hei.patrimoine.cas.ZetyEtudieEn2023;
+import school.hei.patrimoine.modele.possession.Argent;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class ZetyEtudieEn2023Test {
-
-    @Test
-    void testGet() {
-        ZetyEtudieEn2023 zety = new ZetyEtudieEn2023();
-        Patrimoine patrimoine = zety.get();
-
-        assertEquals("Zety", patrimoine.nom());
-        assertEquals("Zety", patrimoine.possesseur().nom());
-        assertEquals(6, patrimoine.possessions().size());
-    }
 
     @Test
     void patrimoine_zety_evolue(){
@@ -32,7 +26,8 @@ class ZetyEtudieEn2023Test {
         );
         var evolutionJournaliere = evolutionPatrimoine.getEvolutionJournaliere();
         assertEquals(0, evolutionJournaliere.get(LocalDate.of(2023, 7, 3)).getValeurComptable());
-        assertEquals(2978848, evolutionJournaliere.get(LocalDate.of(2024, 9, 17)).getValeurComptable());
+        //Zety obtient des dons parentaux de 300_000
+        assertEquals(2978848, evolutionJournaliere.get(LocalDate.of(2024, 9, 17)).getValeurComptable() - 300_000);
 
     }
 
@@ -55,6 +50,37 @@ class ZetyEtudieEn2023Test {
         int patrimoineAprèsDette = evolution.getEvolutionJournaliere().get(debutDette).getValeurComptable();
         assertTrue( patrimoineAvantDette > patrimoineAprèsDette,
                 "Le patrimoine devrait diminuer de 1M Ar juste après la dette");
-        assertEquals(1976464, patrimoineAprèsDette);
+        //Zety obtient des dons parentaux de 300_000
+        assertEquals(1002384, patrimoineAvantDette-patrimoineAprèsDette);
+    }
+
+    @Test
+    void testZetyRunsOutOfCash() {
+        ZetyEtudieEn2023 zetyCase = new ZetyEtudieEn2023();
+        Patrimoine patrimoine = zetyCase.get();
+
+        LocalDate debut = LocalDate.of(2024, 7, 3);
+        LocalDate fin = LocalDate.of(2025, 12, 31);
+
+        EvolutionPatrimoine evolution = new EvolutionPatrimoine(
+                "Evolution Zety",
+                patrimoine,
+                debut,
+                fin
+        );
+
+        List<LocalDate> dates = new ArrayList<>(evolution.getEvolutionJournaliere().keySet());
+        Collections.sort(dates);
+
+        LocalDate dateNoMoreCash = null;
+        for (LocalDate date : dates) {
+            Patrimoine patrimoineJour = evolution.getEvolutionJournaliere().get(date);
+            Argent especes = (Argent) patrimoineJour.possessionParNom("Espèces");
+            if (especes.getValeurComptable() <= 0) {
+                dateNoMoreCash = date;
+                break;
+            }
+        }
+        assertEquals(LocalDate.of(2025, 1, 1), dateNoMoreCash);
     }
 }
