@@ -27,4 +27,10 @@ public record Patrimoine(
   public Possession possessionParNom(String nom) {
     return possessions.stream().filter(p -> nom.equals(p.getNom())).findFirst().orElseThrow();
   }
+  public Patrimoine convertirDevise(String nouvelleDevise) {
+    Set<Possession> nouvellesPossessions = possessions.stream()
+            .map(p -> p.convertirEnDevise(nouvelleDevise))
+            .collect(toSet());
+    return new Patrimoine(nom, possesseur, t, nouvellesPossessions);
+  }
 }
