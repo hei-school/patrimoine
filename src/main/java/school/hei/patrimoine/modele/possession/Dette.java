@@ -9,4 +9,9 @@ public final class Dette extends Argent {
       throw new IllegalArgumentException();
     }
   }
+
+  @Override
+  public Dette projectionFuture(LocalDate tFutur) {
+    return new Dette(nom, tFutur, valeurComptable);
+  }
 }
