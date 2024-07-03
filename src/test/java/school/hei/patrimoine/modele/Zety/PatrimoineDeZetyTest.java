@@ -168,4 +168,58 @@ public class PatrimoineDeZetyTest {
 
         assertEquals(1_000_000, diminutionPatrimoine);
     }
+
+    @Test
+    void date_Epuisement_Espèces() {
+
+        var au3jul24 = LocalDate.of(2024, JULY, 3);
+
+        var argentEspeces = new Argent(
+                "Espèces",
+                au3jul24,
+                800_000);
+
+
+        var debutDonMensuel = LocalDate.of(2024, JANUARY, 15);
+        var finDonMensuel = LocalDate.of(2025, FEBRUARY, 15);
+        var donMensuel = new FluxArgent(
+                "Don mensuel des parents",
+                argentEspeces,
+                debutDonMensuel,
+                finDonMensuel,
+                100_000,
+                30);
+
+
+        var debutTrainDeVie = LocalDate.of(2024, OCTOBER, 1);
+        var finTrainDeVie = LocalDate.of(2025, FEBRUARY, 13);
+        var trainDeVie = new FluxArgent(
+                "Train de vie mensuel",
+                argentEspeces,
+                debutTrainDeVie,
+                finTrainDeVie,
+                -250_000,
+                0);
+
+        var fraisScolarite = new FluxArgent(
+                "Frais de scolarité",
+                argentEspeces,
+                LocalDate.of(2024, SEPTEMBER, 21),
+                LocalDate.of(2024, SEPTEMBER, 21),
+                -2_500_000,
+                21);
+
+        argentEspeces.addFinancés(fraisScolarite);
+
+
+        LocalDate dateEpuisement = au3jul24;
+        int soldeEspèces = argentEspeces.getValeurComptable();
+
+        while (soldeEspèces >= 0) {
+            dateEpuisement = dateEpuisement.plusDays(1);
+            soldeEspèces = argentEspeces.projectionFuture(dateEpuisement).getValeurComptable();
+        }
+
+        assertEquals(LocalDate.of(2024, SEPTEMBER, 21), dateEpuisement);
+    }
 }
