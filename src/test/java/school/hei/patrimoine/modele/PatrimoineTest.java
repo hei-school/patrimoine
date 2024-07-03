@@ -19,7 +19,9 @@ class PatrimoineTest {
         "patrimoineIloAu13mai24",
         ilo,
         LocalDate.of(2024, MAY, 13),
-        Set.of());
+        Set.of(),
+            null
+    );
 
     assertEquals(0, patrimoineIloAu13mai24.getValeurComptable());
   }
@@ -36,7 +38,8 @@ class PatrimoineTest {
         Set.of(
             new Argent("Espèces", au13mai24, 400_000),
             new Argent("Compte epargne", au13mai24, 200_000),
-            new Argent("Compte courant", au13mai24, 600_000)));
+            new Argent("Compte courant", au13mai24, 600_000)),
+            null);
 
     assertEquals(1_200_000, patrimoineIloAu13mai24.getValeurComptable());
   }
@@ -55,7 +58,7 @@ class PatrimoineTest {
         "patrimoineIloAu13mai24",
         ilo,
         au13mai24,
-        Set.of(financeur, trainDeVie));
+        Set.of(financeur, trainDeVie), null);
 
     assertEquals(500_000, patrimoineIloAu13mai24.projectionFuture(au13mai24.plusDays(10)).getValeurComptable());
     assertEquals(200_000, patrimoineIloAu13mai24.projectionFuture(au13mai24.plusDays(100)).getValeurComptable());
@@ -76,7 +79,7 @@ class PatrimoineTest {
         "patrimoineIloAu13mai24",
         ilo,
         au13mai24,
-        Set.of(new GroupePossession("Le groupe", au13mai24, Set.of(financeur, trainDeVie))));
+        Set.of(new GroupePossession("Le groupe", au13mai24, Set.of(financeur, trainDeVie))), null);
 
     assertEquals(500_000, patrimoineIloAu13mai24.projectionFuture(au13mai24.plusDays(10)).getValeurComptable());
     assertEquals(200_000, patrimoineIloAu13mai24.projectionFuture(au13mai24.plusDays(100)).getValeurComptable());
@@ -101,7 +104,8 @@ class PatrimoineTest {
             "Patrimoine de Zety",
             zety,
             dateDebut,
-            Set.of(ordinateur, vetement, argentEspece, compteBancaire, fraisDeCompte, fraisScolaire)
+            Set.of(ordinateur, vetement, argentEspece, compteBancaire, fraisDeCompte, fraisScolaire),
+            null
     );
     int valeurAttendueOrdinateur = (int) (1200000 * Math.pow((1 - 0.10), 1.5 / 12));
     int valeurAttendueVetements = (int) (1500000 * Math.pow((1 - 0.50), 1.5 / 12));
@@ -131,7 +135,7 @@ class PatrimoineTest {
             "Patrimoine de Zety",
             zety,
             dateDebut,
-            Set.of(ordinateur, vetement, argentEspece,compteBancaire, fraisDeCompte, fraisScolaire)
+            Set.of(ordinateur, vetement, argentEspece,compteBancaire, fraisDeCompte, fraisScolaire), null
     );
 
     Argent empruntBancaire = new Argent("Emprunt bancaire", LocalDate.of(2024, SEPTEMBER, 18), 10000000);
@@ -141,7 +145,7 @@ class PatrimoineTest {
             "Patrimoine de Zety après endettement",
             zety,
             dateDebut,
-            Set.of(ordinateur, vetement, argentEspece, compteBancaire, fraisDeCompte, fraisScolaire, empruntBancaire, coutEmprunt)
+            Set.of(ordinateur, vetement, argentEspece, compteBancaire, fraisDeCompte, fraisScolaire, empruntBancaire, coutEmprunt), null
             );
 
     int diminutionAttendue = patrimoineAvantEndettement.getValeurComptable() - patrimoineApresEndettement.getValeurComptable();
@@ -168,7 +172,7 @@ class PatrimoineTest {
             "patrimoine de zety",
             zety,
             dateDebut,
-            Set.of(argentEspece, compteBancaire, fraisScolarite, donMensuel, trainDeVie)
+            Set.of(argentEspece, compteBancaire, fraisScolarite, donMensuel, trainDeVie), null
     );
 
     LocalDate dateActuelle = dateDebut;
@@ -185,4 +189,28 @@ class PatrimoineTest {
 
     assertEquals(LocalDate.of(2025, JANUARY, 31), dateActuelle);
   }
+
+  @Test
+  void testConversionEnEUR() {
+    LocalDate dateDebut = LocalDate.of(2024, 7, 3);
+
+    Argent argentEspece = new Argent("Espèces", dateDebut, 800000);
+    Argent compteBancaire = new Argent("Compte bancaire", dateDebut, 100000);
+
+    Patrimoine patrimoineZety = new Patrimoine(
+            "patrimoine de zety",
+            new Personne("Zety"),
+            dateDebut,
+            Set.of(argentEspece, compteBancaire),
+            "Ar"
+    );
+
+    double tauxChangeEURtoAr = 1 / 4821.0;
+    double tauxAppreciationAnnuelAr = -0.10;
+
+    double valeurEnEUR = patrimoineZety.getValeurEnDevise("EUR", LocalDate.of(2025, 2, 14), tauxChangeEURtoAr, tauxAppreciationAnnuelAr);
+
+    assertEquals(800000 * tauxChangeEURtoAr * Math.pow(1 + tauxAppreciationAnnuelAr, -1.5 / 365), valeurEnEUR, 0.01);
+  }
+
 }
