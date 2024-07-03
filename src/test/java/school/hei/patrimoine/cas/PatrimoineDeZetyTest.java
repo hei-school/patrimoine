@@ -8,12 +8,14 @@ import static school.hei.patrimoine.cas.zety.PatrimoineZetyAu3Juillet2024.AU_26_
 import static school.hei.patrimoine.cas.zety.PatrimoineZetyAu3Juillet2024.AU_3_JUILLET_2024;
 
 import java.time.LocalDate;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import school.hei.patrimoine.cas.zety.PatrimoineZetyAu3Juillet2024;
 import school.hei.patrimoine.modele.Devise;
 import school.hei.patrimoine.modele.Patrimoine;
 import school.hei.patrimoine.modele.possession.Argent;
 
+@Slf4j
 class PatrimoineDeZetyTest {
 	private final PatrimoineZetyAu3Juillet2024 patrimoineDeZetyAu3JuilletSupplier = new PatrimoineZetyAu3Juillet2024();
 
@@ -64,12 +66,12 @@ class PatrimoineDeZetyTest {
 	void zety_étudie_en_2024_2025() {
 		var argentEnEspècesDeZetyEn20242025 = argentEnEspècesDeZetyEn20242025();
 
-		System.out.println(argentEnEspècesDeZetyEn20242025.getValeurComptable());
+		log.debug("montant valeur comptable 2024 2025 {} ", argentEnEspècesDeZetyEn20242025.getValeurComptable());
 		LocalDate dayOfFailureFrom18September = LocalDate.of(2024, SEPTEMBER, 18);
 		for (int i = 0; true; i++) {
 			LocalDate tFutur = dayOfFailureFrom18September.plusDays(i);
 			var argentEnEspècesProjeté = argentEnEspècesDeZetyEn20242025.projectionFuture(tFutur);
-			System.out.println(argentEnEspècesProjeté.getValeurComptable() + " à " + tFutur);
+			log.debug("à t={} montant = {}", argentEnEspècesProjeté.getValeurComptable(),tFutur);
 			if (argentEnEspècesProjeté.getValeurComptable() <= 0) {
 				dayOfFailureFrom18September = tFutur;
 				break;
