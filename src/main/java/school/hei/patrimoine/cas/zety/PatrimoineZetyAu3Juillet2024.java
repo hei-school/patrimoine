@@ -1,8 +1,11 @@
 package school.hei.patrimoine.cas.zety;
 
 import static java.time.Month.AUGUST;
+import static java.time.Month.FEBRUARY;
+import static java.time.Month.JANUARY;
 import static java.time.Month.JULY;
 import static java.time.Month.NOVEMBER;
+import static java.time.Month.OCTOBER;
 import static java.time.Month.SEPTEMBER;
 
 import java.time.LocalDate;
@@ -56,6 +59,14 @@ public class PatrimoineZetyAu3Juillet2024 implements Supplier<Patrimoine> {
 		return Set.of(dette);
 	}
 
+	private static Set<Possession> possessionsRajoutéesAprèsLe18Septembre2024(Argent espèces, Argent compteBancaire) {
+		LocalDate au21Septembre2024 = LocalDate.of(2024, SEPTEMBER, 21);
+		new FluxArgent("frais de scolarité 1 fois", compteBancaire, au21Septembre2024, au21Septembre2024, -2_500_000, au21Septembre2024.getDayOfMonth());
+		new FluxArgent("dons parentaux", espèces, LocalDate.of(2024, JANUARY, 1), LocalDate.MAX, 100_000, 15);
+		new FluxArgent("train de vie mensuel", espèces, LocalDate.of(2024, OCTOBER, 1), LocalDate.of(2025, FEBRUARY, 13), -250_000, 1);
+		return Set.of();
+	}
+
 	@Override
 	public Patrimoine get() {
 		var zety = new Personne("zety");
@@ -79,5 +90,19 @@ public class PatrimoineZetyAu3Juillet2024 implements Supplier<Patrimoine> {
 
 		return new Patrimoine("zety au 18 Septembre 2024", zety, AU_18_SEPTEMBRE_2024, Set.of(possessionsDu3Juillet, possessionsRajoutéesLe18Septembre))
 			.projectionFuture(AU_18_SEPTEMBRE_2024);
+	}
+
+	public Argent argentEnEspècesDeZetyEn20242025() {
+		//kept for some sort of pattern in all the getters
+		var zety = new Personne("zety");
+		var ordinateur = ordinateur();
+		var vêtements = vêtements();
+		var espèces = espèces();
+		var compteBancaire = compteBancaire();
+		new GroupePossession("possessions du 3 Juillet", AU_3_JUILLET_2024, possessionsDu3Juillet2024(ordinateur, vêtements, espèces, compteBancaire));
+		new GroupePossession("possessions ajoutées le 18 Septembre 2024", AU_18_SEPTEMBRE_2024, possessionsRajoutéesLe18Septembre2024(compteBancaire));
+		new GroupePossession("possessions ajoutées après le 18 Septembre", AU_18_SEPTEMBRE_2024, possessionsRajoutéesAprèsLe18Septembre2024(espèces, compteBancaire));
+
+		return espèces;
 	}
 }
