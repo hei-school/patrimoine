@@ -1,14 +1,12 @@
 package school.hei.patrimoine.modele;
 
 import org.junit.jupiter.api.Test;
-import school.hei.patrimoine.modele.possession.Argent;
-import school.hei.patrimoine.modele.possession.FluxArgent;
-import school.hei.patrimoine.modele.possession.GroupePossession;
+import school.hei.patrimoine.modele.possession.*;
 
 import java.time.LocalDate;
 import java.util.Set;
 
-import static java.time.Month.MAY;
+import static java.time.Month.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class PatrimoineTest {
@@ -83,5 +81,34 @@ class PatrimoineTest {
     assertEquals(500_000, patrimoineIloAu13mai24.projectionFuture(au13mai24.plusDays(10)).getValeurComptable());
     assertEquals(200_000, patrimoineIloAu13mai24.projectionFuture(au13mai24.plusDays(100)).getValeurComptable());
     assertEquals(200_000, patrimoineIloAu13mai24.projectionFuture(au13mai24.plusDays(1_000)).getValeurComptable());
+  }
+
+  @Test
+  void patrimoine_zety_le_17_sept_24(){
+    var zety = new Personne("zety");
+    var dateDebut = LocalDate.of(2024, JULY, 3);
+    var dateFin = LocalDate.of(2024, SEPTEMBER, 17);
+
+    Possession ordinateur = new Materiel("Ordinateur", dateDebut, 1200000, dateDebut, -0.10);
+    Possession vetement = new Materiel("Vetement", dateDebut, 1500000, dateDebut, -0.50);
+    var argentEspece = new Argent("Espece", dateDebut, 800000);
+
+    Argent compteBancaire = new Argent("Compte bancaire", dateDebut, 100000);
+    FluxArgent fraisDeCompte = new FluxArgent("Frais de tenue de compte", compteBancaire, dateDebut, dateFin.plusMonths(1), -20000, 25);
+    TransfertArgent fraisScolaire = new TransfertArgent("Frais de scolarite", argentEspece, compteBancaire, LocalDate.of(2023, 11, 27), LocalDate.of(2024, 8, 27), -200000, 27);
+
+    var patrimoineZetyAu17Sept27 = new Patrimoine(
+            "Patrimoine de Zety",
+            zety,
+            dateDebut,
+            Set.of(ordinateur, vetement, argentEspece, compteBancaire, fraisDeCompte, fraisScolaire)
+    );
+    int valeurAttendueOrdinateur = (int) (1200000 * Math.pow((1 - 0.10), 1.5 / 12));
+    int valeurAttendueVetements = (int) (1500000 * Math.pow((1 - 0.50), 1.5 / 12));
+    int valeurAttendueEspeces = 800000 - 200000 * 10;
+    int valeurAttendueCompteBancaire = 100000 - 20000 * 2;
+    int valeurComptableAttendue = valeurAttendueOrdinateur + valeurAttendueVetements + valeurAttendueEspeces + valeurAttendueCompteBancaire;
+
+    assertEquals(valeurComptableAttendue, patrimoineZetyAu17Sept27.getValeurComptable());
   }
 }
