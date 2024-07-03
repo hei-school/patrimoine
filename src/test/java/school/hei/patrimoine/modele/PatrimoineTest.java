@@ -1,14 +1,15 @@
 package school.hei.patrimoine.modele;
 
 import org.junit.jupiter.api.Test;
-import school.hei.patrimoine.modele.possession.Argent;
-import school.hei.patrimoine.modele.possession.FluxArgent;
-import school.hei.patrimoine.modele.possession.GroupePossession;
+import school.hei.patrimoine.modele.possession.*;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static java.time.Month.MAY;
+import static java.util.Calendar.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class PatrimoineTest {
