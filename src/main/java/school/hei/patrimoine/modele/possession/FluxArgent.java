@@ -20,7 +20,7 @@ public final class FluxArgent extends Possession {
       int dateOperation) {
     super(nom, null, 0);
     this.argent = argent;
-    this.argent.addFinancés(this);
+    this.argent.addFinances(this);
 
     this.debut = debut;
     this.fin = fin;

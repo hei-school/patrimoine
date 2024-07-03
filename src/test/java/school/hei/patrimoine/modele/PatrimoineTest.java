@@ -144,6 +144,77 @@ class PatrimoineTest {
         valeurAttendueCalculeManuellementParMaCalculatrice, patrimoineFutur.getValeurComptable());
   }
 
+  @Test
+  void diminution_patrimoine_zety_entre_17_au_18_sep_24() {
+    var zety = new Personne("Zety");
+
+    var ordinateur =
+        new Materiel(
+            "Ordinateur",
+            LocalDate.of(2024, JULY, 3),
+            1_200_000,
+            LocalDate.of(2024, SEPTEMBER, 17),
+            -0.10);
+    var vetements =
+        new Materiel(
+            "Vêtements",
+            LocalDate.of(2024, JULY, 3),
+            1_500_000,
+            LocalDate.of(2024, SEPTEMBER, 17),
+            -0.50);
+    var argentLiquide = new Argent("Argent en espèces", LocalDate.of(2024, JULY, 3), 800_000);
+    var fraisScolarite =
+        new FluxArgent(
+            "Frais de scolarité",
+            argentLiquide,
+            LocalDate.of(2023, NOVEMBER, 27),
+            LocalDate.of(2024, AUGUST, 27),
+            200_000,
+            27);
+    var fraisCompte =
+        new FluxArgent(
+            "Frais de compte",
+            argentLiquide,
+            LocalDate.of(2024, JULY, 25),
+            LocalDate.of(2024, SEPTEMBER, 17),
+            -20_000,
+            25);
+    var compteBancaire =
+        new Argent(
+            "Compte bancaire",
+            LocalDate.of(2024, JULY, 3),
+            LocalDate.of(2024, SEPTEMBER, 17),
+            100_000,
+            Set.of(fraisCompte));
+
+    Set<Possession> possessions = new HashSet<>();
+    possessions.add(ordinateur);
+    possessions.add(vetements);
+    possessions.add(argentLiquide);
+    possessions.add(fraisScolarite);
+    possessions.add(compteBancaire);
+    var patrimoine =
+        new Patrimoine("Patrimoine de Zety", zety, LocalDate.of(2024, JULY, 3), possessions);
+
+    var patrimoineFutur = patrimoine.projectionFuture(LocalDate.of(2024, SEPTEMBER, 17));
+    int valeurPatrimoine17Septembre = patrimoineFutur.getValeurComptable();
+
+    var dette =
+        new FluxArgent(
+            "Dette",
+            compteBancaire,
+            LocalDate.of(2024, SEPTEMBER, 18),
+            LocalDate.of(2025, SEPTEMBER, 18),
+            -11_000_000,
+            18);
+    compteBancaire.addFinances(dette);
+
+    patrimoineFutur = patrimoine.projectionFuture(LocalDate.of(2024, SEPTEMBER, 18));
+    int valeurPatrimoine18Septembre = patrimoineFutur.getValeurComptable();
+
+    assertEquals(valeurPatrimoine17Septembre - valeurPatrimoine18Septembre, 11_002_384);
+  }
+
   private static Patrimoine getPatrimoine(LocalDate au13mai24, Personne ilo) {
     var financeur = new Argent("Espèces", au13mai24, 600_000);
     var trainDeVie =

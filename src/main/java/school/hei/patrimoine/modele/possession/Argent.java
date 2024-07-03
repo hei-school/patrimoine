@@ -25,7 +25,7 @@ public sealed class Argent extends Possession permits Dette, Creance {
       int valeurComptable,
       Set<FluxArgent> fluxArgents) {
     super(nom, t, valeurComptable);
-    this.fluxArgents = fluxArgents;
+    this.fluxArgents = new HashSet<>(fluxArgents);
     this.dateOuverture = dateOuverture;
   }
 
@@ -50,7 +50,7 @@ public sealed class Argent extends Possession permits Dette, Creance {
         .sum();
   }
 
-  void addFinancés(FluxArgent fluxArgent) {
+  public void addFinances(FluxArgent fluxArgent) {
     fluxArgents.add(fluxArgent);
   }
 }
