@@ -116,10 +116,21 @@ class PatrimoineTest {
 
     LocalDate au17septembre2024 = LocalDate.of(2024, SEPTEMBER, 17);
 
-   assertEquals(1175013, ordinateur.valeurComptableFuture(au17septembre2024));
-   assertEquals(1343835, vetements.valeurComptableFuture(au17septembre2024));
+    Patrimoine patrimoine_de_zety = new Patrimoine(
+            "patrimoineDeZety",
+            Zety, au17septembre2024,
+            Set.of(
+                    new Materiel("ordinateur", au03juillet2024, 1_200_000, au03juillet2024, -0.10),
+                    new Materiel("vêtements", au03juillet2024, 1_500_000, au03juillet2024, -0.50),
+                    new Argent("frais de scolarité", au03juillet2024, fraisScolariteTotal),
+                    new Argent("compte bancaire", au03juillet2024, 100_000 - fraisTenueCompte)
+            ));
+
+   assertEquals(1_175_013, ordinateur.valeurComptableFuture(au17septembre2024));
+   assertEquals(1_343_835, vetements.valeurComptableFuture(au17septembre2024));
    assertEquals(400_000, fraisScolarite.valeurComptableFuture(au17septembre2024));
    assertEquals(40_000, compteBancaire.valeurComptableFuture(au17septembre2024));
+   assertEquals(3_140_000, patrimoine_de_zety.getValeurComptable());
   }
 
 }
