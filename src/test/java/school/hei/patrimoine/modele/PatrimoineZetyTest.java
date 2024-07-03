@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import school.hei.patrimoine.modele.possession.*;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Set;
 
 import static java.time.Month.*;
@@ -33,6 +34,39 @@ class PatrimoineZetyTest {
 
     @Test
     void diminution_patrimoine_zety_entre_17_et_18_septembre_2024() {
+
+        var ordinateur = new Materiel("Ordinateur", LocalDate.of(2024, 7, 3), 1_200_000, LocalDate.of(2024, 7, 3), -0.1);
+        var vetements = new Materiel("Vêtements", LocalDate.of(2024, 7, 3), 1_500_000, LocalDate.of(2024, 7, 3), -0.5);
+        var argentEspeces = new Argent("Espèces", LocalDate.of(2024, 7, 3), 800_000);
+        var fraisScolarite = new FluxArgent("Frais scolarité", argentEspeces, LocalDate.of(2024, 7, 3), LocalDate.of(2024, 9, 17), -200_000, 1);
+
+        var zety = new Personne("Zety");
+
+        var au3juillet24 = LocalDate.of(2024, JULY, 3);
+        var compteBancaire = new Argent("Compte bancaire", au3juillet24, 100_000);
+        var fraisCompteBancaire = new FluxArgent("Frais compte bancaire", compteBancaire, LocalDate.of(2024, 7, 3), LocalDate.of(2024, 12, 31), -20_000, 1);
+
+        var patrimoineZety = new Patrimoine("Zety", zety, LocalDate.of(2024, 7, 3), Set.of(ordinateur, vetements, argentEspeces, fraisScolarite, compteBancaire, fraisCompteBancaire));
+        int valeurPatrimoineAuDebut = patrimoineZety.getValeurComptable();
+
+        FluxArgent ajoutCompteBancaire = new FluxArgent("Ajout au compte bancaire", compteBancaire, LocalDate.of(2024, 9, 18), LocalDate.of(2024, 9, 18), 10000000, 18);
+        Argent dette = new Dette("Dette bancaire", LocalDate.of(2024, 9, 18), -11000000);
+
+        Set<Possession> possessionsDeZety = new HashSet<>();
+        possessionsDeZety.add(dette);
+        possessionsDeZety.add(ajoutCompteBancaire);
+
+
+        Patrimoine patrimoineApresDette = patrimoineZety.projectionFuture(LocalDate.of(2024, 9, 18));
+
+        int valeurApres = patrimoineApresDette.getValeurComptable();
+        int diminution = valeurPatrimoineAuDebut - valeurApres ;
+
+        assertEquals(9000000, diminution);
+    }
+
+    @Test
+    void diminution_patrimoine_zety_entre_17_et_18_septembre_2024x() {
         var au3juillet24 = LocalDate.of(2024, JULY, 3);
 
         var zety = new Personne("Zety");
