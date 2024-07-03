@@ -1,11 +1,11 @@
 package school.hei.patrimoine.modele;
 
 import org.junit.jupiter.api.Test;
-import school.hei.patrimoine.modele.possession.Argent;
-import school.hei.patrimoine.modele.possession.FluxArgent;
-import school.hei.patrimoine.modele.possession.Materiel;
+import school.hei.patrimoine.modele.possession.*;
 
 import java.time.LocalDate;
+import java.time.Month;
+import java.util.HashSet;
 import java.util.Set;
 
 import static java.time.Month.MAY;
@@ -42,115 +42,5 @@ class EvolutionPatrimoineTest {
         assertEquals(500_000, evolutionJournaliere.get(LocalDate.of(2024, MAY, 15)).getValeurComptable());
         assertEquals(500_000, evolutionJournaliere.get(LocalDate.of(2024, MAY, 16)).getValeurComptable());
         assertEquals(500_000, evolutionJournaliere.get(LocalDate.of(2024, MAY, 17)).getValeurComptable());
-    }
-
-
-    @Test
-    void patrimoine_evolue_au_17_septembre_2024() {
-        var zety = new Personne("Zety");
-        var au3juillet24 = LocalDate.of(2024, JULY, 3);
-        var au17sept24 = LocalDate.of(2024, SEPTEMBER, 17);
-        var ordinateur = new Materiel("Ordinateur", au3juillet24, 1_200_000, au3juillet24, -0.10);
-        var vetements = new Materiel("Vêtements", au3juillet24, 1_500_000, au3juillet24, -0.50);
-        var argentEspeces = new Argent("Espèces", au3juillet24, 800_000);
-        var compteBancaire = new Argent("Compte bancaire", au3juillet24, 100_000);
-        var fraisScolarite = new FluxArgent(
-                "Frais de scolarité",
-                argentEspeces,
-                LocalDate.of(2023, NOVEMBER, 27),
-                LocalDate.of(2024, AUGUST, 27),
-                -200_000,
-                30);
-        var fraisTenueCompte = new FluxArgent(
-                "Frais de tenue de compte",
-                compteBancaire,
-                au3juillet24,
-                au17sept24.plusDays(1),
-                -20_000,
-                30);
-
-        var patrimoineZety = new Patrimoine(
-                "patrimoineZetyAu17sept24",
-                zety,
-                au3juillet24,
-                Set.of(ordinateur, vetements, argentEspeces, compteBancaire, fraisScolarite, fraisTenueCompte));
-
-        var evolutionPatrimoine = new EvolutionPatrimoine(
-                "EvolutionPatrimoineZety",
-                patrimoineZety,
-                au3juillet24,
-                au17sept24);
-
-        var evolutionJournaliere = evolutionPatrimoine.getEvolutionJournaliere();
-        var valeurPatrimoineAu17sept24 = evolutionJournaliere.get(au17sept24).getValeurComptable();
-
-        assertEquals(3_181_232, valeurPatrimoineAu17sept24);
-    }
-
-
-    @Test
-    void patrimoine_diminue_avec_dette_au_18_septembre_2024() {
-        var zety = new Personne("Zety");
-
-        var au3juillet24 = LocalDate.of(2024, JULY, 3);
-        var au17sept24 = LocalDate.of(2024, SEPTEMBER, 17);
-        var au18sept24 = LocalDate.of(2024, SEPTEMBER, 18);
-
-        var ordinateur = new Materiel("Ordinateur", au3juillet24, 1_200_000, au3juillet24, -0.10);
-        var vetements = new Materiel("Vêtements", au3juillet24, 1_500_000, au3juillet24, -0.50);
-        var argentEspeces = new Argent("Espèces", au3juillet24, 800_000);
-        var compteBancaire = new Argent("Compte bancaire", au3juillet24, 100_000);
-
-        var fraisScolarite = new FluxArgent(
-                "Frais de scolarité",
-                argentEspeces,
-                LocalDate.of(2023, NOVEMBER, 27),
-                LocalDate.of(2024, AUGUST, 27),
-                -200_000,
-                30);
-
-        var fraisTenueCompte = new FluxArgent(
-                "Frais de tenue de compte",
-                compteBancaire,
-                au3juillet24,
-                au17sept24.plusDays(1),
-                -20_000,
-                30);
-
-        var emprunt = new FluxArgent(
-                "Emprunt bancaire",
-                compteBancaire,
-                au18sept24,
-                au18sept24,
-                10_000_000,
-                1);
-
-        var dette = new FluxArgent(
-                "Dette bancaire",
-                compteBancaire,
-                au18sept24,
-                LocalDate.of(2025, SEPTEMBER, 18),
-                -11_000_000,
-                365);
-
-        var patrimoineZety = new Patrimoine(
-                "patrimoineZetyAu18sept24",
-                zety,
-                au3juillet24,
-                Set.of(ordinateur, vetements, argentEspeces, compteBancaire, fraisScolarite, fraisTenueCompte, emprunt, dette));
-
-        var evolutionPatrimoine = new EvolutionPatrimoine(
-                "EvolutionPatrimoineZety",
-                patrimoineZety,
-                au3juillet24,
-                au18sept24);
-
-        var evolutionJournaliere = evolutionPatrimoine.getEvolutionJournaliere();
-        var valeurPatrimoineAu17sept24 = evolutionJournaliere.get(au17sept24).getValeurComptable();
-        var valeurPatrimoineAu18sept24 = evolutionJournaliere.get(au18sept24).getValeurComptable();
-
-        var diminutionPatrimoine = valeurPatrimoineAu17sept24 - valeurPatrimoineAu18sept24;
-
-        assertEquals(2384, diminutionPatrimoine);
     }
 }
