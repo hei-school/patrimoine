@@ -3,10 +3,7 @@ package school.hei.patrimoine.modele.zety;
 import org.junit.jupiter.api.Test;
 import school.hei.patrimoine.modele.Patrimoine;
 import school.hei.patrimoine.modele.Personne;
-import school.hei.patrimoine.modele.possession.Argent;
-import school.hei.patrimoine.modele.possession.Dette;
-import school.hei.patrimoine.modele.possession.FluxArgent;
-import school.hei.patrimoine.modele.possession.Materiel;
+import school.hei.patrimoine.modele.possession.*;
 
 import java.time.LocalDate;
 import java.util.Set;
@@ -41,18 +38,36 @@ public class ZetyPatrimoineTest {
 
         //Zety s’endette
         var au18Septembre2024 = LocalDate.of(2024, 9, 18);
-        var frais2025 = new Dette("Frais 2024-2025", au18Septembre2024, -10000000);
-        var ncb = new FluxArgent("Compte bancaire", compteBancaire, au18Septembre2024, LocalDate.of(2025,9,18),10000000,18);
+        var fraisFutur = new Dette("Frais 2024-2025", au18Septembre2024, -10000000);
+        var ncb = new FluxArgent("Compte bancaire", compteBancaire, au18Septembre2024, au18Septembre2024,10000000,18);
         var coutPret = new Dette("coût du prêt", au18Septembre2024, -1000000);
 
         var nouveauPatrimoine = new Patrimoine(
-                "patrimoine après dette", zety, au18Septembre2024, Set.of(frais2025, coutPret, compteBancaire)
+                "patrimoine après dette", zety, au18Septembre2024, Set.of(fraisFutur, coutPret, ncb)
         );
 
         var patrimoineLe18Septembre2024 = nouveauPatrimoine.projectionFuture(LocalDate.of(2024,9,18)).getValeurComptable();
         System.out.println("Le patrimoine de Zety entre le 17 et le 18 septembre 2024 a diminué de: " +
-                (patrimoineLe17Septembre2024 - patrimoineLe18Septembre2024));
+                (patrimoineLe17Septembre2024 + patrimoineLe18Septembre2024));
 
-        //
+        //Zety étudie en 2024-2025
+        var frais2025 = new FluxArgent("frais scolaire 2025", compteBancaire,
+                LocalDate.of(2024,9,21), LocalDate.of(2024,9,21),
+                2500000, 21);
+        var donParents = new FluxArgent("don des parents", argent,
+                LocalDate.of(224,01,01), null, 100000,15);
+        var trainDeVie = new FluxArgent("train de vie", argent,
+                LocalDate.of(2024,10,01),LocalDate.of(2025,02,13),
+                250000,1);
+
+        var patrimoine2025 = new Patrimoine("patrimoine 2025", zety, LocalDate.of(2024,9,21),
+                Set.of(frais2025,donParents,trainDeVie));
+
+        if (patrimoine2025.getValeurComptable() <= 0){
+            System.out.println("Zety n'a plus d'éspèce le: " + argent.getT());
+        }
+
+
+
     }
 }

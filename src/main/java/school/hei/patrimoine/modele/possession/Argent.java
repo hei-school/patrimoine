@@ -48,4 +48,6 @@ public sealed class Argent extends Possession permits Dette, Creance {
   void addFinancés(FluxArgent fluxArgent) {
     fluxArgents.add(fluxArgent);
   }
+
+
 }
