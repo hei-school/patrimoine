@@ -44,4 +44,12 @@ public class ZetyTest {
         assertTrue(espèces.projectionFuture(au1Janvier25).getValeurComptable() <= 0);
     }
 
+    @Test
+    void zetyPartir() {
+        Zety24_25 zety24_25 = new Zety24_25();
+        var au13Fevrier25 = LocalDate.of(2025, Month.FEBRUARY, 13);
+
+        assertEquals(zety24_25.get().projectionFuture(au13Fevrier25).getValeurComptable(), -1_526_302);
+    }
+
 }
