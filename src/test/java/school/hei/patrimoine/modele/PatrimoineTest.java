@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import school.hei.patrimoine.modele.possession.*;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 import static java.time.Month.*;
@@ -195,7 +196,6 @@ class PatrimoineTest {
             au18septembre24,
             Set.of(ordinateur.projectionFuture(au18septembre24), vetements.projectionFuture(au18septembre24), argent.projectionFuture(au18septembre24), financeurau18septembre, fraisDeCompte, detteDeZety, coutDuPret)
     );
-
     assertEquals(560_007, patrimoineZetyAu03Juillet24.projectionFuture(au17septembre24).getValeurComptable() - patrimoineZetyAu18septembre24.getValeurComptable());
   }
 
@@ -204,21 +204,21 @@ class PatrimoineTest {
     var zety = new Personne("Zety");
     var au03juillet24 = LocalDate.of(2024, JULY, 3);
     var argent = new Argent("Espèces", au03juillet24, 800_000);
-    var rapportDeTauxdAppreciation_journaliere = 365;
+    var rapportDeTauxdAppreciationJournaliere = 365;
 
     var ordinateur = new Materiel(
             "Thinkpad",
             au03juillet24,
             1_200_000,
             au03juillet24.minusDays(2),
-            -0.10 / rapportDeTauxdAppreciation_journaliere);
+            -0.10 / rapportDeTauxdAppreciationJournaliere);
 
     var vetements = new Materiel(
             "Vetements",
             au03juillet24,
             1_500_000,
             au03juillet24.minusDays(2),
-            -0.50 / rapportDeTauxdAppreciation_journaliere
+            -0.50 / rapportDeTauxdAppreciationJournaliere
     );
     var financeur = new Argent("Compte bancaire", au03juillet24, 100_000);
 
@@ -249,7 +249,7 @@ class PatrimoineTest {
 
     var ecolage2425 = new FluxArgent(
             "ecolage 2024 - 2025",
-            financeurau18septembre,
+            financeurau18septembre.projectionFuture(au21septembre24),
             au21septembre24,
             au21septembre24,
             2_500_000,
@@ -277,7 +277,7 @@ class PatrimoineTest {
             argent,
             LocalDate.of(2024, OCTOBER, 1),
             LocalDate.of(2025, FEBRUARY, 13),
-            250_000,
+            -250_000,
             1
     );
 
@@ -288,16 +288,23 @@ class PatrimoineTest {
             Set.of(ordinateur.projectionFuture(LocalDate.of(2024, OCTOBER, 1)), vetements.projectionFuture(LocalDate.of(2024, OCTOBER, 1)), donDesParentsDeZety, trainDeVie, ecolage2425, financeurau18septembre, fraisDeCompte, detteDeZety, coutDuPret)
     );
 
-    var evolutionPatrimoine = new EvolutionPatrimoine(
-            "evolution",
-            patrimoineZetyAu01OCtobre24,
-            LocalDate.of(2024, OCTOBER, 1),
-            LocalDate.of(2025, FEBRUARY, 13)
-    );
+    LocalDate dateZeroEspecesAttendu = LocalDate.of(2025, JANUARY, 1);
+    LocalDate dateDeProjectionActuel =  LocalDate.of(2024, OCTOBER, 1);
 
-    System.out.println(evolutionPatrimoine.serieValeursComptablesParPossession());
-    Map<Possession, List<Integer>> map = evolutionPatrimoine.serieValeursComptablesParPossession();
-    System.out.println(map);
+    var especesProjetees = trainDeVie.getArgent().projectionFuture(dateDeProjectionActuel);
+    long maxIntervals = ChronoUnit.DAYS.between(dateDeProjectionActuel, dateZeroEspecesAttendu);
+
+    for (int i = 0; i <= maxIntervals; i++) {
+      dateDeProjectionActuel = dateDeProjectionActuel.plusDays(i);
+
+      especesProjetees = trainDeVie.getArgent().projectionFuture(dateDeProjectionActuel);
+
+      if (especesProjetees.getValeurComptable() == 0) {
+        break;
+      }
+    }
+    assertEquals(dateZeroEspecesAttendu, dateDeProjectionActuel);
+    System.out.println(trainDeVie.getArgent().projectionFuture( LocalDate.of(2025, FEBRUARY, 13)).getValeurComptable());
   }
 
   @Test
