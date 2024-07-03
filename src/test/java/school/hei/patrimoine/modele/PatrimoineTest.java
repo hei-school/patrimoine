@@ -87,19 +87,27 @@ class PatrimoineTest {
 
   @Test
   void patrimoine_zety_le_17_septembre_2024() {
-    var au17Septembre = LocalDate.of(2024, SEPTEMBER, 17);
-    var ordinateur = new Materiel("Ordinateur", LocalDate.of(2024, JULY, 3), 1_200_000, LocalDate.of(2024, 7, 3), -0.10);
-    var vetements = new Materiel("Vêtements", LocalDate.of(2024, JULY, 3), 1_500_000, LocalDate.of(2024, 7, 3), -0.50);
-    var argentEnEspece = new Argent("Argent en espèces", LocalDate.of(2024, JULY, 3), 800_000);
-    var compteBancaire = new Argent("Compte bancaire", LocalDate.of(2024, JULY, 3), 100_000);
-    var fraisTenueCompte = new FluxArgent("Frais de tenue de compte", compteBancaire, LocalDate.of(2024, JULY, 3), LocalDate.of(2024, 7, 3).plusMonths(12), -20_000, 25);
-    var fraisScolarite = new Argent("Frais de scolarité", LocalDate.of(2024, 7, 3), 0);
+    var zety = new Personne("Zety");
+    var au3juillet24 = LocalDate.of(2024, JULY, 3);
+    var au17septembre24 = LocalDate.of(2024, SEPTEMBER, 17);
+
+    var ordinateur = new Materiel("Ordinateur", au3juillet24, 1_200_000, au3juillet24, -0.10);
+    var vetements = new Materiel("Vêtements", au3juillet24, 1_500_000, au3juillet24, -0.50);
+    var argentEnEspece = new Argent("Argent en espèces", au3juillet24, 800_000);
+    var compteBancaire = new Argent("Compte bancaire", au3juillet24, 100_000);
+    var fraisTenueCompte = new FluxArgent("Frais de tenue de compte", compteBancaire, au3juillet24, au3juillet24.plusMonths(12), -20_000, 25);
+    var fraisScolarite = new Argent("Frais de scolarité", au3juillet24, 0);
     var fluxFraisScolarite = new FluxArgent("Frais de scolarité", fraisScolarite, LocalDate.of(2023, 11, 27), LocalDate.of(2024, 8, 27), -200_000, 27);
 
-    var patrimoineZety = new Patrimoine("Patrimoine Zety", new Personne("Zety"), LocalDate.of(2024, 7, 3), Set.of(ordinateur, vetements, argentEnEspece, compteBancaire, fraisScolarite, fluxFraisScolarite, fraisTenueCompte));
+    var patrimoineZetyAu3juillet24 = new Patrimoine(
+            "Patrimoine Zety",
+            zety,
+            au3juillet24,
+            Set.of(ordinateur, vetements, argentEnEspece, compteBancaire, fraisScolarite, fluxFraisScolarite, fraisTenueCompte));
 
-    var projectionFuture = patrimoineZety.projectionFuture(au17Septembre);
-    assertEquals(2_978_848, projectionFuture.getValeurComptable());
+    var patrimoineZetyAu17septembre24 = patrimoineZetyAu3juillet24.projectionFuture(au17septembre24);
+
+    assertEquals(2_978_848, patrimoineZetyAu17septembre24.getValeurComptable());
   }
   @Test
   void patrimoine_de_zety_apres_emprunt() {
@@ -161,6 +169,8 @@ class PatrimoineTest {
 
     assertEquals(LocalDate.of(2025, JANUARY, 31), dateSansEspèces);
   }
+
+
   private static Patrimoine getPatrimoine(LocalDate au17septembre24, LocalDate au18septembre24, Personne zety) {
     var compteBancaire = new Argent("Compte bancaire", au17septembre24, 100_000);
 
