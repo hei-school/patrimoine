@@ -3,11 +3,8 @@ package school.hei.patrimoine.modele;
 import org.junit.jupiter.api.Test;
 import school.hei.patrimoine.modele.possession.Argent;
 import school.hei.patrimoine.modele.possession.FluxArgent;
-import school.hei.patrimoine.modele.possession.Materiel;
-
 import java.time.LocalDate;
 import java.util.Set;
-
 import static java.time.Month.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
