@@ -6,6 +6,7 @@ import school.hei.patrimoine.modele.possession.FluxArgent;
 import school.hei.patrimoine.modele.possession.Materiel;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -81,16 +82,18 @@ class EvolutionPatrimoineTest {
         var coutPret = 1_000_000;
         var dette = empruntBanque.getFluxMensuel() + coutPret;
         var au18septembre25 = au18septembre24.plusYears(1);
+        var daysBetween = ChronoUnit.DAYS.between(au18septembre24, au18septembre25);
         var banqueDette = new Argent("dette banque", au18septembre25, dette);
-        var endettement = new FluxArgent("argent à rendre à la banque", banqueDette, au18septembre24, au18septembre25, -dette, au18septembre25.getDayOfMonth());
+        var endettement = new FluxArgent("argent à rendre à la banque", compteBancaire, au18septembre24, au18septembre25, -dette, au18septembre25.getDayOfMonth());
 
         ensemblePatrimoine.add(empruntBanque);
         ensemblePatrimoine.add(endettement);
 
         var evolutionPatrimoineZety18Septembre25 = new EvolutionPatrimoine("nom", patrimoineZety, au2juillet24, au18septembre25);
         var evolution = evolutionPatrimoineZety18Septembre25.getEvolutionJournaliere();
+        var valeurDiminue=Math.abs(evolution.get(au18septembre24).getValeurComptable()-evolution.get(au17septembre24).getValeurComptable());
+        assertEquals(1_000_000,valeurDiminue);
 
-        assertTrue((evolution.get(au18septembre24).getValeurComptable()-evolution.get(au17septembre24).getValeurComptable())>0);
 
 
 
