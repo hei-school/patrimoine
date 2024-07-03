@@ -35,4 +35,4 @@ class FluxArgentTest {
     assertEquals(-2_900_000, compteCourant.projectionFuture(aLaDiplomation).valeurComptable);
     assertEquals(-2_900_000, compteCourant.projectionFuture(aLaDiplomation.plusDays(100)).valeurComptable);
   }
-}
+  }
