@@ -11,6 +11,7 @@ import java.util.Set;
 
 import static java.time.Month.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class EvolutionPatrimoineTest {
 
@@ -189,4 +190,50 @@ class EvolutionPatrimoineTest {
     assertEquals(LocalDate.of(2025, FEBRUARY, 13), dateEpuisementEspece);
   }
 
+  @Test
+  void patrimoine_zety_14_Fevrier_2025() {
+    var zety = new Personne("Zety");
+    var au3juillet24 = LocalDate.of(2024, JULY, 3);
+    var au27Novembre2023 = LocalDate.of(2023, NOVEMBER, 27);
+    var au27Aout2024 = LocalDate.of(2024, AUGUST, 27);
+    var au25Juillet2024 = LocalDate.of(2024, JULY, 25);
+    var auDateIndeterminee = LocalDate.of(2025, DECEMBER, 25);
+    var au21Septembre2024 = LocalDate.of(2025, FEBRUARY, 14);
+    var au1Octobre2024 = LocalDate.of(2024, OCTOBER, 1);
+    var au13Fevrier2025 = LocalDate.of(2025, FEBRUARY, 13);
+
+    var financeur = new Argent("Espèces", au3juillet24, 800_000);
+    var financeur2 = new Argent("Compte bancaire", au3juillet24, 100_000);
+
+    var ordinateur = new AchatMaterielAuComptant("Ordinateur", au3juillet24, 1_200_000, -0.1, financeur);
+    var vetement = new AchatMaterielAuComptant("Vêtements", au3juillet24, 1_500_000, -0.5, financeur);
+
+    var fraisDeScolarite = new FluxArgent("Frais de scolarité", financeur, au27Novembre2023, au27Aout2024, -200_000, 30);
+    var fraisTenueCompte = new FluxArgent("Frais tenue de compte", financeur2, au25Juillet2024, auDateIndeterminee, -20_000, 30);
+
+    LocalDate dateDebut = au1Octobre2024;
+    while (dateDebut.isBefore(au13Fevrier2025.plusDays(1))) {
+      var depenseMensuelle = new FluxArgent("Dépense mensuelle", financeur2, dateDebut, dateDebut, -250_000, 1);
+      financeur2 = new Argent("Compte bancaire", dateDebut, financeur2.getValeurComptable() + depenseMensuelle.getValeurComptable());
+      dateDebut = dateDebut.plusMonths(1);
+    }
+
+    var patrimoineZetyAu3Juillet2025 = new Patrimoine(
+            "patrimoineZety2025",
+            zety,
+            au3juillet24,
+            Set.of(financeur, financeur2, ordinateur, vetement, fraisDeScolarite, fraisTenueCompte)
+    );
+
+    var evolutionPatrimoine = new EvolutionPatrimoine(
+            "Zety",
+            patrimoineZetyAu3Juillet2025,
+            LocalDate.of(2025, FEBRUARY, 13),
+            LocalDate.of(2025, FEBRUARY, 14)
+    );
+
+    var evolutionJournaliere = evolutionPatrimoine.getEvolutionJournaliere();
+
+    assertEquals(100_000, financeur2.getValeurComptable());
+  }
 }
