@@ -107,14 +107,15 @@ class EvolutionPatrimoineTest {
         ensemblePatrimoine.addAll(Set.of(scolarite2425, donParentsZety, trainDeVie));
 
 
-        var au1Janvier2025=LocalDate.of(2025,JANUARY,1);
-        var au14Janvier2025=LocalDate.of(2025,JANUARY,14);
+        var au1Janvier2025 = LocalDate.of(2025, JANUARY, 1);
+        var au14Janvier2025 = LocalDate.of(2025, JANUARY, 14);
 
 
-        assertEquals(0,especes.projectionFuture(au1Janvier2025).getValeurComptable());
-        assertEquals(0,especes.projectionFuture(au14Janvier2025).getValeurComptable());
+        assertEquals(0, especes.projectionFuture(au1Janvier2025).getValeurComptable());
+        assertEquals(0, especes.projectionFuture(au14Janvier2025).getValeurComptable());
 
-
+        var au14Fevrier25=LocalDate.of(2025,FEBRUARY,14);
+        assertEquals(-44640000,evolution.get(au14Fevrier25).getValeurComptable());
 
 
     }
