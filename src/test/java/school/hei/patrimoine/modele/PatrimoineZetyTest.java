@@ -1,15 +1,13 @@
 package school.hei.patrimoine.modele;
 
 import org.junit.jupiter.api.Test;
-import school.hei.patrimoine.modele.possession.Argent;
-import school.hei.patrimoine.modele.possession.FluxArgent;
-import school.hei.patrimoine.modele.possession.Materiel;
-import school.hei.patrimoine.modele.possession.Possession;
+import school.hei.patrimoine.modele.possession.*;
 
 import java.time.LocalDate;
 import java.util.Set;
 
 import static java.time.Month.JULY;
+import static java.time.Month.SEPTEMBER;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class PatrimoineZetyTest {
@@ -66,5 +64,33 @@ class PatrimoineZetyTest {
 
         // Assertion
         assertEquals(valeurAttendue, valeurComptableFutur);
+    }
+    @Test
+    void zety_patrimoine_diminue_apres_emprunt() {
+        var zety = new Personne("Zety");
+        var au17sept24 = LocalDate.of(2024, 9, 17);
+        var au18sept24 = LocalDate.of(2024, 9, 18);
+
+        // Initialisation du patrimoine de Zety au 17 septembre 2024
+        var patrimoineZetyAu17sept24 = new Patrimoine(
+                "patrimoineZetyAu17sept24",
+                zety,
+                au17sept24,
+                Set.of(new Argent("Compte bancaire", au17sept24, 100_000)));
+
+        // Simulation de l'emprunt de Zety le 18 septembre 2024
+        var compteBancaireApresEmprunt = new Argent("Compte bancaire", au18sept24, 10_100_000); // Montant sur le compte bancaire après emprunt
+        var dette = new Dette("Dette bancaire", au18sept24, -11_000_000); // Dette contractée
+
+        var patrimoineZetyAu18sept24 = new Patrimoine(
+                "patrimoineZetyAu18sept24",
+                zety,
+                au18sept24,
+                Set.of(compteBancaireApresEmprunt, dette));
+
+        // Calcul de la diminution du patrimoine
+        int diminutionPatrimoine = patrimoineZetyAu18sept24.getValeurComptable() - patrimoineZetyAu17sept24.getValeurComptable();
+
+        assertEquals(-1_000_000, diminutionPatrimoine, "Le patrimoine de Zety devrait diminuer de 1 000 000 Ar après l'emprunt.");
     }
 }
