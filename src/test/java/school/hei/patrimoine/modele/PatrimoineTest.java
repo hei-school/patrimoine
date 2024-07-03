@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import school.hei.patrimoine.modele.possession.*;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Set;
 
 import static java.time.Month.MAY;
@@ -159,28 +160,70 @@ class PatrimoineTest {
   }
 
   @Test
-  void zety_etudie_en_2024() {
-    int argentInitial = 0;
-    int fraisScolarite = 2_500_000;
-    int donMensuel = 100_000;
-    int trainDeVieMensuel = 250_000;
+  public void zety_etudie_en_2024_2025() {
+    var zety = new Personne("Zety");
+    var au3juillet24 = LocalDate.of(2024, 7, 3);
 
-    int argentDisponible = argentInitial;
-    argentDisponible -= fraisScolarite;
-    argentDisponible += donMensuel;
-    argentDisponible += donMensuel;
-    argentDisponible -= trainDeVieMensuel;
-    argentDisponible += donMensuel;
-    argentDisponible -= trainDeVieMensuel;
-    argentDisponible += donMensuel;
-    argentDisponible -= trainDeVieMensuel;
+    var ordinateur = new Materiel("ordinateur", au3juillet24, 1_200_000, au3juillet24, -10);
+    var vetements = new Materiel("vetements", au3juillet24, 1_500_000, au3juillet24, -50);
+    var especes = new Argent("espèces", au3juillet24, 800_000);
 
-    argentDisponible += donMensuel;
-    argentDisponible -= trainDeVieMensuel;
+    var novembre23 = LocalDate.of(2023, 11, 1);
+    var aout24 = LocalDate.of(2024, 8, 31);
+    var fraisScolarite = new FluxArgent("frais de scolarité", especes, novembre23, aout24, -200_000, 27);
 
-    assertEquals(-3_000_000, argentDisponible, "zety espce");
+    var compteBancaire = new Argent("compte bancaire", au3juillet24, 100_000);
+    var date = LocalDate.MAX;
+    var fraisDeCompte = new FluxArgent("frais de tenue de compte", compteBancaire, au3juillet24, date, -20_000, 25);
+
+    var patrimoine = new HashSet<>(Set.of(ordinateur, vetements, especes, fraisScolarite, compteBancaire, fraisDeCompte));
+    var patrimoineZety = new Patrimoine("patrimoine de Zety", zety, au3juillet24, patrimoine);
+
+    var au17septembre24 = LocalDate.of(2024, 9, 17);
+    var au2juillet24 = LocalDate.of(2024, 7, 2);
+    var evolutionPatrimoineZety = new EvolutionPatrimoine("patrimoine evolue", patrimoineZety, au2juillet24, au17septembre24);
+    var evolutionJournaliere = evolutionPatrimoineZety.getEvolutionJournaliere();
+
+    assertEquals(0, evolutionJournaliere.get(LocalDate.of(2024, 7, 2)).getValeurComptable());
+    assertEquals(patrimoineZety.getValeurComptable(), evolutionJournaliere.get(au3juillet24).getValeurComptable());
+    assertEquals(460_000, evolutionJournaliere.get(au17septembre24).getValeurComptable());
+
+    var au18septembre24 = LocalDate.of(2024, 9, 18);
+    var empruntBanque = new FluxArgent("argent emprunte à la banque", compteBancaire, au18septembre24, au18septembre24, 10_000_000, au18septembre24.getDayOfMonth());
+
+    var coutPret = 1_000_000;
+    var dette = empruntBanque.getFluxMensuel() + coutPret;
+    var au18septembre25 = au18septembre24.plusYears(1);
+    var endettement = new FluxArgent("argent à rendre à la banque", compteBancaire, au18septembre24, au18septembre25, -dette, au18septembre25.getDayOfMonth());
+
+    patrimoine.add(empruntBanque);
+    patrimoine.add(endettement);
+
+    var evolutionPatrimoineZety18Septembre25 = new EvolutionPatrimoine("nom", patrimoineZety, au2juillet24, au18septembre25);
+    var evolution = evolutionPatrimoineZety18Septembre25.getEvolutionJournaliere();
+
+    var valeurDiminue = Math.abs(evolution.get(au18septembre24).getValeurComptable() - evolution.get(au17septembre24).getValeurComptable());
+    assertEquals(1_000_000, valeurDiminue);
+
+    var au21Septembre24 = LocalDate.of(2024, 9, 21);
+    var debut2024 = LocalDate.of(2024, 1, 1);
+    var scolarite2425 = new FluxArgent("payement scolarite une fois", compteBancaire, au21Septembre24, au21Septembre24, -2_500_000, au21Septembre24.getDayOfMonth());
+    var donParentsZety = new FluxArgent("don de parents de zety", especes, debut2024, LocalDate.MAX, 100_000, 15);
+
+    var au1octobre24 = LocalDate.of(2024, 10, 1);
+    var au13Fevrier25 = LocalDate.of(2025, 2, 13);
+    var trainDeVie = new FluxArgent("train de vie mensuel", especes, au1octobre24, au13Fevrier25, -250_000, 1);
+
+    patrimoine.addAll(Set.of(scolarite2425, donParentsZety, trainDeVie));
+
+    var au1Janvier2025 = LocalDate.of(2025, 1, 1);
+    var au14Janvier2025 = LocalDate.of(2025, 1, 14);
+    assertEquals(0, especes.projectionFuture(au1Janvier2025).getValeurComptable());
+    assertEquals(0, especes.projectionFuture(au14Janvier2025).getValeurComptable());
+
+    var au14Fevrier25 = LocalDate.of(2025, 2, 14);
+    assertEquals(-44640000, evolution.get(au14Fevrier25).getValeurComptable());
   }
-
 
 
 }
