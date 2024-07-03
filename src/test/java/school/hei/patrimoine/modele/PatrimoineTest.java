@@ -180,19 +180,4 @@ class PatrimoineTest {
   }
 
 
-  private static Patrimoine getPatrimoine(LocalDate au17septembre24, LocalDate au18septembre24, Personne zety) {
-    var compteBancaire = new Argent("Compte bancaire", au17septembre24, 100_000);
-
-    var emprunt = new Dette("Emprunt bancaire", au18septembre24, -11_000_000);
-    var fluxEmprunt = new FluxArgent("Emprunt", compteBancaire, au18septembre24, au18septembre24, 10_000_000, au18septembre24.getDayOfMonth());
-
-
-    var patrimoineZetyAu18septembre24 = new Patrimoine(
-            "patrimoineZetyAu18septembre24",
-            zety,
-            au18septembre24,
-            Set.of(compteBancaire, emprunt, fluxEmprunt));
-    return patrimoineZetyAu18septembre24;
-  }
-
 }
