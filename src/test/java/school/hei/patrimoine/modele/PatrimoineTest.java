@@ -128,4 +128,30 @@ class PatrimoineTest {
     assertEquals(400000,patrimoineZetyAu17Septembre2024.projectionFuture(au3Juillet2024.plusDays(200)).getValeurComptable());
     assertEquals(400000,patrimoineZetyAu17Septembre2024.projectionFuture(au3Juillet2024.plusDays(1_220)).getValeurComptable());
   }
+  @Test
+  void compte_bancaire_evolution(){
+    var au3July2024 = LocalDate.of(2024,JULY,3);
+    var Zety = new Personne("Zety");
+    var compteBancaire = new Argent("compte bancaire",au3July2024,100_000);
+
+    var FraisTenueCompte = new FluxArgent(
+            "frais tenue compte",
+            compteBancaire,
+            LocalDate.of(2024,JULY,25),
+            au3July2024.plusDays(54654798),
+            -20_000,
+            30
+    );
+    var patrimoineZetyau3Juillet2024 = new Patrimoine(
+            "patrimoine zety au 3 july",
+            Zety,
+            au3July2024,
+            Set.of(
+                    compteBancaire,FraisTenueCompte
+            )
+    );
+
+    assertEquals(100000,patrimoineZetyau3Juillet2024.projectionFuture(au3July2024.plusDays(20)).getValeurComptable());
+    assertEquals(-240000,patrimoineZetyau3Juillet2024.projectionFuture(au3July2024.plusDays(562)).getValeurComptable());
+  }
 }
