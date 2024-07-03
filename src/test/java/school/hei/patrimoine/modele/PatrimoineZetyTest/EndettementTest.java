@@ -33,4 +33,6 @@ class EndettementTest {
         assertEquals(1_976_464, patrimoineDeZetySendette.getValeurComptable());
         assertEquals(1_002_384, differenceEntreLesDeuxPatrimoines);
     }
+
+
 }
