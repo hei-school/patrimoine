@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import school.hei.patrimoine.modele.Patrimoine;
 import school.hei.patrimoine.modele.Personne;
 import school.hei.patrimoine.modele.possession.Argent;
+import school.hei.patrimoine.modele.possession.Dette;
 import school.hei.patrimoine.modele.possession.FluxArgent;
 import school.hei.patrimoine.modele.possession.Materiel;
 
@@ -90,5 +91,81 @@ public class PatrimoineDeZetyTest {
                         fraisCompteBancaire.projectionFuture(LocalDate.of(2024, SEPTEMBER, 17)).getValeurComptable();
 
         assertEquals(2978848.0, valeurComptableAttendue);
+    }
+    @Test
+    void diminution_Patrimoine_Entre17_Et_18Septembre2024() {
+        var zety = new Personne("Zety");
+        var au3jul24 = LocalDate.of(2024, JULY, 3);
+
+        var ordinateur = new Materiel(
+                "Ordinateur",
+                au3jul24,
+                1_200_000,
+                au3jul24,
+                -0.10);
+
+        var vetements = new Materiel(
+                "Vêtements",
+                au3jul24,
+                1_500_000,
+                au3jul24,
+                -0.50);
+
+        var argentEspeces = new Argent(
+                "Espèces",
+                au3jul24,
+                800_000);
+
+        var debutFraisScolarite = LocalDate.of(2023, NOVEMBER, 27);
+        var finFraisScolarite = LocalDate.of(2024, AUGUST, 27);
+        var fraisScolarite = new FluxArgent(
+                "Frais de scolarité",
+                argentEspeces,
+                debutFraisScolarite,
+                finFraisScolarite,
+                200_000,
+                27);
+
+        var compteBancaire = new Argent(
+                "Compte Bancaire",
+                au3jul24,
+                100_000);
+
+        var debutCompteBancaire = LocalDate.of(2024, JULY, 25);
+        var fraisCompteBancaire = new FluxArgent(
+                "Frais de tenue de compte",
+                compteBancaire,
+                debutCompteBancaire,
+                LocalDate.MAX,
+                -20_000,
+                25);
+
+        argentEspeces.addFinancés(fraisScolarite);
+        compteBancaire.addFinancés(fraisCompteBancaire);
+
+        var patrimoineZetyAu17sept24 = new Patrimoine(
+                "patrimoineZetyAu17sept24",
+                zety,
+                au3jul24,
+                Set.of(
+                        ordinateur,
+                        vetements,
+                        argentEspeces,
+                        fraisScolarite,
+                        compteBancaire,
+                        fraisCompteBancaire
+                )
+        );
+
+        var endettement = new Dette(
+                "Dette bancaire",
+                LocalDate.of(2024, SEPTEMBER, 18),
+                -11_000_000);
+
+        var patrimoineZetyAu18sept24 = patrimoineZetyAu17sept24.ajouterPossession(endettement);
+
+        var diminutionPatrimoine = patrimoineZetyAu18sept24.getValeurComptable() - patrimoineZetyAu17sept24.getValeurComptable();
+
+        assertEquals(1_000_000, diminutionPatrimoine);
     }
 }
