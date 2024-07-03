@@ -254,6 +254,7 @@ public class PatrimoineZetyTest {
 
         var au17Septembre24 = LocalDate.of(2024, SEPTEMBER, 17);
         var au18Septembre24 = au17Septembre24.plusDays(1);
+        var au21Septembre24 = LocalDate.of(2024, SEPTEMBER, 21);
 
         var debut2024 = LocalDate.of(2024, JANUARY, 1);
         var au1octobre24 = LocalDate.of(2024, OCTOBER, 1);
@@ -317,6 +318,14 @@ public class PatrimoineZetyTest {
                                 null,
                                 100_000,
                                 15
+                        ),
+                        new FluxArgent(
+                          "Frais de scolarité 2024-2025",
+                                argentEnBanqueAu3Juillet24,
+                                au21Septembre24,
+                                au21Septembre24,
+                                -2_500_000,
+                                21
                         ),
                         new FluxArgent(
                                 "Train de vie",
