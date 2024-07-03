@@ -16,6 +16,10 @@ public record Patrimoine(
     return possessions.stream().mapToInt(Possession::getValeurComptable).sum();
   }
 
+  public int getValeurComptable(Devise devise){
+    return possessions.stream().mapToInt(p -> p.getValeurComptable(devise, t)).sum();
+  }
+
   public Patrimoine projectionFuture(LocalDate tFutur) {
     return new Patrimoine(
         nom,

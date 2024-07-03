@@ -3,6 +3,7 @@ package school.hei.patrimoine.modele.possession;
 import lombok.Getter;
 
 import java.time.LocalDate;
+import school.hei.patrimoine.modele.Devise;
 
 @Getter
 public final class FluxArgent extends Possession {
@@ -13,8 +14,8 @@ public final class FluxArgent extends Possession {
   private final int dateOperation;
 
   public FluxArgent(
-      String nom, Argent argent, LocalDate debut, LocalDate fin, int fluxMensuel, int dateOperation) {
-    super(nom, null, 0);
+    String nom, Argent argent, LocalDate debut, LocalDate fin, int fluxMensuel, int dateOperation, Devise devise) {
+    super(nom, null, 0, devise);
     this.argent = argent;
     this.argent.addFinancés(this);
 
@@ -39,8 +40,8 @@ public final class FluxArgent extends Possession {
                 .filter(d -> d.getDayOfMonth() == dateOperation)
                 .count();
     var argentFutur = new Argent(
-        nom, tFutur, argent.getValeurComptable() + fluxMensuel * nbOperations);
+        nom, tFutur, argent.getValeurComptable() + fluxMensuel * nbOperations, argent.devise);
 
-    return new FluxArgent(nom, argentFutur, debut, tFuturMajoréParFin, fluxMensuel, dateOperation);
+    return new FluxArgent(nom, argentFutur, debut, tFuturMajoréParFin, fluxMensuel, dateOperation, devise);
   }
 }

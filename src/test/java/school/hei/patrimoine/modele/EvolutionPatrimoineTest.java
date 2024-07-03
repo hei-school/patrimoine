@@ -9,6 +9,7 @@ import java.util.Set;
 
 import static java.time.Month.MAY;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static school.hei.patrimoine.modele.Devise.ARIARY;
 
 class EvolutionPatrimoineTest {
 
@@ -16,11 +17,11 @@ class EvolutionPatrimoineTest {
   void patrimoine_evolue() {
     var ilo = new Personne("Ilo");
     var au13mai24 = LocalDate.of(2024, MAY, 13);
-    var financeur = new Argent("Espèces", au13mai24, 600_000);
+    var financeur = new Argent("Espèces", au13mai24, 600_000, ARIARY);
     var trainDeVie = new FluxArgent(
         "Vie courante",
         financeur, au13mai24.minusDays(100), au13mai24.plusDays(100), -100_000,
-        15);
+        15, ARIARY);
     var patrimoineIloAu13mai24 = new Patrimoine(
         "patrimoineIloAu13mai24",
         ilo,

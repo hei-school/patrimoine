@@ -4,10 +4,13 @@ import static java.time.Month.JANUARY;
 import static java.time.Month.SEPTEMBER;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static school.hei.patrimoine.cas.zety.PatrimoineZetyAu3Juillet2024.AU_14_FEVRIER_2025;
+import static school.hei.patrimoine.cas.zety.PatrimoineZetyAu3Juillet2024.AU_26_OCTOBRE_2025;
+import static school.hei.patrimoine.cas.zety.PatrimoineZetyAu3Juillet2024.AU_3_JUILLET_2024;
 
 import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
 import school.hei.patrimoine.cas.zety.PatrimoineZetyAu3Juillet2024;
+import school.hei.patrimoine.modele.Devise;
 import school.hei.patrimoine.modele.Patrimoine;
 import school.hei.patrimoine.modele.possession.Argent;
 
@@ -28,6 +31,10 @@ class PatrimoineDeZetyTest {
 
 	private Patrimoine patrimoineDeZetyLe14Fev2025() {
 		return patrimoineDeZetyAu3JuilletSupplier.patrimoineDeZetyLe14Fevrier2025();
+	}
+
+	private Patrimoine patrimoineDeZetyLe26Octobre2025(Devise euro) {
+		return patrimoineDeZetyAu3JuilletSupplier.patrimoineDeZety26Octobre2025(euro);
 	}
 
 
@@ -78,5 +85,15 @@ class PatrimoineDeZetyTest {
 			.projectionFuture(AU_14_FEVRIER_2025);
 
 		assertEquals(-1_528_686, patrimoineDeZetyLe14Fevrier2025.getValeurComptable());
+	}
+
+
+	@Test
+	void zety_part_en_Allemagne() {
+		Devise euro = new Devise("euro", 4821, AU_3_JUILLET_2024, -0.1);
+		var patrimoineDeZetyLe14Fevrier2025 = patrimoineDeZetyLe26Octobre2025(euro)
+			.projectionFuture(AU_26_OCTOBRE_2025);
+
+		assertEquals(-9_275, patrimoineDeZetyLe14Fevrier2025.getValeurComptable(euro));
 	}
 }
