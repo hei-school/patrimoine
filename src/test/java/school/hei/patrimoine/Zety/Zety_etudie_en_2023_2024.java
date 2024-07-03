@@ -8,7 +8,7 @@ import java.time.temporal.ChronoUnit;
 import static java.time.Month.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class Zety_Test {
+class Zety_etudie_en_2023_2024{
     @Test
     void test_valeur_ordinateur() {
         var dateInitiale = LocalDate.of(2024, JULY, 3);
