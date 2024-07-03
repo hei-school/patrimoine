@@ -51,7 +51,7 @@ public class EvolutionPatrimoine {
       var serie = new ArrayList<Integer>();
 
       dates().forEach(d -> serie.add(
-          evolutionJournaliere.get(d).possessionParNom(possession.getNom()).getValeurComptable()));
+              evolutionJournaliere.get(d).possessionParNom(possession.getNom()).getValeurComptable()));
       map.put(possession, serie);
     }
     return map;

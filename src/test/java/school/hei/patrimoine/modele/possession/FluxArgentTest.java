@@ -4,10 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 
-import static java.time.Month.DECEMBER;
-import static java.time.Month.JUNE;
-import static java.time.Month.MAY;
-import static java.time.Month.OCTOBER;
+import static java.time.Month.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class FluxArgentTest {
@@ -38,4 +35,4 @@ class FluxArgentTest {
     assertEquals(-2_900_000, compteCourant.projectionFuture(aLaDiplomation).valeurComptable);
     assertEquals(-2_900_000, compteCourant.projectionFuture(aLaDiplomation.plusDays(100)).valeurComptable);
   }
-}
+  }
