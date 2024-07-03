@@ -162,7 +162,7 @@ class PatrimoineTest {
 
     var patrimoineZetyAu17Sep24 = patrimoineZetyAu3Juillet24.projectionFuture(Au17Sept2024).getValeurComptable();
     var patrimoineZetyAu18Sep24 = patrimoineZetyAu3Juillet24.projectionFuture(dateDette).getValeurComptable();
-
+//
     var valeurPatrimoineEntre17Et18 = patrimoineZetyAu17Sep24 - patrimoineZetyAu18Sep24;
     assertEquals(2_384, valeurPatrimoineEntre17Et18);
   }
