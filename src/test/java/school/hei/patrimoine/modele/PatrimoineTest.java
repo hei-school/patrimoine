@@ -141,4 +141,55 @@ class PatrimoineTest {
     }
   }
 
+  @Test
+  void testDiminutionPatrimoineZetyApresEmprunt() {
+    LocalDate dateInitiale = LocalDate.of(2024, 9, 17);
+    LocalDate dateEmprunt = LocalDate.of(2024, 9, 18);
+
+    Materiel ordinateur = new Materiel("Ordinateur", dateInitiale, 1200000, dateInitiale, -0.10);
+    Materiel vetements = new Materiel("Vêtements", dateInitiale, 1500000, dateInitiale, -0.50);
+    Argent especes = new Argent("Espèces", dateInitiale, 800000);
+    Argent compteBancaire = new Argent("Compte bancaire", dateInitiale, 100000);
+
+    LocalDate debutScolarite = LocalDate.of(2023, 11, 27);
+    LocalDate finScolarite = LocalDate.of(2024, 8, 27);
+    FluxArgent fraisScolarite = new FluxArgent("Frais de scolarité", especes, debutScolarite, finScolarite, -200000, 27);
+
+    FluxArgent fraisBancaires = new FluxArgent("Frais bancaires", compteBancaire, dateInitiale, LocalDate.of(9999, 12, 31), -20000, 25);
+
+    Set<Possession> possessionsInitiales = new HashSet<>();
+    possessionsInitiales.add(ordinateur);
+    possessionsInitiales.add(vetements);
+    possessionsInitiales.add(especes);
+    possessionsInitiales.add(compteBancaire);
+    possessionsInitiales.add(fraisScolarite);
+    possessionsInitiales.add(fraisBancaires);
+
+    Personne zety = new Personne("Zety");
+    Patrimoine patrimoineInitial = new Patrimoine("Patrimoine de Zety", zety, dateInitiale, possessionsInitiales);
+
+    int valeurPatrimoineInitial = patrimoineInitial.getValeurComptable();
+
+    Set<Possession> possessionsApresEmprunt = new HashSet<>(possessionsInitiales);
+
+    FluxArgent emprunt = new FluxArgent("Emprunt bancaire", compteBancaire, dateEmprunt, dateEmprunt, 10000000, 18);
+    possessionsApresEmprunt.add(emprunt);
+
+    Dette detteBancaire = new Dette("Dette bancaire", dateEmprunt, -11000000);
+    possessionsApresEmprunt.add(detteBancaire);
+
+    Patrimoine patrimoineApresEmprunt = new Patrimoine("Patrimoine de Zety après emprunt", zety, dateEmprunt, possessionsApresEmprunt);
+
+    int valeurPatrimoineApresEmprunt = patrimoineApresEmprunt.getValeurComptable();
+
+    int diminutionPatrimoine = valeurPatrimoineInitial - valeurPatrimoineApresEmprunt;
+
+    System.out.println("Valeur du patrimoine au 17 septembre 2024 : " + valeurPatrimoineInitial + " Ar");
+    System.out.println("Valeur du patrimoine au 18 septembre 2024 : " + valeurPatrimoineApresEmprunt + " Ar");
+    System.out.println("Diminution du patrimoine : " + diminutionPatrimoine + " Ar");
+
+    int diminutionAttendue = 11000000;
+
+    assertEquals(diminutionAttendue, diminutionPatrimoine, 100,"La diminution du patrimoine de Zety devrait être d'environ 11 000 000 Ar");
+  }
 }
