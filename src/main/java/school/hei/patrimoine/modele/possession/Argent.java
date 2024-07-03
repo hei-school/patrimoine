@@ -31,21 +31,29 @@ public sealed class Argent extends Possession permits Dette, Creance {
     }
 
     return new Argent(
-        nom,
-        dateOuverture,
-        tFutur,
-        valeurComptable - financementsFutur(tFutur),
-        fluxArgents.stream().map(f -> f.projectionFuture(tFutur)).collect(toSet()));
+            nom,
+            dateOuverture,
+            tFutur,
+            valeurComptable - financementsFutur(tFutur),
+            fluxArgents.stream().map(f -> f.projectionFuture(tFutur)).collect(toSet()));
   }
 
   private int financementsFutur(LocalDate tFutur) {
-    return fluxArgents.stream().
-        mapToInt(
-            f -> valeurComptable - f.projectionFuture(tFutur).getArgent().getValeurComptable())
-        .sum();
+    return fluxArgents.stream()
+            .mapToInt(f -> valeurComptable - f.projectionFuture(tFutur).getArgent().getValeurComptable())
+            .sum();
   }
 
   void addFinancés(FluxArgent fluxArgent) {
     fluxArgents.add(fluxArgent);
+  }
+
+  public double conversion(int valeurEnAr, LocalDate dateConversion, LocalDate dateReference) {
+    double tauxChangeInitial = 4821.0;
+    double tauxAppreciationAnnuelle = -0.10;
+
+    double tauxChange = tauxChangeInitial * Math.pow(1 + tauxAppreciationAnnuelle, dateReference.until(dateConversion).getDays() / 365.0);
+
+    return valeurEnAr / tauxChange;
   }
 }
