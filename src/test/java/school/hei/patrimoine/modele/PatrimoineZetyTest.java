@@ -81,7 +81,7 @@ public class PatrimoineZetyTest {
                 .projectionFuture(au17Septembre24)
                 .getValeurComptable();
 
-        log.info("Patrimoine de Zety le 17 septembre 2024: " + valeurComptablePatrimoineZetyAu17Septembre24 + "Ar");
+        log.info("Patrimoine de Zety le 17 septembre 2024: " + valeurComptablePatrimoineZetyAu17Septembre24 + "Ar\n");
 
         assertTrue(valeurComptablePatrimoineZetyAu3juillet24 > valeurComptablePatrimoineZetyAu17Septembre24);
     }
@@ -169,7 +169,7 @@ public class PatrimoineZetyTest {
                 .getValeurComptable();
         var difference = valeurComptablePatrimoineZetyAu17Septembre24 - valeurComptablePatrimoineZetyAu18Septembre24;
         log.info("Patrimoine de Zety le 18 Septembre 2024: " + valeurComptablePatrimoineZetyAu18Septembre24 + "Ar\n" +
-                "      Valeur de diminution de patrimoine de Zety le 18 Septembre 2024: " + difference + "Ar");
+                "      Valeur de diminution de patrimoine de Zety le 18 Septembre 2024: " + difference + "Ar \n");
 
         assertTrue(valeurComptablePatrimoineZetyAu18Septembre24 < valeurComptablePatrimoineZetyAu17Septembre24);
     }
