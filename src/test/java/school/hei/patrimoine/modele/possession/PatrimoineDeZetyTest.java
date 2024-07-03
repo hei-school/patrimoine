@@ -61,10 +61,8 @@ public class PatrimoineDeZetyTest {
         var frais_de_scolarite = new FluxArgent("Frais de scolarite de Zety", argent_ecollage_de_zety, LocalDate.of(2023, NOVEMBER, 1), LocalDate.of(2024, AUGUST, 31), -200_000, 27);
         var compte_bancaire = new FluxArgent("Compte bancaire de Zety", argent_dans_le_compte, au3Juillet24, au17Sept24, -20_000, 25);
 
-        // Emprunt ajouté le 18 septembre 2024
         var emprunt = new Argent("Emprunt de Zety", au18Sept24, 10_000_000);
 
-        // Ajouter la dette
         var dette = new Argent("Dette de Zety", au18Sept24, -11_000_000);
 
         var patrimoine_Zety_le_3_juillet_2024 = new Patrimoine(
