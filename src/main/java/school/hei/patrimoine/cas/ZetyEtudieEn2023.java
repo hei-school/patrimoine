@@ -20,6 +20,9 @@ public class ZetyEtudieEn2023 implements Supplier<Patrimoine> {
     private final LocalDate debutTrainDeVie = LocalDate.of(2024, 10, 1);
     private final LocalDate finTrainDeVie = LocalDate.of(2025, 2, 13);
 
+    private final LocalDate departAllemagne = LocalDate.of(2025, 2, 14);
+    private final LocalDate arriveeAllemagne = LocalDate.of(2025, 2, 15);
+
     private Set<Possession> possessionsZety(Argent compteBancaire) {
         var ordinateur = new Materiel(
                 "Ordinateur",
@@ -88,6 +91,9 @@ public class ZetyEtudieEn2023 implements Supplier<Patrimoine> {
                 1
         );
 
+        var compteBancaireAllemagne = new Argent("Compte Deutsche Bank", arriveeAllemagne, 0);
+        var detteAllemagne = new Dette("Dette Allemagne", arriveeAllemagne, -7000);
+
         return Set.of(
                 ordinateur,
                 vetements,
@@ -98,7 +104,9 @@ public class ZetyEtudieEn2023 implements Supplier<Patrimoine> {
                 emprunt, dette,
                 fraisScolaire2024,
                 donParents,
-                trainDeVie
+                trainDeVie,
+                compteBancaireAllemagne,
+                detteAllemagne
         );
     }
 

@@ -27,13 +27,13 @@ public class EvolutionPatrimoine {
     this.evolutionJournaliere = evolutionJournaliere();
   }
 
-  public EvolutionPatrimoine nouveauDebut(LocalDate nouveauDebut) {
-    return new EvolutionPatrimoine(nom, patrimoine, nouveauDebut, fin);
-  }
-
-  public EvolutionPatrimoine nouvelleFin(LocalDate nouvelleFin) {
-    return new EvolutionPatrimoine(nom, patrimoine, debut, nouvelleFin);
-  }
+//  public EvolutionPatrimoine nouveauDebut(LocalDate nouveauDebut) {
+//    return new EvolutionPatrimoine(nom, patrimoine, nouveauDebut, fin);
+//  }
+//
+//  public EvolutionPatrimoine nouvelleFin(LocalDate nouvelleFin) {
+//    return new EvolutionPatrimoine(nom, patrimoine, debut, nouvelleFin);
+//  }
 
   private Map<LocalDate, Patrimoine> evolutionJournaliere() {
     Map<LocalDate, Patrimoine> evolutionJournaliere = new HashMap<>();
@@ -63,7 +63,15 @@ public class EvolutionPatrimoine {
     return serie;
   }
 
+  public List<Integer> serieValeursComptablesPatrimoine(String devise, Map<String, Double> tauxChange, Map<String, Double> tauxAppreciation) {
+    var serie = new ArrayList<Integer>();
+    dates().forEach(d -> serie.add(evolutionJournaliere.get(d).getValeurComptable(devise, tauxChange, tauxAppreciation)));
+    return serie;
+  }
+
   public Stream<LocalDate> dates() {
     return debut.datesUntil(fin.plusDays(1));
   }
+
+
 }
