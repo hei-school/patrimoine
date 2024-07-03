@@ -4,11 +4,13 @@ import org.junit.jupiter.api.Test;
 import school.hei.patrimoine.modele.possession.Argent;
 import school.hei.patrimoine.modele.possession.FluxArgent;
 import school.hei.patrimoine.modele.possession.GroupePossession;
+import school.hei.patrimoine.modele.possession.Materiel;
 
 import java.time.LocalDate;
+import java.time.Year;
 import java.util.Set;
 
-import static java.time.Month.MAY;
+import static java.time.Month.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class PatrimoineTest {
@@ -83,5 +85,51 @@ class PatrimoineTest {
     assertEquals(500_000, patrimoineIloAu13mai24.projectionFuture(au13mai24.plusDays(10)).getValeurComptable());
     assertEquals(200_000, patrimoineIloAu13mai24.projectionFuture(au13mai24.plusDays(100)).getValeurComptable());
     assertEquals(200_000, patrimoineIloAu13mai24.projectionFuture(au13mai24.plusDays(1_000)).getValeurComptable());
+  }
+
+  @Test
+  void patrimoine_de_zety_au_17_septembre(){
+    var zety = new Personne("Zety");
+    var au03juillet24 = LocalDate.of(2024, JULY, 3);
+    var argent = new Argent("Espèces", au03juillet24, 800_000);
+    var rapport_de_taux_d_appreciation_journaliere = 365;
+    var ordinateur = new Materiel(
+            "Thinkpad",
+            au03juillet24,
+            1_200_000,
+            au03juillet24.minusDays(2),
+            -0.10 / rapport_de_taux_d_appreciation_journaliere);
+    var vetements = new Materiel(
+            "Vetements",
+            au03juillet24,
+            1_500_000,
+            au03juillet24.minusDays(2),
+            -0.10 / rapport_de_taux_d_appreciation_journaliere
+    );
+    var financeur = new Argent("Compte bancaire", au03juillet24, 100_000);
+    var aunovembre23 = LocalDate.of(2023, NOVEMBER, 27);
+    var enaout24 = LocalDate.of(2024, AUGUST, 27);
+
+    var au17septembre24 = LocalDate.of(2024, SEPTEMBER, 17);
+
+    var frais_de_scolarite = new FluxArgent(
+            "Frais de scolarite",
+            financeur, aunovembre23, enaout24, -200_000,
+            27);
+
+    var frais_de_compte = new FluxArgent(
+            "frais de tenue de compte",
+            financeur, au03juillet24, au17septembre24,
+            -20_000, 25
+    );
+
+    var patrimoineZetyAu03Juillet24 = new Patrimoine(
+            "patrimoineZetyAu03Juillet24",
+            zety,
+            au03juillet24,
+            Set.of(ordinateur, vetements, argent, financeur,frais_de_scolarite, frais_de_compte)
+    );
+
+    assertEquals(3_159_845, patrimoineZetyAu03Juillet24.projectionFuture(au17septembre24).getValeurComptable());
   }
 }
