@@ -3,10 +3,7 @@ package school.hei.patrimoine.modele;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.jupiter.api.Test;
-import school.hei.patrimoine.modele.possession.Argent;
-import school.hei.patrimoine.modele.possession.Dette;
-import school.hei.patrimoine.modele.possession.FluxArgent;
-import school.hei.patrimoine.modele.possession.Materiel;
+import school.hei.patrimoine.modele.possession.*;
 
 import java.time.LocalDate;
 import java.util.Set;
@@ -175,5 +172,65 @@ public class PatrimoineZetyTest {
                 "      Valeur de diminution de patrimoine de Zety le 18 Septembre 2024: " + difference + "Ar");
 
         assertTrue(valeurComptablePatrimoineZetyAu18Septembre24 < valeurComptablePatrimoineZetyAu17Septembre24);
+    }
+
+    @Test
+    public void date_ou_zety_na_plus_despeces() {
+        var au3Juillet24 = LocalDate.of(2024, JULY, 3);
+
+        var argentEnEspecesAu3Juillet24 = new Argent(
+                "Espèces",
+                au3Juillet24,
+                800_000
+        );
+        var novembre23 = LocalDate.of(2023, NOVEMBER, 1);
+        var aout24 = LocalDate.of(2024, AUGUST, 28);
+
+        var au17Septembre24 = LocalDate.of(2024, SEPTEMBER, 17);
+
+        var debut2024 = LocalDate.of(2024, JANUARY, 1);
+        var au1octobre24 = LocalDate.of(2024, OCTOBER, 1);
+        var au13fevrier25 = LocalDate.of(2025, FEBRUARY, 13);
+
+        var ensembleDepensesEnEspèces = new GroupePossession(
+                "Depenses en espèces",
+                au3Juillet24,
+                Set.of(
+                        argentEnEspecesAu3Juillet24,
+                        new FluxArgent(
+                                "Frais de scolarité",
+                                argentEnEspecesAu3Juillet24,
+                                novembre23,
+                                aout24,
+                                -200_000,
+                                27
+                        ),
+                        new FluxArgent(
+                                "Don parentaux",
+                                argentEnEspecesAu3Juillet24,
+                                debut2024,
+                                null,
+                                100_000,
+                                15
+                        ),
+                        new FluxArgent(
+                                "Train de vie",
+                                argentEnEspecesAu3Juillet24,
+                                au1octobre24,
+                                au13fevrier25,
+                                -250_000,
+                                1
+                        )
+                )
+        );
+
+        var daysToAdd = 0;
+        while(argentEnEspecesAu3Juillet24.projectionFuture(au3Juillet24.plusDays(daysToAdd)).getValeurComptable() > 0) {
+            daysToAdd++;
+        }
+
+        var dateDeFinEspèces = au3Juillet24.plusDays(daysToAdd);
+        log.info("La date où Zety n'a plus d'espèces: " + dateDeFinEspèces + "\n");
+        assertTrue(dateDeFinEspèces.isAfter(au3Juillet24));
     }
 }
