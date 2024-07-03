@@ -23,4 +23,8 @@ public sealed abstract class Possession implements Serializable /*note(no-serial
   }
 
   public abstract Possession projectionFuture(LocalDate tFutur);
+
+  public int getValeurComptableDevise(String devise) {
+    return 0;
+  }
 }
