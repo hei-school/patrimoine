@@ -2,10 +2,7 @@ package school.hei.patrimoine.cas;
 
 import school.hei.patrimoine.modele.Patrimoine;
 import school.hei.patrimoine.modele.Personne;
-import school.hei.patrimoine.modele.possession.Argent;
-import school.hei.patrimoine.modele.possession.FluxArgent;
-import school.hei.patrimoine.modele.possession.Materiel;
-import school.hei.patrimoine.modele.possession.Possession;
+import school.hei.patrimoine.modele.possession.*;
 
 import java.time.LocalDate;
 import java.util.Set;
@@ -15,8 +12,9 @@ public class ZetyEtudieEn2023 implements Supplier<Patrimoine> {
     private final LocalDate ajd = LocalDate.of(2024, 7, 3);
     private final LocalDate novembre2023 = LocalDate.of(2023, 11, 1);
     private final LocalDate août2024 = LocalDate.of(2024, 8, 31);
+    private final LocalDate debutDette = LocalDate.of(2024, 9, 18);
 
-    private Set<Possession> possessionsZety() {
+    private Set<Possession> possessionsZety(Argent compteBancaire) {
         var ordinateur = new Materiel(
                 "Ordinateur",
                 ajd,
@@ -31,7 +29,7 @@ public class ZetyEtudieEn2023 implements Supplier<Patrimoine> {
                 ajd.minusDays(1),
                 -0.5
         );
-        var argent = new Argent("Espèces", ajd, 800_000);
+        var argent = new Argent("Argent en espèces", ajd, 800_000);
         var fraisScolaire = new FluxArgent(
                 "Frais de scolarité",
                 argent,
@@ -40,8 +38,6 @@ public class ZetyEtudieEn2023 implements Supplier<Patrimoine> {
                 -200_000,
                 27
         );
-        var compteBancaire = new Argent(
-                "Compte bancaire", ajd.minusDays(1), 100_000);
         var tenueCompteBancaire = new FluxArgent(
                 "Tenue de compte",
                 compteBancaire,
@@ -50,17 +46,37 @@ public class ZetyEtudieEn2023 implements Supplier<Patrimoine> {
                 -20_000,
                 25
         );
-        return Set.of(ordinateur, vetements, argent, fraisScolaire, compteBancaire, tenueCompteBancaire);
+        var dette = new Dette("Dette bancaire", debutDette, -11_000_000);
+        var emprunt = new FluxArgent(
+                "Prêt bancaire",
+                compteBancaire,
+                debutDette,
+                debutDette,
+                10_000_000,
+                debutDette.getDayOfMonth()
+        );
+
+        return Set.of(
+                ordinateur,
+                vetements,
+                argent,
+                fraisScolaire,
+                compteBancaire,
+                tenueCompteBancaire,
+                emprunt, dette
+        );
     }
 
     @Override
     public Patrimoine get() {
         var zety = new Personne("Zety");
+        var compteBancaire = new Argent(
+                "Compte bancaire", ajd.minusDays(1), 100_000);
         return new Patrimoine(
                 "Zety",
                 zety,
                 ajd,
-                possessionsZety()
+                possessionsZety(compteBancaire)
         );
     }
 }
