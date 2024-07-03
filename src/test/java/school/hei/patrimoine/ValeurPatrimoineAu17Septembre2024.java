@@ -33,7 +33,6 @@ public class ValeurPatrimoineAu17Septembre2024 {
         int valeurComptableFuture = patrimoineFutur.getValeurComptable();
 
 
-
         assertEquals(3_378_848, valeurComptableFuture);
     }
 }
