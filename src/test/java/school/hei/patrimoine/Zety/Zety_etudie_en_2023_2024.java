@@ -8,7 +8,7 @@ import java.time.temporal.ChronoUnit;
 import static java.time.Month.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class test_zety_etudie_en_2023_2024 {
+class Zety_etudie_en_2023_2024 {
     @Test
     void test_valeur_ordinateur() {
         var dateInitiale = LocalDate.of(2024, JULY, 3);
@@ -61,7 +61,7 @@ class test_zety_etudie_en_2023_2024 {
     }
 
     @Test
-    void testPatrimoineTotal() {
+    void test_Patrimoine_Total_qui_etudie_en_2023_2024() {
         var dateInitiale = LocalDate.of(2024, JULY, 3);
         var dateCible = LocalDate.of(2024, SEPTEMBER, 17);
         var nombreJours = ChronoUnit.DAYS.between(dateInitiale, dateCible);
@@ -70,12 +70,12 @@ class test_zety_etudie_en_2023_2024 {
         var valeurOrdinateurInitiale = 1_200_000;
         var tauxAppréciationJournalierOrdinateur = Math.pow(1 - 0.1, 1.0 / 365);
         var valeurOrdinateurFinale = valeurOrdinateurInitiale * Math.pow(tauxAppréciationJournalierOrdinateur, nombreJours);
-
+        System.out.println(valeurOrdinateurFinale);
         // Vêtements
         var valeurVetementsInitiale = 1_500_000;
         var tauxAppréciationJournalierVetements = Math.pow(1 - 0.5, 1.0 / 365);
         var valeurVetementsFinale = valeurVetementsInitiale * Math.pow(tauxAppréciationJournalierVetements, nombreJours);
-
+        System.out.println(valeurVetementsFinale);
         // Espèces
         var valeurEspecesInitiale = 800_000;
         var fraisScolariteMensuel = 200_000;
@@ -92,4 +92,5 @@ class test_zety_etudie_en_2023_2024 {
         System.out.println("Valeur totale finale calculée : " + valeurTotale);
         assertEquals(2_932_369, valeurTotale);
     }
+
 }
