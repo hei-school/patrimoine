@@ -103,4 +103,52 @@ public class PatrimoineZetyTest {
 
         assertEquals(-1002384, valeurDeDette);
     }
+
+    @Test
+    void calculer_date_epuisement_argent_zety() {
+        var zety = new Personne("Zety");
+        var dateActuelle = LocalDate.of(2024, JULY, 3);
+        var dateLimiteFraisScolarite = LocalDate.of(2024, SEPTEMBER, 21);
+        var dateLimitePaiementScolarite = LocalDate.of(2024, OCTOBER, 1);
+        var dateFinTrainDeVie = LocalDate.of(2025, FEBRUARY, 13);
+
+        var ordinateur = new Materiel("Ordinateur", dateActuelle, 1_200_000, dateActuelle, -0.10);
+        var vetements = new Materiel("Vêtements", dateActuelle, 1_500_000, dateActuelle, -0.50);
+        var argentEspeces = new Argent("Espèces", dateActuelle, 800_000);
+
+        var fraisScolarite = new FluxArgent(
+                "Frais de scolarité", argentEspeces, LocalDate.of(2023, NOVEMBER, 27),
+                LocalDate.of(2024, AUGUST, 27), -200_000, 27);
+
+        var compteBancaire = new Argent("Compte bancaire", dateActuelle, 100_000);
+        var fraisTenueCompte = new FluxArgent(
+                "Frais de tenue de compte", compteBancaire, dateActuelle.withDayOfMonth(25),
+                LocalDate.of(2024, DECEMBER, 25), -20_000, 25);
+
+        var donParents = new FluxArgent(
+                "Don des parents", argentEspeces, LocalDate.of(2024, 1, 15),
+                LocalDate.of(2024, DECEMBER, 15), 100_000, 14);
+
+        var trainDeVie = new FluxArgent(
+                "Train de vie", argentEspeces, dateLimitePaiementScolarite,
+                dateFinTrainDeVie, -250_000, 1);
+
+        var paiementScolarite = new FluxArgent(
+                "Paiement scolarité", compteBancaire, dateLimiteFraisScolarite, dateLimiteFraisScolarite, -2_500_000, 21);
+
+        var patrimoineZetyAu3juillet24 = new Patrimoine(
+                "patrimoineZetyAu3juillet24",
+                zety,
+                dateActuelle,
+                Set.of(ordinateur, vetements, argentEspeces, fraisScolarite, compteBancaire, fraisTenueCompte, donParents, trainDeVie, paiementScolarite));
+
+        LocalDate dateEpuisementEspeces = dateActuelle;
+        while (patrimoineZetyAu3juillet24.projectionFuture(dateEpuisementEspeces).getValeurComptable() > 0) {
+            dateEpuisementEspeces = dateEpuisementEspeces.plusDays(1);
+        }
+
+        assertEquals(LocalDate.of(2024, 12, 1), dateEpuisementEspeces);
+    }
+
+
 }
