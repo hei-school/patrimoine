@@ -11,7 +11,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class PatrimoineZetyTest {
 
-
     @Test
     void valeur_patrimoine_zety_le_17_septembre_2024() {
         var ordinateur = new Materiel("Ordinateur", LocalDate.of(2024, 7, 3), 1_200_000, LocalDate.of(2024, 7, 3), -0.1);
@@ -66,23 +65,23 @@ class PatrimoineZetyTest {
 
         var compteBancaire = new Argent("Compte bancaire", au3juillet24, 100_000);
 
-        var patrimoineZetyAu3juillet24 = new Patrimoine(
+        var patrimoineZetyAu3juillet2024 = new Patrimoine(
                 "Patrimoine de Zety au 3 juillet 2024",
                 zety,
                 au3juillet24,
                 Set.of(ordinateur, vetements, argentEspece, fraisScolarite, compteBancaire));
 
         var detteBancaire = new Dette("Dette bancaire", LocalDate.of(2024, SEPTEMBER, 18), -11_000_000);
-        var possessionsAu18septembre24 = Set.of(ordinateur, vetements, argentEspece, fraisScolarite, compteBancaire, detteBancaire);
+        var possessionsAu18septembre2024 = Set.of(ordinateur, vetements, argentEspece, fraisScolarite, compteBancaire, detteBancaire);
         var patrimoineZetyAu18septembre24 = new Patrimoine(
                 "Patrimoine de Zety au 18 septembre 2024",
                 zety,
                 LocalDate.of(2024, SEPTEMBER, 18),
-                possessionsAu18septembre24);
+                possessionsAu18septembre2024);
 
-        var valeurPatrimoineAu17septembre24 = patrimoineZetyAu3juillet24.projectionFuture(LocalDate.of(2024, SEPTEMBER, 17)).getValeurComptable();
-        var valeurPatrimoineAu18septembre24 = patrimoineZetyAu18septembre24.getValeurComptable();
-        int diminutionPatrimoine = valeurPatrimoineAu18septembre24 - valeurPatrimoineAu17septembre24;
+        var valeurPatrimoineAu17septembre2024 = patrimoineZetyAu3juillet2024.projectionFuture(LocalDate.of(2024, SEPTEMBER, 17)).getValeurComptable();
+        var valeurPatrimoineAu18septembre2024 = patrimoineZetyAu18septembre24.getValeurComptable();
+        int diminutionPatrimoine = valeurPatrimoineAu18septembre2024 - valeurPatrimoineAu17septembre2024;
 
         assertEquals(-10_418_848, diminutionPatrimoine);
 
