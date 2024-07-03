@@ -20,13 +20,11 @@ public abstract sealed class Possession implements Serializable permits
   protected final String nom;
   protected final LocalDate t;
   protected final int valeurComptable;
-  protected final String devise;
 
-  public Possession(String nom, LocalDate t, int valeurComptable, String devise) {
+  public Possession(String nom, LocalDate t, int valeurComptable) {
     this.nom = nom;
     this.t = t;
     this.valeurComptable = valeurComptable;
-    this.devise = devise;
   }
 
   public int getValeurComptable() {
