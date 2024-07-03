@@ -3,10 +3,12 @@ package school.hei.patrimoine.cas.zety;
 import school.hei.patrimoine.modele.Patrimoine;
 import school.hei.patrimoine.modele.Personne;
 import school.hei.patrimoine.modele.possession.Argent;
+import school.hei.patrimoine.modele.possession.Dette;
 import school.hei.patrimoine.modele.possession.FluxArgent;
 import school.hei.patrimoine.modele.possession.Materiel;
 
 import java.time.LocalDate;
+import java.util.SequencedCollection;
 import java.util.Set;
 
 import static java.time.Month.*;
@@ -55,6 +57,21 @@ public class PatrimoineZetyEtudiant {
 
         );
 
+        var dette = new Dette(
+                "dette pour frais de scolarite 2024-2025",
+                LocalDate.of(2024 , SEPTEMBER , 18),
+                -10_000_000
+        );
+
+        var remboursement = new FluxArgent(
+                "remboursement",
+                compteBancaire ,
+                LocalDate.of(2024 , SEPTEMBER , 18),
+                LocalDate.of(2025 , SEPTEMBER , 18),
+                11_000_000 / 365,
+                18
+        );
+
         return new Patrimoine(
                 "zety etduiant",
                 zety,
@@ -64,6 +81,9 @@ public class PatrimoineZetyEtudiant {
                         fraisCompteBancaire,
                         compteBancaire,
                         ordinateur ,
-                        vetement));
+                        vetement,
+                        dette,
+                        remboursement
+                        ));
     }
 }

@@ -5,9 +5,11 @@ import org.junit.jupiter.api.Test;
 import school.hei.patrimoine.modele.Patrimoine;
 import school.hei.patrimoine.modele.Personne;
 import school.hei.patrimoine.modele.possession.Argent;
+import school.hei.patrimoine.modele.possession.Dette;
 import school.hei.patrimoine.modele.possession.FluxArgent;
 import school.hei.patrimoine.modele.possession.Materiel;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.Set;
@@ -23,7 +25,7 @@ public class testPatrimoine {
         var au27Aout2024 = LocalDate.of(24 , AUGUST , 27);
         var espace = new Argent("Espèces", au3juillet24, 800_000);
         var compteBancaire = new Argent("compte" , au3juillet24 , 100_000 );
-        var au17sepembre24 = LocalDate.of(2024 , SEPTEMBER, 24);
+        var au17sepembre24 = LocalDate.of(2024 , SEPTEMBER, 17);
 
         var fraisCompteBancaire = new FluxArgent(
                 "frais compte bancaire",
@@ -64,6 +66,12 @@ public class testPatrimoine {
 
         );
 
+        var dette = new Dette(
+                "dette pour frais de scolarite 2024-2025",
+                LocalDate.of(2024 , SEPTEMBER , 18),
+                -10_000_000
+        );
+
         var depresciationParJour = (0.5 /365) * 1_500_000 ;
         var totalDepreciation = ChronoUnit.DAYS.between(au3juillet24 , au17sepembre24) * depresciationParJour;
         var valeurVetement = 1_500_000 - totalDepreciation;
@@ -72,16 +80,22 @@ public class testPatrimoine {
               "zety etudiante",
               zety,
               au3juillet24,
-              Set.of(fraisDeScolarite , fraisCompteBancaire , ordinateur , vetement , espace , compteBancaire)
+              Set.of(fraisDeScolarite , fraisCompteBancaire , ordinateur , vetement , espace , compteBancaire , dette )
         );
 
         var resteEspece = espace.getValeurComptable() - totalPaye ;
         var resteCompteBancaire = compteBancaire.getValeurComptable() - argentRetirerParLesFrais ;
 
         var patrimoinzValeur = resteEspece + resteCompteBancaire + valeurVetement + valeurpc ;
+        var patrimoineAu17 = zetyPatrimoine.projectionFuture(au17sepembre24).getValeurComptable();
+
+        var patrimoineAu18 = zetyPatrimoine.projectionFuture(LocalDate.of(2024 , SEPTEMBER , 18)).getValeurComptable();
 
 
-        Assertions.assertEquals(patrimoinzValeur ,zetyPatrimoine.projectionFuture(au17sepembre24).getValeurComptable());
+
+       // Assertions.assertEquals(patrimoinzValeur , patrimoineAu17);
+        Assertions.assertEquals((int)patrimoineAu18 ,(int) (patrimoineAu17 - 10_000_000 - depresciationParJour - depresciationParJourPc));
+
 
     }
 }
