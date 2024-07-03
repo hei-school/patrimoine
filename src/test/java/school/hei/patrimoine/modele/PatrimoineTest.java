@@ -122,4 +122,45 @@ class PatrimoineTest {
 
     assertEquals(2978848, patrimoineZetyAu3juillet24.projectionFuture(au17septembre24).getValeurComptable());
   }
+  //la diminution du patrimoine de zety
+  @Test
+  void petrimoine_zety_diminution () {
+    var zety = new Personne("Zety");
+    var au3juillet2024 = LocalDate.of(2024, JULY, 3);
+    var financeur = new Argent("Espèces", au3juillet2024.minusDays(0), au3juillet2024, 200000);
+    var fraisSup = new Argent("Espèces", au3juillet2024.minusDays(0), au3juillet2024, -1526357);
+    var fraisInf = new Argent("Espèces", au3juillet2024.minusDays(0), au3juillet2024, -200000);
+    var requeteBanque = new Argent("Espèces", au3juillet2024.minusDays(0), au3juillet2024, -1976464);
+    var dete = new Argent("Espèces", au3juillet2024.minusDays(0), au3juillet2024, -10000000);
+
+    var ordinateur = new Materiel(
+            "MacBook Pro",
+            au3juillet2024,
+            1_200_000,
+            au3juillet2024.minusDays(46),
+            5);
+
+    var vetement = new Materiel(
+            "Vetement",
+            au3juillet2024,
+            1_500_000,
+            au3juillet2024.minusDays(46),
+            1);
+
+
+    var patrimoineZetyAu17septembre24 = new Patrimoine(
+            "patrimoineZetyAu17septembre24",
+            zety,
+            au3juillet2024,
+            Set.of(
+                    new Argent("Espèces", au3juillet2024, 800_000),
+                    new Argent("Compte bancaire", au3juillet2024, 10_060_000),
+                    new GroupePossession("Le groupe", au3juillet2024, Set.of(requeteBanque ,financeur, ordinateur, vetement, fraisSup, fraisInf, dete))
+            )
+    );
+
+    assertEquals(
+            1002384, patrimoineZetyAu17septembre24.projectionFuture(au3juillet2024.plusDays(46)).getValeurComptable());
+
+  }
 }
