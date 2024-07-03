@@ -126,6 +126,7 @@ public class PatrimoineDeZetyTest {
 
         assertEquals(LocalDate.of(2025, JANUARY, 1), dateEpuisement);
     }
+
     @Test
     void valeur_patrimoine_zety_le_14_fevrier_2025() {
         var zety = new Personne("Zety");
@@ -151,6 +152,33 @@ public class PatrimoineDeZetyTest {
         assertEquals(2_521_314, patrimoineLe14Fevrier2025.getValeurComptable());
     }
 
+    @Test
+    void valeur_patrimoine_zety_le_26_octobre_2025_en_euros() {
+        var zety = new Personne("Zety");
+        var au3juillet2024 = LocalDate.of(2024, JULY, 3);
+        var ordinateur = new Materiel("Ordinateur", au3juillet2024, 1_200_000, au3juillet2024.minusDays(10), -0.1);
+        var vetements = new Materiel("Vetements", au3juillet2024, 1_500_000, au3juillet2024.minusDays(1000), -0.5);
+        var argent_espece = new Argent("Especes", au3juillet2024, 800_000);
+        var frais_scolarite = new FluxArgent("Frais de scolarite", argent_espece, LocalDate.of(2023, NOVEMBER, 1), LocalDate.of(2024, AUGUST, 31), -200_000, 27);
+        var argentCompte = new Argent("Espèces", LocalDate.of(2024, JULY, 3), 100_000);
+        LocalDate dateFinIndefinie = LocalDate.of(3000, DECEMBER, 31);
+        var fraisDeTenueDeCompte = new FluxArgent("Frais de tenue de compte", argent_espece, au3juillet2024.minusDays(2), dateFinIndefinie, -20_000, 25);
+
+        var patrimoineZety = new Patrimoine(
+                "Patrimoine de Zety",
+                zety,
+                au3juillet2024,
+                Set.of(ordinateur, vetements, argentCompte, argent_espece, frais_scolarite, fraisDeTenueDeCompte)
+        );
+
+        LocalDate octobre262025 = LocalDate.of(2025, OCTOBER, 26);
+
+        double valeurEnEuros = patrimoineZety.getValeurEnDevise("EUR", octobre262025);
+
+        double valeurAttendueEnEuros = patrimoineZety.getValeurComptable() / 4800.0;
+
+        assertEquals(valeurAttendueEnEuros, valeurEnEuros, 0.01);
+    }
 }
 
 
