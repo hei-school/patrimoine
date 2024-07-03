@@ -29,11 +29,11 @@ class MaterielTest {
     var pc = new Materiel(
             "pc de Zety",
             au3Juil24,
-            2_000_000,
+            1_200_000,
             au3Juil24.minusDays(2),
             -0.10);
 
     var au17Sept24 = LocalDate.of(2024, SEPTEMBER, 17);
-    assertEquals( 879_781, pc.valeurComptableFuture(au17Sept24));
+    assertEquals( 1_175_013, pc.valeurComptableFuture(au17Sept24));
   }
 }
