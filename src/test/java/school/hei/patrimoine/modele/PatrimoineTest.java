@@ -9,6 +9,7 @@ import school.hei.patrimoine.modele.possession.Possession;
 import school.hei.patrimoine.modele.possession.TransfertArgent;
 import school.hei.patrimoine.modele.possession.Dette;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
@@ -268,4 +269,26 @@ class PatrimoineTest {
 
     System.out.println("Valeur du patrimoine de Zety le " + dateDepart + " : " + valeurTotale + " Ar");
   }
+
+    @Test
+    void testValeurPatrimoineZetyEnEuros() {
+        BigDecimal valeurPatrimoineAR = BigDecimal.valueOf(-7000);
+
+        LocalDate dateInitiale = LocalDate.of(2024, 7, 3);
+        LocalDate dateEvaluation = LocalDate.of(2025, 10, 26);
+        double tauxInitial = 1.0 / 4821;
+        double tauxAppreciationAnnuel = -0.10;
+
+        long joursDifference = dateEvaluation.toEpochDay() - dateInitiale.toEpochDay();
+
+        double tauxAppreciationJournalier = Math.pow(1 + tauxAppreciationAnnuel, 1.0 / 365) - 1;
+        double tauxChange = tauxInitial * Math.pow(1 + tauxAppreciationJournalier, joursDifference);
+
+        BigDecimal valeurEUR = valeurPatrimoineAR.multiply(BigDecimal.valueOf(tauxChange)).setScale(2);
+
+        BigDecimal expectedValueEUR = BigDecimal.valueOf(-1452.81).setScale(2);
+        assertEquals(expectedValueEUR, valeurEUR);
+
+        System.out.println("Valeur du patrimoine de Zety au " + dateEvaluation + " : " + valeurEUR + " EUR");
+    }
 }
