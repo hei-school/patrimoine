@@ -79,4 +79,26 @@ class FluxArgentTest {
     assertEquals(80_000, compteBancaire.projectionFuture(au03Juil24.plusMonths(1)).valeurComptable);
     assertEquals(-140_000, compteBancaire.projectionFuture(au03Juil24.plusYears(1)).valeurComptable);
   }
+
+  @Test
+  void Zety_a_paye_son_frais_de_scolarite_une_seule_fois() {
+    var au21Sep2024 = LocalDate.of(2024, SEPTEMBER, 21);
+
+    var au03Juil24 = LocalDate.of(2024, JULY, 3);
+    var espece = new  Argent("Argent en espèce", au03Juil24, 800_000);
+    var compteBancaire = new Argent("Compte bancaire",  au03Juil24, 100_000);
+
+    var argentParents = new Argent("Argent parents", LocalDate.MIN, 0);
+
+    var totalite = new FluxArgent(
+            "Totalité du frais de scolarité",
+            compteBancaire,
+            au21Sep2024,
+            au21Sep2024,
+            2_500_000,
+            au21Sep2024.getDayOfMonth()
+    );
+    //var donParents = new TransfertArgent();
+
+  }
 }
