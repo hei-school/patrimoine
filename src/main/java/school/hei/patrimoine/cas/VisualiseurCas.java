@@ -12,7 +12,8 @@ public class VisualiseurCas {
     invokeLater(() -> new MainIHM(List.of(
         new PatrimoineEtudiantPireCas().get(),
         new PatrimoineRichePireCas().get(),
-        new PatrimoineRicheMoyenCas().get()
+        new PatrimoineRicheMoyenCas().get(),
+            new PatrimoineZetyCas().get()
     )));
   }
 }
