@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -55,7 +56,7 @@ class ZetyEtudieEn2023Test {
     }
 
     @Test
-    void testZetyRunsOutOfCash() {
+    void zety_n_a_plus_d_argent() {
         ZetyEtudieEn2023 zetyCase = new ZetyEtudieEn2023();
         Patrimoine patrimoine = zetyCase.get();
 
@@ -82,5 +83,21 @@ class ZetyEtudieEn2023Test {
             }
         }
         assertEquals(LocalDate.of(2025, 1, 1), dateNoMoreCash);
+    }
+
+    @Test
+    void zety_part_le_14_fev_2025(){
+        ZetyEtudieEn2023 zety = new ZetyEtudieEn2023();
+        Patrimoine patrimoine = zety.get();
+
+        var evolutionPatrimoine = new EvolutionPatrimoine(
+                "Zety",
+                patrimoine,
+                LocalDate.of(2023, 7, 3),
+                LocalDate.of(2025, 2, 14)
+        );
+        var evolutionJournaliere = evolutionPatrimoine.getEvolutionJournaliere();
+        assertEquals(-1528686, evolutionJournaliere.get(LocalDate.of(2025, 2, 14)).getValeurComptable());
+
     }
 }
