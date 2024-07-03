@@ -122,4 +122,41 @@ class PatrimoineTest {
     var diminutionPatrimoine = projectionAu17Septembre.getValeurComptable() - projectionAu18Septembre.getValeurComptable();
     assertEquals(1002384, diminutionPatrimoine);
   }
+  @Test
+  void zety_etudie_en_2024() {
+    int argentInitial = 0;
+    int fraisScolarite = 2_500_000;
+    int donMensuel = 100_000;
+    int trainDeVieMensuel = 250_000;
+
+    int argentDisponible = argentInitial;
+    argentDisponible -= fraisScolarite;
+    argentDisponible += donMensuel;
+    argentDisponible += donMensuel;
+    argentDisponible -= trainDeVieMensuel;
+    argentDisponible += donMensuel;
+    argentDisponible -= trainDeVieMensuel;
+    argentDisponible += donMensuel;
+    argentDisponible -= trainDeVieMensuel;
+
+    argentDisponible += donMensuel;
+    argentDisponible -= trainDeVieMensuel;
+
+    assertEquals(-3_000_000, argentDisponible, "zety espce");
+  }
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
