@@ -27,12 +27,8 @@ public sealed abstract class Possession implements Serializable /*note(no-serial
 
 	public abstract Possession projectionFuture(LocalDate tFutur);
 
-	public final int getValeurComptable(Devise devise, LocalDate tFutur) {
-		double valeurEnAriaryATempsT = devise.valeurEnAriary(tFutur);
-		if (ARIARY.equals(this.devise)) {
-			return (int) (this.valeurComptable / valeurEnAriaryATempsT);
-		} else {
-			return (int) ((this.valeurComptable * this.devise.valeurEnAriary(tFutur)) / valeurEnAriaryATempsT);
-		}
+	public final int getValeurComptable(Devise autreDevise, LocalDate tFutur) {
+		double valeurEnAriaryAutreDeviseATempsT = autreDevise.valeurEnAriary(tFutur);
+		return (int) ((this.valeurComptable * this.devise.valeurEnAriary(tFutur)) / valeurEnAriaryAutreDeviseATempsT);
 	}
 }
