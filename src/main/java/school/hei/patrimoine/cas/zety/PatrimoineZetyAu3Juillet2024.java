@@ -3,6 +3,7 @@ package school.hei.patrimoine.cas.zety;
 import static java.time.Month.AUGUST;
 import static java.time.Month.JULY;
 import static java.time.Month.NOVEMBER;
+import static java.time.Month.SEPTEMBER;
 
 import java.time.LocalDate;
 import java.util.Set;
@@ -10,13 +11,17 @@ import java.util.function.Supplier;
 import school.hei.patrimoine.modele.Patrimoine;
 import school.hei.patrimoine.modele.Personne;
 import school.hei.patrimoine.modele.possession.Argent;
+import school.hei.patrimoine.modele.possession.Dette;
 import school.hei.patrimoine.modele.possession.FluxArgent;
+import school.hei.patrimoine.modele.possession.GroupePossession;
 import school.hei.patrimoine.modele.possession.Materiel;
 import school.hei.patrimoine.modele.possession.Possession;
 
 public class PatrimoineZetyAu3Juillet2024 implements Supplier<Patrimoine> {
 
 	public static final LocalDate AU_3_JUILLET_2024 = LocalDate.of(2024, JULY, 3);
+	public static final LocalDate AU_18_SEPTEMBRE_2024 = LocalDate.of(2024, SEPTEMBER, 18);
+	public static final LocalDate AU_18_SEPTEMBRE_2025 = LocalDate.of(2025, SEPTEMBER, 18);
 
 	private Argent compteBancaire() {
 		return new Argent("compte bancaire argent", AU_3_JUILLET_2024, 100_000);
@@ -40,6 +45,17 @@ public class PatrimoineZetyAu3Juillet2024 implements Supplier<Patrimoine> {
 		return Set.of(ordinateur, vêtements, espèces, compteBancaire);
 	}
 
+	private static Set<Possession> possessionsRajoutéesLe18Septembre2024(Argent compteBancaire) {
+		LocalDate dateDePriseDeffetDette = AU_18_SEPTEMBRE_2024;
+		LocalDate dateDeRemboursementDette = AU_18_SEPTEMBRE_2025;
+		int valeurDetteARembourser = -11_000_000;
+		var dette = new Dette("dette de 10M", dateDePriseDeffetDette, valeurDetteARembourser);
+		new FluxArgent("remboursement de la dette", compteBancaire, dateDeRemboursementDette, dateDeRemboursementDette, valeurDetteARembourser, dateDeRemboursementDette.getDayOfMonth());
+		int valeurDetteRajoutéeAuCompte = 10_000_000;
+		new FluxArgent("flux de la dette", compteBancaire, dateDePriseDeffetDette, dateDePriseDeffetDette, valeurDetteRajoutéeAuCompte, dateDePriseDeffetDette.getDayOfMonth());
+		return Set.of(dette);
+	}
+
 	@Override
 	public Patrimoine get() {
 		var zety = new Personne("zety");
@@ -50,5 +66,18 @@ public class PatrimoineZetyAu3Juillet2024 implements Supplier<Patrimoine> {
 
 		Set<Possession> possessionsDu3Juillet = possessionsDu3Juillet2024(ordinateur, vêtements, espèces, compteBancaire);
 		return new Patrimoine("zety au 3 juillet 2024", zety, AU_3_JUILLET_2024, possessionsDu3Juillet);
+	}
+
+	public Patrimoine zetySendette() {
+		var zety = new Personne("zety");
+		var ordinateur = ordinateur();
+		var vêtements = vêtements();
+		var espèces = espèces();
+		var compteBancaire = compteBancaire();
+		GroupePossession possessionsDu3Juillet = new GroupePossession("possessions du 3 Juillet", AU_3_JUILLET_2024, possessionsDu3Juillet2024(ordinateur, vêtements, espèces, compteBancaire));
+		GroupePossession possessionsRajoutéesLe18Septembre = new GroupePossession("possessions ajoutées le 18 Septembre 2024", AU_18_SEPTEMBRE_2024, possessionsRajoutéesLe18Septembre2024(compteBancaire));
+
+		return new Patrimoine("zety au 18 Septembre 2024", zety, AU_18_SEPTEMBRE_2024, Set.of(possessionsDu3Juillet, possessionsRajoutéesLe18Septembre))
+			.projectionFuture(AU_18_SEPTEMBRE_2024);
 	}
 }
