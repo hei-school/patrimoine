@@ -36,6 +36,21 @@ class MaterielTest {
     );
 
     var au17Septembre2024 = LocalDate.of(2024,SEPTEMBER,17);
-    assertEquals(1175013,ordi.valeurComptableFuture(au17Septembre2024));
+    assertEquals(1_175_013,ordi.valeurComptableFuture(au17Septembre2024));
+  }
+  @Test
+  void vetement_zety_s_appercie_negativement_dans_le_futur(){
+    var au3Juillet2024 = LocalDate.of(2024,JULY,3);
+
+    var vetement = new Materiel(
+            "Vetement",
+            au3Juillet2024,
+            1_500_000,
+            au3Juillet2024.minusDays(2),
+            -0.50
+    );
+
+    var au17Septembre2024 = LocalDate.of(2024,SEPTEMBER,17);
+    assertEquals(1_343_835,vetement.valeurComptableFuture(au17Septembre2024));
   }
 }
