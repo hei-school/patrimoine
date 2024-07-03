@@ -22,7 +22,7 @@ public final class Materiel extends Possession {
       return new Materiel(nom, tFutur, 0, dateAcquisition, tauxDAppreciationAnnuelle);
     }
     var joursEcoules = DAYS.between(t, tFutur);
-    double valeurAjouteeJournaliere = valeurComptable * (tauxDAppreciationAnnuelle / 365.);
+    double valeurAjouteeJournaliere = valeurComptable * (tauxDAppreciationAnnuelle / 365);
     int valeurComptableFuture = max(0, (int) (valeurComptable + valeurAjouteeJournaliere * joursEcoules));
     return new Materiel(nom, tFutur, valeurComptableFuture, dateAcquisition, tauxDAppreciationAnnuelle);
   }
