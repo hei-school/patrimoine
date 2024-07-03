@@ -1,9 +1,7 @@
 package school.hei.patrimoine.modele;
 
 import org.junit.jupiter.api.Test;
-import school.hei.patrimoine.modele.possession.Argent;
-import school.hei.patrimoine.modele.possession.FluxArgent;
-import school.hei.patrimoine.modele.possession.GroupePossession;
+import school.hei.patrimoine.modele.possession.*;
 
 import java.time.LocalDate;
 import java.util.Set;
@@ -154,4 +152,29 @@ class PatrimoineTest {
     assertEquals(100000,patrimoineZetyau3Juillet2024.projectionFuture(au3July2024.plusDays(20)).getValeurComptable());
     assertEquals(-240000,patrimoineZetyau3Juillet2024.projectionFuture(au3July2024.plusDays(562)).getValeurComptable());
   }
+  @Test
+  void patrimoine_zety_avec_dette_entre_17_et_18_septembre_2024() {
+    var zety = new Personne("Zety");
+    var au17septembre24 = LocalDate.of(2024, SEPTEMBER, 17);
+    var au18septembre24 = LocalDate.of(2024, SEPTEMBER, 18);
+
+    var ordinateur = new Materiel("Ordinateur", au17septembre24, 1_200_000, au17septembre24, -0.10);
+    var vetements = new Materiel("Vêtements", au17septembre24, 1_500_000, au17septembre24, -0.50);
+    var argentEspeces = new Argent("Espèces", au17septembre24, 800_000);
+    var compteBancaire = new Argent("Compte bancaire", au17septembre24, 100_000);
+
+    var fluxArgentPret = new FluxArgent("Prêt bancaire", compteBancaire, au18septembre24, au18septembre24.plusYears(1), 10_000_000, 18);
+    var dette = new Dette("Dette bancaire", au18septembre24, -11_000_000);
+
+    var patrimoineZetyAu17septembre24 = new Patrimoine("patrimoineZetyAu17septembre24", zety, au17septembre24, Set.of(ordinateur, vetements, argentEspeces, compteBancaire));
+    var patrimoineZetyAu18septembre24 = new Patrimoine("patrimoineZetyAu18septembre24", zety, au18septembre24, Set.of(ordinateur, vetements, argentEspeces, compteBancaire, fluxArgentPret, dette));
+
+    int valeurPatrimoine17septembre = patrimoineZetyAu17septembre24.getValeurComptable();
+    int valeurPatrimoine18septembre = patrimoineZetyAu18septembre24.getValeurComptable();
+
+    int diminutionValeur = valeurPatrimoine18septembre - valeurPatrimoine17septembre;
+
+    assertEquals(-11000000, diminutionValeur);
+  }
+
 }
