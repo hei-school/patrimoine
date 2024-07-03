@@ -3,7 +3,6 @@ package school.hei.patrimoine.modele;
 import org.junit.Test;
 import school.hei.patrimoine.modele.possession.Argent;
 import school.hei.patrimoine.modele.possession.Materiel;
-import school.hei.patrimoine.modele.possession.Possession;
 
 import java.time.LocalDate;
 import java.util.Set;
@@ -71,5 +70,4 @@ public class PatrimoineZetyTest {
 
         assertEquals(expectedTotalValue, patrimoine_de_zety.projectionFuture(date17Septembre2024).getValeurComptable());
     }
-
-    }
+ }
