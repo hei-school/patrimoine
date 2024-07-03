@@ -71,6 +71,8 @@ class EvolutionPatrimoineTest {
         var evolutionPatrimoineZety = new EvolutionPatrimoine("patrimoine evolue", patrimoineZety, au2juillet24, au17septembre24);
 
         var evolutionJournaliere = evolutionPatrimoineZety.getEvolutionJournaliere();
+
+        //patrimoine de zety au 17 septembre 2024
         assertEquals(0, evolutionJournaliere.get(LocalDate.of(2024, JULY, 2)).getValeurComptable());
         assertEquals(patrimoineZety.getValeurComptable(), evolutionJournaliere.get(au3juillet24).getValeurComptable());
         assertEquals(460_000, evolutionJournaliere.get(au17septembre24).getValeurComptable());
@@ -82,8 +84,6 @@ class EvolutionPatrimoineTest {
         var coutPret = 1_000_000;
         var dette = empruntBanque.getFluxMensuel() + coutPret;
         var au18septembre25 = au18septembre24.plusYears(1);
-        var daysBetween = ChronoUnit.DAYS.between(au18septembre24, au18septembre25);
-        var banqueDette = new Argent("dette banque", au18septembre25, dette);
         var endettement = new FluxArgent("argent à rendre à la banque", compteBancaire, au18septembre24, au18septembre25, -dette, au18septembre25.getDayOfMonth());
 
         ensemblePatrimoine.add(empruntBanque);
@@ -92,6 +92,8 @@ class EvolutionPatrimoineTest {
         var evolutionPatrimoineZety18Septembre25 = new EvolutionPatrimoine("nom", patrimoineZety, au2juillet24, au18septembre25);
         var evolution = evolutionPatrimoineZety18Septembre25.getEvolutionJournaliere();
         var valeurDiminue = Math.abs(evolution.get(au18septembre24).getValeurComptable() - evolution.get(au17septembre24).getValeurComptable());
+
+        //valeur de diminution le 18 septembre 2024
         assertEquals(1_000_000, valeurDiminue);
 
 
@@ -110,12 +112,14 @@ class EvolutionPatrimoineTest {
         var au1Janvier2025 = LocalDate.of(2025, JANUARY, 1);
         var au14Janvier2025 = LocalDate.of(2025, JANUARY, 14);
 
-
+        // date  patrimoine est à 0
         assertEquals(0, especes.projectionFuture(au1Janvier2025).getValeurComptable());
         assertEquals(0, especes.projectionFuture(au14Janvier2025).getValeurComptable());
 
-        var au14Fevrier25=LocalDate.of(2025,FEBRUARY,14);
-        assertEquals(-44640000,evolution.get(au14Fevrier25).getValeurComptable());
+        var au14Fevrier25 = LocalDate.of(2025, FEBRUARY, 14);
+
+        //patrimoine de zety au 14 février 2025
+        assertEquals(-44640000, evolution.get(au14Fevrier25).getValeurComptable());
 
 
     }
