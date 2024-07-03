@@ -65,18 +65,20 @@ class PatrimoineDeZetyTest {
 	@Test
 	void zety_étudie_en_2024_2025() {
 		var argentEnEspècesDeZetyEn20242025 = argentEnEspècesDeZetyEn20242025();
-
 		log.debug("montant valeur comptable 2024 2025 {} ", argentEnEspècesDeZetyEn20242025.getValeurComptable());
 		LocalDate dayOfFailureFrom18September = LocalDate.of(2024, SEPTEMBER, 18);
-		for (int i = 0; true; i++) {
+
+		int i = 0;
+		do {
 			LocalDate tFutur = dayOfFailureFrom18September.plusDays(i);
 			var argentEnEspècesProjeté = argentEnEspècesDeZetyEn20242025.projectionFuture(tFutur);
-			log.debug("à t={} montant = {}", argentEnEspècesProjeté.getValeurComptable(),tFutur);
+			log.debug("à t={} montant = {}", argentEnEspècesProjeté.getValeurComptable(), tFutur);
 			if (argentEnEspècesProjeté.getValeurComptable() <= 0) {
 				dayOfFailureFrom18September = tFutur;
 				break;
 			}
-		}
+			i++;
+		} while (true);
 
 		assertEquals(LocalDate.of(2025, JANUARY, 1), dayOfFailureFrom18September);
 	}
