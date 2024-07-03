@@ -227,4 +227,43 @@ class PatrimoineTest {
     }
     assertEquals(LocalDate.of(2024, DECEMBER, 1), dateEpuisementEspeces);
   }
+  @Test
+  void valeurPatrimoine_le14Fevrier2025(){
+    var Zety = new Personne("Zety");
+    var au3juillet24 = LocalDate.of(2024,JULY,3);
+    var au13fevrier25 = LocalDate.of(2025,FEBRUARY,13);
+    var au1octobre24 = LocalDate.of(2024,OCTOBER,1);
+    var au21septembre24 = LocalDate.of(2024,SEPTEMBER,21);
+    var au14Fevrier2025 = LocalDate.of(2025,FEBRUARY,14);
+
+    var ordinateur = new Materiel("Ordinateur", au3juillet24, 1_200_000, au3juillet24, -0.10);
+    var vetements = new Materiel("Vêtements", au3juillet24, 1_500_000, au3juillet24, -0.50);
+    var argentEspeces = new Argent("Espèces", au3juillet24, 800_000);
+
+    var fraisScolarite = new FluxArgent(
+            "Frais de scolarité", argentEspeces, LocalDate.of(2023, NOVEMBER, 27),
+            LocalDate.of(2024, AUGUST, 27), -200_000, 27);
+
+    var compteBancaire = new Argent("Compte bancaire", au3juillet24, 100_000);
+    var fraisTenueCompte = new FluxArgent(
+            "Frais de tenue de compte", compteBancaire, au3juillet24.withDayOfMonth(25),
+            LocalDate.of(2024, DECEMBER, 25), -20_000, 25);
+
+    var donParents = new FluxArgent(
+            "Don des parents", argentEspeces, au3juillet24,
+            LocalDate.of(2024, DECEMBER, 15), 100_000, 15);
+
+    var trainDeVie = new FluxArgent(
+            "Train de vie", argentEspeces, au1octobre24,
+            au13fevrier25, -250_000, 1);
+
+    var paiementScolarite = new FluxArgent(
+            "Paiement scolarité", compteBancaire, au21septembre24, au21septembre24, -2_500_000, 21);
+
+    var patrimoineZety = new Patrimoine("patrimoine zety",Zety,au14Fevrier2025,Set.of(ordinateur,vetements,argentEspeces,fraisScolarite,fraisTenueCompte,donParents,trainDeVie));
+
+    double valeurComptable = patrimoineZety.getValeurComptable();
+
+    assertEquals(3500000,valeurComptable);
+  }
 }
