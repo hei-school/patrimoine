@@ -24,7 +24,6 @@ public class Espece {
                 .sum();
 
         while (especesRestantes >= 0) {
-            // Appliquer les flux financiers
             for (Possession possession : patrimoineZety.possessions()) {
                 if (possession instanceof FluxArgent) {
                     FluxArgent flux = (FluxArgent) possession;
