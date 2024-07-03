@@ -237,4 +237,35 @@ class PatrimoineTest {
     assertNotNull(dateSansEspeces, "Zety devrait se retrouver sans espèces à un moment donné");
     System.out.println("Zety n'a plus d'espèces à partir du : " + dateSansEspeces);
   }
+
+  @Test
+  public void testPatrimoineAvantDepart() {
+    LocalDate dateDebut = LocalDate.of(2024, 1, 1);
+    LocalDate dateDepart = LocalDate.of(2025, 2, 14);
+
+    Argent compteBancaire = new Argent("Compte bancaire", dateDebut, 3600000);
+    Argent especes = new Argent("Espèces", dateDebut, 0);
+
+    LocalDate datePaiementScolarite = LocalDate.of(2024, 9, 21);
+    FluxArgent paiementScolarite = new FluxArgent("Frais de scolarité", compteBancaire, datePaiementScolarite, datePaiementScolarite, -2500000, datePaiementScolarite.getDayOfMonth());
+
+    TransfertArgent donParents = new TransfertArgent("Don parents", compteBancaire, especes, dateDebut, dateDepart, 100000, 15);
+
+    LocalDate dateDebutDepenses = LocalDate.of(2024, 10, 1);
+    LocalDate dateFinDepenses = LocalDate.of(2025, 2, 13);
+    FluxArgent depensesMensuelles = new FluxArgent("Dépenses mensuelles", especes, dateDebutDepenses, dateFinDepenses, -250000, 1);
+
+    GroupePossession patrimoine = new GroupePossession("Patrimoine Zety", dateDebut, Set.of(compteBancaire, especes, paiementScolarite, donParents, depensesMensuelles));
+
+    Possession patrimoineProjection = patrimoine.projectionFuture(dateDepart);
+
+    assertTrue(patrimoineProjection instanceof GroupePossession, "La projection devrait être un GroupePossession");
+    GroupePossession groupeProjection = (GroupePossession) patrimoineProjection;
+
+    double valeurTotale = groupeProjection.getPossessions().stream()
+            .mapToDouble(Possession::getValeurComptable)
+            .sum();
+
+    System.out.println("Valeur du patrimoine de Zety le " + dateDepart + " : " + valeurTotale + " Ar");
+  }
 }
