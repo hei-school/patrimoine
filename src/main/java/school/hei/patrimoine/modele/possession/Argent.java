@@ -18,7 +18,7 @@ public sealed class Argent extends Possession permits Dette, Creance {
     this(nom, dateOuverture, t, valeurComptable, new HashSet<>());
   }
 
-  private Argent(
+  public Argent(
       String nom,
       LocalDate dateOuverture,
       LocalDate t,
