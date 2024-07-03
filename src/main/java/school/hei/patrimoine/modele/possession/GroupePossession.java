@@ -10,7 +10,7 @@ public final class GroupePossession extends Possession {
   private final Set<Possession> possessions;
 
   public GroupePossession(String nom, LocalDate t, Set<Possession> possessions) {
-    super(nom, t, possessions.stream().mapToInt(Possession::getValeurComptable).sum());
+    super(nom, t, possessions.stream().mapToInt(Possession::getValeurComptable).sum(), null);
     this.possessions = possessions;
   }
 

@@ -9,7 +9,7 @@ public final class AchatMaterielAuComptant extends Possession {
 
   public AchatMaterielAuComptant(
       String nom, LocalDate dateAchat, int valeurComptableALAchat, double tauxAppreciationAnnuelle, Argent financeur) {
-    super(nom, dateAchat, valeurComptableALAchat);
+    super(nom, dateAchat, valeurComptableALAchat, null);
     this.achatCommeGroupe = new GroupePossession(
         nom,
         dateAchat,
