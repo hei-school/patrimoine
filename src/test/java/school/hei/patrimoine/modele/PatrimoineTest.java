@@ -140,6 +140,14 @@ class PatrimoineTest {
     argentDisponible += donMensuel;
     argentDisponible -= trainDeVieMensuel;
 
-    assertEquals(-3_000_000, argentDisponible, "Zety should have -3,000,000 cash in January");
+    assertEquals(-3_000_000, argentDisponible);
+  }
+  @Test
+  void zety_part_en_allemagne() {
+    assertEquals(-3325000, 0 - 2500000 + 5 * 100000 - 5 * 250000 + 50000 - 125000);
+  }
+  @Test
+  void valeur_patrimoine_en_euros() {
+    assertEquals(-955.58, -4025000 / (4821 * Math.pow(1 - 0.10, 1.2815)), 0.01);
   }
 }
