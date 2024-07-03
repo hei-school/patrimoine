@@ -88,7 +88,7 @@ class PatrimoineTest {
   }
 
 
-
+/* --------------------------------------------------------------------------------------------------------- */
 
   /* 1ere Partie */
 
@@ -174,4 +174,96 @@ class PatrimoineTest {
             1002384, patrimoineZetyAu17septembre24.projectionFuture(au3juillet2024.plusDays(46)).getValeurComptable());
 
   }
-}
+
+
+    /* 3eme Partie */
+    @Test
+    void patrimoine_zety_17_septembre_zero () {
+      var zety = new Personne("Zety");
+      var au3juillet2024 = LocalDate.of(2024, JULY, 3);
+      var financeur = new Argent("Espèces", au3juillet2024.minusDays(0), au3juillet2024, 200000);
+      var fraisSup = new Argent("Espèces", au3juillet2024.minusDays(0), au3juillet2024, -1526357);
+      var fraisInf = new Argent("Espèces", au3juillet2024.minusDays(0), au3juillet2024, -200000);
+      var requeteBanque = new Argent("Espèces", au3juillet2024.minusDays(0), au3juillet2024, -1976464);
+      var dete = new Argent("Espèces", au3juillet2024.minusDays(0), au3juillet2024, -10000000);
+      var valeurFinale = new Argent("Espèces", au3juillet2024.minusDays(0), au3juillet2024, 9857616);
+
+      var ordinateur = new Materiel(
+              "MacBook Pro",
+              au3juillet2024,
+              1_200_000,
+              au3juillet2024.minusDays(46),
+              5);
+
+      var vetement = new Materiel(
+              "Vetement",
+              au3juillet2024,
+              1_500_000,
+              au3juillet2024.minusDays(46),
+              1);
+
+      var patrimoineZetyAu17septembre24 = new Patrimoine(
+              "patrimoineZetyAu17septembre24",
+              zety,
+              au3juillet2024,
+              Set.of(
+                      new Argent("Espèces", au3juillet2024, 0),
+                      new Argent("Compte bancaire", au3juillet2024, 0),
+                      new GroupePossession("Le groupe", au3juillet2024, Set.of(requeteBanque, financeur, ordinateur, valeurFinale, vetement, fraisSup, fraisInf, dete))
+              )
+      );
+
+      assertEquals(
+              0, patrimoineZetyAu17septembre24.projectionFuture(au3juillet2024.plusDays(46)).getValeurComptable());
+    }
+
+
+
+
+    /* 4eme Partie */
+    @Test
+    void patrimoine_zety_18_septembre_negatif () {
+      var zety = new Personne("Zety");
+      var au3juillet2024 = LocalDate.of(2024, JULY, 3);
+      var financeur = new Argent("Espèces", au3juillet2024.minusDays(0), au3juillet2024, 200000);
+      var fraisSup = new Argent("Espèces", au3juillet2024.minusDays(0), au3juillet2024, -1526357);
+      var fraisInf = new Argent("Espèces", au3juillet2024.minusDays(0), au3juillet2024, -200000);
+      var requeteBanque = new Argent("Espèces", au3juillet2024.minusDays(0), au3juillet2024, -1976464);
+      var valeurFinale = new Argent("Espèces", au3juillet2024.minusDays(0), au3juillet2024, 8308383);
+      var dete = new Argent("Espèces", au3juillet2024.minusDays(0), au3juillet2024, -10000000);
+
+      var ordinateur = new Materiel(
+              "MacBook Pro",
+              au3juillet2024,
+              1_200_000,
+              au3juillet2024.minusDays(46),
+              5);
+
+      var vetement = new Materiel(
+              "Vetement",
+              au3juillet2024,
+              1_500_000,
+              au3juillet2024.minusDays(46),
+              1);
+
+      var patrimoineZetyAu17septembre24 = new Patrimoine(
+              "patrimoineZetyAu17septembre24",
+              zety,
+              au3juillet2024,
+              Set.of(
+                      new Argent("Espèces", au3juillet2024, 0),
+                      new Argent("Compte bancaire", au3juillet2024, 0),
+                      new GroupePossession("Le groupe", au3juillet2024, Set.of(requeteBanque, financeur,valeurFinale, ordinateur, vetement, fraisSup, fraisInf, dete))
+              )
+      );
+
+      assertEquals(
+              -1528686, patrimoineZetyAu17septembre24.projectionFuture(au3juillet2024.plusDays(47)).getValeurComptable());
+    }
+
+
+
+  }
+
+
+
