@@ -8,6 +8,7 @@ import school.hei.patrimoine.modele.possession.GroupePossession;
 import java.time.LocalDate;
 import java.util.Set;
 
+import static java.time.Month.JULY;
 import static java.time.Month.MAY;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -83,5 +84,23 @@ class PatrimoineTest {
     assertEquals(500_000, patrimoineIloAu13mai24.projectionFuture(au13mai24.plusDays(10)).getValeurComptable());
     assertEquals(200_000, patrimoineIloAu13mai24.projectionFuture(au13mai24.plusDays(100)).getValeurComptable());
     assertEquals(200_000, patrimoineIloAu13mai24.projectionFuture(au13mai24.plusDays(1_000)).getValeurComptable());
+  }
+  @Test
+  void patrimoine_a_de_l_argent_zety(){
+    var Zety = new Personne("Zety");
+
+    var au3Juillet2024 = LocalDate.of(2024,JULY,3);
+
+    var patrimoineZetyau3Juillet2024 = new Patrimoine(
+            "patrimoine zety au 3 july",
+            Zety,
+            au3Juillet2024,
+            Set.of(
+                new Argent("especes",au3Juillet2024,800_000),
+                    new Argent("compte bancaire",au3Juillet2024,100_000)
+            )
+    );
+    assertEquals(900_000,patrimoineZetyau3Juillet2024.getValeurComptable());
+
   }
 }
