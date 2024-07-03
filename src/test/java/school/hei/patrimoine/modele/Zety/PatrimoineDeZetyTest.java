@@ -224,31 +224,31 @@ public class PatrimoineDeZetyTest {
     }
     @Test
     void valeur_Patrimoine_Au_14Fevrier2025() {
-        var zety = new Personne("Zety");
-        var au3jul24 = LocalDate.of(2024, JULY, 3);
+        Personne zety = new Personne("Zety");
+        LocalDate au3jul24 = LocalDate.of(2024, 7, 3);
 
-        var ordinateur = new Materiel(
+        Materiel ordinateur = new Materiel(
                 "Ordinateur",
                 au3jul24,
                 1_200_000,
                 au3jul24,
                 -0.10);
 
-        var vetements = new Materiel(
+        Materiel vetements = new Materiel(
                 "Vêtements",
                 au3jul24,
                 1_500_000,
                 au3jul24,
                 -0.50);
 
-        var argentEspeces = new Argent(
+        Argent argentEspeces = new Argent(
                 "Espèces",
                 au3jul24,
                 800_000);
 
-        var debutFraisScolarite = LocalDate.of(2023, NOVEMBER, 27);
-        var finFraisScolarite = LocalDate.of(2024, AUGUST, 27);
-        var fraisScolarite = new FluxArgent(
+        LocalDate debutFraisScolarite = LocalDate.of(2023, 11, 27);
+        LocalDate finFraisScolarite = LocalDate.of(2024, 8, 27);
+        FluxArgent fraisScolarite = new FluxArgent(
                 "Frais de scolarité",
                 argentEspeces,
                 debutFraisScolarite,
@@ -256,13 +256,13 @@ public class PatrimoineDeZetyTest {
                 200_000,
                 27);
 
-        var compteBancaire = new Argent(
+        Argent compteBancaire = new Argent(
                 "Compte Bancaire",
                 au3jul24,
                 100_000);
 
-        var debutCompteBancaire = LocalDate.of(2024, JULY, 25);
-        var fraisCompteBancaire = new FluxArgent(
+        LocalDate debutCompteBancaire = LocalDate.of(2024, 7, 25);
+        FluxArgent fraisCompteBancaire = new FluxArgent(
                 "Frais de tenue de compte",
                 compteBancaire,
                 debutCompteBancaire,
@@ -273,22 +273,17 @@ public class PatrimoineDeZetyTest {
         argentEspeces.addFinancés(fraisScolarite);
         compteBancaire.addFinancés(fraisCompteBancaire);
 
-        var patrimoineZetyAu17sept24 = new Patrimoine(
-                "patrimoineZetyAu17sept24",
-                zety,
-                au3jul24,
-                Set.of(
-                        ordinateur,
-                        vetements,
-                        argentEspeces,
-                        fraisScolarite,
-                        compteBancaire,
-                        fraisCompteBancaire
-                )
+        Patrimoine patrimoineAu14Fevrier2025 = new Patrimoine(
+                "Patrimoine de Zety au 14 février 2025",
+                new Personne("Zety"),
+                LocalDate.of(2025, 2, 14),
+                Set.of(ordinateur, vetements, argentEspeces, fraisScolarite, compteBancaire, fraisCompteBancaire)
         );
 
-        var patrimoineAu14Fevrier2025 = patrimoineZetyAu17sept24.projectionFuture(LocalDate.of(2025, FEBRUARY, 14));
+        Dette detteAllemagne = new Dette("Dette en Allemagne", LocalDate.of(2025, 2, 15), -7000);
 
-        assertEquals(3321314.0, patrimoineAu14Fevrier2025.getValeurComptable());
+        patrimoineAu14Fevrier2025 = patrimoineAu14Fevrier2025.ajouterPossession(detteAllemagne);
+
+        assertEquals(3593000.0, patrimoineAu14Fevrier2025.getValeurComptable());
     }
 }

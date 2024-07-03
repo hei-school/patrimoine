@@ -34,4 +34,18 @@ public record Patrimoine(
         nouvellesPossessions.add(nouvellePossession);
         return new Patrimoine(nom, possesseur, t, nouvellesPossessions);
     }
+
+    public double getValeurComptableEnDevise(String devise, LocalDate dateEvaluation, double tauxChangeInitial, double tauxAppreciationAnnuelle) {
+
+        double tauxChange = tauxChangeInitial * Math.pow(1 + tauxAppreciationAnnuelle, t.until(dateEvaluation).getDays());
+
+        double valeurComptableEnEuro = getValeurComptable() * tauxChange;
+
+        if ("Euro".equalsIgnoreCase(devise)) {
+            return valeurComptableEnEuro;
+        } else {
+
+            throw new UnsupportedOperationException("Conversion vers d'autres devises n'est pas encore implémentée.");
+        }
+    }
 }
