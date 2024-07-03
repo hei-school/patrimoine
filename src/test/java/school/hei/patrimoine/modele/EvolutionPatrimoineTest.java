@@ -91,8 +91,28 @@ class EvolutionPatrimoineTest {
 
         var evolutionPatrimoineZety18Septembre25 = new EvolutionPatrimoine("nom", patrimoineZety, au2juillet24, au18septembre25);
         var evolution = evolutionPatrimoineZety18Septembre25.getEvolutionJournaliere();
-        var valeurDiminue=Math.abs(evolution.get(au18septembre24).getValeurComptable()-evolution.get(au17septembre24).getValeurComptable());
-        assertEquals(1_000_000,valeurDiminue);
+        var valeurDiminue = Math.abs(evolution.get(au18septembre24).getValeurComptable() - evolution.get(au17septembre24).getValeurComptable());
+        assertEquals(1_000_000, valeurDiminue);
+
+
+        var au21Septembre24 = LocalDate.of(2024, SEPTEMBER, 21);
+        var debut2024 = LocalDate.of(2024, JANUARY, 1);
+        var scolarite2425 = new FluxArgent("payement scolarite une fois", compteBancaire, au21Septembre24, au21Septembre24, -2_500_000, au21Septembre24.getDayOfMonth());
+        var donParentsZety = new FluxArgent("don de parents de zety", especes, debut2024, dateIndetermine, 100_000, 15);
+
+        var au1octobre24 = LocalDate.of(2024, OCTOBER, 1);
+        var au13Fevrier25 = LocalDate.of(2025, FEBRUARY, 13);
+        var trainDeVie = new FluxArgent("train de vie mensuel", especes, au1octobre24, au13Fevrier25, -250_000, 1);
+
+        ensemblePatrimoine.addAll(Set.of(scolarite2425, donParentsZety, trainDeVie));
+
+
+        var au1Janvier2025=LocalDate.of(2025,JANUARY,1);
+        var au14Janvier2025=LocalDate.of(2025,JANUARY,14);
+
+
+        assertEquals(0,especes.projectionFuture(au1Janvier2025).getValeurComptable());
+        assertEquals(0,especes.projectionFuture(au14Janvier2025).getValeurComptable());
 
 
 
