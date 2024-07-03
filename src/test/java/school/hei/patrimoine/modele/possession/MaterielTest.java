@@ -36,4 +36,19 @@ class MaterielTest {
     var au17Sept24 = LocalDate.of(2024, SEPTEMBER, 17);
     assertEquals( 1_175_013, pc.valeurComptableFuture(au17Sept24));
   }
+
+  @Test
+  void zetyVetements(){
+    var au3Juil24 = LocalDate.of(2024, JULY, 3);
+    var vetements = new Materiel(
+            "vetements de Zety",
+            au3Juil24,
+            1_500_000,
+            au3Juil24.minusDays(0),
+            -0.50);
+
+    var au17Sept24 = LocalDate.of(2024, SEPTEMBER, 17);
+    assertEquals( 1_343_835, vetements.valeurComptableFuture(au17Sept24));
+  }
+
 }
