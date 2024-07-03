@@ -5,6 +5,7 @@ import school.hei.patrimoine.modele.Patrimoine;
 import school.hei.patrimoine.modele.Personne;
 
 import java.time.LocalDate;
+import java.time.Month;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -37,19 +38,33 @@ public class DetteZetyTest {
                 800_000
         );
 
-        var compteEnBanque = new Argent(
-                "compte_bancaire",
-                LocalDate.of(2024, 7, 3),
-                100_000
+        LocalDate date3Juillet2024 = LocalDate.of(2024, 7, 3);
+
+        var fluxArgentFraisDeScolarite = new FluxArgent(
+                "frais de scolarité",
+                argentEnEspece,
+                LocalDate.of(2024, Month.NOVEMBER, 1),
+                LocalDate.of(2024, Month.AUGUST, 31),
+                -200_000,
+                27
         );
 
-        LocalDate date3Juillet2024 = LocalDate.of(2024, 7, 3);
+        var compteBancaire = new Argent("compte bancaire", LocalDate.of(2024, 7, 3), 100_000);
+
+        var fluxArgentCompteBancaire = new FluxArgent(
+                "compte bancaire",
+                compteBancaire,
+                LocalDate.of(2024, 7, 3),
+                LocalDate.now().plusYears(10),
+                -20_000,
+                25
+        );
 
         var patrimoine_de_zety = new Patrimoine(
                 "patrimoine_de_zety",
                 zety,
                 date3Juillet2024,
-                Set.of(ordinateur, vetement, argentEnEspece, compteEnBanque)
+                Set.of(ordinateur, vetement, argentEnEspece, compteBancaire, fluxArgentCompteBancaire, fluxArgentFraisDeScolarite)
         );
 
         var detteDeZety = new Dette(
@@ -62,6 +77,6 @@ public class DetteZetyTest {
 
         int diminutionDePatrimoineDeZety = valeurDuPatrimoineFutur.getValeurComptable() + detteDeZety.getValeurComptable();
 
-        assertEquals(-7_558_549, diminutionDePatrimoineDeZety);
+        assertEquals(-7_598_549, diminutionDePatrimoineDeZety);
     }
 }

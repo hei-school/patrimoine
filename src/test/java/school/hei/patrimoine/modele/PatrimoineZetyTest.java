@@ -2,9 +2,11 @@ package school.hei.patrimoine.modele;
 
 import org.junit.Test;
 import school.hei.patrimoine.modele.possession.Argent;
+import school.hei.patrimoine.modele.possession.FluxArgent;
 import school.hei.patrimoine.modele.possession.Materiel;
 
 import java.time.LocalDate;
+import java.time.Month;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -48,22 +50,36 @@ public class PatrimoineZetyTest {
                 800_000
         );
 
-        var compteEnBanque = new Argent(
-                "compte_bancaire",
-                LocalDate.of(2024, 7, 3),
-                100_000
+        var date3Juillet2024 = LocalDate.of(2024, 7, 3);
+
+        var fluxArgentFraisDeScolarite = new FluxArgent(
+                "frais de scolarité",
+                argentEnEspece,
+                LocalDate.of(2024, Month.NOVEMBER, 1),
+                LocalDate.of(2024, Month.AUGUST, 31),
+                -200_000,
+                27
         );
 
-        var date3Juillet2024 = LocalDate.of(2024, 7, 3);
+        var compteBancaire = new Argent("compte bancaire", LocalDate.of(2024, 7, 3), 100_000);
+
+        var fluxArgentCompteBancaire = new FluxArgent(
+                "compte bancaire",
+                compteBancaire,
+                LocalDate.of(2024, 7, 3),
+                LocalDate.now().plusYears(10),
+                -20_000,
+                25
+        );
 
         var date17Septembre2024 = LocalDate.of(2024, 9, 17);
         var patrimoine_de_zety = new Patrimoine(
                 "patrimoine_de_zety",
                 zety,
                 date3Juillet2024,
-                Set.of(ordinateur, vetement, argentEnEspece, compteEnBanque)
+                Set.of(ordinateur, vetement, fluxArgentCompteBancaire, fluxArgentFraisDeScolarite)
         );
 
-        assertEquals(3_443_835, patrimoine_de_zety.projectionFuture(date17Septembre2024).getValeurComptable());
+        assertEquals(2_543_835, patrimoine_de_zety.projectionFuture(date17Septembre2024).getValeurComptable());
     }
  }

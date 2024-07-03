@@ -54,4 +54,9 @@ public class ZetyPartEnAllemagneTest {
 
         assertEquals(3_086_300, patrimoine_de_zety.projectionFuture(date14Fevrier2025).getValeurComptable());
     }
+
+    @Test
+    void la_valeur_du_patrimoine_un_quelconque_devise(){
+
+    }
 }
