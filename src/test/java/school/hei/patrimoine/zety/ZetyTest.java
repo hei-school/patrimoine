@@ -10,6 +10,8 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 class ZetyTest {
     LocalDate dateActuelle = LocalDate.of(2024, 7, 3);
     LocalDate dateFuture = LocalDate.of(2024, 9, 17);
@@ -37,24 +39,33 @@ class ZetyTest {
         zetyPatrimoine = new Patrimoine("Patrimoine de Zety", new Personne("Zety"), dateActuelle, possessions);
     }
 
-    Patrimoine patrimoineFutur = zetyPatrimoine.projectionFuture(dateFuture);
+    int valeurPatrimoine = zetyPatrimoine.getValeurComptable();
 
     @Test
     void testValeurPatrimoineLe17Septembre2024() {
+        Patrimoine patrimoineFutur = zetyPatrimoine.projectionFuture(dateFuture);
         int valeurFuture = patrimoineFutur.getValeurComptable();
-        System.out.println("Valeur du patrimoine de Zety le 17 septembre 2024 : " + valeurFuture);
+
+        assertEquals(2978848, valeurFuture);
     }
 
     @Test
     void testDiminutionPatrimoineDeZety() {
+        FluxArgent ajoutCompteBancaire = new FluxArgent("Ajout au compte bancaire", compteBancaire, LocalDate.of(2024, 9, 18), LocalDate.of(2024, 9, 18), 10000000, 18);
         Argent dette = new Dette("Dette bancaire", LocalDate.of(2024, 9, 18), -11000000);
         possessions.add(dette);
-        Patrimoine patrimoineApres = zetyPatrimoine.projectionFuture(LocalDate.of(2024, 9, 18));
+        possessions.add(ajoutCompteBancaire);
 
-        int valeurAvantDette = zetyPatrimoine.getValeurComptable();
-        int valeurApresDette = patrimoineApres.getValeurComptable();
-        int diminution = valeurApresDette - valeurApresDette;
+        Patrimoine patrimoineApresDette = zetyPatrimoine.projectionFuture(LocalDate.of(2024, 9, 18));
 
-        System.out.println(diminution);
+        int valeurApres = patrimoineApresDette.getValeurComptable();
+        int diminution = valeurPatrimoine - valeurApres ;
+
+       assertEquals(1623536, diminution);
+    }
+
+    @Test
+    void testDateFinEspèces() {
+
     }
 }
