@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
     @Test
-    void patrimoine_de_zety_possede_materiel_argent_et_flux_argent() {
+    void patrimoine_de_zety() {
       var zety = new Personne("Zety");
       var au03Juillet2024 = LocalDate.of(2024, JULY, 03);
 
@@ -208,7 +208,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
     }
 
     @Test
-    void zety_evalue_son_patrimoine_au_14_fevrier_2025() {
+    void patrimoine_au_14_fevrier_2025() {
       var zety = new Personne("Zety");
       var au03Juillet2024 = LocalDate.of(2024, JULY, 03);
 
