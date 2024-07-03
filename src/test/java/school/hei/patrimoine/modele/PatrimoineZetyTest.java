@@ -60,7 +60,7 @@ class PatrimoineZetyTest {
         Patrimoine patrimoineApresDette = patrimoineZety.projectionFuture(LocalDate.of(2024, 9, 18));
 
         int valeurApres = patrimoineApresDette.getValeurComptable();
-        int diminution = valeurPatrimoineAuDebut - valeurApres ;
+        int diminution = valeurPatrimoineAuDebut - valeurApres;
 
         assertEquals(9000000, diminution);
     }
