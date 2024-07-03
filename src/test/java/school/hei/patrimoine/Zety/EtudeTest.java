@@ -260,7 +260,7 @@ class EtudeTest {
         var au18Sept2025 = LocalDate.of(2025, SEPTEMBER, 18);
         var au14Fev2025 = LocalDate.of(2025, FEBRUARY, 14);
 
-        var arriary = new Monnaie("arriary", 4_821, au3juillet2024, -.1);
+        var arriary = new Monnaie("arriary", 4_821, au3juillet2024, .1);
 
         // Annees scolaire 2024-2025
         var ordinateur = new Materiel(
@@ -363,7 +363,8 @@ class EtudeTest {
         );
         // var viz = grapheurEvolutionPatrimoine.apply(patrimoineAuJusquau18Sep);
 
+        var au26Oct2025 = LocalDate.of(2025, OCTOBER, 26);
         assertEquals(2_911_314, patrimoineDeZety.projectionFuture(au14Fev2025).getValeurComptable());
-        assertEquals(2_398_889, patrimoineDeZety.projectionFuture(LocalDate.of(2025, OCTOBER, 26)).getValeurComptable());
+        assertEquals(439, arriary.projectionFutur(au26Oct2025).convert(patrimoineDeZety.projectionFuture(au26Oct2025).getValeurComptable(), euro));
     }
 }
