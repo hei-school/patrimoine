@@ -92,4 +92,41 @@ public class PatrimoineDeZetyTest {
 
         assertEquals(1002384, diminution_de_patimoine);
     }
+
+
+    @Test
+    void date_epuisement_especes_zety() {
+        var zety = new Personne("Zety");
+        var debut2024 = LocalDate.of(2024, JANUARY, 1);
+        var debutOctobre2024 = LocalDate.of(2024, OCTOBER, 1);
+        var fevrier132025 = LocalDate.of(2025, FEBRUARY, 13);
+
+        var argentMensuel = new Argent("Argent mensuel", debut2024, 100_000);
+        var trainDeVie = new FluxArgent("Train de vie mensuel", argentMensuel, debutOctobre2024, fevrier132025, -250_000, 1);
+
+        var patrimoineZety = new Patrimoine(
+                "Patrimoine de Zety",
+                zety,
+                debut2024,
+                Set.of(argentMensuel, trainDeVie)
+        );
+
+        LocalDate dateEpuisement = debutOctobre2024;
+        int montantEspeces = patrimoineZety.getValeurComptable();
+
+
+        while (montantEspeces > 0) {
+            montantEspeces += 100_000;
+            if (dateEpuisement.isAfter(debutOctobre2024)) {
+                montantEspeces -= 250_000;
+            }
+
+            dateEpuisement = dateEpuisement.plusMonths(1);
+        }
+
+        assertEquals(LocalDate.of(2025, JANUARY, 1), dateEpuisement);
+    }
 }
+
+
+
