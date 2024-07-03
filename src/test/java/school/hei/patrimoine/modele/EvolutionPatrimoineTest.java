@@ -83,7 +83,7 @@ class EvolutionPatrimoineTest {
   }
 
   @Test
-  void patrimoine_zety_18_Septembre() {
+  void patrimoine_zety_17_18_Septembre() {
     var zety = new Personne("Zety");
     var au3juillet24 = LocalDate.of(2024, JULY, 3);
     var au27Novembre2023 = LocalDate.of(2023, NOVEMBER, 27);
@@ -123,4 +123,6 @@ class EvolutionPatrimoineTest {
     assertEquals(-2_000_000, evolutionJournaliere.get(LocalDate.of(2024, SEPTEMBER, 17)).getValeurComptable());
     assertEquals(-13_000_000, evolutionJournaliere.get(LocalDate.of(2024, SEPTEMBER, 18)).getValeurComptable());
   }
+
+
 }
