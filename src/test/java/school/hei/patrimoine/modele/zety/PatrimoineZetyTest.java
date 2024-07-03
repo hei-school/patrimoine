@@ -6,7 +6,7 @@ import school.hei.patrimoine.modele.Personne;
 import school.hei.patrimoine.modele.possession.*;
 
 import java.time.LocalDate;
-import java.time.Month;
+
 import java.util.*;
 
 import static java.time.Month.*;
@@ -16,15 +16,13 @@ class PatrimoineZetyTest {
 
     @Test
     void testPatrimoineZetyLe17Septembre2024() {
-        // Date de début des possessions de Zety
+
         LocalDate dateDebut = LocalDate.of(2024, JULY, 3);
 
-        // Création des possessions de Zety le 3 juillet 2024
         Materiel ordinateur = new Materiel("Ordinateur", dateDebut, 1200000, dateDebut, -0.1 / 365);
         Materiel vetements = new Materiel("Vêtements", dateDebut, 1500000, dateDebut, -0.5 / 365);
         Argent argentEspeces = new Argent("Espèces", dateDebut, 800000);
 
-        // Flux d'argent pour les frais de scolarité
         FluxArgent fraisScolarite = new FluxArgent(
                 "Frais de scolarité",
                 argentEspeces,
@@ -33,7 +31,6 @@ class PatrimoineZetyTest {
                 -200000,
                 27);
 
-        // Compte bancaire avec frais de tenue de compte
         Argent compteBancaire = new Argent("Compte bancaire", dateDebut, 100000);
         FluxArgent fraisTenueCompte = new FluxArgent(
                 "Frais de tenue de compte",
@@ -43,19 +40,14 @@ class PatrimoineZetyTest {
                 -20000,
                 25);
 
-        // Ajout des possessions au patrimoine de Zety
         Set<Possession> possessions = Set.of(ordinateur, vetements, argentEspeces, fraisScolarite, compteBancaire, fraisTenueCompte);
 
-        // Création du patrimoine de Zety au 3 juillet 2024
         Patrimoine zetyPatrimoine = new Patrimoine("Zety", new Personne("Zety"), dateDebut, possessions);
 
-        // Projection au 17 septembre 2024
         Patrimoine patrimoineFutur = zetyPatrimoine.projectionFuture(LocalDate.of(2024, 9, 17));
 
-        // Calcul de la valeur comptable du patrimoine futur
         int valeurComptableFutur = patrimoineFutur.getValeurComptable();
 
-        // calcul Valeur attendue
 
         int valeurAttendue = ordinateur.projectionFuture(LocalDate.of(2024, 9, 17)).getValeurComptable() +
                 vetements.projectionFuture(LocalDate.of(2024, 9, 17)).getValeurComptable() +
@@ -64,7 +56,6 @@ class PatrimoineZetyTest {
                 compteBancaire.projectionFuture(LocalDate.of(2024, 9, 17)).getValeurComptable() +
                 fraisTenueCompte.projectionFuture(LocalDate.of(2024, 9, 17)).getValeurComptable();
 
-        // Assertion
         assertEquals(valeurAttendue, valeurComptableFutur);
     }
     @Test
@@ -73,7 +64,6 @@ class PatrimoineZetyTest {
         var au17sept24 = LocalDate.of(2024, 9, 17);
         var au18sept24 = LocalDate.of(2024, 9, 18);
 
-        // Initialisation du patrimoine de Zety au 17 septembre 2024
         var patrimoineZetyAu17sept24 = new Patrimoine(
                 "patrimoineZetyAu17sept24",
                 zety,
@@ -114,9 +104,9 @@ class PatrimoineZetyTest {
                     "FluxArgent",
                     donParent,
                     LocalDate.of(2024, month, 15),
-                    LocalDate.of(2024, month, 15), // Fin doit être ajusté selon vos besoins
-                    100_000, // fluxMensuel doit être ajusté selon vos besoins
-                    15)); // dateOperation doit être ajusté selon vos besoins
+                    LocalDate.of(2024, month, 15),
+                    100_000,
+                    15));
             initialPossessions.add(donParent);
         }
 
@@ -163,7 +153,6 @@ class PatrimoineZetyTest {
         var zety = new Personne("Zety");
         var au3juillet24 = LocalDate.of(2024, 7, 3);
 
-        // Initialisation du patrimoine de Zety au 3 juillet 2024
         var especes = new Argent("Espèces", au3juillet24, 800_000);
         var initialPossessions = new HashMap<>(Map.of(especes, "€"));
 
