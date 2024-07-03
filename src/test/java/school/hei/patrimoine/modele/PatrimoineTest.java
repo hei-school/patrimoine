@@ -9,6 +9,7 @@ import java.util.Set;
 
 import static java.time.Month.MAY;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PatrimoineTest {
 
@@ -186,4 +187,59 @@ class PatrimoineTest {
 
     assertEquals(-2384, diminutionPatrimoine);
   }
+
+  // la date sur la quelle Zety n’a plus d’espèces
+  @Test
+  void zety_n_a_plus_especes_apres_18_septembre_2024() {
+    var zety = new Personne("Zety");
+    var au3juillet2024 = LocalDate.of(2024, Month.JULY, 3);
+    var argentEspeces = new Argent("Espèces", au3juillet2024, 800_000);
+    var ordinateur = new Materiel(
+            "Ordinateur",
+            au3juillet2024,
+            1_200_000,
+            au3juillet2024.minusDays(2),
+            -0.10);
+
+    var vetements = new Materiel(
+            "Vêtements",
+            au3juillet2024,
+            1_500_000,
+            au3juillet2024.minusDays(2),
+            -0.50);
+
+    var fraisScolarite = new FluxArgent(
+            "Frais de scolarité",
+            argentEspeces,
+            LocalDate.of(2023, Month.NOVEMBER, 27),
+            LocalDate.of(2024, Month.AUGUST, 27),
+            -200_000,
+            30);
+
+    var compteBancaire = new Argent("Compte bancaire", au3juillet2024, 100_000);
+
+    var fraisTenueCompte = new FluxArgent(
+            "Frais de tenue de compte",
+            compteBancaire,
+            au3juillet2024.minusMonths(1),
+            au3juillet2024.plusYears(1),
+            -20_000,
+            30);
+
+    var patrimoineZety = new Patrimoine(
+            "Patrimoine de Zety",
+            zety,
+            au3juillet2024,
+            Set.of(argentEspeces, ordinateur, vetements, fraisScolarite, compteBancaire, fraisTenueCompte));
+    LocalDate dateProjection = au3juillet2024;
+    do {
+      var valeurPatrimoine = patrimoineZety.projectionFuture(dateProjection).getValeurComptable();
+      assertTrue(argentEspeces.valeurComptableFuture(dateProjection) >= 0);
+      dateProjection = dateProjection.plusDays(1);
+      argentEspeces = new Argent("Espèces", dateProjection, argentEspeces.getValeurComptable());
+    }
+    while (argentEspeces.getValeurComptable() <= 0);
+    assertEquals(LocalDate.of(2024, Month.JULY, 4), dateProjection);
+  }
+
 }
