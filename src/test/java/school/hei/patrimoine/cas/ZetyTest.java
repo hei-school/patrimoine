@@ -47,9 +47,9 @@ public class ZetyTest {
     @Test
     void zetyPartir() {
         Zety24_25 zety24_25 = new Zety24_25();
-        var au13Fevrier25 = LocalDate.of(2025, Month.FEBRUARY, 13);
+        var au14Fevrier25 = LocalDate.of(2025, Month.FEBRUARY, 14);
 
-        assertEquals(zety24_25.get().projectionFuture(au13Fevrier25).getValeurComptable(), -1_526_302);
+        assertEquals(zety24_25.get().projectionFuture(au14Fevrier25).getValeurComptable(), -1_528_686);
     }
 
 }
