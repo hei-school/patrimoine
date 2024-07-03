@@ -7,7 +7,6 @@ import school.hei.patrimoine.modele.possession.Possession;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.Objects;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
