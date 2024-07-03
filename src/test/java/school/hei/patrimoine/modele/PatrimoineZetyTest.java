@@ -82,7 +82,7 @@ public class PatrimoineZetyTest {
         assertEquals(40_000, patrimoineZetyAu3july24.projectionFuture(au3july24.plusDays(1_000)).getValeurComptable());
     }
     @Test
-    void patrimoine_total_de_zety_sans_dette_et_sans_etudes_2024_2025() {
+    void patrimoine_total_de_zety() {
         var zety = new Personne("Zety");
 
         // Date de référence : 3 juillet 2024
@@ -117,7 +117,6 @@ public class PatrimoineZetyTest {
                 25
         );
 
-        // Création du patrimoine de Zety sans les éléments spécifiés
         var patrimoineZety = new Patrimoine(
                 "patrimoineZety",
                 zety,
@@ -131,9 +130,51 @@ public class PatrimoineZetyTest {
                 )
         );
 
-        // Projection future au 17 septembre 2024
         var projectionAu17Septembre24 = patrimoineZety.projectionFuture(LocalDate.of(2024, SEPTEMBER, 17));
         assertEquals(3_378_848, projectionAu17Septembre24.getValeurComptable());
+    }
+    @Test
+    void diminution_patrimoine_de_zety_en_raison_de_lendettement() {
+        var zety = new Personne("Zety");
+
+        // Date de référence : 17 septembre 2024
+        var dateReference = LocalDate.of(2024, SEPTEMBER, 17);
+
+        var compteBancaire = new Argent("Compte bancaire", dateReference, 100_000);
+
+        // Ajout d'un prêt reçu de 10 000 000 Ar le 18 septembre 2024
+        var pretRecu = new FluxArgent(
+                "Prêt reçu",
+                compteBancaire,
+                LocalDate.of(2024, SEPTEMBER, 18),
+                LocalDate.of(2024, SEPTEMBER, 18),
+                10_000_000,
+                18
+        );
+
+        // Ajout d'une dette de 11 000 000 Ar envers la banque le 18 septembre 2024
+        var detteBancaire = new FluxArgent(
+                "Dette bancaire",
+                compteBancaire,
+                LocalDate.of(2024, SEPTEMBER, 18),
+                LocalDate.of(2025, SEPTEMBER, 18),
+                -11_000_000,
+                18
+        );
+
+        var patrimoineZety = new Patrimoine(
+                "patrimoineZety",
+                zety,
+                dateReference,
+                Set.of(
+                        compteBancaire,
+                        pretRecu,
+                        detteBancaire
+                )
+        );
+
+        var projectionAu18Septembre24 = patrimoineZety.projectionFuture(LocalDate.of(2024, SEPTEMBER, 18));
+        assertEquals(-900_000, projectionAu18Septembre24.getValeurComptable());
     }
 }
 
