@@ -237,4 +237,5 @@ class PatrimoineTest {
 
     assertEquals(3500000,valeurComptable);
   }
+
 }
