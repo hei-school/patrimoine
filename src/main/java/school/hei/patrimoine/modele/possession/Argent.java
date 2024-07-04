@@ -41,8 +41,9 @@ public sealed class Argent extends Possession permits Dette, Creance {
   public LocalDate finFinancements(int montant) {
     int argentTotal = getValeurComptable();
     LocalDate dateFinFinancement = dateOuverture;
-    while (argentTotal == montant) {
-      argentTotal = projectionFuture(dateFinFinancement.plusDays(1)).getValeurComptable();
+    while (argentTotal > montant) {
+      dateFinFinancement = dateFinFinancement.plusDays(1);
+      argentTotal = projectionFuture(dateFinFinancement).getValeurComptable();
     }
     return dateFinFinancement;
   }

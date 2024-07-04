@@ -137,7 +137,6 @@ public class PatrimoineZetyTest {
                 argentEspeces, au01Oct2024, au13Fev2025, -250_000,
                 1);
 
-        // 2025-01-01
         assertEquals(LocalDate.of(2025, 1, 1), argentEspeces.finFinancements(0));
     }
 
