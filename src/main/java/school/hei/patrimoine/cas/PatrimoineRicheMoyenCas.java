@@ -30,7 +30,7 @@ import school.hei.patrimoine.modele.possession.TransfertArgent;
 
 public class PatrimoineRicheMoyenCas implements Supplier<Patrimoine> {
 
-  private final LocalDate ajd = now();
+  private final LocalDate ajd = LocalDate.of(2024, JULY, 8);
   private final LocalDate dans1mois = ajd.plusMonths(1);
   private final LocalDate finSimulation = LocalDate.of(2028, MARCH, 31);
 
