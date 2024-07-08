@@ -5,6 +5,7 @@ import school.hei.patrimoine.modele.possession.Argent;
 import school.hei.patrimoine.modele.possession.FluxArgent;
 
 import java.time.LocalDate;
+import java.util.Map;
 import java.util.Set;
 
 import static java.time.Month.MAY;

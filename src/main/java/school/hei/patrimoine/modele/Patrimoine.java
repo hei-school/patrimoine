@@ -4,6 +4,7 @@ import school.hei.patrimoine.modele.possession.Possession;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.Map;
 import java.util.Set;
 
 import static java.util.stream.Collectors.toSet;
@@ -22,6 +23,12 @@ public record Patrimoine(
         possesseur,
         tFutur,
         possessions.stream().map(p -> p.projectionFuture(tFutur)).collect(toSet()));
+  }
+
+  public int getValeurComptable(String devise, Map<String, Double> tauxChange, Map<String, Double> tauxAppreciation) {
+    return possessions.stream()
+            .mapToInt(p -> p.getValeurComptable(devise, t, tauxChange, tauxAppreciation))
+            .sum();
   }
 
   public Possession possessionParNom(String nom) {
