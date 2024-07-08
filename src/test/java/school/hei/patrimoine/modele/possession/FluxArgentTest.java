@@ -9,6 +9,7 @@ import static java.time.Month.JUNE;
 import static java.time.Month.MAY;
 import static java.time.Month.OCTOBER;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static school.hei.patrimoine.modele.Devise.NON_NOMMEE;
 
 class FluxArgentTest {
   @Test

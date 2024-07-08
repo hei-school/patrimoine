@@ -11,6 +11,7 @@ import java.util.Set;
 
 import static java.time.Month.MAY;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static school.hei.patrimoine.modele.Devise.NON_NOMMEE;
 
 class SerialiseurTest {
 
