@@ -3,6 +3,8 @@ package school.hei.patrimoine.modele.possession;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
+
+import lombok.ToString;
 import school.hei.patrimoine.modele.Devise;
 
 import static java.util.stream.Collectors.toSet;

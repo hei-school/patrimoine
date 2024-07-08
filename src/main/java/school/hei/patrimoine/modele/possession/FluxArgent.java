@@ -1,10 +1,12 @@
 package school.hei.patrimoine.modele.possession;
 
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import school.hei.patrimoine.modele.Devise;
 
 import java.time.LocalDate;
 
+@Slf4j
 @Getter
 public final class FluxArgent extends Possession {
   private final Argent argent;
@@ -59,8 +61,14 @@ public final class FluxArgent extends Possession {
                 .datesUntil(tFuturMajoréParFin.plusDays(1))
                 .filter(d -> d.getDayOfMonth() == dateOperation)
                 .count();
-    var argentFutur = new Argent(
-        nom, tFutur, argent.getValeurComptable() + fluxMensuel * nbOperations, argent.devise);
+    var valeurFutur = argent.getValeurComptable() + fluxMensuel * nbOperations;
+    var argentFutur = new Argent(argent.nom, tFutur, valeurFutur, argent.devise);
+    if (valeurFutur < 0 && !(argent instanceof Dette)) {
+      log.warn("Argent >0 --> <0: t={}, argent.nom={}, argent.valeur={}, flux.nom={}, flux.valeur={}",
+          tFutur,
+          argent.nom, valeurFutur,
+          this.nom, this.fluxMensuel);
+    }
 
     return new FluxArgent(nom, argentFutur, debut, tFuturMajoréParFin, fluxMensuel, dateOperation, devise);
   }
