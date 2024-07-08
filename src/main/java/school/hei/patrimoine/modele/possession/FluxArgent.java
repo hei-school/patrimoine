@@ -35,6 +35,10 @@ public final class FluxArgent extends Possession {
     this.fin = fin;
     this.fluxMensuel = fluxMensuel;
     this.dateOperation = dateOperation;
+}
+ 
+  public FluxArgent(String nom, Argent argent, LocalDate date, int montant) {
+    this(nom, argent, date, date, montant, date.getDayOfMonth());
   }
 
   @Override
