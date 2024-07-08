@@ -7,7 +7,7 @@ import static java.time.temporal.ChronoUnit.DAYS;
 import java.time.LocalDate;
 
 public record Devise(String nom, int valeurEnAriary, LocalDate t, double tauxDappréciationAnnuel) {
-	public static final Devise ARIARY = new Devise("ARIARY", 1, LocalDate.MIN, 0.0);
+	public static final Devise MGA = new Devise("ARIARY", 1, LocalDate.MIN, 0.0);
 	//non-nommée.valeurEnAriary() = 1 pour la consistence, en pratique, non-nommee ne sera jamais
 	// mixée avec d'autres devises, ainsi, les opérations entre valeurComptable de même devise restent les mêmes.
 	public static final Devise NON_NOMMEE = new Devise("non-nommee", 1, LocalDate.MIN, 0.0);

@@ -3,7 +3,7 @@ package school.hei.patrimoine.modele;
 import static java.time.Month.MAY;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static school.hei.patrimoine.modele.Devise.ARIARY;
+import static school.hei.patrimoine.modele.Devise.MGA;
 
 import java.time.LocalDate;
 import java.util.Set;
@@ -103,7 +103,7 @@ class PatrimoineTest {
         au13mai24,
         Set.of(
           new GroupePossession("Le groupe", au13mai24, Set.of(financeur, trainDeVie)),
-          new GroupePossession("un autre groupe", au13mai24, Set.of(financeur, trainDeVie), ARIARY)
+          new GroupePossession("un autre groupe", au13mai24, Set.of(financeur, trainDeVie), MGA)
         ));
     });
   }
