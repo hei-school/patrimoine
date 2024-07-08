@@ -1,6 +1,6 @@
 package school.hei.patrimoine.modele.possession;
 
-import static school.hei.patrimoine.modele.Devise.ARIARY;
+import static school.hei.patrimoine.modele.Devise.NON_NOMMEE;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -20,6 +20,13 @@ public sealed abstract class Possession implements Serializable /*note(no-serial
 	protected final LocalDate t;
 	protected final int valeurComptable;
 	protected final Devise devise;
+
+	public Possession(String nom, LocalDate t, int valeurComptable) {
+		this.nom = nom;
+		this.t = t;
+		this.valeurComptable = valeurComptable;
+		this.devise = NON_NOMMEE;
+	}
 
 	public final int valeurComptableFuture(LocalDate tFutur) {
 		return projectionFuture(tFutur).getValeurComptable(this.devise, tFutur);

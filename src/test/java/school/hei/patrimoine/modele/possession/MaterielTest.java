@@ -7,7 +7,7 @@ import java.time.LocalDate;
 import static java.time.Month.JUNE;
 import static java.time.Month.OCTOBER;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static school.hei.patrimoine.modele.Devise.ARIARY;
+import static school.hei.patrimoine.modele.Devise.NON_NOMMEE;
 
 class MaterielTest {
 
@@ -19,7 +19,7 @@ class MaterielTest {
         au26Oct21,
         2_000_000,
         au26Oct21.minusDays(2),
-        -0.10, ARIARY);
+        -0.10);
 
     var au26juin24 = LocalDate.of(2024, JUNE, 26);
     assertEquals(1_466_301, mac.valeurComptableFuture(au26juin24));

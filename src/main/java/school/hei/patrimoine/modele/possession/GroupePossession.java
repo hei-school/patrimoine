@@ -10,6 +10,11 @@ public final class GroupePossession extends Possession {
 
   private final Set<Possession> possessions;
 
+  public GroupePossession(String nom, LocalDate t, Set<Possession> possessions) {
+    super(nom, t, possessions.stream().mapToInt(Possession::getValeurComptable).sum());
+    this.possessions = possessions;
+  }
+
   public GroupePossession(String nom, LocalDate t, Set<Possession> possessions, Devise devise) {
     super(nom, t, possessions.stream().mapToInt(Possession::getValeurComptable).sum(), devise);
     this.possessions = possessions;

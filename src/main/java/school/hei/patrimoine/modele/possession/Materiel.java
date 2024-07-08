@@ -11,6 +11,13 @@ public final class Materiel extends Possession {
   private final double tauxDAppreciationAnnuelle;
 
   public Materiel(
+    String nom, LocalDate t, int valeurComptable, LocalDate dateAcquisition, double tauxDAppreciationAnnuelle) {
+    super(nom, t, valeurComptable);
+    this.dateAcquisition = dateAcquisition;
+    this.tauxDAppreciationAnnuelle = tauxDAppreciationAnnuelle;
+  }
+
+  public Materiel(
     String nom, LocalDate t, int valeurComptable, LocalDate dateAcquisition, double tauxDAppreciationAnnuelle, Devise devise) {
     super(nom, t, valeurComptable, devise);
     this.dateAcquisition = dateAcquisition;
