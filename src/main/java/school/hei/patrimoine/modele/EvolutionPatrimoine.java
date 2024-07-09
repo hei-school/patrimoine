@@ -1,6 +1,8 @@
 package school.hei.patrimoine.modele;
 
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+import school.hei.patrimoine.modele.possession.Argent;
 import school.hei.patrimoine.modele.possession.FluxArgent;
 import school.hei.patrimoine.modele.possession.Possession;
 
@@ -9,15 +11,22 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Stream;
 
+import static java.util.Comparator.comparing;
+import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toSet;
+
 @Getter
+@Slf4j
 public class EvolutionPatrimoine {
   private final String nom;
   private final Patrimoine patrimoine;
   private final LocalDate debut;
   private final LocalDate fin;
   private final Map<LocalDate, Patrimoine> evolutionJournaliere;
+  private final Set<Argent.OperationImpossible> operationsImpossibles;
 
   public EvolutionPatrimoine(String nom, Patrimoine patrimoine, LocalDate debut, LocalDate fin) {
     this.nom = nom;
@@ -25,6 +34,22 @@ public class EvolutionPatrimoine {
     this.debut = debut;
     this.fin = fin;
     this.evolutionJournaliere = evolutionJournaliere();
+    this.operationsImpossibles = operationsImpossibles();
+    log.info("OPERATIONS IMPOSSIBLES: {} --> {}\n{}\n\n", debut, fin, operationsImpossibleStr());
+  }
+
+  private Set<Argent.OperationImpossible> operationsImpossibles() {
+    return patrimoine.possessions().stream()
+        .filter(p -> p instanceof Argent)
+        .flatMap(p -> ((Argent) p).getOperationsImpossibles().stream())
+        .collect(toSet());
+  }
+
+  public String operationsImpossibleStr() {
+    return operationsImpossibles.stream()
+        .sorted(comparing(Argent.OperationImpossible::date))
+        .map(Argent.OperationImpossible::toString)
+        .collect(joining("\n"));
   }
 
   private Map<LocalDate, Patrimoine> evolutionJournaliere() {
