@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static java.util.stream.Collectors.toSet;
+import static school.hei.patrimoine.modele.Devise.NON_NOMMEE;
 
 @Getter
 public sealed class Argent extends Possession permits Dette, Creance {
@@ -28,22 +29,18 @@ public sealed class Argent extends Possession permits Dette, Creance {
     }
   }
 
-  public void addOperationImpossible(OperationImpossible operationImpossible) {
-    operationsImpossibles.add(operationImpossible);
-  }
-
   public Argent(String nom, LocalDate t, int valeurComptable, Devise devise) {
     this(nom, t, t, valeurComptable, devise);
-  }
-
-  public Argent(String nom, LocalDate dateOuverture, LocalDate t, int valeurComptable, Devise devise) {
-    this(nom, dateOuverture, t, valeurComptable, new HashSet<>(), devise);
   }
 
   private Argent(String nom, LocalDate dateOuverture, LocalDate t, int valeurComptable, Set<FluxArgent> fluxArgents, Devise devise) {
     super(nom, t, valeurComptable, devise);
     this.fluxArgents = fluxArgents;
     this.dateOuverture = dateOuverture;
+  }
+
+  public Argent(String nom, LocalDate dateOuverture, LocalDate t, int valeurComptable, Devise devise) {
+    this(nom, dateOuverture, t, valeurComptable, new HashSet<>(), devise);
   }
 
   public Argent(String nom, LocalDate t, int valeurComptable) {
@@ -55,9 +52,7 @@ public sealed class Argent extends Possession permits Dette, Creance {
   }
 
   private Argent(String nom, LocalDate dateOuverture, LocalDate t, int valeurComptable, Set<FluxArgent> fluxArgents) {
-    super(nom, t, valeurComptable);
-    this.fluxArgents = fluxArgents;
-    this.dateOuverture = dateOuverture;
+    this(nom, dateOuverture, t, valeurComptable, fluxArgents, NON_NOMMEE);
   }
 
   @Override
@@ -78,11 +73,11 @@ public sealed class Argent extends Possession permits Dette, Creance {
     var res = valeurComptable;
     for (var f : fluxArgents) {
       var financementsFuturs = valeurComptable - f.projectionFuture(tFutur).getArgent().getValeurComptable();
-      var resAcc = res - financementsFuturs;
-      if (!(this instanceof Dette) && resAcc < 0) {
-        this.addOperationImpossible(new Argent.OperationImpossible(tFutur, res, f));
+      var newRes = res - financementsFuturs;
+      if (!(this instanceof Dette) && newRes < 0 && newRes < res) {
+        operationsImpossibles.add(new Argent.OperationImpossible(tFutur, res, f));
       }
-      res = resAcc;
+      res = newRes;
     }
     return res;
   }

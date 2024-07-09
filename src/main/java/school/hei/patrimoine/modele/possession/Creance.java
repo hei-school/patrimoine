@@ -1,21 +1,21 @@
 package school.hei.patrimoine.modele.possession;
 
-import java.time.LocalDate;
 import school.hei.patrimoine.modele.Devise;
 
-public final class Creance extends Argent {
+import java.time.LocalDate;
 
-  public Creance(String nom, LocalDate t, int valeurComptable) {
-    super(nom, t, valeurComptable);
-    if (valeurComptable < 0) {
-      throw new IllegalArgumentException();
-    }
-  }
+import static school.hei.patrimoine.modele.Devise.NON_NOMMEE;
+
+public final class Creance extends Argent {
 
   public Creance(String nom, LocalDate t, int valeurComptable, Devise devise) {
     super(nom, t, valeurComptable, devise);
     if (valeurComptable < 0) {
       throw new IllegalArgumentException();
     }
+  }
+
+  public Creance(String nom, LocalDate t, int valeurComptable) {
+    this(nom, t, valeurComptable, NON_NOMMEE);
   }
 }
