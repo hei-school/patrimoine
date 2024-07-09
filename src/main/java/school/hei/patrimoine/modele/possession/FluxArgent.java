@@ -17,15 +17,6 @@ public final class FluxArgent extends Possession {
   private final int fluxMensuel;
   private final int dateOperation;
 
-  public FluxArgent(String nom, Argent argent, LocalDate date, int montant) {
-    this(nom, argent, date, date, montant, date.getDayOfMonth());
-  }
-
-  public FluxArgent(
-      String nom, Argent argent, LocalDate debut, LocalDate fin, int fluxMensuel, int dateOperation) {
-    this(nom, argent, debut, fin, fluxMensuel, dateOperation, NON_NOMMEE);
-  }
-
   public FluxArgent(
       String nom, Argent argent, LocalDate debut, LocalDate fin, int fluxMensuel, int dateOperation, Devise devise) {
     super(nom, null, 0, devise);
@@ -36,8 +27,13 @@ public final class FluxArgent extends Possession {
     this.fin = fin;
     this.fluxMensuel = fluxMensuel;
     this.dateOperation = dateOperation;
-}
- 
+  }
+
+  public FluxArgent(
+      String nom, Argent argent, LocalDate debut, LocalDate fin, int fluxMensuel, int dateOperation) {
+    this(nom, argent, debut, fin, fluxMensuel, dateOperation, NON_NOMMEE);
+  }
+
   public FluxArgent(String nom, Argent argent, LocalDate date, int montant) {
     this(nom, argent, date, date, montant, date.getDayOfMonth());
   }
