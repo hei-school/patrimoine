@@ -19,8 +19,8 @@ public class OperationsImpossiblesIHM extends JPanel implements Observer {
     this.patrimoinesVisualisables.addObserver(this);
 
     operationsImpossiblesTextPane = new JTextPane();
-    updateTextPane();
     new FixedSizer().accept(operationsImpossiblesTextPane, new Dimension(500, 600));
+    updateTextPane();
     this.add(new JScrollPane(operationsImpossiblesTextPane));
   }
 

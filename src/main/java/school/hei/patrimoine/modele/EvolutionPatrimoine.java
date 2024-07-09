@@ -42,6 +42,8 @@ public class EvolutionPatrimoine {
     return patrimoine.possessions().stream()
         .filter(p -> p instanceof Argent)
         .flatMap(p -> ((Argent) p).getOperationsImpossibles().stream())
+        .filter(o -> o.date().isAfter(debut) || o.date().isEqual(debut))
+        .filter(o -> o.date().isBefore(fin) || o.date().isEqual(fin))
         .collect(toSet());
   }
 
