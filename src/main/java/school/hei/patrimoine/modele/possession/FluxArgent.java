@@ -6,6 +6,8 @@ import school.hei.patrimoine.modele.Devise;
 
 import java.time.LocalDate;
 
+import static school.hei.patrimoine.modele.Devise.NON_NOMMEE;
+
 @Slf4j
 @Getter
 public final class FluxArgent extends Possession {
@@ -15,16 +17,13 @@ public final class FluxArgent extends Possession {
   private final int fluxMensuel;
   private final int dateOperation;
 
+  public FluxArgent(String nom, Argent argent, LocalDate date, int montant) {
+    this(nom, argent, date, date, montant, date.getDayOfMonth());
+  }
+
   public FluxArgent(
       String nom, Argent argent, LocalDate debut, LocalDate fin, int fluxMensuel, int dateOperation) {
-    super(nom, null, 0);
-    this.argent = argent;
-    this.argent.addFinancés(this);
-
-    this.debut = debut;
-    this.fin = fin;
-    this.fluxMensuel = fluxMensuel;
-    this.dateOperation = dateOperation;
+    this(nom, argent, debut, fin, fluxMensuel, dateOperation, NON_NOMMEE);
   }
 
   public FluxArgent(
@@ -39,10 +38,6 @@ public final class FluxArgent extends Possession {
     this.dateOperation = dateOperation;
 }
  
-  public FluxArgent(String nom, Argent argent, LocalDate date, int montant) {
-    this(nom, argent, date, date, montant, date.getDayOfMonth());
-  }
-
   public FluxArgent(String nom, Argent argent, LocalDate date, int montant) {
     this(nom, argent, date, date, montant, date.getDayOfMonth());
   }
