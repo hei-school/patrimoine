@@ -26,7 +26,10 @@ public class OperationsImpossiblesIHM extends JPanel implements Observer {
 
   private void updateTextPane() {
     var operationsImpossibleStr = patrimoinesVisualisables.getEvolutionPatrimoine().operationsImpossibleStr();
-    operationsImpossiblesTextPane.setText(operationsImpossibleStr);
+    operationsImpossiblesTextPane.setText(
+        "".equals(operationsImpossibleStr)
+            ? ""
+            : ("!! OPERATIONS IMPOSSIBLES !!\n\n" + operationsImpossibleStr));
   }
 
   @Override
