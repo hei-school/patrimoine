@@ -31,6 +31,7 @@ public class SelecteurPeriodeIHM extends JPanel implements Observer {
     this.patrimoinesVisualisables.addObserver(this);
 
     configurePeriodeEvolution();
+    new FixedSizer().accept(this, new Dimension(500, 35));
   }
 
   private void configurePeriodeEvolution() {

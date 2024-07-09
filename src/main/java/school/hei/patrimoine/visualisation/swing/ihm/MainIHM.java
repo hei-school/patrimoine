@@ -22,6 +22,7 @@ public class MainIHM extends JFrame implements Observer {
   private final PatrimoinesVisualisables patrimoinesVisualisables;
   private final SelecteurPatrimoineIHM selecteurPatrimoineIHM;
   private final SelecteurPeriodeIHM selecteurPeriodeIHM;
+  private final OperationsImpossiblesIHM operationsImpossiblesIHM;
   private final GrapheurEvolutionPatrimoineIHM grapheurEvolutionPatrimoineIHM;
 
   public MainIHM(List<Patrimoine> patrimoines) {
@@ -29,6 +30,8 @@ public class MainIHM extends JFrame implements Observer {
     patrimoinesVisualisables.addObserver(this);
 
     this.selecteurPatrimoineIHM = new SelecteurPatrimoineIHM(patrimoinesVisualisables);
+
+    this.operationsImpossiblesIHM = new OperationsImpossiblesIHM(patrimoinesVisualisables);
 
     this.selecteurPeriodeIHM = new SelecteurPeriodeIHM(patrimoinesVisualisables);
     this.grapheurEvolutionPatrimoineIHM = new GrapheurEvolutionPatrimoineIHM(patrimoinesVisualisables);
@@ -60,6 +63,7 @@ public class MainIHM extends JFrame implements Observer {
     westPanel.setBorder(createEmptyBorder(westMargin, westMargin, westMargin, westMargin));
     westPanel.add(selecteurPatrimoineIHM);
     westPanel.add(selecteurPeriodeIHM);
+    westPanel.add(operationsImpossiblesIHM);
     contentPane.add(westPanel, WEST);
 
     contentPane.add(grapheurEvolutionPatrimoineIHM, CENTER);
