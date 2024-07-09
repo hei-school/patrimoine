@@ -1,32 +1,23 @@
 package school.hei.patrimoine.modele.possession;
 
+import school.hei.patrimoine.modele.Devise;
+
 import java.time.LocalDate;
 import java.util.Set;
-import school.hei.patrimoine.modele.Devise;
+
+import static school.hei.patrimoine.modele.Devise.NON_NOMMEE;
 
 public final class AchatMaterielAuComptant extends Possession {
 
   private final GroupePossession achatCommeGroupe;
 
   public AchatMaterielAuComptant(
-    String nom, LocalDate dateAchat, int valeurComptableALAchat, double tauxAppreciationAnnuelle, Argent financeur) {
-    super(nom, dateAchat, valeurComptableALAchat);
-    this.achatCommeGroupe = new GroupePossession(
-      nom,
-      dateAchat,
-      Set.of(
-        new Materiel(nom, dateAchat, valeurComptableALAchat, dateAchat, tauxAppreciationAnnuelle, devise),
-        new FluxArgent(
-          "Financement AchatMaterielAuComptant: " + nom,
-          financeur,
-          dateAchat,
-          dateAchat,
-          -1 * valeurComptableALAchat,
-          dateAchat.getDayOfMonth(), devise)), devise);
+      String nom, LocalDate dateAchat, int valeurComptableALAchat, double tauxAppreciationAnnuelle, Argent financeur) {
+    this(nom, dateAchat, valeurComptableALAchat, tauxAppreciationAnnuelle, financeur, NON_NOMMEE);
   }
 
   public AchatMaterielAuComptant(
-    String nom, LocalDate dateAchat, int valeurComptableALAchat, double tauxAppreciationAnnuelle, Argent financeur, Devise devise) {
+      String nom, LocalDate dateAchat, int valeurComptableALAchat, double tauxAppreciationAnnuelle, Argent financeur, Devise devise) {
     super(nom, dateAchat, valeurComptableALAchat, devise);
     this.achatCommeGroupe = new GroupePossession(
         nom,

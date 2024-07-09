@@ -1,20 +1,37 @@
 package school.hei.patrimoine.modele.possession;
 
+import lombok.Getter;
+import school.hei.patrimoine.modele.Devise;
+
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
-import lombok.ToString;
-import school.hei.patrimoine.modele.Devise;
-
 import static java.util.stream.Collectors.toSet;
 
+@Getter
 public sealed class Argent extends Possession permits Dette, Creance {
   private final LocalDate dateOuverture;
   private final Set<FluxArgent> fluxArgents;
-  /*
-  * constructeurs avec Devise
-  */
+
+  private final Set<OperationImpossible> operationsImpossibles = new HashSet<>();
+
+  public record OperationImpossible(LocalDate date, int valeurArgentAvantOperation, FluxArgent flux) {
+    @Override
+    public String toString() {
+      return String.join(", ",
+          date.toString(),
+          flux.getArgent().getNom(),
+          valeurArgentAvantOperation + "",
+          flux.getNom(),
+          flux.getFluxMensuel() + "");
+    }
+  }
+
+  public void addOperationImpossible(OperationImpossible operationImpossible) {
+    operationsImpossibles.add(operationImpossible);
+  }
+
   public Argent(String nom, LocalDate t, int valeurComptable, Devise devise) {
     this(nom, t, t, valeurComptable, devise);
   }
@@ -28,12 +45,7 @@ public sealed class Argent extends Possession permits Dette, Creance {
     this.fluxArgents = fluxArgents;
     this.dateOuverture = dateOuverture;
   }
-  /*
-   * constructeurs avec Devise
-   */
-  /*
-   * constructeurs sans devise
-   */
+
   public Argent(String nom, LocalDate t, int valeurComptable) {
     this(nom, t, t, valeurComptable);
   }
@@ -47,9 +59,7 @@ public sealed class Argent extends Possession permits Dette, Creance {
     this.fluxArgents = fluxArgents;
     this.dateOuverture = dateOuverture;
   }
-  /*
-   * constructeurs sans devise
-   */
+
   @Override
   public Argent projectionFuture(LocalDate tFutur) {
     if (tFutur.isBefore(dateOuverture)) {
@@ -60,15 +70,21 @@ public sealed class Argent extends Possession permits Dette, Creance {
         nom,
         dateOuverture,
         tFutur,
-        valeurComptable - financementsFutur(tFutur),
+        valeurComptableFutur(tFutur),
         fluxArgents.stream().map(f -> f.projectionFuture(tFutur)).collect(toSet()), devise);
   }
 
-  private int financementsFutur(LocalDate tFutur) {
-    return fluxArgents.stream().
-        mapToInt(
-            f -> valeurComptable - f.projectionFuture(tFutur).getArgent().getValeurComptable())
-        .sum();
+  private int valeurComptableFutur(LocalDate tFutur) {
+    var res = valeurComptable;
+    for (var f : fluxArgents) {
+      var financementsFuturs = valeurComptable - f.projectionFuture(tFutur).getArgent().getValeurComptable();
+      var resAcc = res - financementsFuturs;
+      if (!(this instanceof Dette) && resAcc < 0) {
+        this.addOperationImpossible(new Argent.OperationImpossible(tFutur, res, f));
+      }
+      res = resAcc;
+    }
+    return res;
   }
 
   void addFinancés(FluxArgent fluxArgent) {
