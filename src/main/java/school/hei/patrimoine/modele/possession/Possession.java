@@ -3,6 +3,7 @@ package school.hei.patrimoine.modele.possession;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.ToString;
 import school.hei.patrimoine.modele.Devise;
 
 import java.io.Serializable;
@@ -10,6 +11,7 @@ import java.time.LocalDate;
 
 import static school.hei.patrimoine.modele.Devise.NON_NOMMEE;
 
+@ToString
 @EqualsAndHashCode
 @AllArgsConstructor
 @Getter

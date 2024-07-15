@@ -1,6 +1,7 @@
 package school.hei.patrimoine.modele.possession;
 
 import lombok.Getter;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import school.hei.patrimoine.modele.Devise;
 
@@ -8,9 +9,11 @@ import java.time.LocalDate;
 
 import static school.hei.patrimoine.modele.Devise.NON_NOMMEE;
 
+@ToString(callSuper = true)
 @Slf4j
 @Getter
 public final class FluxArgent extends Possession {
+  @ToString.Exclude
   private final Argent argent;
   private final LocalDate debut;
   private final LocalDate fin;

@@ -3,12 +3,14 @@ package school.hei.patrimoine.modele;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import school.hei.patrimoine.modele.possession.Argent;
+import school.hei.patrimoine.modele.possession.Dette;
 import school.hei.patrimoine.modele.possession.FluxArgent;
 import school.hei.patrimoine.modele.possession.Possession;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -26,7 +28,7 @@ public class EvolutionPatrimoine {
   private final LocalDate debut;
   private final LocalDate fin;
   private final Map<LocalDate, Patrimoine> evolutionJournaliere;
-  private final Set<Argent.OperationImpossible> operationsImpossibles;
+  private final Set<FluxImpossibles> fluxImpossibles;
 
   public EvolutionPatrimoine(String nom, Patrimoine patrimoine, LocalDate debut, LocalDate fin) {
     this.nom = nom;
@@ -34,24 +36,38 @@ public class EvolutionPatrimoine {
     this.debut = debut;
     this.fin = fin;
     this.evolutionJournaliere = evolutionJournaliere();
-    this.operationsImpossibles = operationsImpossibles();
-    log.info("OPERATIONS IMPOSSIBLES: {} --> {}\n{}\n\n", debut, fin, operationsImpossibleStr());
+    this.fluxImpossibles = fluxImpossibles();
+    log.info("FLUX IMPOSSIBLES: {} --> {}\n{}\n\n", debut, fin, fluxImpossiblesStr());
   }
 
-  private Set<Argent.OperationImpossible> operationsImpossibles() {
-    return patrimoine.possessions().stream()
-        .filter(p -> p instanceof Argent)
-        .flatMap(p -> ((Argent) p).getOperationsImpossibles().stream())
-        .filter(o -> o.date().isAfter(debut) || o.date().isEqual(debut))
-        .filter(o -> o.date().isBefore(fin) || o.date().isEqual(fin))
-        .collect(toSet());
+  private Set<FluxImpossibles> fluxImpossibles() {
+    var res = new HashSet<FluxImpossibles>();
+    evolutionJournaliere.forEach((date, patrimoine) ->
+        patrimoine.possessions().forEach(p -> {
+              if (p instanceof Argent argent && !(p instanceof Dette) && p.getValeurComptable() < 0) {
+                var fluxImpossibles = argent.getFluxArgents().stream()
+                    .filter(f -> f.getDateOperation() == date.getDayOfMonth())
+                    .filter(f -> f.getDebut().isBefore(date) || f.getDebut().isEqual(date))
+                    .filter(f -> f.getFin().isAfter(date) || f.getFin().isEqual(date))
+                    .collect(toSet());
+                if (!fluxImpossibles.isEmpty()) {
+                  res.add(new FluxImpossibles(
+                      date,
+                      argent.getNom(),
+                      argent.getValeurComptable(),
+                      fluxImpossibles));
+                }
+              }
+            }
+        ));
+    return res;
   }
 
-  public String operationsImpossibleStr() {
-    return operationsImpossibles.stream()
-        .sorted(comparing(Argent.OperationImpossible::date))
-        .map(Argent.OperationImpossible::toString)
-        .collect(joining("\n"));
+  public String fluxImpossiblesStr() {
+    return fluxImpossibles.stream()
+        .sorted(comparing(FluxImpossibles::date))
+        .map(FluxImpossibles::toString)
+        .collect(joining("\n\n"));
   }
 
   private Map<LocalDate, Patrimoine> evolutionJournaliere() {

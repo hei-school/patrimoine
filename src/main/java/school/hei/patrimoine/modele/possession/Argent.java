@@ -1,6 +1,7 @@
 package school.hei.patrimoine.modele.possession;
 
 import lombok.Getter;
+import lombok.ToString;
 import school.hei.patrimoine.modele.Devise;
 
 import java.time.LocalDate;
@@ -10,24 +11,11 @@ import java.util.Set;
 import static java.util.stream.Collectors.toSet;
 import static school.hei.patrimoine.modele.Devise.NON_NOMMEE;
 
+@ToString
 @Getter
 public sealed class Argent extends Possession permits Dette, Creance {
   private final LocalDate dateOuverture;
   private final Set<FluxArgent> fluxArgents;
-
-  private final Set<OperationImpossible> operationsImpossibles = new HashSet<>();
-
-  public record OperationImpossible(LocalDate date, int valeurArgentAvantOperation, FluxArgent flux) {
-    @Override
-    public String toString() {
-      return String.join(", ",
-          date.toString(),
-          flux.getArgent().getNom(),
-          valeurArgentAvantOperation + "",
-          flux.getNom(),
-          flux.getFluxMensuel() + "");
-    }
-  }
 
   public Argent(String nom, LocalDate t, int valeurComptable, Devise devise) {
     this(nom, t, t, valeurComptable, devise);
@@ -65,21 +53,14 @@ public sealed class Argent extends Possession permits Dette, Creance {
         nom,
         dateOuverture,
         tFutur,
-        valeurComptableFutur(tFutur),
+        valeurComptable - financementsFuturs(tFutur),
         fluxArgents.stream().map(f -> f.projectionFuture(tFutur)).collect(toSet()), devise);
   }
 
-  private int valeurComptableFutur(LocalDate tFutur) {
-    var res = valeurComptable;
-    for (var f : fluxArgents) {
-      var financementsFuturs = valeurComptable - f.projectionFuture(tFutur).getArgent().getValeurComptable();
-      var newRes = res - financementsFuturs;
-      if (!(this instanceof Dette) && newRes < 0 && newRes < res) {
-        operationsImpossibles.add(new Argent.OperationImpossible(tFutur, res, f));
-      }
-      res = newRes;
-    }
-    return res;
+  private int financementsFuturs(LocalDate tFutur) {
+    return fluxArgents.stream()
+        .mapToInt(f -> valeurComptable - f.projectionFuture(tFutur).getArgent().getValeurComptable())
+        .sum();
   }
 
   void addFinancés(FluxArgent fluxArgent) {
