@@ -1,10 +1,9 @@
 package school.hei.patrimoine.modele.possession;
 
-import school.hei.patrimoine.modele.Devise;
+import static school.hei.patrimoine.modele.Devise.NON_NOMMEE;
 
 import java.time.LocalDate;
-
-import static school.hei.patrimoine.modele.Devise.NON_NOMMEE;
+import school.hei.patrimoine.modele.Devise;
 
 public final class Dette extends Argent {
 

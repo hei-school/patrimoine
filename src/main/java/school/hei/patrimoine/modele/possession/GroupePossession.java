@@ -1,12 +1,11 @@
 package school.hei.patrimoine.modele.possession;
 
-import school.hei.patrimoine.modele.Devise;
+import static java.util.stream.Collectors.toSet;
+import static school.hei.patrimoine.modele.Devise.NON_NOMMEE;
 
 import java.time.LocalDate;
 import java.util.Set;
-
-import static java.util.stream.Collectors.toSet;
-import static school.hei.patrimoine.modele.Devise.NON_NOMMEE;
+import school.hei.patrimoine.modele.Devise;
 
 public final class GroupePossession extends Possession {
 
@@ -24,6 +23,9 @@ public final class GroupePossession extends Possession {
   @Override
   public Possession projectionFuture(LocalDate tFutur) {
     return new GroupePossession(
-        nom, tFutur, possessions.stream().map(p -> p.projectionFuture(tFutur)).collect(toSet()), devise);
+        nom,
+        tFutur,
+        possessions.stream().map(p -> p.projectionFuture(tFutur)).collect(toSet()),
+        devise);
   }
 }

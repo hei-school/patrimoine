@@ -1,13 +1,12 @@
 package school.hei.patrimoine.visualisation.swing.ihm;
 
-import school.hei.patrimoine.visualisation.swing.modele.PatrimoinesVisualisables;
+import static java.awt.FlowLayout.LEFT;
 
-import javax.swing.*;
 import java.awt.*;
 import java.util.Observable;
 import java.util.Observer;
-
-import static java.awt.FlowLayout.LEFT;
+import javax.swing.*;
+import school.hei.patrimoine.visualisation.swing.modele.PatrimoinesVisualisables;
 
 public class OperationsImpossiblesIHM extends JPanel implements Observer {
   private final PatrimoinesVisualisables patrimoinesVisualisables;
@@ -25,7 +24,8 @@ public class OperationsImpossiblesIHM extends JPanel implements Observer {
   }
 
   private void updateTextPane() {
-    var operationsImpossibleStr = patrimoinesVisualisables.getEvolutionPatrimoine().fluxImpossiblesStr();
+    var operationsImpossibleStr =
+        patrimoinesVisualisables.getEvolutionPatrimoine().fluxImpossiblesStr();
     operationsImpossiblesTextPane.setText(
         "".equals(operationsImpossibleStr)
             ? ""
