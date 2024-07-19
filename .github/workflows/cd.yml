@@ -1,0 +1,40 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+jobs:
+  deploy-package:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Setup Maven Action
+        uses: s4u/setup-maven-action@v1.13.0
+        with:
+          java-version: "21"
+          java-distribution: "temurin"
+          maven-version: "3.9.6"
+
+      - name: Build with Maven
+        run: mvn -B package --file pom.xml
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-west-3
+
+      - name: Login to AWS CodeArtifact
+        id: login-codeartifact
+        run: |
+          aws codeartifact get-authorization-token --domain ${{ secrets.DOMAIN }} --domain-owner ${{ secrets.OWNER }} --query authorizationToken --output text > token
+          echo "TOKEN=$(cat token)" >> $GITHUB_ENV
+
+      - name: Publish package to AWS CodeArtifact
+        run: |
+          aws codeartifact login --tool mvn --repository ${{ secrets.REPO_NAME }} --domain ${{ secrets.DOMAIN }} --domain-owner ${{ secrets.OWNER }}
+          mvn deploy -DrepositoryId=codeartifact -Durl=${{ secrets.CODEARTIFACT_REPOSITORY_URL }} -Daws.codeartifact.auth.token=$TOKEN
