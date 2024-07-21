@@ -5,8 +5,11 @@ import static java.time.temporal.ChronoUnit.DAYS;
 import static school.hei.patrimoine.modele.Devise.NON_NOMMEE;
 
 import java.time.LocalDate;
+
+import lombok.Getter;
 import school.hei.patrimoine.modele.Devise;
 
+@Getter
 public final class Materiel extends Possession {
   private final LocalDate dateAcquisition;
   private final double tauxDAppreciationAnnuelle;
