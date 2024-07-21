@@ -4,8 +4,11 @@ import static school.hei.patrimoine.modele.Devise.NON_NOMMEE;
 
 import java.time.LocalDate;
 import java.util.Set;
+
+import lombok.Getter;
 import school.hei.patrimoine.modele.Devise;
 
+@Getter
 public final class AchatMaterielAuComptant extends Possession {
 
   private final GroupePossession achatCommeGroupe;
