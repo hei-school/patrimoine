@@ -1,15 +1,14 @@
 package school.hei.patrimoine.modele.possession;
 
-import lombok.Getter;
-import lombok.ToString;
-import school.hei.patrimoine.modele.Devise;
+import static java.util.stream.Collectors.toSet;
+import static school.hei.patrimoine.modele.Devise.NON_NOMMEE;
 
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
-
-import static java.util.stream.Collectors.toSet;
-import static school.hei.patrimoine.modele.Devise.NON_NOMMEE;
+import lombok.Getter;
+import lombok.ToString;
+import school.hei.patrimoine.modele.Devise;
 
 @ToString
 @Getter
@@ -21,13 +20,20 @@ public sealed class Argent extends Possession permits Dette, Creance {
     this(nom, t, t, valeurComptable, devise);
   }
 
-  private Argent(String nom, LocalDate dateOuverture, LocalDate t, int valeurComptable, Set<FluxArgent> fluxArgents, Devise devise) {
+  private Argent(
+      String nom,
+      LocalDate dateOuverture,
+      LocalDate t,
+      int valeurComptable,
+      Set<FluxArgent> fluxArgents,
+      Devise devise) {
     super(nom, t, valeurComptable, devise);
     this.fluxArgents = fluxArgents;
     this.dateOuverture = dateOuverture;
   }
 
-  public Argent(String nom, LocalDate dateOuverture, LocalDate t, int valeurComptable, Devise devise) {
+  public Argent(
+      String nom, LocalDate dateOuverture, LocalDate t, int valeurComptable, Devise devise) {
     this(nom, dateOuverture, t, valeurComptable, new HashSet<>(), devise);
   }
 
@@ -39,7 +45,12 @@ public sealed class Argent extends Possession permits Dette, Creance {
     this(nom, dateOuverture, t, valeurComptable, new HashSet<>());
   }
 
-  private Argent(String nom, LocalDate dateOuverture, LocalDate t, int valeurComptable, Set<FluxArgent> fluxArgents) {
+  private Argent(
+      String nom,
+      LocalDate dateOuverture,
+      LocalDate t,
+      int valeurComptable,
+      Set<FluxArgent> fluxArgents) {
     this(nom, dateOuverture, t, valeurComptable, fluxArgents, NON_NOMMEE);
   }
 
@@ -54,12 +65,14 @@ public sealed class Argent extends Possession permits Dette, Creance {
         dateOuverture,
         tFutur,
         valeurComptable - financementsFuturs(tFutur),
-        fluxArgents.stream().map(f -> f.projectionFuture(tFutur)).collect(toSet()), devise);
+        fluxArgents.stream().map(f -> f.projectionFuture(tFutur)).collect(toSet()),
+        devise);
   }
 
   private int financementsFuturs(LocalDate tFutur) {
     return fluxArgents.stream()
-        .mapToInt(f -> valeurComptable - f.projectionFuture(tFutur).getArgent().getValeurComptable())
+        .mapToInt(
+            f -> valeurComptable - f.projectionFuture(tFutur).getArgent().getValeurComptable())
         .sum();
   }
 

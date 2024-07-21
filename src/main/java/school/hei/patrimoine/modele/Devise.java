@@ -1,12 +1,12 @@
 package school.hei.patrimoine.modele;
 
-import java.io.Serializable;
-import java.time.LocalDate;
-
 import static java.lang.Math.max;
 import static java.time.LocalDate.now;
 import static java.time.Month.JULY;
 import static java.time.temporal.ChronoUnit.DAYS;
+
+import java.io.Serializable;
+import java.time.LocalDate;
 
 public record Devise(String nom, int valeurEnAriary, LocalDate t, double tauxDappréciationAnnuel)
     implements Serializable {

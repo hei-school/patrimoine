@@ -1,12 +1,11 @@
 package school.hei.patrimoine.serialisation;
 
-import lombok.SneakyThrows;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Base64;
+import lombok.SneakyThrows;
 
 /* note(no-serializable): Serializable is highly deprecated by
  * Effective Java 3rd Edition Item 86.
@@ -16,7 +15,7 @@ public class Serialiseur<T> {
   @SneakyThrows
   public String serialise(T object) {
     try (var bos = new ByteArrayOutputStream();
-         ObjectOutputStream oos = new ObjectOutputStream(bos)) {
+        ObjectOutputStream oos = new ObjectOutputStream(bos)) {
       oos.writeObject(object);
       return Base64.getEncoder().encodeToString(bos.toByteArray());
     }
@@ -26,7 +25,7 @@ public class Serialiseur<T> {
   public T deserialise(String serialisé) {
     var bytes = Base64.getDecoder().decode(serialisé);
     try (var bis = new ByteArrayInputStream(bytes);
-         var ois = new ObjectInputStream(bis)) {
+        var ois = new ObjectInputStream(bis)) {
       return (T) ois.readObject();
     }
   }

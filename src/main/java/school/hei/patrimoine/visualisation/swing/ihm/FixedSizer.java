@@ -6,9 +6,9 @@ import java.util.function.BiConsumer;
 public class FixedSizer implements BiConsumer<Component, Dimension> {
   @Override
   public void accept(Component component, Dimension dimension) {
-      component.setSize(dimension);
-      component.setMinimumSize(dimension);
-      component.setMaximumSize(dimension);
-      component.setPreferredSize(dimension);
+    component.setSize(dimension);
+    component.setMinimumSize(dimension);
+    component.setMaximumSize(dimension);
+    component.setPreferredSize(dimension);
   }
 }

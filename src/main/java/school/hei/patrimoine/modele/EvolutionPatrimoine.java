@@ -1,11 +1,8 @@
 package school.hei.patrimoine.modele;
 
-import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
-import school.hei.patrimoine.modele.possession.Argent;
-import school.hei.patrimoine.modele.possession.Dette;
-import school.hei.patrimoine.modele.possession.FluxArgent;
-import school.hei.patrimoine.modele.possession.Possession;
+import static java.util.Comparator.comparing;
+import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toSet;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -15,10 +12,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
-
-import static java.util.Comparator.comparing;
-import static java.util.stream.Collectors.joining;
-import static java.util.stream.Collectors.toSet;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+import school.hei.patrimoine.modele.possession.Argent;
+import school.hei.patrimoine.modele.possession.Dette;
+import school.hei.patrimoine.modele.possession.FluxArgent;
+import school.hei.patrimoine.modele.possession.Possession;
 
 @Getter
 @Slf4j
@@ -42,24 +41,32 @@ public class EvolutionPatrimoine {
 
   private Set<FluxImpossibles> fluxImpossibles() {
     var res = new HashSet<FluxImpossibles>();
-    evolutionJournaliere.forEach((date, patrimoine) ->
-        patrimoine.possessions().forEach(p -> {
-              if (p instanceof Argent argent && !(p instanceof Dette) && p.getValeurComptable() < 0) {
-                var fluxImpossibles = argent.getFluxArgents().stream()
-                    .filter(f -> f.getDateOperation() == date.getDayOfMonth())
-                    .filter(f -> f.getDebut().isBefore(date) || f.getDebut().isEqual(date))
-                    .filter(f -> f.getFin().isAfter(date) || f.getFin().isEqual(date))
-                    .collect(toSet());
-                if (!fluxImpossibles.isEmpty()) {
-                  res.add(new FluxImpossibles(
-                      date,
-                      argent.getNom(),
-                      argent.getValeurComptable(),
-                      fluxImpossibles));
-                }
-              }
-            }
-        ));
+    evolutionJournaliere.forEach(
+        (date, patrimoine) ->
+            patrimoine
+                .possessions()
+                .forEach(
+                    p -> {
+                      if (p instanceof Argent argent
+                          && !(p instanceof Dette)
+                          && p.getValeurComptable() < 0) {
+                        var fluxImpossibles =
+                            argent.getFluxArgents().stream()
+                                .filter(f -> f.getDateOperation() == date.getDayOfMonth())
+                                .filter(
+                                    f -> f.getDebut().isBefore(date) || f.getDebut().isEqual(date))
+                                .filter(f -> f.getFin().isAfter(date) || f.getFin().isEqual(date))
+                                .collect(toSet());
+                        if (!fluxImpossibles.isEmpty()) {
+                          res.add(
+                              new FluxImpossibles(
+                                  date,
+                                  argent.getNom(),
+                                  argent.getValeurComptable(),
+                                  fluxImpossibles));
+                        }
+                      }
+                    }));
     return res;
   }
 
@@ -85,8 +92,14 @@ public class EvolutionPatrimoine {
       }
       var serie = new ArrayList<Integer>();
 
-      dates().forEach(d -> serie.add(
-          evolutionJournaliere.get(d).possessionParNom(possession.getNom()).getValeurComptable()));
+      dates()
+          .forEach(
+              d ->
+                  serie.add(
+                      evolutionJournaliere
+                          .get(d)
+                          .possessionParNom(possession.getNom())
+                          .getValeurComptable()));
       map.put(possession, serie);
     }
     return map;
