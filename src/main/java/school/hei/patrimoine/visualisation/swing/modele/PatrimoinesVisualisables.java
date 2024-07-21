@@ -1,13 +1,12 @@
 package school.hei.patrimoine.visualisation.swing.modele;
 
-import school.hei.patrimoine.modele.EvolutionPatrimoine;
-import school.hei.patrimoine.modele.Patrimoine;
+import static java.time.LocalDate.now;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Observable;
-
-import static java.time.LocalDate.now;
+import school.hei.patrimoine.modele.EvolutionPatrimoine;
+import school.hei.patrimoine.modele.Patrimoine;
 
 public class PatrimoinesVisualisables extends Observable {
 
@@ -39,10 +38,8 @@ public class PatrimoinesVisualisables extends Observable {
   }
 
   public Patrimoine selectionne(String nom) {
-    this.patrimoineSélectionné = patrimoines.stream()
-        .filter(patrimoine -> nom.equals(patrimoine.nom()))
-        .findFirst()
-        .get();
+    this.patrimoineSélectionné =
+        patrimoines.stream().filter(patrimoine -> nom.equals(patrimoine.nom())).findFirst().get();
 
     change();
     return this.patrimoineSélectionné;
@@ -55,9 +52,6 @@ public class PatrimoinesVisualisables extends Observable {
 
   public EvolutionPatrimoine getEvolutionPatrimoine() {
     return new EvolutionPatrimoine(
-        patrimoineSélectionné.nom(),
-        patrimoineSélectionné,
-        débutEvolution,
-        finEvolution);
+        patrimoineSélectionné.nom(), patrimoineSélectionné, débutEvolution, finEvolution);
   }
 }

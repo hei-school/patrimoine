@@ -1,25 +1,23 @@
 package school.hei.patrimoine.visualisation.swing.ihm;
 
-import lombok.Getter;
-import lombok.SneakyThrows;
-import school.hei.patrimoine.modele.Patrimoine;
-import school.hei.patrimoine.visualisation.swing.modele.PatrimoinesVisualisables;
-
-import javax.swing.*;
-import java.awt.*;
-import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
-
 import static java.awt.BorderLayout.CENTER;
 import static java.awt.BorderLayout.WEST;
 import static java.awt.Toolkit.getDefaultToolkit;
 import static javax.swing.BorderFactory.createEmptyBorder;
 import static javax.swing.BoxLayout.Y_AXIS;
 
+import java.awt.*;
+import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
+import javax.swing.*;
+import lombok.Getter;
+import lombok.SneakyThrows;
+import school.hei.patrimoine.modele.Patrimoine;
+import school.hei.patrimoine.visualisation.swing.modele.PatrimoinesVisualisables;
+
 public class MainIHM extends JFrame implements Observer {
-  @Getter
-  private final PatrimoinesVisualisables patrimoinesVisualisables;
+  @Getter private final PatrimoinesVisualisables patrimoinesVisualisables;
   private final SelecteurPatrimoineIHM selecteurPatrimoineIHM;
   private final SelecteurPeriodeIHM selecteurPeriodeIHM;
   private final OperationsImpossiblesIHM operationsImpossiblesIHM;
@@ -34,7 +32,8 @@ public class MainIHM extends JFrame implements Observer {
     this.operationsImpossiblesIHM = new OperationsImpossiblesIHM(patrimoinesVisualisables);
 
     this.selecteurPeriodeIHM = new SelecteurPeriodeIHM(patrimoinesVisualisables);
-    this.grapheurEvolutionPatrimoineIHM = new GrapheurEvolutionPatrimoineIHM(patrimoinesVisualisables);
+    this.grapheurEvolutionPatrimoineIHM =
+        new GrapheurEvolutionPatrimoineIHM(patrimoinesVisualisables);
 
     configureFrame();
     configureContentPane();
@@ -75,6 +74,8 @@ public class MainIHM extends JFrame implements Observer {
   }
 
   private void setTitle() {
-    setTitle("Patrimoine - " + patrimoinesVisualisables.getEvolutionPatrimoine().getPatrimoine().possesseur().nom());
+    setTitle(
+        "Patrimoine - "
+            + patrimoinesVisualisables.getEvolutionPatrimoine().getPatrimoine().possesseur().nom());
   }
 }
