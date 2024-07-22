@@ -1,4 +1,4 @@
-name: ci
+name: CI
 
 on:
   push:
@@ -10,26 +10,61 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Setup Maven Action
+      - name: Checkout code
+        uses: actions/checkout@v4.1.6
+
+      - name: Setup Java and Maven
         uses: s4u/setup-maven-action@v1.13.0
         with:
           java-version: '21'
           java-distribution: 'temurin'
           maven-version: '3.9.6'
 
-      - name: test with coverage (min -> 80%)
+      - name: Cache Maven packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven
+
+      - name: Test with coverage (min -> 80%)
         run: mvn -B clean verify '-Dtest=school.hei.patrimoine.modele.**'
+
+      - name: Cache SonarCloud packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+
+      - name: Code quality and coverage analysis
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GTB_TOKEN }}
+        run: |
+          mvn sonar:sonar \
+            -Dsonar.projectKey=${{vars.SONAR_PJ_KEY}} \
+            -Dsonar.organization=${{vars.SONAR_ORG}} \
+            -Dsonar.host.url=http:https://sonarcloud.io \
+            -Dsonar.coverage.jacoco.xmlReportPaths=build/reports/jacoco/test/jacocoTestReport.xml \
+            -Dsonar.java.checkstyle.reportPaths=build/reports/checkstyle/main.xml,build/reports/checkstyle/test.xml
+
   format:
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
     steps:
-      - uses: actions/checkout@v4.1.6
-      - uses: actions/setup-java@v4.2.1
+      - name: Checkout code
+        uses: actions/checkout@v4.1.6
+
+      - name: Setup Java
+        uses: actions/setup-java@v4.2.1
         with:
           java-version: '21'
           distribution: 'corretto'
 
-      - run: chmod +x format.sh
-      - run: ./format.sh && git diff --exit-code
+      - name: Run format script
+        run: chmod +x format.sh && ./format.sh && git diff --exit-code reformat
