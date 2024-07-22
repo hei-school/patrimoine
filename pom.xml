@@ -10,6 +10,14 @@
 
     <name>patrimoine</name>
 
+    <distributionManagement>
+        <repository>
+            <id>patrimoine-sonic-patrimoine-sonic-repository</id>
+            <name>patrimoine-sonic-patrimoine-sonic-repository</name>
+            <url>https://patrimoine-sonic-008541141815.d.codeartifact.eu-west-3.amazonaws.com/maven/patrimoine-sonic-repository/</url>
+        </repository>
+    </distributionManagement>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>21</maven.compiler.source>
