@@ -1,0 +1,33 @@
+name: cd
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Setup Maven Action
+        uses: s4u/setup-maven-action@v1.13.0
+        with:
+          java-version: "21"
+          java-distribution: "temurin"
+          maven-version: "3.9.6"
+
+      - name: Build with Maven
+        run: mvn clean package
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4.0.1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_SECRET_KEY_ID}}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY}}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Publish package to AWS CodeArtifact
+        run: export CODEARTIFACT_TOKEN=$(aws codeartifact get-authorization-token --domain patrimoine-sonic --domain-owner 008541141815 --region eu-west-3 --query authorizationToken --output text) && mvn clean deploy --settings ./.m2/settings.xml

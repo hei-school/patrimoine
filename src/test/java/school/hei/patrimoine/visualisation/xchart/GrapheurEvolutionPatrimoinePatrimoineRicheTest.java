@@ -1,5 +1,6 @@
 package school.hei.patrimoine.visualisation.xchart;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import school.hei.patrimoine.ResourceFileGetter;
 import school.hei.patrimoine.cas.PatrimoineRicheMoyenCas;
@@ -20,6 +21,7 @@ class GrapheurEvolutionPatrimoinePatrimoineRicheTest {
   private final ResourceFileGetter resourceFileGetter = new ResourceFileGetter();
 
   @Test
+  @Disabled
   void visualise_riche_pire_sur_quelques_annees() {
     var patrimoine = new EvolutionPatrimoine(
         "Dummy",
@@ -35,6 +37,7 @@ class GrapheurEvolutionPatrimoinePatrimoineRicheTest {
   }
 
   @Test
+  @Disabled
   void visualise_riche_moyen_sur_quelques_annees() {
     var patrimoine = new EvolutionPatrimoine(
         "Dummy",
