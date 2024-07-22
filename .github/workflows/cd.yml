@@ -2,19 +2,46 @@ name: cd
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   workflow_dispatch:
 
 jobs:
-  build:
+  deploy-package:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
+
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
       - name: Setup Maven Action
         uses: s4u/setup-maven-action@v1.13.0
         with:
-          java-version: '21'
-          java-distribution: 'temurin'
-          maven-version: '3.9.6'
+          java-version: "21"
+          java-distribution: "temurin"
+          maven-version: "3.9.6"
 
-      - name: Build
-        run: mvn clean install
+      - name: Build with Maven
+        run: mvn clean package
+
+      - name: Create Maven settings.xml
+        run: |
+          mkdir -p ~/.m2
+          echo "<settings>
+                  <servers>
+                    <server>
+                      <id>codeartifact</id>
+                      <username>aws</username>
+                      <password>${{ secrets.CODEARTIFACT_AUTH_TOKEN }}</password>
+                    </server>
+                  </servers>
+                  <mirrors>
+                    <mirror>
+                      <id>codeartifact</id>
+                      <mirrorOf>*</mirrorOf>
+                      <url>https://${{ secrets.DOMAIN }}-${{ secrets.OWNER }}.d.codeartifact.eu-west-3.amazonaws.com/maven/${{ secrets.REPO_NAME }}/</url>
+                    </mirror>
+                  </mirrors>
+                </settings>" > ~/.m2/settings.xml
+      - name: Publish package to AWS CodeArtifact
+        run: mvn deploy -Pdeployment --settings ~/.m2/settings.xml --file pom.xml
