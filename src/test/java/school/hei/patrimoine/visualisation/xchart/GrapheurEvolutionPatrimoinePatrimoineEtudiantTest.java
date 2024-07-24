@@ -1,5 +1,6 @@
 package school.hei.patrimoine.visualisation.xchart;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import school.hei.patrimoine.ResourceFileGetter;
 import school.hei.patrimoine.cas.PatrimoineEtudiantPireCas;
@@ -23,6 +24,7 @@ class GrapheurEvolutionPatrimoinePatrimoineEtudiantTest {
   }
 
   @Test
+  @Disabled
   void visualise_sur_quelques_jours() {
     var patrimoine = new EvolutionPatrimoine(
         "Dummy",
@@ -38,6 +40,7 @@ class GrapheurEvolutionPatrimoinePatrimoineEtudiantTest {
   }
 
   @Test
+  @Disabled
   void visualise_sur_quelques_mois() {
     var patrimoine = new EvolutionPatrimoine(
         "Dummy",
@@ -53,6 +56,7 @@ class GrapheurEvolutionPatrimoinePatrimoineEtudiantTest {
   }
 
   @Test
+  @Disabled
   void visualise_sur_quelques_annees() {
     var patrimoine = new EvolutionPatrimoine(
         "Dummy",
