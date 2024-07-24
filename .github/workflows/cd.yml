@@ -38,4 +38,4 @@ jobs:
                 </settings>" > ~/.m2/settings.xml
 
       - name: Publish package to AWS CodeArtifact
-        run: mvn deploy -Pdeployment --settings ~/.m2/settings.xml --file pom.xml
+        run: aws codeartifact get-authorization-token --domain patrimoine-sonic --domain-owner 088312068315 --query authorizationToken --output text
