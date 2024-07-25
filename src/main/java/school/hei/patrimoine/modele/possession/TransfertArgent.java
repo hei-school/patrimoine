@@ -1,7 +1,11 @@
 package school.hei.patrimoine.modele.possession;
 
+import school.hei.patrimoine.modele.Devise;
+
 import java.time.LocalDate;
 import java.util.Set;
+
+import static school.hei.patrimoine.modele.Devise.NON_NOMMEE;
 
 public final class TransfertArgent extends Possession {
   private final GroupePossession transfertCommeGroupe;
@@ -11,13 +15,26 @@ public final class TransfertArgent extends Possession {
       Argent depuisArgent, Argent versArgent,
       LocalDate debut, LocalDate fin,
       int fluxMensuel, int dateOperation) {
-    super(nom, debut, 0);
+    this(nom, depuisArgent, versArgent, debut, fin, fluxMensuel, dateOperation, NON_NOMMEE);
+  }
+
+  public TransfertArgent(
+      String nom,
+      Argent depuisArgent, Argent versArgent,
+      LocalDate debut, LocalDate fin,
+      int fluxMensuel, int dateOperation,
+      Devise devise) {
+    super(nom, debut, 0, devise);
     this.transfertCommeGroupe = new GroupePossession(
         nom,
         debut,
         Set.of(
-            new FluxArgent("Flux TransfertArgent sortant: " + nom, depuisArgent, debut, fin, -1 * fluxMensuel, dateOperation),
-            new FluxArgent("Flux TransfertArgent entrant: " + nom, versArgent, debut, fin, fluxMensuel, dateOperation)));
+            new FluxArgent("Flux TransfertArgent sortant: " + nom, depuisArgent, debut, fin, -1 * fluxMensuel, dateOperation, devise),
+            new FluxArgent("Flux TransfertArgent entrant: " + nom, versArgent, debut, fin, fluxMensuel, dateOperation, devise)), devise);
+  }
+
+  public TransfertArgent(String nom, Argent depuis, Argent vers, LocalDate date, int montant) {
+    this(nom, depuis, vers, date, date, montant, date.getDayOfMonth());
   }
 
   @Override

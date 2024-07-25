@@ -1,5 +1,14 @@
 package school.hei.patrimoine.cas;
 
+import static java.time.Month.DECEMBER;
+import static java.time.Month.JANUARY;
+import static java.time.Month.MAY;
+import static java.util.Calendar.JUNE;
+
+import java.time.LocalDate;
+import java.util.Calendar;
+import java.util.Set;
+import java.util.function.Supplier;
 import school.hei.patrimoine.modele.Patrimoine;
 import school.hei.patrimoine.modele.Personne;
 import school.hei.patrimoine.modele.possession.AchatMaterielAuComptant;
@@ -8,16 +17,6 @@ import school.hei.patrimoine.modele.possession.FluxArgent;
 import school.hei.patrimoine.modele.possession.GroupePossession;
 import school.hei.patrimoine.modele.possession.Materiel;
 import school.hei.patrimoine.modele.possession.TransfertArgent;
-
-import java.time.LocalDate;
-import java.util.Calendar;
-import java.util.Set;
-import java.util.function.Supplier;
-
-import static java.time.Month.DECEMBER;
-import static java.time.Month.JANUARY;
-import static java.time.Month.MAY;
-import static java.util.Calendar.JUNE;
 
 public class PatrimoineRichePireCas implements Supplier<Patrimoine> {
 

@@ -1,22 +1,5 @@
 package school.hei.patrimoine.cas;
 
-import school.hei.patrimoine.modele.Patrimoine;
-import school.hei.patrimoine.modele.Personne;
-import school.hei.patrimoine.modele.possession.AchatMaterielAuComptant;
-import school.hei.patrimoine.modele.possession.Argent;
-import school.hei.patrimoine.modele.possession.Creance;
-import school.hei.patrimoine.modele.possession.Dette;
-import school.hei.patrimoine.modele.possession.FluxArgent;
-import school.hei.patrimoine.modele.possession.GroupePossession;
-import school.hei.patrimoine.modele.possession.Materiel;
-import school.hei.patrimoine.modele.possession.Possession;
-import school.hei.patrimoine.modele.possession.TransfertArgent;
-
-import java.time.LocalDate;
-import java.util.Set;
-import java.util.function.Supplier;
-import java.util.stream.Stream;
-
 import static java.time.LocalDate.now;
 import static java.time.Month.APRIL;
 import static java.time.Month.AUGUST;
@@ -29,9 +12,25 @@ import static java.time.Month.SEPTEMBER;
 import static java.time.temporal.ChronoUnit.MONTHS;
 import static java.util.stream.Collectors.toSet;
 
+import java.time.LocalDate;
+import java.util.Set;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
+import school.hei.patrimoine.modele.Patrimoine;
+import school.hei.patrimoine.modele.Personne;
+import school.hei.patrimoine.modele.possession.AchatMaterielAuComptant;
+import school.hei.patrimoine.modele.possession.Argent;
+import school.hei.patrimoine.modele.possession.Creance;
+import school.hei.patrimoine.modele.possession.Dette;
+import school.hei.patrimoine.modele.possession.FluxArgent;
+import school.hei.patrimoine.modele.possession.GroupePossession;
+import school.hei.patrimoine.modele.possession.Materiel;
+import school.hei.patrimoine.modele.possession.Possession;
+import school.hei.patrimoine.modele.possession.TransfertArgent;
+
 public class PatrimoineRicheMoyenCas implements Supplier<Patrimoine> {
 
-  private final LocalDate ajd = now();
+  private final LocalDate ajd = LocalDate.of(2024, JULY, 8);
   private final LocalDate dans1mois = ajd.plusMonths(1);
   private final LocalDate finSimulation = LocalDate.of(2028, MARCH, 31);
 

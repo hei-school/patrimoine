@@ -14,7 +14,7 @@ public class SelecteurPatrimoineIHM extends JPanel {
     super(new FlowLayout(LEFT));
     this.patrimoinesVisualisables = patrimoinesVisualisables;
 
-    configureStyle();
+    new FixedSizer().accept(this, new Dimension(500, 30));
 
     var description = new JLabel("Patrimoine");
     this.add(description);
@@ -25,13 +25,5 @@ public class SelecteurPatrimoineIHM extends JPanel {
     selecteur.addActionListener(e -> patrimoinesVisualisables
         .selectionne(((JComboBox) e.getSource()).getSelectedItem().toString()));
     this.add(selecteur);
-  }
-
-  private void configureStyle() {
-    var size = new Dimension(500, 30);
-    this.setSize(size);
-    this.setMinimumSize(size);
-    this.setMaximumSize(size);
-    this.setPreferredSize(size);
   }
 }

@@ -1,16 +1,15 @@
 package school.hei.patrimoine.cas;
 
+import static java.time.Month.MAY;
+
+import java.time.LocalDate;
+import java.util.Set;
+import java.util.function.Supplier;
 import school.hei.patrimoine.modele.Patrimoine;
 import school.hei.patrimoine.modele.Personne;
 import school.hei.patrimoine.modele.possession.Argent;
 import school.hei.patrimoine.modele.possession.FluxArgent;
 import school.hei.patrimoine.modele.possession.Materiel;
-
-import java.time.LocalDate;
-import java.util.Set;
-import java.util.function.Supplier;
-
-import static java.time.Month.MAY;
 
 public class PatrimoineEtudiantPireCas implements Supplier<Patrimoine> {
   @Override
