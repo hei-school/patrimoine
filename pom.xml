@@ -130,6 +130,9 @@
             <properties>
                 <maven.test.skip>false</maven.test.skip>
                 <skipTests>false</skipTests>
+                 <sonar.coverage.jacoco.xmlReportPaths>
+                 ../app-it/target/site/jacoco-aggregate/jacoco.xml
+                </sonar.coverage.jacoco.xmlReportPaths>
             </properties>
             <build>
                 <plugins>
