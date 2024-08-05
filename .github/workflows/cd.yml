@@ -27,7 +27,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_SECRET_KEY_ID}}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY}}
-          aws-region: ${{ secrets.AWS_REGION }}
+          aws-region: eu-west-3
 
       - name: Publish package to AWS CodeArtifact
         run: export CODEARTIFACT_TOKEN=$(aws codeartifact get-authorization-token --domain maven-hei-lab --domain-owner 057045785189 --region eu-west-3 --query authorizationToken --output text) && mvn clean deploy --settings ./.m2/settings.xml
