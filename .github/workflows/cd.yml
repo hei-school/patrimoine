@@ -30,4 +30,4 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Publish package to AWS CodeArtifact
-        run: export CODEARTIFACT_TOKEN=$(aws codeartifact get-authorization-token --domain patrimoine-sonic --domain-owner 008541141815 --region eu-west-3 --query authorizationToken --output text) && mvn clean deploy --settings ./.m2/settings.xml
+        run: export CODEARTIFACT_TOKEN=$(aws codeartifact get-authorization-token --domain maven-hei-lab --domain-owner 057045785189 --region eu-west-3 --query authorizationToken --output text) && mvn clean deploy --settings ./.m2/settings.xml
