@@ -1,5 +1,6 @@
 package school.hei.patrimoine.cas;
 
+import school.hei.patrimoine.cas.zety.PatrimoineZetyEtudiant;
 import school.hei.patrimoine.visualisation.swing.ihm.MainIHM;
 
 import java.util.List;
@@ -10,6 +11,7 @@ public class VisualiseurCas {
 
   public static void main(String[] args) {
     invokeLater(() -> new MainIHM(List.of(
+        new PatrimoineZetyEtudiant().get(),
         new PatrimoineEtudiantPireCas().get(),
         new PatrimoineRichePireCas().get(),
         new PatrimoineRicheMoyenCas().get()
