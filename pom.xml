@@ -118,9 +118,9 @@
 
     <distributionManagement>
         <repository>
-            <id>patrimoine-sonic-harena-patrimoine</id>
-            <name>patrimoine-sonic-harena-patrimoine</name>
-            <url>https://patrimoine-sonic-008541141815.d.codeartifact.eu-west-3.amazonaws.com/maven/harena-patrimoine/</url>
+            <id>patrimoine</id>
+            <name>patrimoine</name>
+            <url>https://maven-hei-lab-057045785189.d.codeartifact.eu-west-3.amazonaws.com/maven/patrimoine/</url>
         </repository>
     </distributionManagement>
 
