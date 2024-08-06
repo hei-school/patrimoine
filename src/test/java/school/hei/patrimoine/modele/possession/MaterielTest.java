@@ -9,7 +9,7 @@ import static java.time.Month.OCTOBER;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static school.hei.patrimoine.modele.Devise.NON_NOMMEE;
 
-class MaterielTest {
+class jMaterielTest {
 
   @Test
   void mon_mac_s_apprecie_negativement_dans_le_futur() {

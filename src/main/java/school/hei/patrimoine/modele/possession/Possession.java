@@ -18,7 +18,7 @@ import static school.hei.patrimoine.modele.Devise.NON_NOMMEE;
 public sealed abstract class Possession implements Serializable /*note(no-serializable)*/ permits
     Argent, FluxArgent, TransfertArgent,
     Materiel, AchatMaterielAuComptant,
-    GroupePossession {
+    GroupePossession, CompteBancaire {
   protected final String nom;
   protected final LocalDate t;
   protected final int valeurComptable;
