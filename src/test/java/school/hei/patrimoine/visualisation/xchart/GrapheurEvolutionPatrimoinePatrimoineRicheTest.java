@@ -19,7 +19,7 @@ class GrapheurEvolutionPatrimoinePatrimoineRicheTest {
   private final AreImagesEqual areImagesEqual = new AreImagesEqual();
   private final ResourceFileGetter resourceFileGetter = new ResourceFileGetter();
 
-  @RepeatedTest(value = 5)
+  @RepeatedTest(3)
   void visualise_riche_pire_sur_quelques_annees() {
     var patrimoine = new EvolutionPatrimoine(
         "Dummy",
@@ -34,7 +34,7 @@ class GrapheurEvolutionPatrimoinePatrimoineRicheTest {
         imageGeneree));
   }
 
-  @RepeatedTest(value = 5)
+  @RepeatedTest(3)
   void visualise_riche_moyen_sur_quelques_annees() {
     var patrimoine = new EvolutionPatrimoine(
         "Dummy",

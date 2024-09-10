@@ -1,20 +1,5 @@
 package school.hei.patrimoine.cas;
 
-import static java.time.Month.APRIL;
-import static java.time.Month.AUGUST;
-import static java.time.Month.DECEMBER;
-import static java.time.Month.JANUARY;
-import static java.time.Month.JULY;
-import static java.time.Month.MARCH;
-import static java.time.Month.MAY;
-import static java.time.Month.SEPTEMBER;
-import static java.time.temporal.ChronoUnit.MONTHS;
-import static java.util.stream.Collectors.toSet;
-
-import java.time.LocalDate;
-import java.util.Set;
-import java.util.function.Supplier;
-import java.util.stream.Stream;
 import school.hei.patrimoine.modele.Patrimoine;
 import school.hei.patrimoine.modele.Personne;
 import school.hei.patrimoine.modele.possession.AchatMaterielAuComptant;
@@ -26,6 +11,22 @@ import school.hei.patrimoine.modele.possession.GroupePossession;
 import school.hei.patrimoine.modele.possession.Materiel;
 import school.hei.patrimoine.modele.possession.Possession;
 import school.hei.patrimoine.modele.possession.TransfertArgent;
+
+import java.time.LocalDate;
+import java.util.Set;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
+
+import static java.time.Month.APRIL;
+import static java.time.Month.AUGUST;
+import static java.time.Month.DECEMBER;
+import static java.time.Month.JANUARY;
+import static java.time.Month.JULY;
+import static java.time.Month.MARCH;
+import static java.time.Month.MAY;
+import static java.time.Month.SEPTEMBER;
+import static java.time.temporal.ChronoUnit.MONTHS;
+import static java.util.stream.Collectors.toSet;
 
 public class PatrimoineRicheMoyenCas implements Supplier<Patrimoine> {
 
@@ -70,8 +71,6 @@ public class PatrimoineRicheMoyenCas implements Supplier<Patrimoine> {
         "Byzance",
         LocalDate.of(2024, JANUARY, 1),
         Set.of(
-            new Materiel("Byzance 1/3", ajd, 60_000, LocalDate.of(2024, JANUARY, 1), tauxAppreciationByzance),
-
             new FluxArgent("Zanz&Cie prêt", bp, dateEmpruntZanzEtCie, dateEmpruntZanzEtCie, 30_000, dateEmpruntZanzEtCie.getDayOfMonth()),
             new FluxArgent("Zanz&Cie dette creation", dette, dateEmpruntZanzEtCie, dateEmpruntZanzEtCie, -33_000, dateEmpruntZanzEtCie.getDayOfMonth()),
             new FluxArgent("Zanz&Cie remb.", bp, dateRembZanzEtCie, dateRembZanzEtCie, -33_000, dateRembZanzEtCie.getDayOfMonth()),
@@ -92,7 +91,8 @@ public class PatrimoineRicheMoyenCas implements Supplier<Patrimoine> {
         a2,
         dette,
         creance,
-        byzance);
+        byzance,
+        new Materiel("Byzance 1/3", ajd, 60_000, LocalDate.of(2024, JANUARY, 1), tauxAppreciationByzance));
   }
 
   private Set<Possession> possessionsMyriade(Argent myriadeFr, Creance creanceFr, Dette detteMyriadeFr, Argent myriadeMg, Argent bp) {

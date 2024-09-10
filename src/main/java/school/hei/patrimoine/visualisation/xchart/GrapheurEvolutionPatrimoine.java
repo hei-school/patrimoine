@@ -5,20 +5,27 @@ import org.knowm.xchart.XYChart;
 import org.knowm.xchart.XYChartBuilder;
 import org.knowm.xchart.style.theme.MatlabTheme;
 import school.hei.patrimoine.modele.EvolutionPatrimoine;
+import school.hei.patrimoine.modele.possession.Creance;
+import school.hei.patrimoine.modele.possession.Dette;
 import school.hei.patrimoine.modele.possession.FluxArgent;
+import school.hei.patrimoine.modele.possession.Materiel;
 import school.hei.patrimoine.modele.possession.Possession;
 
+import java.awt.*;
 import java.io.File;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
+import static java.awt.Color.DARK_GRAY;
+import static java.awt.Color.GRAY;
 import static java.awt.Color.WHITE;
 import static java.nio.file.Files.createTempFile;
 import static java.util.UUID.randomUUID;
@@ -26,6 +33,11 @@ import static org.knowm.xchart.BitmapEncoder.BitmapFormat.PNG;
 import static org.knowm.xchart.BitmapEncoder.saveBitmapWithDPI;
 import static org.knowm.xchart.style.Styler.LegendPosition.OutsideE;
 import static org.knowm.xchart.style.markers.SeriesMarkers.NONE;
+import static school.hei.patrimoine.visualisation.xchart.StyleSerie.SerieWidth.FAT;
+import static school.hei.patrimoine.visualisation.xchart.StyleSerie.SerieWidth.NORMAL;
+import static school.hei.patrimoine.visualisation.xchart.StyleSerie.SerieWidth.THIN;
+import static school.hei.patrimoine.visualisation.xchart.StyleSerie.Stroke.CONTINUOUS;
+import static school.hei.patrimoine.visualisation.xchart.StyleSerie.Stroke.DASH;
 
 public class GrapheurEvolutionPatrimoine implements Function<EvolutionPatrimoine, File> {
 
@@ -35,12 +47,28 @@ public class GrapheurEvolutionPatrimoine implements Function<EvolutionPatrimoine
     var dates = evolutionPatrimoine.dates().toList();
     var seriesParPossession = serieValeursComptablesParPossession(evolutionPatrimoine);
     seriesParPossession.keySet().forEach(
-        possession -> addSerie(chart, possession.getNom(), dates, seriesParPossession.get(possession)));
+        possession -> addSerie(
+            chart,
+            possession.getNom(),
+            dates,
+            seriesParPossession.get(possession),
+            styleSerie(possession)));
     addSerie(
         chart,
         "Patrimoine",
         dates,
-        serieValeursComptablesPatrimoine(evolutionPatrimoine));
+        serieValeursComptablesPatrimoine(evolutionPatrimoine),
+        new StyleSerie(FAT, CONTINUOUS, false));
+  }
+
+  private static StyleSerie styleSerie(Possession possession) {
+    if (possession instanceof Materiel) {
+      return new StyleSerie(NORMAL, CONTINUOUS, true);
+    }
+
+    return possession instanceof Dette || possession instanceof Creance
+        ? new StyleSerie(THIN, DASH, false)
+        : new StyleSerie(NORMAL, CONTINUOUS, false);
   }
 
   private static Map<Possession, List<Integer>> serieValeursComptablesParPossession(EvolutionPatrimoine ep) {
@@ -65,7 +93,12 @@ public class GrapheurEvolutionPatrimoine implements Function<EvolutionPatrimoine
     return serie;
   }
 
-  private static void addSerie(XYChart chart, String nom, List<LocalDate> localDates, List<Integer> values) {
+  private static void addSerie(
+      XYChart chart,
+      String nom,
+      List<LocalDate> localDates,
+      List<Integer> values,
+      StyleSerie style) {
     if (values.stream().allMatch(value -> value == 0)) {
       return;
     }
@@ -74,7 +107,23 @@ public class GrapheurEvolutionPatrimoine implements Function<EvolutionPatrimoine
         .map(localDate -> Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant()))
         .toList();
     var serie = chart.addSeries(nom, dates, values);
-    serie.setMarker(NONE);
+
+    if (!style.withMarker()) {
+      serie.setMarker(NONE);
+    }
+    serie.setMarkerColor(DARK_GRAY);
+    serie.setSmooth(true);
+    serie.setLineColor(color(nom));
+    serie.setLineWidth(style.width().getValue());
+    serie.setLineStyle(style.stroke().getValue());
+  }
+
+  private static Color color(String nom) {
+    var nomEnNb = Arrays.stream(nom.split("")).mapToInt(s -> s.charAt(0)).sum();
+    var r = nomEnNb % 255;
+    var g = 255 - r;
+    var b = (128 + nomEnNb) % 255;
+    return new Color(r, g, b);
   }
 
   @SneakyThrows
