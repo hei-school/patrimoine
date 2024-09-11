@@ -109,6 +109,7 @@ public class PatrimoineCresusSupplier implements Supplier<Patrimoine> {
     var byzance =
         new GroupePossession(
             "Byzance",
+            EUR,
             LocalDate.of(2024, JANUARY, 1),
             Set.of(
                 new FluxArgent(
@@ -178,8 +179,7 @@ public class PatrimoineCresusSupplier implements Supplier<Patrimoine> {
                     LocalDate.of(2025, JULY, 31),
                     euro(30_000),
                     tauxAppreciationByzance,
-                    bp)),
-            EUR);
+                    bp)));
     new FluxArgent("Achat Byzance 1/2", bp, ajd, LocalDate.of(2024, AUGUST, 30), euro(-1400), 27);
 
     return Set.of(
@@ -190,9 +190,9 @@ public class PatrimoineCresusSupplier implements Supplier<Patrimoine> {
         byzance,
         new Materiel(
             "Byzance 1/3",
+            LocalDate.of(2024, JANUARY, 1),
             ajd,
             euro(60_000),
-            LocalDate.of(2024, JANUARY, 1),
             tauxAppreciationByzance));
   }
 
@@ -214,8 +214,8 @@ public class PatrimoineCresusSupplier implements Supplier<Patrimoine> {
         bp,
         dateRembCCA,
         dateRembCCA,
-        euro(30_000),
-        dateRembCCA.getDayOfMonth());
+        dateRembCCA.getDayOfMonth(),
+        euro(30_000));
     new FluxArgent("CAR 2024 créance", creanceFr, ajd, ajd, euro(45_000), ajd.getDayOfMonth());
     var dateRembCAR24 = LocalDate.of(2025, JULY, 10);
     new TransfertArgent(
@@ -224,8 +224,8 @@ public class PatrimoineCresusSupplier implements Supplier<Patrimoine> {
         myriadeFr,
         dateRembCAR24,
         dateRembCAR24,
-        euro(45_000),
-        dateRembCAR24.getDayOfMonth());
+        dateRembCAR24.getDayOfMonth(),
+        euro(45_000));
 
     new FluxArgent(
         "Cesar dette",
@@ -278,7 +278,7 @@ public class PatrimoineCresusSupplier implements Supplier<Patrimoine> {
     var finDontBeFoe = LocalDate.of(2025, DECEMBER, 5);
     new FluxArgent("DontBeFoe", myriadeFr, ajd, finDontBeFoe, euro(7_500), 3);
     new TransfertArgent(
-        "Myriade Fr --> Mg", myriadeFr, myriadeMg, ajd, finDontBeFoe, euro(5_000), 27);
+        "Myriade Fr --> Mg", myriadeFr, myriadeMg, ajd, finDontBeFoe, 27, euro(5_000));
     new FluxArgent("Charges Myriade Mg", myriadeMg, ajd, finDontBeFoe, euro(-5_000), 27);
 
     return Set.of(myriadeFr, creanceFr, detteMyriadeFr, myriadeMg);
@@ -301,8 +301,8 @@ public class PatrimoineCresusSupplier implements Supplier<Patrimoine> {
     return Patrimoine.of(
         "Crésus",
         EUR,
-        cresus,
         ajd,
+        cresus,
         Stream.concat(
                 possessionsCresus.stream(),
                 possessionsMyriade(myriadeFr, creanceMyriadeFr, detteMyriadeFr, myriadeMg, bp)

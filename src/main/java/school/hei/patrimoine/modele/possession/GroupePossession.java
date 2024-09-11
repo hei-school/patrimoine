@@ -12,7 +12,7 @@ public final class GroupePossession extends Possession {
 
   private final Set<Possession> possessions;
 
-  public GroupePossession(String nom, LocalDate t, Set<Possession> possessions, Devise devise) {
+  public GroupePossession(String nom, Devise devise, LocalDate t, Set<Possession> possessions) {
     super(
         nom,
         t,
@@ -29,9 +29,9 @@ public final class GroupePossession extends Possession {
   public Possession projectionFuture(LocalDate tFutur) {
     return new GroupePossession(
         nom,
+        valeurComptable.devise(),
         tFutur,
-        possessions.stream().map(p -> p.projectionFuture(tFutur)).collect(toSet()),
-        valeurComptable.devise());
+        possessions.stream().map(p -> p.projectionFuture(tFutur)).collect(toSet()));
   }
 
   @Override

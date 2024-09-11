@@ -22,22 +22,22 @@ public class Patrimoine implements Serializable, Objectivable /*note(no-serializ
 
   private final String nom;
   private final Devise devise;
-  private final Set<Personne> possesseurs;
   private final LocalDate t;
+  private final Set<Personne> possesseurs;
   private final Set<Possession> possessions;
 
   public static Patrimoine of(
       String nom,
       Devise devise,
-      Set<Personne> possesseurs,
       LocalDate t,
+      Set<Personne> possesseurs,
       Set<Possession> possessions) {
-    return new Patrimoine(nom, devise, possesseurs, t, withComptesCorrections(possessions));
+    return new Patrimoine(nom, devise, t, possesseurs, withComptesCorrections(possessions));
   }
 
   public static Patrimoine of(
-      String nom, Devise devise, Personne possesseur, LocalDate t, Set<Possession> possessions) {
-    return new Patrimoine(nom, devise, Set.of(possesseur), t, withComptesCorrections(possessions));
+      String nom, Devise devise, LocalDate t, Personne possesseur, Set<Possession> possessions) {
+    return new Patrimoine(nom, devise, t, Set.of(possesseur), withComptesCorrections(possessions));
   }
 
   private static Set<Possession> withComptesCorrections(Set<Possession> possessions) {
@@ -54,37 +54,35 @@ public class Patrimoine implements Serializable, Objectivable /*note(no-serializ
     return getValeurComptable(devise);
   }
 
-  public Argent getValeurComptable(Devise devise) {
-    return new Argent(
-        possessions.stream()
-            .filter(not(p -> p instanceof CompteCorrection))
-            .mapToInt(p -> valeurPartagéeEntrePossesseursDePatrimoine(p, devise))
-            .sum(),
-        devise);
+  public Argent getValeurComptable(Devise autreDevise) {
+    return possessions.stream()
+        .filter(not(p -> p instanceof CompteCorrection))
+        .map(p -> valeurPartagéeEntrePossesseursDePatrimoine(p, autreDevise))
+        .reduce(new Argent(0, autreDevise), (a1, a2) -> a1.add(a2, t));
   }
 
-  private int valeurPartagéeEntrePossesseursDePatrimoine(Possession possession, Devise cible) {
+  private Argent valeurPartagéeEntrePossesseursDePatrimoine(
+      Possession possession, Devise autreDevise) {
     var possesseursDePossession = possession.getPossesseurs();
-    int possessionValeur = possession.valeurComptable().convertir(cible, t).montant();
+    var possessionValeur = possession.valeurComptable().convertir(autreDevise, t);
     if (possesseursDePossession.isEmpty()) {
       return possessionValeur;
     }
 
     return possesseurs.stream()
-        .mapToInt(
+        .map(
             possesseurDePatrimoine ->
-                (int)
-                    (possessionValeur
-                        * possesseursDePossession.getOrDefault(possesseurDePatrimoine, 0.)))
-        .sum();
+                possessionValeur.mult(
+                    possesseursDePossession.getOrDefault(possesseurDePatrimoine, 0.)))
+        .reduce(new Argent(0, autreDevise), (a1, a2) -> a1.add(a2, t));
   }
 
   public Patrimoine projectionFuture(LocalDate tFutur) {
     return new Patrimoine(
         nom,
         devise,
-        possesseurs,
         tFutur,
+        possesseurs,
         possessions.stream().map(p -> p.projectionFuture(tFutur)).collect(toSet()));
   }
 

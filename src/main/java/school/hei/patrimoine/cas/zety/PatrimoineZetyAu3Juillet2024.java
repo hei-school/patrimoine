@@ -134,12 +134,12 @@ public class PatrimoineZetyAu3Juillet2024 implements Supplier<Patrimoine> {
   }
 
   private Materiel vêtements() {
-    return new Materiel("vêtements", AU_3_JUILLET_2024, ariary(1_500_000), AU_3_JUILLET_2024, -0.5);
+    return new Materiel("vêtements", AU_3_JUILLET_2024, AU_3_JUILLET_2024, ariary(1_500_000), -0.5);
   }
 
   private Materiel ordinateur() {
     return new Materiel(
-        "ordinateur", AU_3_JUILLET_2024, ariary(1_200_000), AU_3_JUILLET_2024, -0.1);
+        "ordinateur", AU_3_JUILLET_2024, AU_3_JUILLET_2024, ariary(1_200_000), -0.1);
   }
 
   @Override
@@ -153,7 +153,7 @@ public class PatrimoineZetyAu3Juillet2024 implements Supplier<Patrimoine> {
     Set<Possession> possessionsDu3Juillet =
         possessionsDu3Juillet2024(ordinateur, vêtements, espèces, compteBancaire);
     return Patrimoine.of(
-        "zety au 3 juillet 2024", MGA, Set.of(zety), AU_3_JUILLET_2024, possessionsDu3Juillet);
+        "zety au 3 juillet 2024", MGA, AU_3_JUILLET_2024, Set.of(zety), possessionsDu3Juillet);
   }
 
   public Patrimoine zetySendette() {
@@ -165,21 +165,21 @@ public class PatrimoineZetyAu3Juillet2024 implements Supplier<Patrimoine> {
     GroupePossession possessionsDu3Juillet =
         new GroupePossession(
             "possessions du 3 Juillet",
+            MGA,
             AU_3_JUILLET_2024,
-            possessionsDu3Juillet2024(ordinateur, vêtements, espèces, compteBancaire),
-            MGA);
+            possessionsDu3Juillet2024(ordinateur, vêtements, espèces, compteBancaire));
     GroupePossession possessionsRajoutéesLe18Septembre =
         new GroupePossession(
             "possessions ajoutées le 18 Septembre 2024",
+            MGA,
             AU_18_SEPTEMBRE_2024,
-            possessionsRajoutéesLe18Septembre2024(compteBancaire),
-            MGA);
+            possessionsRajoutéesLe18Septembre2024(compteBancaire));
 
     return Patrimoine.of(
             "zety au 18 Septembre 2024",
             MGA,
-            Set.of(zety),
             AU_18_SEPTEMBRE_2024,
+            Set.of(zety),
             Set.of(possessionsDu3Juillet, possessionsRajoutéesLe18Septembre))
         .projectionFuture(AU_18_SEPTEMBRE_2024);
   }
@@ -193,19 +193,19 @@ public class PatrimoineZetyAu3Juillet2024 implements Supplier<Patrimoine> {
     var compteBancaire = compteBancaire();
     new GroupePossession(
         "possessions du 3 Juillet",
+        MGA,
         AU_3_JUILLET_2024,
-        possessionsDu3Juillet2024(ordinateur, vêtements, espèces, compteBancaire),
-        MGA);
+        possessionsDu3Juillet2024(ordinateur, vêtements, espèces, compteBancaire));
     new GroupePossession(
         "possessions ajoutées le 18 Septembre 2024",
+        MGA,
         AU_18_SEPTEMBRE_2024,
-        possessionsRajoutéesLe18Septembre2024(compteBancaire),
-        MGA);
+        possessionsRajoutéesLe18Septembre2024(compteBancaire));
     new GroupePossession(
         "possessions ajoutées après le 18 Septembre",
+        MGA,
         AU_18_SEPTEMBRE_2024,
-        possessionsRajoutéesAprèsLe18Septembre2024(espèces, compteBancaire),
-        MGA);
+        possessionsRajoutéesAprèsLe18Septembre2024(espèces, compteBancaire));
 
     return espèces;
   }
@@ -219,27 +219,27 @@ public class PatrimoineZetyAu3Juillet2024 implements Supplier<Patrimoine> {
     GroupePossession possessionsDu3Juillet2024 =
         new GroupePossession(
             "possessions du 3 Juillet",
+            MGA,
             AU_3_JUILLET_2024,
-            possessionsDu3Juillet2024(ordinateur, vêtements, espèces, compteBancaire),
-            MGA);
+            possessionsDu3Juillet2024(ordinateur, vêtements, espèces, compteBancaire));
     GroupePossession possessionsRajoutéesLe18Septembre2024 =
         new GroupePossession(
             "possessions ajoutées le 18 Septembre 2024",
+            MGA,
             AU_18_SEPTEMBRE_2024,
-            possessionsRajoutéesLe18Septembre2024(compteBancaire),
-            MGA);
+            possessionsRajoutéesLe18Septembre2024(compteBancaire));
     GroupePossession possessionsRajoutéesAprèsLe18Septembre2024 =
         new GroupePossession(
             "possessions ajoutées après le 18 Septembre",
+            MGA,
             AU_18_SEPTEMBRE_2024,
-            possessionsRajoutéesAprèsLe18Septembre2024(espèces, compteBancaire),
-            MGA);
+            possessionsRajoutéesAprèsLe18Septembre2024(espèces, compteBancaire));
 
     return Patrimoine.of(
         "zety au 14 Février 2025",
         MGA,
-        Set.of(zety),
         AU_14_FEVRIER_2025,
+        Set.of(zety),
         Set.of(
             possessionsDu3Juillet2024,
             possessionsRajoutéesLe18Septembre2024,
@@ -257,35 +257,35 @@ public class PatrimoineZetyAu3Juillet2024 implements Supplier<Patrimoine> {
     GroupePossession possessionsDu3Juillet2024 =
         new GroupePossession(
             "possessions du 3 Juillet",
+            MGA,
             AU_3_JUILLET_2024,
-            possessionsDu3Juillet2024(ordinateur, vêtements, espèces, compteBancaire),
-            MGA);
+            possessionsDu3Juillet2024(ordinateur, vêtements, espèces, compteBancaire));
     GroupePossession possessionsRajoutéesLe18Septembre2024 =
         new GroupePossession(
             "possessions ajoutées le 18 Septembre 2024",
+            MGA,
             AU_18_SEPTEMBRE_2024,
-            possessionsRajoutéesLe18Septembre2024(compteBancaire),
-            MGA);
+            possessionsRajoutéesLe18Septembre2024(compteBancaire));
     GroupePossession possessionsRajoutéesAprèsLe18Septembre2024 =
         new GroupePossession(
             "possessions ajoutées après le 18 Septembre",
+            MGA,
             AU_18_SEPTEMBRE_2024,
-            possessionsRajoutéesAprèsLe18Septembre2024(espèces, compteBancaire),
-            MGA);
+            possessionsRajoutéesAprèsLe18Septembre2024(espèces, compteBancaire));
     // possession en euros
     GroupePossession possessionsRajoutéesAprèsLe14Février2025 =
         new GroupePossession(
             "possessions rajoutées après le 14 Février 2025",
+            EUR,
             AU_14_FEVRIER_2025,
-            possessionsRajoutéesAprèsLe14Février2025(),
-            EUR);
+            possessionsRajoutéesAprèsLe14Février2025());
 
     // patrimoine avec possessions mixtes
     return Patrimoine.of(
         "zety au 26 Octobre 2025",
         MGA,
-        Set.of(zety),
         AU_26_OCTOBRE_2025,
+        Set.of(zety),
         Set.of(
             possessionsDu3Juillet2024,
             possessionsRajoutéesLe18Septembre2024,

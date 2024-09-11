@@ -27,7 +27,7 @@ public abstract class Cas {
     this.finSimulation = finSimulation;
     this.patrimoineSupplier =
         // lazy init required as spec is declarative, not procedural
-        () -> Patrimoine.of(nom(), devise(), possesseurs, ajd, possessions());
+        () -> Patrimoine.of(nom(), devise(), ajd, possesseurs, possessions());
   }
 
   public Patrimoine patrimoine() {

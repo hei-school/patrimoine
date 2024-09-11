@@ -8,13 +8,13 @@ import java.io.Serializable;
 import java.time.LocalDate;
 
 public record Devise(
-    String nom, String symbole, double valeurEnAriary, LocalDate t, double tauxDappréciationAnnuel)
+    String nom, String symbole, LocalDate t, double valeurEnAriary, double tauxDappréciationAnnuel)
     implements Serializable {
-  public static final Devise MGA = new Devise("ARIARY", "Ar", 1, LocalDate.MIN, 0.0);
+  public static final Devise MGA = new Devise("ARIARY", "Ar", LocalDate.MIN, 1, 0.0);
   public static final Devise EUR =
-      new Devise("EURO", "€", 4_821, LocalDate.of(2024, JULY, 3), -0.1);
+      new Devise("EURO", "€", LocalDate.of(2024, JULY, 3), 4_821, -0.1);
   public static final Devise CAD =
-      new Devise("CAD", "CAD", 3286, LocalDate.of(2024, JULY, 8), -0.1);
+      new Devise("CAD", "CAD", LocalDate.of(2024, JULY, 8), 3286, -0.1);
 
   public double valeurEnAriary(LocalDate now) {
     var joursEcoules = DAYS.between(t, now);

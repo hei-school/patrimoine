@@ -29,7 +29,7 @@ class EvolutionPatrimoineTest {
             15);
     var patrimoineIloAu13mai24 =
         Patrimoine.of(
-            "patrimoineIloAu13mai24", MGA, Set.of(ilo), au13mai24, Set.of(financeur, trainDeVie));
+            "patrimoineIloAu13mai24", MGA, au13mai24, Set.of(ilo), Set.of(financeur, trainDeVie));
 
     var evolutionPatrimoine =
         new EvolutionPatrimoine(

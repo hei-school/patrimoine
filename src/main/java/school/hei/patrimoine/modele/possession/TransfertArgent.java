@@ -15,12 +15,13 @@ public final class TransfertArgent extends Possession {
       Compte versCompte,
       LocalDate debut,
       LocalDate fin,
-      Argent fluxMensuel,
-      int dateOperation) {
+      int dateOperation,
+      Argent fluxMensuel) {
     super(nom, debut, new Argent(0, fluxMensuel.devise()));
     this.transfertCommeGroupe =
         new GroupePossession(
             nom,
+            valeurComptable.devise(),
             debut,
             Set.of(
                 new FluxArgent(
@@ -35,14 +36,13 @@ public final class TransfertArgent extends Possession {
                     versCompte,
                     debut,
                     fin,
-                    fluxMensuel,
-                    dateOperation)),
-            valeurComptable.devise());
+                    fluxMensuel, // TODO: take into account Devise.appreciation
+                    dateOperation)));
   }
 
   public TransfertArgent(
       String nom, Compte depuisCompte, Compte versCompte, LocalDate t, Argent fluxMensuel) {
-    this(nom, depuisCompte, versCompte, t, t, fluxMensuel, t.getDayOfMonth());
+    this(nom, depuisCompte, versCompte, t, t, t.getDayOfMonth(), fluxMensuel);
   }
 
   @Override

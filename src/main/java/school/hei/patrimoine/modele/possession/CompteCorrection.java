@@ -7,9 +7,10 @@ import lombok.Getter;
 import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.Devise;
 
+@Getter
 public final class CompteCorrection extends Possession {
 
-  @Getter private final Compte compte;
+  final Compte compte;
 
   public CompteCorrection(String nom, Devise devise) {
     this(

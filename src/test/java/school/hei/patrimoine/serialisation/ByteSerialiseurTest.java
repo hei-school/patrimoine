@@ -29,7 +29,7 @@ class ByteSerialiseurTest {
             ariary(-100_000),
             15);
     var patrimoineIloAu13mai24 =
-        Patrimoine.of("patrimoineIloAu13mai24", MGA, ilo, au13mai24, Set.of(financeur, trainDeVie));
+        Patrimoine.of("patrimoineIloAu13mai24", MGA, au13mai24, ilo, Set.of(financeur, trainDeVie));
 
     var serialiseur = new ByteSerialiseur<Patrimoine>();
     var serialisé = serialiseur.serialise(patrimoineIloAu13mai24);

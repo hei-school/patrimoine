@@ -13,9 +13,9 @@ public final class Materiel extends Possession {
 
   public Materiel(
       String nom,
+      LocalDate dateAcquisition,
       LocalDate t,
       Argent valeurComptable,
-      LocalDate dateAcquisition,
       double tauxDAppreciationAnnuelle) {
     super(nom, t, valeurComptable);
     this.dateAcquisition = dateAcquisition;
@@ -27,9 +27,9 @@ public final class Materiel extends Possession {
     if (tFutur.isBefore(dateAcquisition)) {
       return new Materiel(
           nom,
+          dateAcquisition,
           tFutur,
           new Argent(0, valeurComptable.devise()),
-          dateAcquisition,
           tauxDAppreciationAnnuelle);
     }
     var joursEcoules = DAYS.between(t, tFutur);
@@ -39,9 +39,9 @@ public final class Materiel extends Possession {
         max(0, (int) (valeurComptable.montant() + valeurAjouteeJournaliere * joursEcoules));
     return new Materiel(
         nom,
+        dateAcquisition,
         tFutur,
         new Argent(valeurComptableFuture, valeurComptable.devise()),
-        dateAcquisition,
         tauxDAppreciationAnnuelle);
   }
 

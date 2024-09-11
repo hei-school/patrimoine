@@ -20,18 +20,18 @@ public final class AchatMaterielAuComptant extends Possession {
     this.achatCommeGroupe =
         new GroupePossession(
             nom,
+            valeurComptable.devise(),
             dateAchat,
             Set.of(
                 new Materiel(
-                    nom, dateAchat, valeurComptableALAchat, dateAchat, tauxAppreciationAnnuelle),
+                    nom, dateAchat, dateAchat, valeurComptableALAchat, tauxAppreciationAnnuelle),
                 new FluxArgent(
                     "Financement AchatMaterielAuComptant: " + nom,
                     financeur,
                     dateAchat,
                     dateAchat,
                     valeurComptableALAchat.mult(-1),
-                    dateAchat.getDayOfMonth())),
-            valeurComptable.devise());
+                    dateAchat.getDayOfMonth())));
   }
 
   @Override
