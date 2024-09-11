@@ -35,7 +35,7 @@ public class EvolutionPatrimoine {
     this.debut = debut;
     this.fin = fin;
     this.evolutionJournaliere = evolutionJournaliere();
-    this.serieComptableTemporelle = new SerieComptableTemporelle(this);
+    this.serieComptableTemporelle = new SerieComptableTemporelle(this, patrimoine.getDevise());
     this.fluxJournaliers = fluxJournaliers();
     this.fluxJournaliersImpossibles = fluxJournaliersImpossibles();
   }

@@ -42,8 +42,8 @@ alors qu'une personne à haut patrimoine est fortunée.
 Ainsi, vous pourriez un jour payer des [impôts sur la fortune](https://fr.wikipedia.org/wiki/Imp%C3%B4t_sur_la_fortune) si vous êtes fortuné,
 mais pas si vous êtes (seulement) riche.
 
-Sur un tout autre registre, il n'y a pas que l'compte comme richesse. Il y a aussi les relations sociales, la culture, le pouvoir.
+Sur un tout autre registre, il n'y a pas que l'argent comme richesse. Il y a aussi les relations sociales, la culture, le pouvoir.
 Bourdieu a longuement pensé ces différentes [formes de richesse](https://www.rse-magazine.com/Pierre-Bourdieu-et-les-formes-de-Capital_a3583.html).
 
-Enfin, ne confondons pas richesse et bonheur. Ne dit-on pas : *"L'compte ne fait pas..."*. Non, trop classique.
+Enfin, ne confondons pas richesse et bonheur. Ne dit-on pas : *"L'argent ne fait pas..."*. Non, trop classique.
 Confucius ne disait-il pas : *"Le contentement apporte le bonheur, même dans la pauvreté. L'insatisfaction apporte le malheur, même dans la richesse"*.

@@ -8,12 +8,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 import lombok.AllArgsConstructor;
+import school.hei.patrimoine.modele.Devise;
 import school.hei.patrimoine.modele.possession.FluxArgent;
 import school.hei.patrimoine.modele.possession.Possession;
 
 @AllArgsConstructor
 public class SerieComptableTemporelle {
   private final EvolutionPatrimoine ep;
+  private final Devise devise;
 
   private static int zeroIfNull(Integer integer) {
     return integer == null ? 0 : integer;
@@ -40,6 +42,7 @@ public class SerieComptableTemporelle {
                           .get(d)
                           .possessionParNom(possession.getNom())
                           .valeurComptable()
+                          .convertir(devise, d)
                           .montant()));
       map.put(possession, serie);
     }
@@ -77,7 +80,13 @@ public class SerieComptableTemporelle {
     var serie = new ArrayList<Integer>();
     serieDates()
         .forEach(
-            d -> serie.add(ep.getEvolutionJournaliere().get(d).getValeurComptable().montant()));
+            d ->
+                serie.add(
+                    ep.getEvolutionJournaliere()
+                        .get(d)
+                        .getValeurComptable()
+                        .convertir(devise, d)
+                        .montant()));
     return serie;
   }
 }

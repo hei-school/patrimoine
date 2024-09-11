@@ -166,7 +166,8 @@ public class GrapheurEvolutionPatrimoine
   public File apply(EvolutionPatrimoine evolutionPatrimoine, GrapheConf grapheConf) {
     XYChart chart = new XYChartBuilder().width(800).height(600).build();
     if (grapheConf.avecTitre()) {
-      chart.setTitle(evolutionPatrimoine.getPatrimoine().nom());
+      var patrimoine = evolutionPatrimoine.getPatrimoine();
+      chart.setTitle(String.format("%s (%s)", patrimoine.nom(), patrimoine.getDevise().symbole()));
     }
     configureStyle(chart);
     configureSeries(evolutionPatrimoine, chart, grapheConf);
