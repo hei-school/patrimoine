@@ -31,7 +31,7 @@ La librairie Patrimoine permet de raisonner holistiquement sur son patrimoine en
 ## D'autres définitions de la richesse
 
 Êtes-vous riche parce que vous gagnez un gros salaire ? Oui.
-En réalité, la plupart des instituts statistiques définissent le seul de richesse
+En réalité, la plupart des instituts statistiques définissent le seuil de richesse
 soit à [partir du revenu](https://inegalites.fr/Comment-definir-un-seuil-de-richesse) dont le salaire,
 soit à [partir du patrimoine](https://www.inegalites.fr/A-partir-de-quel-niveau-de-patrimoine-est-on-fortune).
 
