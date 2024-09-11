@@ -43,5 +43,5 @@ mais pas si vous êtes (seulement) riche.
 Sur un tout autre registre, il n'y a pas que l'argent comme richesse. Il y a aussi les relations sociales, la culture, le pouvoir.
 Bourdieu a longuement pensé ces différentes [formes de richesse](https://www.rse-magazine.com/Pierre-Bourdieu-et-les-formes-de-Capital_a3583.html).
 
-Enfin, ne confondons pas richesse et bonheur. Ne dit-on pas : *"L'argent de fait pas..."*. Non, trop classique.
+Enfin, ne confondons pas richesse et bonheur. Ne dit-on pas : *"L'argent ne fait pas..."*. Non, trop classique.
 Confucius ne disait-il pas : *"Le contentement apporte le bonheur, même dans la pauvreté. L'insatisfaction apporte le malheur, même dans la richesse"*.
