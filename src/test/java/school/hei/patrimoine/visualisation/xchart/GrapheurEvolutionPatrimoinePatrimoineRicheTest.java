@@ -45,7 +45,8 @@ class GrapheurEvolutionPatrimoinePatrimoineRicheTest {
             LocalDate.of(2025, MARCH, 5));
 
     var imageGeneree =
-        grapheurEvolutionPatrimoine.apply(patrimoine, new GrapheConf(true, true, true, true));
+        grapheurEvolutionPatrimoine.apply(
+            patrimoine, new GrapheConf(false, true, true, true, true));
 
     assertTrue(
         areImagesEqual.apply(
@@ -62,7 +63,8 @@ class GrapheurEvolutionPatrimoinePatrimoineRicheTest {
             LocalDate.of(2025, MARCH, 5));
 
     var imageGeneree =
-        grapheurEvolutionPatrimoine.apply(patrimoine, new GrapheConf(true, true, false, false));
+        grapheurEvolutionPatrimoine.apply(
+            patrimoine, new GrapheConf(false, true, true, false, false));
 
     assertTrue(
         areImagesEqual.apply(
@@ -80,7 +82,8 @@ class GrapheurEvolutionPatrimoinePatrimoineRicheTest {
             LocalDate.of(2025, MARCH, 5));
 
     var imageGeneree =
-        grapheurEvolutionPatrimoine.apply(patrimoine, new GrapheConf(true, false, true, false));
+        grapheurEvolutionPatrimoine.apply(
+            patrimoine, new GrapheConf(false, true, false, true, false));
 
     assertTrue(
         areImagesEqual.apply(
@@ -98,7 +101,8 @@ class GrapheurEvolutionPatrimoinePatrimoineRicheTest {
             LocalDate.of(2025, MARCH, 5));
 
     var imageGeneree =
-        grapheurEvolutionPatrimoine.apply(patrimoine, new GrapheConf(true, false, false, true));
+        grapheurEvolutionPatrimoine.apply(
+            patrimoine, new GrapheConf(true, true, false, false, true));
 
     assertTrue(
         areImagesEqual.apply(

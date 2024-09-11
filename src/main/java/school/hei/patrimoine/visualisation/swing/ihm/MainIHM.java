@@ -34,21 +34,22 @@ public class MainIHM extends JFrame implements Observer {
   private final FluxImpossiblesIHM fluxImpossiblesIHM;
   private final FluxJournaliersIHM fluxJournaliersIHM;
 
-  private final GrapheurEvolutionPatrimoineIHM grapheurEvolutionPatrimoineIHM;
+  private final EvolutionPatrimoineSelectionnéIHM evolutionPatrimoineSelectionnéIHM;
   private final SelecteurGrapheConfIHM selecteurGrapheConfIHM;
 
   public MainIHM(List<Patrimoine> patrimoines) {
     this.patrimoinesVisualisables = new PatrimoinesVisualisables(patrimoines);
     this.patrimoinesVisualisables.addObserver(this);
 
-    this.selecteurPatrimoineIHM = new SelecteurPatrimoineIHM(patrimoinesVisualisables);
+    this.selecteurPatrimoineIHM =
+        new SelecteurPatrimoineIHM(patrimoinesVisualisables, grapheConfObservable);
 
     this.fluxImpossiblesIHM = new FluxImpossiblesIHM(patrimoinesVisualisables);
     this.fluxJournaliersIHM = new FluxJournaliersIHM(patrimoinesVisualisables);
 
     this.selecteurPeriodeIHM = new SelecteurPeriodeIHM(patrimoinesVisualisables);
-    this.grapheurEvolutionPatrimoineIHM =
-        new GrapheurEvolutionPatrimoineIHM(patrimoinesVisualisables, grapheConfObservable);
+    this.evolutionPatrimoineSelectionnéIHM =
+        new EvolutionPatrimoineSelectionnéIHM(patrimoinesVisualisables, grapheConfObservable);
     this.selecteurGrapheConfIHM = new SelecteurGrapheConfIHM(grapheConfObservable);
 
     configureFrame();
@@ -83,7 +84,7 @@ public class MainIHM extends JFrame implements Observer {
     westPanel.add(fluxJournaliersIHM);
     contentPane.add(westPanel, WEST);
 
-    contentPane.add(grapheurEvolutionPatrimoineIHM, CENTER);
+    contentPane.add(evolutionPatrimoineSelectionnéIHM, CENTER);
   }
 
   @Override
