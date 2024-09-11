@@ -27,20 +27,15 @@ import java.io.File;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.function.BiFunction;
-import java.util.function.Predicate;
 import lombok.SneakyThrows;
 import org.knowm.xchart.XYChart;
 import org.knowm.xchart.XYChartBuilder;
 import org.knowm.xchart.style.theme.MatlabTheme;
 import school.hei.patrimoine.modele.EvolutionPatrimoine;
-import school.hei.patrimoine.modele.possession.FluxArgent;
 import school.hei.patrimoine.modele.possession.Possession;
 
 public class GrapheurEvolutionPatrimoine implements BiFunction<EvolutionPatrimoine, Boolean, File> {
@@ -48,9 +43,9 @@ public class GrapheurEvolutionPatrimoine implements BiFunction<EvolutionPatrimoi
   private static final int DPI = 300;
 
   private static void configureSeries(
-      EvolutionPatrimoine evolutionPatrimoine, XYChart chart, boolean withAggregates) {
-    var dates = evolutionPatrimoine.dates().toList();
-    var seriesParPossession = serieValeursComptablesParPossession(evolutionPatrimoine);
+      EvolutionPatrimoine ep, XYChart chart, boolean withAggregates) {
+    var dates = ep.serieDates();
+    var seriesParPossession = ep.serieValeursComptablesParPossession();
     seriesParPossession.keySet().stream()
         .sorted(comparing(Possession::getNom))
         .forEach(
@@ -65,27 +60,26 @@ public class GrapheurEvolutionPatrimoine implements BiFunction<EvolutionPatrimoi
         chart,
         "Patrimoine",
         dates,
-        serieValeursComptablesPatrimoine(evolutionPatrimoine),
+        ep.serieValeursComptablesPatrimoine(),
         new StyleSerie(GREEN, FAT, CONTINUOUS, false));
     if (withAggregates) {
       addSerie(
           chart,
           "Immobilisation",
           dates,
-          serieParPossessionsFiltrées(
-              evolutionPatrimoine, p -> IMMOBILISATION.equals(p.typeAgregat())),
+          ep.serieParPossessionsFiltrées(p -> IMMOBILISATION.equals(p.typeAgregat())),
           new StyleSerie(BLACK, FAT, CONTINUOUS, false));
       addSerie(
           chart,
           "Trésorerie",
           dates,
-          serieParPossessionsFiltrées(evolutionPatrimoine, p -> TRESORIE.equals(p.typeAgregat())),
+          ep.serieParPossessionsFiltrées(p -> TRESORIE.equals(p.typeAgregat())),
           new StyleSerie(RED, FAT, CONTINUOUS, false));
       addSerie(
           chart,
           "Obligations",
           dates,
-          serieParPossessionsFiltrées(evolutionPatrimoine, p -> OBLIGATION.equals(p.typeAgregat())),
+          ep.serieParPossessionsFiltrées(p -> OBLIGATION.equals(p.typeAgregat())),
           new StyleSerie(YELLOW, FAT, DASH, false));
     }
   }
@@ -99,67 +93,6 @@ public class GrapheurEvolutionPatrimoine implements BiFunction<EvolutionPatrimoi
     return OBLIGATION.equals(typeAgregat)
         ? new StyleSerie(null, THIN, DASH, false)
         : new StyleSerie(null, NORMAL, CONTINUOUS, false);
-  }
-
-  private static Map<Possession, List<Integer>> serieValeursComptablesParPossession(
-      EvolutionPatrimoine ep) {
-    var map = new HashMap<Possession, List<Integer>>();
-
-    for (var possession : ep.getPatrimoine().possessions()) {
-      if (possession instanceof FluxArgent) {
-        continue; // valeur comptable toujours 0
-      }
-      var serie = new ArrayList<Integer>();
-
-      ep.dates()
-          .forEach(
-              d ->
-                  serie.add(
-                      ep.getEvolutionJournaliere()
-                          .get(d)
-                          .possessionParNom(possession.getNom())
-                          .getValeurComptable()));
-      map.put(possession, serie);
-    }
-    return map;
-  }
-
-  private static List<Integer> serieParPossessionsFiltrées(
-      EvolutionPatrimoine ep, Predicate<Possession> filtre) {
-    var serieParPossession = serieValeursComptablesParPossession(ep);
-    List<List<Integer>> series = new ArrayList<>();
-    serieParPossession.forEach(
-        (p, serie) -> {
-          if (filtre.test(p)) {
-            series.add(serie);
-          }
-        });
-
-    if (series.isEmpty()) {
-      return List.of();
-    }
-    return series.stream()
-        .reduce(
-            Arrays.stream(new Integer[series.getFirst().size()]).toList(),
-            GrapheurEvolutionPatrimoine::ajouteMembreAMembre);
-  }
-
-  private static List<Integer> ajouteMembreAMembre(List<Integer> l1, List<Integer> l2) {
-    List<Integer> res = new ArrayList<>();
-    for (int i = 0; i < l1.size(); i++) {
-      res.add(zeroIfNull(l1.get(i)) + zeroIfNull(l2.get(i)));
-    }
-    return res;
-  }
-
-  private static int zeroIfNull(Integer integer) {
-    return integer == null ? 0 : integer;
-  }
-
-  private static List<Integer> serieValeursComptablesPatrimoine(EvolutionPatrimoine ep) {
-    var serie = new ArrayList<Integer>();
-    ep.dates().forEach(d -> serie.add(ep.getEvolutionJournaliere().get(d).getValeurComptable()));
-    return serie;
   }
 
   private static void addSerie(
