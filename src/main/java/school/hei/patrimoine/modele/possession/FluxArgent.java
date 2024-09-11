@@ -24,8 +24,8 @@ public final class FluxArgent extends Possession {
       Compte compte,
       LocalDate debut,
       LocalDate fin,
-      Argent fluxMensuel,
-      int dateOperation) {
+      int dateOperation,
+      Argent fluxMensuel) {
     super(nom, LocalDate.MIN, new Argent(0, fluxMensuel.devise()));
     this.compte = compte;
     this.compte.addFinancés(this);
@@ -37,7 +37,7 @@ public final class FluxArgent extends Possession {
   }
 
   public FluxArgent(String nom, Compte compte, LocalDate date, Argent montant) {
-    this(nom, compte, date, date, montant, date.getDayOfMonth());
+    this(nom, compte, date, date, date.getDayOfMonth(), montant);
   }
 
   @Override
@@ -60,7 +60,7 @@ public final class FluxArgent extends Possession {
             .first();
     var argentFutur =
         new Compte(compte.nom + " réduit au financement de " + this, tFutur, valeurFutur);
-    return new FluxArgent(nom, argentFutur, debut, tFuturMajoréParFin, fluxMensuel, dateOperation);
+    return new FluxArgent(nom, argentFutur, debut, tFuturMajoréParFin, dateOperation, fluxMensuel);
   }
 
   private static Pair<Argent, LocalDate> add(

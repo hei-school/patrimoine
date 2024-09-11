@@ -25,8 +25,8 @@ class EvolutionPatrimoineTest {
             financeur,
             au13mai24.minusDays(100),
             au13mai24.plusDays(100),
-            ariary(-100_000),
-            15);
+            15,
+            ariary(-100_000));
     var patrimoineIloAu13mai24 =
         Patrimoine.of(
             "patrimoineIloAu13mai24", MGA, au13mai24, Set.of(ilo), Set.of(financeur, trainDeVie));

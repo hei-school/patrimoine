@@ -30,8 +30,8 @@ public final class AchatMaterielAuComptant extends Possession {
                     financeur,
                     dateAchat,
                     dateAchat,
-                    valeurComptableALAchat.mult(-1),
-                    dateAchat.getDayOfMonth())));
+                    dateAchat.getDayOfMonth(),
+                    valeurComptableALAchat.mult(-1))));
   }
 
   @Override

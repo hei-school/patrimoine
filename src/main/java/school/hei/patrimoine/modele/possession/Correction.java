@@ -23,8 +23,8 @@ public final class Correction extends Possession {
         compteCorrection.getCompte(),
         fluxArgent.getDebut(),
         fluxArgent.getFin(),
-        fluxArgent.getFluxMensuel(),
-        fluxArgent.getDateOperation());
+        fluxArgent.getDateOperation(),
+        fluxArgent.getFluxMensuel());
   }
 
   private Correction(Possession possession, CompteCorrection compteCorrection) {

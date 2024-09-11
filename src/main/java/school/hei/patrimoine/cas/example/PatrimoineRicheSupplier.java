@@ -32,8 +32,8 @@ public class PatrimoineRicheSupplier implements Supplier<Patrimoine> {
         compteCourant,
         LocalDate.of(2023, JANUARY, 1),
         LocalDate.of(2026, DECEMBER, 31),
-        euro(4_800),
-        3);
+        3,
+        euro(4_800));
     var trainDeVie =
         new GroupePossession(
             "Train de vie",
@@ -45,15 +45,15 @@ public class PatrimoineRicheSupplier implements Supplier<Patrimoine> {
                     compteCourant,
                     LocalDate.of(2023, JANUARY, 1),
                     LocalDate.of(2026, DECEMBER, 31),
-                    euro(-1_450),
-                    27),
+                    27,
+                    euro(-1_450)),
                 new FluxArgent(
                     "Courses",
                     compteCourant,
                     LocalDate.of(2023, JANUARY, 1),
                     LocalDate.of(2026, DECEMBER, 31),
-                    euro(-1_100),
-                    1)));
+                    1,
+                    euro(-1_100))));
 
     var voiture =
         new AchatMaterielAuComptant(

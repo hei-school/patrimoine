@@ -29,15 +29,15 @@ public final class TransfertArgent extends Possession {
                     depuisCompte,
                     debut,
                     fin,
-                    fluxMensuel.mult(-1),
-                    dateOperation),
+                    dateOperation,
+                    fluxMensuel.mult(-1)),
                 new FluxArgent(
                     "Flux TransfertArgent entrant: " + nom,
                     versCompte,
                     debut,
                     fin,
-                    fluxMensuel,
-                    dateOperation)));
+                    dateOperation,
+                    fluxMensuel)));
   }
 
   public TransfertArgent(

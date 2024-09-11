@@ -3,46 +3,41 @@ package school.hei.patrimoine.cas;
 import static java.util.stream.Collectors.toSet;
 
 import java.time.LocalDate;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import school.hei.patrimoine.modele.Devise;
 import school.hei.patrimoine.modele.Patrimoine;
 import school.hei.patrimoine.modele.Personne;
-import school.hei.patrimoine.modele.objectif.Objectif;
 import school.hei.patrimoine.modele.objectif.ObjectifNonAtteint;
 import school.hei.patrimoine.modele.possession.Compte;
 import school.hei.patrimoine.modele.possession.Possession;
 
 @Slf4j
-public abstract class Cas implements Supplier<Patrimoine> {
+public abstract class Cas {
   @Getter protected final LocalDate ajd;
   @Getter protected final LocalDate finSimulation;
 
-  protected final Supplier<Patrimoine> patrimoineSupplier;
-
-  @Override
-  public Patrimoine get() {
-    // TODO: This is just for backward compatibility with Google Docs feat: eventually rm it
-    return patrimoineSupplier.get();
-  }
-
-  @Getter protected final Set<Objectif> objectifs = new HashSet<>();
+  // lazy init required as spec is declarative, not procedural
+  private final Supplier<Patrimoine> newPatrimoineSupplier;
+  protected Patrimoine patrimoine;
 
   protected Cas(LocalDate ajd, LocalDate finSimulation, Set<Personne> possesseurs) {
     this.ajd = ajd;
     this.finSimulation = finSimulation;
-    this.patrimoineSupplier =
-        // lazy init required as spec is declarative, not procedural
-        () -> Patrimoine.of(nom(), devise(), ajd, possesseurs, possessions());
+    this.newPatrimoineSupplier =
+        () -> {
+          patrimoine = Patrimoine.of(nom(), devise(), ajd, possesseurs, possessions());
+          init();
+          suivi();
+          return patrimoine;
+        };
   }
 
   public Patrimoine patrimoine() {
-    init();
-    suivi();
-    return patrimoineSupplier.get();
+    return patrimoine == null ? newPatrimoineSupplier.get() : patrimoine;
   }
 
   protected abstract Devise devise();
@@ -54,10 +49,13 @@ public abstract class Cas implements Supplier<Patrimoine> {
   protected abstract void suivi();
 
   public Set<ObjectifNonAtteint> verifier() {
-    init();
-    suivi();
     warnPrecociousFluxArgent();
-    return objectifs.stream().flatMap(objectif -> objectif.verifier().stream()).collect(toSet());
+
+    var nonAtteintsPatrimoines = patrimoine().verifier();
+    var nonAtteintsPossessions =
+        possessions().stream().flatMap(p -> p.verifier().stream()).collect(toSet());
+    return Stream.concat(nonAtteintsPatrimoines.stream(), nonAtteintsPossessions.stream())
+        .collect(toSet());
   }
 
   private void warnPrecociousFluxArgent() {

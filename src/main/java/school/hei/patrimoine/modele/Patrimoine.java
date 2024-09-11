@@ -16,9 +16,10 @@ import school.hei.patrimoine.modele.possession.CompteCorrection;
 import school.hei.patrimoine.modele.possession.Possession;
 
 @AllArgsConstructor(access = PRIVATE)
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = false)
 @Getter
-public class Patrimoine implements Serializable, Objectivable /*note(no-serializable)*/ {
+public final class Patrimoine extends Objectivable
+    implements Serializable /*note(no-serializable)*/ {
 
   private final String nom;
   private final Devise devise;

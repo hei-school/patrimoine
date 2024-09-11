@@ -12,10 +12,10 @@ import school.hei.patrimoine.modele.Personne;
 import school.hei.patrimoine.modele.objectif.Objectivable;
 
 @ToString
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = false)
 @Getter
-public abstract sealed class Possession
-    implements Objectivable, Serializable /*note(no-serializable)*/
+public abstract sealed class Possession extends Objectivable
+    implements Serializable /*note(no-serializable)*/
     permits AchatMaterielAuComptant,
         Compte,
         CompteCorrection,

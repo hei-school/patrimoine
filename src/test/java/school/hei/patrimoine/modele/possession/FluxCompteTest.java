@@ -23,22 +23,22 @@ class FluxCompteTest {
         compteCourant,
         aLOuvertureDeITM,
         aLaDiplomation,
-        ariary(-500_000),
-        1);
+        1,
+        ariary(-500_000));
     new FluxArgent(
         "La générosité des parents au début",
         compteCourant,
         aLOuvertureDeITM,
         aLOuvertureDeITM.plusDays(100),
-        ariary(400_000),
-        30);
+        30,
+        ariary(400_000));
     new FluxArgent(
         "La générosité des parents à la fin",
         compteCourant,
         aLaDiplomation,
         aLaDiplomation.minusDays(100),
-        ariary(400_000),
-        30);
+        30,
+        ariary(400_000));
 
     assertEquals(
         ariary(0), compteCourant.projectionFuture(au13mai24.minusDays(100)).valeurComptable);

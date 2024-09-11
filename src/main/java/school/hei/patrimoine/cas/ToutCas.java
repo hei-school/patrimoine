@@ -43,7 +43,6 @@ public class ToutCas extends Cas {
 
   @Override
   protected void suivi() {
-    casSet.set().forEach(cas -> objectifs.addAll(cas.getObjectifs()));
-    objectifs.add(new Objectif(patrimoineSupplier.get(), finSimulation, casSet.objectifFinal()));
+    new Objectif(patrimoine, finSimulation, casSet.objectifFinal());
   }
 }
