@@ -7,13 +7,16 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Supplier;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import school.hei.patrimoine.modele.Devise;
 import school.hei.patrimoine.modele.Patrimoine;
 import school.hei.patrimoine.modele.Personne;
 import school.hei.patrimoine.modele.objectif.Objectif;
 import school.hei.patrimoine.modele.objectif.ObjectifNonAtteint;
+import school.hei.patrimoine.modele.possession.Compte;
 import school.hei.patrimoine.modele.possession.Possession;
 
+@Slf4j
 public abstract class Cas {
   protected final LocalDate ajd;
   protected final LocalDate finSimulation;
@@ -47,7 +50,20 @@ public abstract class Cas {
   public Set<ObjectifNonAtteint> verifier() {
     init();
     suivi();
+    warnPrecociousFluxArgent();
     return objectifs.stream().flatMap(objectif -> objectif.verifier().stream()).collect(toSet());
+  }
+
+  private void warnPrecociousFluxArgent() {
+    patrimoine().getPossessions().stream()
+        .filter(p -> p instanceof Compte)
+        .flatMap(c -> ((Compte) c).getFluxArgents().stream())
+        .forEach(
+            p -> {
+              if (p.getDebut().isBefore(ajd)) {
+                log.warn("fluxArgent.debut before ajd found: {}", p);
+              }
+            });
   }
 
   public abstract Set<Possession> possessions();
