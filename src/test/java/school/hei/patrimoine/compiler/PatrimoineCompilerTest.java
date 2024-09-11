@@ -3,7 +3,7 @@ package school.hei.patrimoine.compiler;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
-import school.hei.patrimoine.cas.PatrimoineRicheSupplier;
+import school.hei.patrimoine.cas.example.PatrimoineRicheSupplier;
 import school.hei.patrimoine.modele.Patrimoine;
 
 class PatrimoineCompilerTest {

@@ -1,4 +1,4 @@
-package school.hei.patrimoine.cas;
+package school.hei.patrimoine.cas.example;
 
 import static java.time.Month.FEBRUARY;
 import static java.time.Month.MAY;
@@ -8,6 +8,7 @@ import static school.hei.patrimoine.modele.Devise.MGA;
 
 import java.time.LocalDate;
 import java.util.Set;
+import school.hei.patrimoine.cas.Cas;
 import school.hei.patrimoine.modele.Devise;
 import school.hei.patrimoine.modele.Personne;
 import school.hei.patrimoine.modele.possession.Compte;

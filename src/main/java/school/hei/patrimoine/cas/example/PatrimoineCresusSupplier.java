@@ -1,4 +1,4 @@
-package school.hei.patrimoine.cas;
+package school.hei.patrimoine.cas.example;
 
 import static java.time.Month.APRIL;
 import static java.time.Month.AUGUST;
