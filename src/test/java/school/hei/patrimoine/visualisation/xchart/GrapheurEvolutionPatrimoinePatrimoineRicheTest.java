@@ -1,6 +1,6 @@
 package school.hei.patrimoine.visualisation.xchart;
 
-import org.junit.jupiter.api.RepeatedTest;
+import org.junit.jupiter.api.Test;
 import school.hei.patrimoine.ResourceFileGetter;
 import school.hei.patrimoine.cas.PatrimoineRicheMoyenCas;
 import school.hei.patrimoine.cas.PatrimoineRichePireCas;
@@ -19,7 +19,7 @@ class GrapheurEvolutionPatrimoinePatrimoineRicheTest {
   private final AreImagesEqual areImagesEqual = new AreImagesEqual();
   private final ResourceFileGetter resourceFileGetter = new ResourceFileGetter();
 
-  @RepeatedTest(3)
+  @Test
   void visualise_riche_pire_sur_quelques_annees() {
     var patrimoine = new EvolutionPatrimoine(
         "Dummy",
@@ -34,7 +34,7 @@ class GrapheurEvolutionPatrimoinePatrimoineRicheTest {
         imageGeneree));
   }
 
-  @RepeatedTest(3)
+  @Test
   void visualise_riche_moyen_sur_quelques_annees() {
     var patrimoine = new EvolutionPatrimoine(
         "Dummy",

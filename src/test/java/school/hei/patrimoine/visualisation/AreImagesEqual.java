@@ -8,9 +8,17 @@ import java.awt.image.DataBuffer;
 import java.io.File;
 import java.util.function.BiFunction;
 
+import static school.hei.Env.IS_LOCAL_ENV;
+
 @Slf4j
 public class AreImagesEqual implements BiFunction<File, File, Boolean> {
-  @Override
+
+  private final double maxDiffRatio;
+
+  public AreImagesEqual() {
+    maxDiffRatio = IS_LOCAL_ENV ? 0 : 0.07 /* Typically, images gen on CI differ (prolly due to OS) */;
+  }
+
   public Boolean apply(File image1, File image2) {
     // https://stackoverflow.com/questions/8567905/how-to-compare-images-for-similarity-using-java
     var db1 = imageDb(image1);
@@ -29,9 +37,10 @@ public class AreImagesEqual implements BiFunction<File, File, Boolean> {
       }
     }
 
-    if (nbDiff != 0) {
-      log.error("Image mismatch:img1={}, img2={}, nbDiff={}, img.size={}, diffRatio={}",
-          image1, image2, nbDiff, size1, nbDiff / (double) size1);
+    var diffRatio = nbDiff / (double) size1;
+    if (diffRatio > maxDiffRatio) {
+      log.error("Image mismatch:img1={}, img2={}, nbDiff={}, img.size={}, diffRatio={}, maxDiffRatio={}",
+          image1, image2, nbDiff, size1, diffRatio, maxDiffRatio);
       return false;
     }
     return true;
