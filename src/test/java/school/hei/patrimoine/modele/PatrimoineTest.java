@@ -3,6 +3,7 @@ package school.hei.patrimoine.modele;
 import static java.time.LocalDate.now;
 import static java.time.Month.MAY;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static school.hei.patrimoine.modele.Devise.MGA;
 
@@ -11,7 +12,6 @@ import java.util.Map;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
 import school.hei.patrimoine.modele.objectif.Objectif;
-import school.hei.patrimoine.modele.objectif.ObjectifNonAtteintException;
 import school.hei.patrimoine.modele.possession.Argent;
 import school.hei.patrimoine.modele.possession.Correction;
 import school.hei.patrimoine.modele.possession.FluxArgent;
@@ -71,18 +71,19 @@ class PatrimoineTest {
         200_000,
         patrimoineIloAu13mai24.projectionFuture(au13mai24.plusDays(100)).getValeurComptable());
     new Objectif(patrimoineIloAu13mai24, au13mai24.plusDays(10), 500_000).verifier();
-    new Objectif(patrimoineIloAu13mai24, au13mai24.plusDays(100), 200_000, 200_000).verifier();
+    new Objectif(patrimoineIloAu13mai24, au13mai24.plusDays(100), 200_000).verifier();
     new Objectif(financeur, au13mai24.plusDays(10), 500_000).verifier();
     assertEquals(
         200_000,
         patrimoineIloAu13mai24.projectionFuture(au13mai24.plusDays(1_000)).getValeurComptable());
-    assertThrows(
-        ObjectifNonAtteintException.class,
-        () -> new Objectif(patrimoineIloAu13mai24, au13mai24.plusDays(1_000), 200_001).verifier());
-    assertThrows(
-        ObjectifNonAtteintException.class,
-        () ->
-            new Objectif(patrimoineIloAu13mai24, au13mai24.plusDays(1_000), 0, 199_999).verifier());
+    assertFalse(
+        new Objectif(patrimoineIloAu13mai24, au13mai24.plusDays(1_000), 200_001)
+            .verifier()
+            .isEmpty());
+    assertFalse(
+        new Objectif(patrimoineIloAu13mai24, au13mai24.plusDays(1_000), 199_999)
+            .verifier()
+            .isEmpty());
   }
 
   @Test

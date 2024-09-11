@@ -6,7 +6,6 @@ import static java.time.Month.SEPTEMBER;
 
 import java.time.LocalDate;
 import java.util.Set;
-import java.util.function.Supplier;
 import school.hei.patrimoine.modele.Personne;
 import school.hei.patrimoine.modele.possession.Argent;
 import school.hei.patrimoine.modele.possession.Correction;
@@ -34,20 +33,18 @@ public class EtudiantPireCas extends Cas {
   }
 
   @Override
-  protected Supplier<Set<Possession>> possessionsSupplier() {
-    return () -> {
-      var au13mai24 = LocalDate.of(2024, MAY, 13);
-      var trainDeVie =
-          new FluxArgent(
-              "Vie courante",
-              financeur,
-              au13mai24.minusDays(100),
-              au13mai24.plusDays(100),
-              -100_000,
-              15);
-      var mac = new Materiel("MacBook Pro", au13mai24, 500_000, au13mai24.minusDays(3), -0.9);
-      return Set.of(financeur, trainDeVie, mac);
-    };
+  public Set<Possession> possessions() {
+    var au13mai24 = LocalDate.of(2024, MAY, 13);
+    var trainDeVie =
+        new FluxArgent(
+            "Vie courante",
+            financeur,
+            au13mai24.minusDays(100),
+            au13mai24.plusDays(100),
+            -100_000,
+            15);
+    var mac = new Materiel("MacBook Pro", au13mai24, 500_000, au13mai24.minusDays(3), -0.9);
+    return Set.of(financeur, trainDeVie, mac);
   }
 
   @Override

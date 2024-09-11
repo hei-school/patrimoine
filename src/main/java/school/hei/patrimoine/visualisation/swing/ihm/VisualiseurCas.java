@@ -14,7 +14,7 @@ public class VisualiseurCas {
         () ->
             new MainIHM(
                 List.of(
-                    new EtudiantPireCas().get(),
+                    new EtudiantPireCas().patrimoine(),
                     new PatrimoineRicheSupplier().get(),
                     new PatrimoineCresusSupplier().get())));
   }

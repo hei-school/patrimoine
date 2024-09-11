@@ -19,7 +19,7 @@ class GrapheurEvolutionPatrimoinePatrimoineEtudiantTest {
   private final ResourceFileGetter resourceFileGetter = new ResourceFileGetter();
 
   private Patrimoine patrimoine() {
-    return new EtudiantPireCas().get();
+    return new EtudiantPireCas().patrimoine();
   }
 
   @Test
