@@ -1,31 +1,6 @@
 package school.hei.patrimoine.visualisation.xchart;
 
-import lombok.SneakyThrows;
-import org.knowm.xchart.XYChart;
-import org.knowm.xchart.XYChartBuilder;
-import org.knowm.xchart.style.theme.MatlabTheme;
-import school.hei.patrimoine.modele.EvolutionPatrimoine;
-import school.hei.patrimoine.modele.possession.Creance;
-import school.hei.patrimoine.modele.possession.Dette;
-import school.hei.patrimoine.modele.possession.FluxArgent;
-import school.hei.patrimoine.modele.possession.Materiel;
-import school.hei.patrimoine.modele.possession.Possession;
-
-import java.awt.*;
-import java.io.File;
-import java.text.DecimalFormat;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-
 import static java.awt.Color.DARK_GRAY;
-import static java.awt.Color.GRAY;
 import static java.awt.Color.WHITE;
 import static java.nio.file.Files.createTempFile;
 import static java.util.UUID.randomUUID;
@@ -39,6 +14,29 @@ import static school.hei.patrimoine.visualisation.xchart.StyleSerie.SerieWidth.T
 import static school.hei.patrimoine.visualisation.xchart.StyleSerie.Stroke.CONTINUOUS;
 import static school.hei.patrimoine.visualisation.xchart.StyleSerie.Stroke.DASH;
 
+import java.awt.*;
+import java.io.File;
+import java.text.DecimalFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import lombok.SneakyThrows;
+import org.knowm.xchart.XYChart;
+import org.knowm.xchart.XYChartBuilder;
+import org.knowm.xchart.style.theme.MatlabTheme;
+import school.hei.patrimoine.modele.EvolutionPatrimoine;
+import school.hei.patrimoine.modele.possession.Creance;
+import school.hei.patrimoine.modele.possession.Dette;
+import school.hei.patrimoine.modele.possession.FluxArgent;
+import school.hei.patrimoine.modele.possession.Materiel;
+import school.hei.patrimoine.modele.possession.Possession;
+
 public class GrapheurEvolutionPatrimoine implements Function<EvolutionPatrimoine, File> {
 
   private static final int DPI = 300;
@@ -46,13 +44,16 @@ public class GrapheurEvolutionPatrimoine implements Function<EvolutionPatrimoine
   private static void configureSeries(EvolutionPatrimoine evolutionPatrimoine, XYChart chart) {
     var dates = evolutionPatrimoine.dates().toList();
     var seriesParPossession = serieValeursComptablesParPossession(evolutionPatrimoine);
-    seriesParPossession.keySet().forEach(
-        possession -> addSerie(
-            chart,
-            possession.getNom(),
-            dates,
-            seriesParPossession.get(possession),
-            styleSerie(possession)));
+    seriesParPossession
+        .keySet()
+        .forEach(
+            possession ->
+                addSerie(
+                    chart,
+                    possession.getNom(),
+                    dates,
+                    seriesParPossession.get(possession),
+                    styleSerie(possession)));
     addSerie(
         chart,
         "Patrimoine",
@@ -71,7 +72,8 @@ public class GrapheurEvolutionPatrimoine implements Function<EvolutionPatrimoine
         : new StyleSerie(NORMAL, CONTINUOUS, false);
   }
 
-  private static Map<Possession, List<Integer>> serieValeursComptablesParPossession(EvolutionPatrimoine ep) {
+  private static Map<Possession, List<Integer>> serieValeursComptablesParPossession(
+      EvolutionPatrimoine ep) {
     var map = new HashMap<Possession, List<Integer>>();
 
     for (var possession : ep.getPatrimoine().possessions()) {
@@ -80,8 +82,14 @@ public class GrapheurEvolutionPatrimoine implements Function<EvolutionPatrimoine
       }
       var serie = new ArrayList<Integer>();
 
-      ep.dates().forEach(d -> serie.add(
-          ep.getEvolutionJournaliere().get(d).possessionParNom(possession.getNom()).getValeurComptable()));
+      ep.dates()
+          .forEach(
+              d ->
+                  serie.add(
+                      ep.getEvolutionJournaliere()
+                          .get(d)
+                          .possessionParNom(possession.getNom())
+                          .getValeurComptable()));
       map.put(possession, serie);
     }
     return map;
@@ -103,9 +111,10 @@ public class GrapheurEvolutionPatrimoine implements Function<EvolutionPatrimoine
       return;
     }
 
-    var dates = localDates.stream()
-        .map(localDate -> Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant()))
-        .toList();
+    var dates =
+        localDates.stream()
+            .map(localDate -> Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant()))
+            .toList();
     var serie = chart.addSeries(nom, dates, values);
 
     if (!style.withMarker()) {

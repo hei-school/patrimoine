@@ -1,24 +1,26 @@
 package school.hei.patrimoine.modele.possession;
 
+import static school.hei.patrimoine.modele.Devise.NON_NOMMEE;
+
+import java.io.Serializable;
+import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 import school.hei.patrimoine.modele.Devise;
 
-import java.io.Serializable;
-import java.time.LocalDate;
-
-import static school.hei.patrimoine.modele.Devise.NON_NOMMEE;
-
 @ToString
 @EqualsAndHashCode
 @AllArgsConstructor
 @Getter
-public sealed abstract class Possession implements Serializable /*note(no-serializable)*/ permits
-    Argent, FluxArgent, TransfertArgent,
-    Materiel, AchatMaterielAuComptant,
-    GroupePossession {
+public abstract sealed class Possession implements Serializable /*note(no-serializable)*/
+    permits Argent,
+        FluxArgent,
+        TransfertArgent,
+        Materiel,
+        AchatMaterielAuComptant,
+        GroupePossession {
   protected final String nom;
   protected final LocalDate t;
   protected final int valeurComptable;
@@ -39,6 +41,8 @@ public sealed abstract class Possession implements Serializable /*note(no-serial
 
   public final int getValeurComptable(Devise autreDevise, LocalDate tFutur) {
     double valeurEnAriaryAutreDeviseATempsT = autreDevise.valeurEnAriary(tFutur);
-    return (int) ((this.valeurComptable * this.devise.valeurEnAriary(tFutur)) / valeurEnAriaryAutreDeviseATempsT);
+    return (int)
+        ((this.valeurComptable * this.devise.valeurEnAriary(tFutur))
+            / valeurEnAriaryAutreDeviseATempsT);
   }
 }
