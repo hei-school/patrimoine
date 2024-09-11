@@ -36,7 +36,7 @@ soit à [partir du revenu](https://inegalites.fr/Comment-definir-un-seuil-de-ric
 soit à [partir du patrimoine](https://www.inegalites.fr/A-partir-de-quel-niveau-de-patrimoine-est-on-fortune).
 
 Pour faire la distinction entre les deux, on dit souvent qu'une personne à haut revenu est riche,
-alors qu'une personne à patrimoine est fortuné.
+alors qu'une personne à haut patrimoine est fortuné.
 Ainsi, vous pourriez un jour payer des [impôts sur la fortune](https://fr.wikipedia.org/wiki/Imp%C3%B4t_sur_la_fortune) si vous êtes fortuné,
 mais pas si vous êtes (seulement) riche.
 
