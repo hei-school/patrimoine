@@ -7,6 +7,7 @@ import static java.awt.Color.RED;
 import static java.awt.Color.WHITE;
 import static java.awt.Color.YELLOW;
 import static java.nio.file.Files.createTempFile;
+import static java.util.Comparator.comparing;
 import static java.util.UUID.randomUUID;
 import static org.knowm.xchart.BitmapEncoder.BitmapFormat.PNG;
 import static org.knowm.xchart.BitmapEncoder.saveBitmapWithDPI;
@@ -39,10 +40,7 @@ import org.knowm.xchart.XYChart;
 import org.knowm.xchart.XYChartBuilder;
 import org.knowm.xchart.style.theme.MatlabTheme;
 import school.hei.patrimoine.modele.EvolutionPatrimoine;
-import school.hei.patrimoine.modele.possession.Creance;
-import school.hei.patrimoine.modele.possession.Dette;
 import school.hei.patrimoine.modele.possession.FluxArgent;
-import school.hei.patrimoine.modele.possession.Materiel;
 import school.hei.patrimoine.modele.possession.Possession;
 
 public class GrapheurEvolutionPatrimoine implements BiFunction<EvolutionPatrimoine, Boolean, File> {
@@ -53,8 +51,8 @@ public class GrapheurEvolutionPatrimoine implements BiFunction<EvolutionPatrimoi
       EvolutionPatrimoine evolutionPatrimoine, XYChart chart, boolean withAggregates) {
     var dates = evolutionPatrimoine.dates().toList();
     var seriesParPossession = serieValeursComptablesParPossession(evolutionPatrimoine);
-    seriesParPossession
-        .keySet()
+    seriesParPossession.keySet().stream()
+        .sorted(comparing(Possession::getNom))
         .forEach(
             possession ->
                 addSerie(
@@ -72,7 +70,7 @@ public class GrapheurEvolutionPatrimoine implements BiFunction<EvolutionPatrimoi
     if (withAggregates) {
       addSerie(
           chart,
-          "Immbobilisation",
+          "Immobilisation",
           dates,
           serieParPossessionsFiltrées(
               evolutionPatrimoine, p -> IMMOBILISATION.equals(p.typeAgregat())),
@@ -93,11 +91,12 @@ public class GrapheurEvolutionPatrimoine implements BiFunction<EvolutionPatrimoi
   }
 
   private static StyleSerie styleSerie(Possession possession) {
-    if (possession instanceof Materiel) {
+    var typeAgregat = possession.typeAgregat();
+    if (IMMOBILISATION.equals(typeAgregat)) {
       return new StyleSerie(null, NORMAL, CONTINUOUS, true);
     }
 
-    return possession instanceof Dette || possession instanceof Creance
+    return OBLIGATION.equals(typeAgregat)
         ? new StyleSerie(null, THIN, DASH, false)
         : new StyleSerie(null, NORMAL, CONTINUOUS, false);
   }
