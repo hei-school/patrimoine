@@ -1,6 +1,7 @@
 package school.hei.patrimoine.visualisation.swing.modele;
 
-import static java.time.Month.DECEMBER;
+import static java.time.LocalDate.now;
+import static java.time.Month.OCTOBER;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -19,8 +20,8 @@ public final class PatrimoinesVisualisables extends ChangingObservable {
     super();
     this.patrimoines = patrimoines;
     this.patrimoineSélectionné = patrimoines.get(0);
-    this.débutEvolution = patrimoineSélectionné.getT();
-    this.finEvolution = LocalDate.of(2025, DECEMBER, 31);
+    this.débutEvolution = now(); // patrimoineSélectionné.getT();
+    this.finEvolution = LocalDate.of(2025, OCTOBER, 31);
   }
 
   public List<String> noms() {

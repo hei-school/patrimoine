@@ -21,4 +21,9 @@ public record Devise(
     double valeurAjouteeJournaliere = valeurEnAriary * (tauxDappréciationAnnuel / 365.);
     return max(0, (int) (valeurEnAriary + valeurAjouteeJournaliere * joursEcoules));
   }
+
+  @Override
+  public String toString() {
+    return symbole;
+  }
 }

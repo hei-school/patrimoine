@@ -11,12 +11,13 @@ import school.hei.patrimoine.modele.possession.FluxArgent;
 public record FluxJournalier(LocalDate date, Compte compte, Set<FluxArgent> flux) {
   @Override
   public String toString() {
+    var valeurComptable = compte.valeurComptable();
     return String.format(
         "[%s][%s=%d%s] %s",
         date,
         compte.nom(),
-        parseMontant(compte.valeurComptable()),
-        compte.valeurComptable().devise().symbole(),
+        parseMontant(valeurComptable),
+        valeurComptable.devise().symbole(),
         toFluxJournalierString(flux));
   }
 
@@ -25,6 +26,8 @@ public record FluxJournalier(LocalDate date, Compte compte, Set<FluxArgent> flux
   }
 
   private String toFluxJournalierString(FluxArgent flux) {
-    return String.format("(%s, %d)", flux.nom(), parseMontant((flux.getFluxMensuel())));
+    var fluxMensuel = flux.getFluxMensuel();
+    return String.format(
+        "(%s, %d%s)", flux.nom(), parseMontant((fluxMensuel)), fluxMensuel.devise());
   }
 }

@@ -1,6 +1,8 @@
 package school.hei.patrimoine.visualisation.swing.ihm.flux;
 
 import static java.awt.Toolkit.getDefaultToolkit;
+import static java.lang.Math.ceil;
+import static java.lang.Math.sqrt;
 
 import java.awt.*;
 import java.time.LocalDate;
@@ -15,9 +17,6 @@ public class TousGrapheIHM extends JDialog {
   public TousGrapheIHM(
       List<Patrimoine> patrimoines, LocalDate debut, LocalDate fin, GrapheConf grapheConf) {
     super();
-    if (patrimoines.size() > 9) {
-      throw new IllegalArgumentException("Ne peut afficher que 9 patrimoines maximum");
-    }
 
     pack();
     setSize(getDefaultToolkit().getScreenSize());
@@ -27,7 +26,8 @@ public class TousGrapheIHM extends JDialog {
 
     var contentPane = new JPanel();
     setContentPane(contentPane);
-    contentPane.setLayout(new GridLayout(3, 3));
+    var rowsCols = (int) ceil(sqrt(patrimoines.size()));
+    contentPane.setLayout(new GridLayout(rowsCols, rowsCols));
     patrimoines.forEach(
         patrimoine ->
             contentPane.add(

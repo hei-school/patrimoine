@@ -31,6 +31,9 @@ public class PatrimoineFileCompiler implements Function<String, Patrimoine> {
     var className = getClassNameFromPath(filePath);
 
     compile(ioDirPath, sourcePath);
+    if (filePath.contains("ToutObjectifSupplier")) {
+      return null; // TODO: ToutObjectifSupplier should be compiled by a GenericClassCompiler
+    }
 
     var dynamicClass = loadClass(className, ioDirPath);
     var patrimoineSupplier =

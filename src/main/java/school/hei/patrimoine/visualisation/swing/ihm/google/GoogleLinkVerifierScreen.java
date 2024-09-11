@@ -147,7 +147,7 @@ public class GoogleLinkVerifierScreen {
     GridBagConstraints gbc = new GridBagConstraints();
     gbc.gridx = 0;
     gbc.fill = HORIZONTAL;
-    gbc.insets = new Insets(10, 50, 10, 50);
+    gbc.insets = new Insets(0, 50, 0, 50);
     return gbc;
   }
 

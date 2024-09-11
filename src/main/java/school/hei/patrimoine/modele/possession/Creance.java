@@ -10,7 +10,7 @@ public final class Creance extends Compte {
   public Creance(String nom, LocalDate t, Argent valeurComptable) {
     super(nom, t, valeurComptable);
     if (valeurComptable.lt(0)) {
-      throw new IllegalArgumentException();
+      throw new IllegalArgumentException(this.toString());
     }
   }
 

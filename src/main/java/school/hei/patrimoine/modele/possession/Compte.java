@@ -10,7 +10,7 @@ import lombok.Getter;
 import lombok.ToString;
 import school.hei.patrimoine.modele.Argent;
 
-@ToString
+@ToString(callSuper = true)
 @Getter
 public sealed class Compte extends Possession permits Dette, Creance {
   private final LocalDate dateOuverture;

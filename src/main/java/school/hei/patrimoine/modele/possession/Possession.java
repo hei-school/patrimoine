@@ -20,6 +20,7 @@ public abstract sealed class Possession extends Objectivable
         GroupePossession,
         Materiel,
         PatrimoinePersonnel,
+        PersonneMorale,
         RemboursementDette,
         TransfertArgent {
   protected final String nom;
