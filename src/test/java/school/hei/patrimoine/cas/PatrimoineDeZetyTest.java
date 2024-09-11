@@ -5,7 +5,7 @@ import static java.time.Month.SEPTEMBER;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static school.hei.patrimoine.cas.zety.PatrimoineZetyAu3Juillet2024.AU_14_FEVRIER_2025;
 import static school.hei.patrimoine.cas.zety.PatrimoineZetyAu3Juillet2024.AU_26_OCTOBRE_2025;
-import static school.hei.patrimoine.cas.zety.PatrimoineZetyAu3Juillet2024.AU_3_JUILLET_2024;
+import static school.hei.patrimoine.modele.Devise.EUR;
 
 import java.time.LocalDate;
 import lombok.extern.slf4j.Slf4j;
@@ -98,11 +98,10 @@ class PatrimoineDeZetyTest {
 
   @Test
   void zety_part_en_Allemagne() {
-    Devise euro = new Devise("euro", 4_821, AU_3_JUILLET_2024, -0.1);
     var patrimoineDeZetyLe14Fevrier2025 =
-        patrimoineDeZetyLe26Octobre2025(euro).projectionFuture(AU_26_OCTOBRE_2025);
+        patrimoineDeZetyLe26Octobre2025(EUR).projectionFuture(AU_26_OCTOBRE_2025);
 
     assertEquals(
-        -9_964, patrimoineDeZetyLe14Fevrier2025.getValeurComptable(euro, AU_26_OCTOBRE_2025));
+        -9_964, patrimoineDeZetyLe14Fevrier2025.getValeurComptable(EUR, AU_26_OCTOBRE_2025));
   }
 }

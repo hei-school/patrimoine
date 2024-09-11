@@ -1,5 +1,7 @@
 package school.hei.patrimoine.modele.evolution;
 
+import static java.util.stream.Collectors.joining;
+
 import java.time.LocalDate;
 import java.util.Set;
 import school.hei.patrimoine.modele.possession.Argent;
@@ -9,6 +11,19 @@ public record FluxJournalier(LocalDate date, Argent argent, Set<FluxArgent> flux
   @Override
   public String toString() {
     return String.format(
-        "[%s][%s=%d] %s)", date, argent.getNom(), argent.getValeurComptable(), flux);
+        "[%s][%s=%d%s] %s",
+        date,
+        argent.getNom(),
+        argent.getValeurComptable(),
+        argent.getDevise().symbole(),
+        toFluxJournalierString(flux));
+  }
+
+  private String toFluxJournalierString(Set<FluxArgent> flux) {
+    return flux.stream().map(this::toFluxJournalierString).collect(joining(" "));
+  }
+
+  private String toFluxJournalierString(FluxArgent flux) {
+    return String.format("(%s, %d)", flux.getNom(), flux.getFluxMensuel());
   }
 }
