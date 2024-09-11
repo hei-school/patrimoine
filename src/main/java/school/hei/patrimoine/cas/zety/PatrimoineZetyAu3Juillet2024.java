@@ -96,25 +96,31 @@ public class PatrimoineZetyAu3Juillet2024 implements Supplier<Patrimoine> {
   private static Set<Possession> possessionsRajoutéesAprèsLe18Septembre2024(
       Argent espèces, Argent compteBancaire) {
     LocalDate au21Septembre2024 = LocalDate.of(2024, SEPTEMBER, 21);
-    new FluxArgent(
-        "frais de scolarité 1 fois",
-        compteBancaire,
-        au21Septembre2024,
-        au21Septembre2024,
-        -2_500_000,
-        au21Septembre2024.getDayOfMonth(),
-        MGA);
-    new FluxArgent(
-        "dons parentaux", espèces, LocalDate.of(2024, JANUARY, 1), LocalDate.MAX, 100_000, 15, MGA);
-    new FluxArgent(
-        "train de vie mensuel",
-        espèces,
-        LocalDate.of(2024, OCTOBER, 1),
-        LocalDate.of(2025, FEBRUARY, 13),
-        -250_000,
-        1,
-        MGA);
-    return Set.of();
+    return Set.of(
+        new FluxArgent(
+            "frais de scolarité 1 fois",
+            compteBancaire,
+            au21Septembre2024,
+            au21Septembre2024,
+            -2_500_000,
+            au21Septembre2024.getDayOfMonth(),
+            MGA),
+        new FluxArgent(
+            "dons parentaux",
+            espèces,
+            LocalDate.of(2024, JANUARY, 1),
+            LocalDate.MAX,
+            100_000,
+            15,
+            MGA),
+        new FluxArgent(
+            "train de vie mensuel",
+            espèces,
+            LocalDate.of(2024, OCTOBER, 1),
+            LocalDate.of(2025, FEBRUARY, 13),
+            -250_000,
+            1,
+            MGA));
   }
 
   private static Set<Possession> possessionsRajoutéesAprèsLe14Février2025(Devise euro) {

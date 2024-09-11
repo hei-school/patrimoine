@@ -28,7 +28,7 @@ class GrapheurEvolutionPatrimoinePatrimoineRicheTest {
             LocalDate.of(2024, MAY, 12),
             LocalDate.of(2026, NOVEMBER, 5));
 
-    var imageGeneree = grapheurEvolutionPatrimoine.apply(patrimoine);
+    var imageGeneree = grapheurEvolutionPatrimoine.apply(patrimoine, false);
 
     assertTrue(
         areImagesEqual.apply(
@@ -45,7 +45,7 @@ class GrapheurEvolutionPatrimoinePatrimoineRicheTest {
             LocalDate.of(2024, MAY, 12),
             LocalDate.of(2025, MARCH, 5));
 
-    var imageGeneree = grapheurEvolutionPatrimoine.apply(patrimoine);
+    var imageGeneree = grapheurEvolutionPatrimoine.apply(patrimoine, true);
 
     assertTrue(
         areImagesEqual.apply(

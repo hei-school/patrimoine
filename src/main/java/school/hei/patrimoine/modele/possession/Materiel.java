@@ -3,6 +3,7 @@ package school.hei.patrimoine.modele.possession;
 import static java.lang.Math.max;
 import static java.time.temporal.ChronoUnit.DAYS;
 import static school.hei.patrimoine.modele.Devise.NON_NOMMEE;
+import static school.hei.patrimoine.modele.possession.TypeAgregat.IMMOBILISATION;
 
 import java.time.LocalDate;
 import school.hei.patrimoine.modele.Devise;
@@ -43,5 +44,10 @@ public final class Materiel extends Possession {
         max(0, (int) (valeurComptable + valeurAjouteeJournaliere * joursEcoules));
     return new Materiel(
         nom, tFutur, valeurComptableFuture, dateAcquisition, tauxDAppreciationAnnuelle, devise);
+  }
+
+  @Override
+  public TypeAgregat typeAgregat() {
+    return IMMOBILISATION;
   }
 }

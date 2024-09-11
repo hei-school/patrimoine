@@ -39,6 +39,8 @@ public abstract sealed class Possession implements Serializable /*note(no-serial
 
   public abstract Possession projectionFuture(LocalDate tFutur);
 
+  public abstract TypeAgregat typeAgregat();
+
   public final int getValeurComptable(Devise autreDevise, LocalDate tFutur) {
     double valeurEnAriaryAutreDeviseATempsT = autreDevise.valeurEnAriary(tFutur);
     return (int)

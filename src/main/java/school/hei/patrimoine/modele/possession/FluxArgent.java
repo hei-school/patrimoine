@@ -1,6 +1,7 @@
 package school.hei.patrimoine.modele.possession;
 
 import static school.hei.patrimoine.modele.Devise.NON_NOMMEE;
+import static school.hei.patrimoine.modele.possession.TypeAgregat.FLUX;
 
 import java.time.LocalDate;
 import lombok.Getter;
@@ -70,5 +71,10 @@ public final class FluxArgent extends Possession {
             argent.nom + " réduit au financement de " + this, tFutur, valeurFutur, argent.devise);
     return new FluxArgent(
         nom, argentFutur, debut, tFuturMajoréParFin, fluxMensuel, dateOperation, devise);
+  }
+
+  @Override
+  public TypeAgregat typeAgregat() {
+    return FLUX;
   }
 }

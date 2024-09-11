@@ -1,6 +1,7 @@
 package school.hei.patrimoine.modele.possession;
 
 import static school.hei.patrimoine.modele.Devise.NON_NOMMEE;
+import static school.hei.patrimoine.modele.possession.TypeAgregat.IMMOBILISATION;
 
 import java.time.LocalDate;
 import java.util.Set;
@@ -53,5 +54,10 @@ public final class AchatMaterielAuComptant extends Possession {
   @Override
   public Possession projectionFuture(LocalDate tFutur) {
     return achatCommeGroupe.projectionFuture(tFutur);
+  }
+
+  @Override
+  public TypeAgregat typeAgregat() {
+    return IMMOBILISATION;
   }
 }

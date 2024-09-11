@@ -1,6 +1,7 @@
 package school.hei.patrimoine.modele.possession;
 
 import static school.hei.patrimoine.modele.Devise.NON_NOMMEE;
+import static school.hei.patrimoine.modele.possession.TypeAgregat.OBLIGATION;
 
 import java.time.LocalDate;
 import school.hei.patrimoine.modele.Devise;
@@ -25,5 +26,10 @@ public final class Creance extends Argent {
   @Override
   public Creance projectionFuture(LocalDate tFutur) {
     return new Creance(super.projectionFuture(tFutur));
+  }
+
+  @Override
+  public TypeAgregat typeAgregat() {
+    return OBLIGATION;
   }
 }

@@ -1,13 +1,20 @@
 package school.hei.patrimoine.visualisation.xchart;
 
+import static java.awt.Color.BLACK;
 import static java.awt.Color.DARK_GRAY;
+import static java.awt.Color.GREEN;
+import static java.awt.Color.RED;
 import static java.awt.Color.WHITE;
+import static java.awt.Color.YELLOW;
 import static java.nio.file.Files.createTempFile;
 import static java.util.UUID.randomUUID;
 import static org.knowm.xchart.BitmapEncoder.BitmapFormat.PNG;
 import static org.knowm.xchart.BitmapEncoder.saveBitmapWithDPI;
 import static org.knowm.xchart.style.Styler.LegendPosition.OutsideE;
 import static org.knowm.xchart.style.markers.SeriesMarkers.NONE;
+import static school.hei.patrimoine.modele.possession.TypeAgregat.IMMOBILISATION;
+import static school.hei.patrimoine.modele.possession.TypeAgregat.OBLIGATION;
+import static school.hei.patrimoine.modele.possession.TypeAgregat.TRESORIE;
 import static school.hei.patrimoine.visualisation.xchart.StyleSerie.SerieWidth.FAT;
 import static school.hei.patrimoine.visualisation.xchart.StyleSerie.SerieWidth.NORMAL;
 import static school.hei.patrimoine.visualisation.xchart.StyleSerie.SerieWidth.THIN;
@@ -25,7 +32,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
+import java.util.function.BiFunction;
+import java.util.function.Predicate;
 import lombok.SneakyThrows;
 import org.knowm.xchart.XYChart;
 import org.knowm.xchart.XYChartBuilder;
@@ -37,11 +45,12 @@ import school.hei.patrimoine.modele.possession.FluxArgent;
 import school.hei.patrimoine.modele.possession.Materiel;
 import school.hei.patrimoine.modele.possession.Possession;
 
-public class GrapheurEvolutionPatrimoine implements Function<EvolutionPatrimoine, File> {
+public class GrapheurEvolutionPatrimoine implements BiFunction<EvolutionPatrimoine, Boolean, File> {
 
   private static final int DPI = 300;
 
-  private static void configureSeries(EvolutionPatrimoine evolutionPatrimoine, XYChart chart) {
+  private static void configureSeries(
+      EvolutionPatrimoine evolutionPatrimoine, XYChart chart, boolean withAggregates) {
     var dates = evolutionPatrimoine.dates().toList();
     var seriesParPossession = serieValeursComptablesParPossession(evolutionPatrimoine);
     seriesParPossession
@@ -59,17 +68,38 @@ public class GrapheurEvolutionPatrimoine implements Function<EvolutionPatrimoine
         "Patrimoine",
         dates,
         serieValeursComptablesPatrimoine(evolutionPatrimoine),
-        new StyleSerie(FAT, CONTINUOUS, false));
+        new StyleSerie(GREEN, FAT, CONTINUOUS, false));
+    if (withAggregates) {
+      addSerie(
+          chart,
+          "Immbobilisation",
+          dates,
+          serieParPossessionsFiltrées(
+              evolutionPatrimoine, p -> IMMOBILISATION.equals(p.typeAgregat())),
+          new StyleSerie(BLACK, FAT, CONTINUOUS, false));
+      addSerie(
+          chart,
+          "Trésorerie",
+          dates,
+          serieParPossessionsFiltrées(evolutionPatrimoine, p -> TRESORIE.equals(p.typeAgregat())),
+          new StyleSerie(RED, FAT, CONTINUOUS, false));
+      addSerie(
+          chart,
+          "Obligations",
+          dates,
+          serieParPossessionsFiltrées(evolutionPatrimoine, p -> OBLIGATION.equals(p.typeAgregat())),
+          new StyleSerie(YELLOW, FAT, DASH, false));
+    }
   }
 
   private static StyleSerie styleSerie(Possession possession) {
     if (possession instanceof Materiel) {
-      return new StyleSerie(NORMAL, CONTINUOUS, true);
+      return new StyleSerie(null, NORMAL, CONTINUOUS, true);
     }
 
     return possession instanceof Dette || possession instanceof Creance
-        ? new StyleSerie(THIN, DASH, false)
-        : new StyleSerie(NORMAL, CONTINUOUS, false);
+        ? new StyleSerie(null, THIN, DASH, false)
+        : new StyleSerie(null, NORMAL, CONTINUOUS, false);
   }
 
   private static Map<Possession, List<Integer>> serieValeursComptablesParPossession(
@@ -93,6 +123,38 @@ public class GrapheurEvolutionPatrimoine implements Function<EvolutionPatrimoine
       map.put(possession, serie);
     }
     return map;
+  }
+
+  private static List<Integer> serieParPossessionsFiltrées(
+      EvolutionPatrimoine ep, Predicate<Possession> filtre) {
+    var serieParPossession = serieValeursComptablesParPossession(ep);
+    List<List<Integer>> series = new ArrayList<>();
+    serieParPossession.forEach(
+        (p, serie) -> {
+          if (filtre.test(p)) {
+            series.add(serie);
+          }
+        });
+
+    if (series.isEmpty()) {
+      return List.of();
+    }
+    return series.stream()
+        .reduce(
+            Arrays.stream(new Integer[series.getFirst().size()]).toList(),
+            GrapheurEvolutionPatrimoine::ajouteMembreAMembre);
+  }
+
+  private static List<Integer> ajouteMembreAMembre(List<Integer> l1, List<Integer> l2) {
+    List<Integer> res = new ArrayList<>();
+    for (int i = 0; i < l1.size(); i++) {
+      res.add(zeroIfNull(l1.get(i)) + zeroIfNull(l2.get(i)));
+    }
+    return res;
+  }
+
+  private static int zeroIfNull(Integer integer) {
+    return integer == null ? 0 : integer;
   }
 
   private static List<Integer> serieValeursComptablesPatrimoine(EvolutionPatrimoine ep) {
@@ -122,7 +184,7 @@ public class GrapheurEvolutionPatrimoine implements Function<EvolutionPatrimoine
     }
     serie.setMarkerColor(DARK_GRAY);
     serie.setSmooth(true);
-    serie.setLineColor(color(nom));
+    serie.setLineColor(style.color() == null ? color(nom) : style.color());
     serie.setLineWidth(style.width().getValue());
     serie.setLineStyle(style.stroke().getValue());
   }
@@ -137,10 +199,10 @@ public class GrapheurEvolutionPatrimoine implements Function<EvolutionPatrimoine
 
   @SneakyThrows
   @Override
-  public File apply(EvolutionPatrimoine evolutionPatrimoine) {
+  public File apply(EvolutionPatrimoine evolutionPatrimoine, Boolean withAggregates) {
     XYChart chart = new XYChartBuilder().width(800).height(600).build();
     configureStyle(chart);
-    configureSeries(evolutionPatrimoine, chart);
+    configureSeries(evolutionPatrimoine, chart, withAggregates);
 
     var temp = createTempFile(randomUUID().toString(), ".png").toFile();
     saveBitmapWithDPI(chart, temp.getAbsolutePath(), PNG, DPI);
