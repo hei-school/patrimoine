@@ -36,7 +36,7 @@ public final class TransfertArgent extends Possession {
                     versCompte,
                     debut,
                     fin,
-                    fluxMensuel, // TODO: take into account Devise.appreciation
+                    fluxMensuel,
                     dateOperation)));
   }
 

@@ -18,30 +18,27 @@ class FluxCompteTest {
 
     var aLOuvertureDeITM = LocalDate.of(2021, OCTOBER, 26);
     var aLaDiplomation = LocalDate.of(2024, DECEMBER, 26);
-    var vieEstudiantine =
-        new FluxArgent(
-            "Ma super(?) vie d'etudiant",
-            compteCourant,
-            aLOuvertureDeITM,
-            aLaDiplomation,
-            ariary(-500_000),
-            1);
-    var donsDePapaEtMamanAuDebut =
-        new FluxArgent(
-            "La générosité des parents au début",
-            compteCourant,
-            aLOuvertureDeITM,
-            aLOuvertureDeITM.plusDays(100),
-            ariary(400_000),
-            30);
-    var donsDePapaEtMamanALaFin =
-        new FluxArgent(
-            "La générosité des parents à la fin",
-            compteCourant,
-            aLaDiplomation,
-            aLaDiplomation.minusDays(100),
-            ariary(400_000),
-            30);
+    new FluxArgent(
+        "Ma super(?) vie d'etudiant",
+        compteCourant,
+        aLOuvertureDeITM,
+        aLaDiplomation,
+        ariary(-500_000),
+        1);
+    new FluxArgent(
+        "La générosité des parents au début",
+        compteCourant,
+        aLOuvertureDeITM,
+        aLOuvertureDeITM.plusDays(100),
+        ariary(400_000),
+        30);
+    new FluxArgent(
+        "La générosité des parents à la fin",
+        compteCourant,
+        aLaDiplomation,
+        aLaDiplomation.minusDays(100),
+        ariary(400_000),
+        30);
 
     assertEquals(
         ariary(0), compteCourant.projectionFuture(au13mai24.minusDays(100)).valeurComptable);

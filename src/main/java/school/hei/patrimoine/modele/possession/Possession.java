@@ -7,6 +7,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 import school.hei.patrimoine.modele.Argent;
+import school.hei.patrimoine.modele.Devise;
 import school.hei.patrimoine.modele.Personne;
 import school.hei.patrimoine.modele.objectif.Objectivable;
 
@@ -51,6 +52,10 @@ public abstract sealed class Possession
 
   public final Argent valeurComptable() {
     return valeurComptable;
+  }
+
+  public final Devise devise() {
+    return valeurComptable.devise();
   }
 
   public final Argent valeurComptableFuture(LocalDate tFutur) {
