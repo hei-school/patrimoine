@@ -12,15 +12,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Setup Maven Action
+      - name: Setup mvn
         uses: s4u/setup-maven-action@v1.13.0
         with:
           java-version: "21"
           java-distribution: "temurin"
           maven-version: "3.9.6"
 
-      - name: Build with Maven
-        run: mvn clean package
+      - name: Build & verify
+        run: mvn clean package verify
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4.0.1
