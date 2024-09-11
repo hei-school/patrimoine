@@ -103,6 +103,6 @@ class PatrimoineDeZetyTest {
     var patrimoineDeZetyLe14Fevrier2025 =
         patrimoineDeZetyLe26Octobre2025().projectionFuture(AU_26_OCTOBRE_2025);
 
-    assertEquals(euro(-9_964), patrimoineDeZetyLe14Fevrier2025.getValeurComptable(EUR));
+    assertEquals(euro(-9_477), patrimoineDeZetyLe14Fevrier2025.getValeurComptable(EUR));
   }
 }

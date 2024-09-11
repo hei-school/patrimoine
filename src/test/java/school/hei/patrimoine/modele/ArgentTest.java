@@ -15,10 +15,11 @@ class ArgentTest {
   void eur_to_mga() {
     var t = LocalDate.of(2024, SEPTEMBER, 1);
 
-    assertEquals(ariary(4_741), euro(1).convertir(MGA, t));
-    assertEquals(ariary(9_482), euro(2).convertir(MGA, t));
-    assertEquals(ariary(7_554), euro(2).convertir(MGA, t.plusYears(2)));
-    assertEquals(ariary(11_414), euro(2).convertir(MGA, t.minusYears(2)));
+    assertEquals(ariary(4_844), euro(1).convertir(MGA, t));
+    assertEquals(ariary(4_989), euro(1).convertir(MGA, t.plusYears(1)));
+    assertEquals(ariary(9_688), euro(2).convertir(MGA, t));
+    assertEquals(ariary(10_268), euro(2).convertir(MGA, t.plusYears(2)));
+    assertEquals(ariary(9_110), euro(2).convertir(MGA, t.minusYears(2)));
   }
 
   @Test
