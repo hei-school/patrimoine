@@ -7,7 +7,7 @@ Ce n'est pas votre salaire qui définit votre richesse, mais votre patrimoine.
 Leur salaire annuel ? [1$](https://www.indiatimes.com/worth/news/from-mark-zuckerberg-to-elon-musk-why-do-the-rich-ceos-take-a-1-salary-634483.html).
 
 🔴 Tenez encore : Mike Tyson, Kenny Anderson, Antoine Walker et beaucoup d'autres super-stars du sport.
-Que sont-ils devenus après avoir été payés plusieurs M$ pendant leur carrière ? [Ils ont déclaré faillite](https://en.wikipedia.org/wiki/Personal_finances_of_professional_American_athletes#Failures).
+Que sont-ils devenus après avoir été payés plusieurs M$ durant leur carrière ? [Ils ont déclaré faillite](https://en.wikipedia.org/wiki/Personal_finances_of_professional_American_athletes#Failures).
 
 La richesse d'une *personne*, c'est son *patrimoine*. Son patrimoine, c'est l'*ensemble* de ses *possessions*.
 ```
