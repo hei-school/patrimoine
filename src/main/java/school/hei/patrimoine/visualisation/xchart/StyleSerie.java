@@ -14,7 +14,7 @@ public record StyleSerie(Color color, SerieWidth width, Stroke stroke, boolean w
     FAT(4),
     THIN(1);
 
-    private float value;
+    private final float value;
 
     SerieWidth(float value) {
       this.value = value;

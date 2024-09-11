@@ -1,4 +1,4 @@
-package school.hei.patrimoine.modele;
+package school.hei.patrimoine.modele.evolution;
 
 import java.time.LocalDate;
 import java.util.Set;

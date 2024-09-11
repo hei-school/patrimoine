@@ -31,22 +31,6 @@ public class PatrimoineZetyAu3Juillet2024 implements Supplier<Patrimoine> {
   public static final LocalDate AU_26_OCTOBRE_2025 = LocalDate.of(2025, OCTOBER, 26);
   public static final LocalDate AU_15_FEVRIER_2025 = LocalDate.of(2024, FEBRUARY, 15);
 
-  private Argent compteBancaire() {
-    return new Argent("compte bancaire argent", AU_3_JUILLET_2024, 100_000, MGA);
-  }
-
-  private Argent espèces() {
-    return new Argent("espèces", AU_3_JUILLET_2024, AU_3_JUILLET_2024, 800_000, MGA);
-  }
-
-  private Materiel vêtements() {
-    return new Materiel("vêtements", AU_3_JUILLET_2024, 1_500_000, AU_3_JUILLET_2024, -0.5, MGA);
-  }
-
-  private Materiel ordinateur() {
-    return new Materiel("ordinateur", AU_3_JUILLET_2024, 1_200_000, AU_3_JUILLET_2024, -0.1, MGA);
-  }
-
   private static Set<Possession> possessionsDu3Juillet2024(
       Materiel ordinateur, Materiel vêtements, Argent espèces, Argent compteBancaire) {
     new FluxArgent(
@@ -146,6 +130,22 @@ public class PatrimoineZetyAu3Juillet2024 implements Supplier<Patrimoine> {
         dateRemboursementDette.getDayOfMonth(),
         euro);
     return Set.of(compteAllemand, dette);
+  }
+
+  private Argent compteBancaire() {
+    return new Argent("compte bancaire argent", AU_3_JUILLET_2024, 100_000, MGA);
+  }
+
+  private Argent espèces() {
+    return new Argent("espèces", AU_3_JUILLET_2024, AU_3_JUILLET_2024, 800_000, MGA);
+  }
+
+  private Materiel vêtements() {
+    return new Materiel("vêtements", AU_3_JUILLET_2024, 1_500_000, AU_3_JUILLET_2024, -0.5, MGA);
+  }
+
+  private Materiel ordinateur() {
+    return new Materiel("ordinateur", AU_3_JUILLET_2024, 1_200_000, AU_3_JUILLET_2024, -0.1, MGA);
   }
 
   @Override

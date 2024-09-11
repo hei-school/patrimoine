@@ -35,7 +35,7 @@ import lombok.SneakyThrows;
 import org.knowm.xchart.XYChart;
 import org.knowm.xchart.XYChartBuilder;
 import org.knowm.xchart.style.theme.MatlabTheme;
-import school.hei.patrimoine.modele.EvolutionPatrimoine;
+import school.hei.patrimoine.modele.evolution.EvolutionPatrimoine;
 import school.hei.patrimoine.modele.possession.Possession;
 
 public class GrapheurEvolutionPatrimoine implements BiFunction<EvolutionPatrimoine, Boolean, File> {
@@ -44,8 +44,9 @@ public class GrapheurEvolutionPatrimoine implements BiFunction<EvolutionPatrimoi
 
   private static void configureSeries(
       EvolutionPatrimoine ep, XYChart chart, boolean withAggregates) {
-    var dates = ep.serieDates();
-    var seriesParPossession = ep.serieValeursComptablesParPossession();
+    var serieComptableTemporelle = ep.getSerieComptableTemporelle();
+    var dates = serieComptableTemporelle.serieDates();
+    var seriesParPossession = serieComptableTemporelle.serieValeursComptablesParPossession();
     seriesParPossession.keySet().stream()
         .sorted(comparing(Possession::getNom))
         .forEach(
@@ -60,26 +61,29 @@ public class GrapheurEvolutionPatrimoine implements BiFunction<EvolutionPatrimoi
         chart,
         "Patrimoine",
         dates,
-        ep.serieValeursComptablesPatrimoine(),
+        serieComptableTemporelle.serieValeursComptablesPatrimoine(),
         new StyleSerie(GREEN, FAT, CONTINUOUS, false));
     if (withAggregates) {
       addSerie(
           chart,
           "Immobilisation",
           dates,
-          ep.serieParPossessionsFiltrées(p -> IMMOBILISATION.equals(p.typeAgregat())),
+          serieComptableTemporelle.serieParPossessionsFiltrées(
+              p -> IMMOBILISATION.equals(p.typeAgregat())),
           new StyleSerie(BLACK, FAT, CONTINUOUS, false));
       addSerie(
           chart,
           "Trésorerie",
           dates,
-          ep.serieParPossessionsFiltrées(p -> TRESORIE.equals(p.typeAgregat())),
+          serieComptableTemporelle.serieParPossessionsFiltrées(
+              p -> TRESORIE.equals(p.typeAgregat())),
           new StyleSerie(RED, FAT, CONTINUOUS, false));
       addSerie(
           chart,
           "Obligations",
           dates,
-          ep.serieParPossessionsFiltrées(p -> OBLIGATION.equals(p.typeAgregat())),
+          serieComptableTemporelle.serieParPossessionsFiltrées(
+              p -> OBLIGATION.equals(p.typeAgregat())),
           new StyleSerie(YELLOW, FAT, DASH, false));
     }
   }
@@ -123,9 +127,12 @@ public class GrapheurEvolutionPatrimoine implements BiFunction<EvolutionPatrimoi
 
   private static Color color(String nom) {
     var nomEnNb = Arrays.stream(nom.split("")).mapToInt(s -> s.charAt(0)).sum();
+
+    // do not use same value for rgb as it will cause gray-scaled images in most cases
     var r = nomEnNb % 255;
     var g = 255 - r;
     var b = (128 + nomEnNb) % 255;
+
     return new Color(r, g, b);
   }
 

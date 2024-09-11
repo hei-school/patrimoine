@@ -19,6 +19,12 @@ public class AreImagesEqual implements BiFunction<File, File, Boolean> {
         IS_LOCAL_ENV ? 0 : 0.08 /* Typically, images gen on CI differ (prolly due to OS) */;
   }
 
+  @SneakyThrows
+  private static DataBuffer imageDb(File file) {
+    var bi = ImageIO.read(file);
+    return bi.getData().getDataBuffer();
+  }
+
   public Boolean apply(File image1, File image2) {
     // https://stackoverflow.com/questions/8567905/how-to-compare-images-for-similarity-using-java
     var db1 = imageDb(image1);
@@ -55,11 +61,5 @@ public class AreImagesEqual implements BiFunction<File, File, Boolean> {
       return false;
     }
     return true;
-  }
-
-  @SneakyThrows
-  private static DataBuffer imageDb(File file) {
-    var bi = ImageIO.read(file);
-    return bi.getData().getDataBuffer();
   }
 }
