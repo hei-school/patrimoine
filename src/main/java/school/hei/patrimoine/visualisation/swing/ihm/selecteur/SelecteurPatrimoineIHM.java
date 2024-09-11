@@ -5,11 +5,15 @@ import static java.awt.FlowLayout.LEFT;
 import java.awt.*;
 import javax.swing.*;
 import school.hei.patrimoine.visualisation.swing.ihm.FixedSizer;
+import school.hei.patrimoine.visualisation.swing.ihm.flux.TousGrapheIHM;
+import school.hei.patrimoine.visualisation.swing.modele.GrapheConfObservable;
 import school.hei.patrimoine.visualisation.swing.modele.PatrimoinesVisualisables;
 
 public class SelecteurPatrimoineIHM extends JPanel {
 
-  public SelecteurPatrimoineIHM(PatrimoinesVisualisables patrimoinesVisualisables) {
+  public SelecteurPatrimoineIHM(
+      PatrimoinesVisualisables patrimoinesVisualisables,
+      GrapheConfObservable grapheConfObservable) {
     super(new FlowLayout(LEFT));
 
     new FixedSizer().accept(this, new Dimension(500, 30));
@@ -25,5 +29,16 @@ public class SelecteurPatrimoineIHM extends JPanel {
             patrimoinesVisualisables.selectionne(
                 ((JComboBox) e.getSource()).getSelectedItem().toString()));
     this.add(selecteur);
+
+    var sigmaGraphButton = new JButton("Tous");
+    var ep = patrimoinesVisualisables.getEvolutionPatrimoine();
+    sigmaGraphButton.addActionListener(
+        e ->
+            new TousGrapheIHM(
+                patrimoinesVisualisables.getPatrimoines(),
+                ep.getDebut(),
+                ep.getFin(),
+                grapheConfObservable.getGrapheConf()));
+    this.add(sigmaGraphButton);
   }
 }

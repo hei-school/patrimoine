@@ -156,6 +156,9 @@ public class GrapheurEvolutionPatrimoine
   @Override
   public File apply(EvolutionPatrimoine evolutionPatrimoine, GrapheConf grapheConf) {
     XYChart chart = new XYChartBuilder().width(800).height(600).build();
+    if (grapheConf.avecTitre()) {
+      chart.setTitle(evolutionPatrimoine.getPatrimoine().nom());
+    }
     configureStyle(chart);
     configureSeries(evolutionPatrimoine, chart, grapheConf);
 
@@ -167,7 +170,7 @@ public class GrapheurEvolutionPatrimoine
   }
 
   public File apply(EvolutionPatrimoine ep) {
-    return apply(ep, new GrapheConf(false, true, true, true));
+    return apply(ep, new GrapheConf(false, false, true, true, true));
   }
 
   private void configureStyle(XYChart chart) {

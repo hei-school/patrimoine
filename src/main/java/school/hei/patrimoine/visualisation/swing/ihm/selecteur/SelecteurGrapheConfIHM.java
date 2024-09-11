@@ -28,6 +28,7 @@ public class SelecteurGrapheConfIHM extends JPanel implements Observer {
         GrapheConf::avecAgregat,
         (GrapheConf currentGrapheConf, Boolean isSelected) ->
             new GrapheConf(
+                false,
                 isSelected,
                 currentGrapheConf.avecTresorerie(),
                 currentGrapheConf.avecImmobilisations(),
@@ -37,6 +38,7 @@ public class SelecteurGrapheConfIHM extends JPanel implements Observer {
         GrapheConf::avecTresorerie,
         (GrapheConf currentGrapheConf, Boolean isSelected) ->
             new GrapheConf(
+                false,
                 currentGrapheConf.avecAgregat(),
                 isSelected,
                 currentGrapheConf.avecImmobilisations(),
@@ -46,6 +48,7 @@ public class SelecteurGrapheConfIHM extends JPanel implements Observer {
         GrapheConf::avecImmobilisations,
         (GrapheConf currentGrapheConf, Boolean isSelected) ->
             new GrapheConf(
+                false,
                 currentGrapheConf.avecAgregat(),
                 currentGrapheConf.avecTresorerie(),
                 isSelected,
@@ -55,6 +58,7 @@ public class SelecteurGrapheConfIHM extends JPanel implements Observer {
         GrapheConf::avecObligations,
         (GrapheConf currentGrapheConf, Boolean isSelected) ->
             new GrapheConf(
+                false,
                 currentGrapheConf.avecAgregat(),
                 currentGrapheConf.avecTresorerie(),
                 currentGrapheConf.avecImmobilisations(),
