@@ -71,8 +71,7 @@ public class EvolutionPatrimoine {
 
   public Set<FluxJournalier> fluxJournaliersImpossibles() {
     return fluxJournaliers.stream()
-        .filter(
-            fj -> !(fj.compte() instanceof Dette) && fj.compte().valeurComptable().montant() < 0)
+        .filter(fj -> !(fj.compte() instanceof Dette) && fj.compte().valeurComptable().lt(0))
         .collect(toSet());
   }
 

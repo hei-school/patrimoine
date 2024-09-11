@@ -1,6 +1,7 @@
 package school.hei.patrimoine.modele.evolution;
 
 import static java.util.stream.Collectors.joining;
+import static school.hei.patrimoine.modele.evolution.SerieComptableTemporelle.parseMontant;
 
 import java.time.LocalDate;
 import java.util.Set;
@@ -14,7 +15,7 @@ public record FluxJournalier(LocalDate date, Compte compte, Set<FluxArgent> flux
         "[%s][%s=%d%s] %s",
         date,
         compte.getNom(),
-        compte.valeurComptable().montant(),
+        parseMontant(compte.valeurComptable()),
         compte.valeurComptable().devise().symbole(),
         toFluxJournalierString(flux));
   }
@@ -24,6 +25,6 @@ public record FluxJournalier(LocalDate date, Compte compte, Set<FluxArgent> flux
   }
 
   private String toFluxJournalierString(FluxArgent flux) {
-    return String.format("(%s, %d)", flux.getNom(), flux.getFluxMensuel().montant());
+    return String.format("(%s, %d)", flux.getNom(), parseMontant((flux.getFluxMensuel())));
   }
 }

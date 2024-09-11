@@ -1,5 +1,7 @@
 package school.hei.patrimoine.modele.evolution;
 
+import static java.lang.Double.parseDouble;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -8,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 import lombok.AllArgsConstructor;
+import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.Devise;
 import school.hei.patrimoine.modele.possession.FluxArgent;
 import school.hei.patrimoine.modele.possession.Possession;
@@ -38,12 +41,12 @@ public class SerieComptableTemporelle {
           .forEach(
               d ->
                   serie.add(
-                      ep.getEvolutionJournaliere()
-                          .get(d)
-                          .possessionParNom(possession.getNom())
-                          .valeurComptable()
-                          .convertir(devise, d)
-                          .montant()));
+                      parseMontant(
+                          ep.getEvolutionJournaliere()
+                              .get(d)
+                              .possessionParNom(possession.getNom())
+                              .valeurComptable()
+                              .convertir(devise, d))));
       map.put(possession, serie);
     }
     return map;
@@ -82,11 +85,18 @@ public class SerieComptableTemporelle {
         .forEach(
             d ->
                 serie.add(
-                    ep.getEvolutionJournaliere()
-                        .get(d)
-                        .getValeurComptable()
-                        .convertir(devise, d)
-                        .montant()));
+                    parseMontant(
+                        ep.getEvolutionJournaliere()
+                            .get(d)
+                            .getValeurComptable()
+                            .convertir(devise, d))));
     return serie;
+  }
+
+  public static int parseMontant(Argent a) {
+    // Argent::montant is PURPOSEFULLY private so that people do NOT manipulate it directly.
+    // Indeed, operations such as those on Devise can only be handled correctly internally.
+    // ppMontant explicitely indicates that it should only be used for printing purpose.
+    return (int) parseDouble(a.ppMontant());
   }
 }

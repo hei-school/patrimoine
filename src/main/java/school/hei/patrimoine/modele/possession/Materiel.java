@@ -1,6 +1,5 @@
 package school.hei.patrimoine.modele.possession;
 
-import static java.lang.Math.max;
 import static java.time.temporal.ChronoUnit.DAYS;
 import static school.hei.patrimoine.modele.possession.TypeAgregat.IMMOBILISATION;
 
@@ -33,15 +32,13 @@ public final class Materiel extends Possession {
           tauxDAppreciationAnnuelle);
     }
     var joursEcoules = DAYS.between(t, tFutur);
-    double valeurAjouteeJournaliere =
-        valeurComptable.montant() * (tauxDAppreciationAnnuelle / 365.);
-    int valeurComptableFuture =
-        max(0, (int) (valeurComptable.montant() + valeurAjouteeJournaliere * joursEcoules));
+    var valeurAjouteeJournaliere = valeurComptable.mult((tauxDAppreciationAnnuelle / 365.));
+    var valeurFutureUnbound = valeurComptable.add(valeurAjouteeJournaliere.mult(joursEcoules), t);
     return new Materiel(
         nom,
         dateAcquisition,
         tFutur,
-        new Argent(valeurComptableFuture, valeurComptable.devise()),
+        valeurFutureUnbound.lt(0) ? new Argent(0, devise()) : valeurFutureUnbound,
         tauxDAppreciationAnnuelle);
   }
 

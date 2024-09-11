@@ -47,7 +47,7 @@ class PatrimoineDeZetyTest {
     var projeté = patrimoineDeZetyAu3Jul.projectionFuture(LocalDate.of(2024, SEPTEMBER, 17));
 
     assertEquals(ariary(3_600_000), patrimoineDeZetyAu3Jul.getValeurComptable());
-    assertEquals(ariary(2_978_848), projeté.getValeurComptable());
+    assertEquals(ariary(2_978_849), projeté.getValeurComptable());
   }
 
   @Test
@@ -58,12 +58,13 @@ class PatrimoineDeZetyTest {
     var patrimoineDeZetySendette = patrimoineDeZetySendette();
 
     var differenceEntreLesDeuxPatrimoines =
-        patrimoineDu17Septembre.getValeurComptable().montant()
-            - patrimoineDeZetySendette.getValeurComptable().montant();
+        patrimoineDu17Septembre
+            .getValeurComptable()
+            .minus(patrimoineDeZetySendette.getValeurComptable(), LocalDate.MIN);
 
-    assertEquals(ariary(2_978_848), patrimoineDu17Septembre.getValeurComptable());
-    assertEquals(ariary(1_976_464), patrimoineDeZetySendette.getValeurComptable());
-    assertEquals(1_002_384, differenceEntreLesDeuxPatrimoines);
+    assertEquals(ariary(2_978_849), patrimoineDu17Septembre.getValeurComptable());
+    assertEquals(ariary(1_976_465), patrimoineDeZetySendette.getValeurComptable());
+    assertEquals(ariary(1_002_384), differenceEntreLesDeuxPatrimoines);
   }
 
   @Test
@@ -79,7 +80,7 @@ class PatrimoineDeZetyTest {
       LocalDate tFutur = dayOfFailureFrom18September.plusDays(i);
       var argentEnEspècesProjeté = argentEnEspècesDeZetyEn20242025.projectionFuture(tFutur);
       log.debug("à t={} montant = {}", argentEnEspècesProjeté.valeurComptable(), tFutur);
-      if (argentEnEspècesProjeté.valeurComptable().montant() <= 0) {
+      if (argentEnEspècesProjeté.valeurComptable().le(0)) {
         dayOfFailureFrom18September = tFutur;
         break;
       }
@@ -94,7 +95,7 @@ class PatrimoineDeZetyTest {
     var patrimoineDeZetyLe14Fevrier2025 =
         patrimoineDeZetyLe14Fev2025().projectionFuture(AU_14_FEVRIER_2025);
 
-    assertEquals(ariary(-1_528_686), patrimoineDeZetyLe14Fevrier2025.getValeurComptable());
+    assertEquals(ariary(-1_528_684), patrimoineDeZetyLe14Fevrier2025.getValeurComptable());
   }
 
   @Test

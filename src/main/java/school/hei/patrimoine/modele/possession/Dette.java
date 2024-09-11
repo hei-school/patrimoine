@@ -9,7 +9,7 @@ public final class Dette extends Compte {
 
   public Dette(String nom, LocalDate t, Argent valeurComptable) {
     super(nom, t, valeurComptable);
-    if (valeurComptable.montant() > 0) {
+    if (valeurComptable.gt(0)) {
       throw new IllegalArgumentException();
     }
   }

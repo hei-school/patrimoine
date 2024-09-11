@@ -8,7 +8,7 @@ public record ObjectifNonAtteint(Objectivable objectivable, Objectif objectif) {
         objectivable.nom(),
         objectif.t(),
         aAtteindre.devise().symbole(),
-        aAtteindre.montant(),
-        objectivable.valeurAObjectifT(objectif.t()).montant());
+        aAtteindre.ppMontant(),
+        objectivable.valeurAObjectifT(objectif.t()).ppMontant());
   }
 }

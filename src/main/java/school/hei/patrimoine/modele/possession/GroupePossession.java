@@ -16,11 +16,9 @@ public final class GroupePossession extends Possession {
     super(
         nom,
         t,
-        new Argent(
-            possessions.stream()
-                .mapToInt(p -> p.getValeurComptable().convertir(devise, t).montant())
-                .sum(),
-            devise));
+        possessions.stream()
+            .map(Possession::getValeurComptable)
+            .reduce(new Argent(0, devise), (a1, a2) -> a1.add(a2, t)));
     this.possessions = possessions;
     typeAgregat(possessions); // sanity check: fails if set is inconsistent
   }
