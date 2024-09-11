@@ -1,32 +1,45 @@
 package school.hei.patrimoine.visualisation;
 
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.imageio.ImageIO;
+import java.awt.image.DataBuffer;
 import java.io.File;
 import java.util.function.BiFunction;
 
+@Slf4j
 public class AreImagesEqual implements BiFunction<File, File, Boolean> {
-  @SneakyThrows
   @Override
   public Boolean apply(File image1, File image2) {
     // https://stackoverflow.com/questions/8567905/how-to-compare-images-for-similarity-using-java
-    var biA = ImageIO.read(image1);
-    var dbA = biA.getData().getDataBuffer();
-    int sizeA = dbA.getSize();
-    var biB = ImageIO.read(image2);
-    var dbB = biB.getData().getDataBuffer();
-    int sizeB = dbB.getSize();
-
-    if (sizeA == sizeB) {
-      for (int i = 0; i < sizeA; i++) {
-        if (dbA.getElem(i) != dbB.getElem(i)) {
-          return false;
-        }
-      }
-      return true;
-    } else {
+    var db1 = imageDb(image1);
+    var db2 = imageDb(image2);
+    var size1 = db1.getSize();
+    var size2 = db2.getSize();
+    if (size1 != size2) {
+      log.error("Image size mismatch: img1={}, img2={}, img1.size={}, img2.size={}", image1, image2, size1, size2);
       return false;
     }
+
+    var nbDiff = 0;
+    for (int i = 0; i < size1; i++) {
+      if (db1.getElem(i) != db2.getElem(i)) {
+        nbDiff++;
+      }
+    }
+
+    if (nbDiff != 0) {
+      log.error("Image mismatch:img1={}, img2={}, nbDiff={}, img.size={}, diffRatio={}",
+          image1, image2, nbDiff, size1, nbDiff / (double) size1);
+      return false;
+    }
+    return true;
+  }
+
+  @SneakyThrows
+  private static DataBuffer imageDb(File file) {
+    var bi = ImageIO.read(file);
+    return bi.getData().getDataBuffer();
   }
 }
