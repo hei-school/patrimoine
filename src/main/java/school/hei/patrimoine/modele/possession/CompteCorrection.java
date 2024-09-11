@@ -4,26 +4,28 @@ import static school.hei.patrimoine.modele.possession.TypeAgregat.CORRECTION;
 
 import java.time.LocalDate;
 import lombok.Getter;
+import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.Devise;
 
 public final class CompteCorrection extends Possession {
 
-  @Getter private final Argent argent;
+  @Getter private final Compte compte;
 
   public CompteCorrection(String nom, Devise devise) {
     this(
         "Correction[" + nom + "]",
-        new Argent(String.format("Correction.Argent[%s]", nom), LocalDate.MIN, 0, devise));
+        new Compte(
+            String.format("Correction.Argent[%s]", nom), LocalDate.MIN, new Argent(0, devise)));
   }
 
-  private CompteCorrection(String nom, Argent argent) {
-    super(nom, argent.t, argent.valeurComptable, argent.devise);
-    this.argent = argent;
+  private CompteCorrection(String nom, Compte compte) {
+    super(nom, compte.t, compte.valeurComptable);
+    this.compte = compte;
   }
 
   @Override
   public CompteCorrection projectionFuture(LocalDate tFutur) {
-    return new CompteCorrection(nom, argent.projectionFuture(tFutur));
+    return new CompteCorrection(nom, compte.projectionFuture(tFutur));
   }
 
   @Override

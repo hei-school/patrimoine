@@ -1,14 +1,12 @@
 package school.hei.patrimoine.modele.possession;
 
-import static school.hei.patrimoine.modele.Devise.NON_NOMMEE;
-
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Map;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
-import school.hei.patrimoine.modele.Devise;
+import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.Personne;
 import school.hei.patrimoine.modele.objectif.Objectivable;
 
@@ -18,7 +16,7 @@ import school.hei.patrimoine.modele.objectif.Objectivable;
 public abstract sealed class Possession
     implements Objectivable, Serializable /*note(no-serializable)*/
     permits AchatMaterielAuComptant,
-        Argent,
+        Compte,
         CompteCorrection,
         Correction,
         FluxArgent,
@@ -27,52 +25,36 @@ public abstract sealed class Possession
         TransfertArgent {
   protected final String nom;
   protected final LocalDate t;
-  protected final int valeurComptable;
-  protected final Devise devise;
+  protected final Argent valeurComptable;
   @EqualsAndHashCode.Exclude @ToString.Exclude private CompteCorrection compteCorrection;
   protected final Map<Personne, Double> possesseurs;
 
   public Possession(
-      String nom,
-      LocalDate t,
-      int valeurComptable,
-      Devise devise,
-      Map<Personne, Double> possesseurs) {
+      String nom, LocalDate t, Argent valeurComptable, Map<Personne, Double> possesseurs) {
     super();
     this.nom = nom;
     this.t = t;
     this.valeurComptable = valeurComptable;
-    this.devise = devise;
     this.possesseurs = possesseurs;
   }
 
-  public Possession(String nom, LocalDate t, int valeurComptable, Devise devise) {
-    this(nom, t, valeurComptable, devise, Map.of());
-  }
-
-  public Possession(String nom, LocalDate t, int valeurComptable) {
-    this(nom, t, valeurComptable, NON_NOMMEE, Map.of());
+  public Possession(String nom, LocalDate t, Argent valeurComptable) {
+    this(nom, t, valeurComptable, Map.of());
   }
 
   public CompteCorrection getCompteCorrection() {
     if (compteCorrection == null) {
-      compteCorrection = new CompteCorrection(nom, devise);
+      compteCorrection = new CompteCorrection(nom, valeurComptable.devise());
     }
     return compteCorrection;
   }
 
-  public final int valeurComptable() {
+  public final Argent valeurComptable() {
     return valeurComptable;
   }
 
-  public final int valeurComptable(Devise autreDevise) {
-    double valeurEnAriaryAutreDeviseATempsT = autreDevise.valeurEnAriary(t);
-    return (int)
-        ((this.valeurComptable * this.devise.valeurEnAriary(t)) / valeurEnAriaryAutreDeviseATempsT);
-  }
-
-  public final int valeurComptableFuture(LocalDate tFutur) {
-    return projectionFuture(tFutur).valeurComptable(this.devise);
+  public final Argent valeurComptableFuture(LocalDate tFutur) {
+    return projectionFuture(tFutur).valeurComptable();
   }
 
   public abstract Possession projectionFuture(LocalDate tFutur);
@@ -85,7 +67,7 @@ public abstract sealed class Possession
   }
 
   @Override
-  public int valeurAObjectifT(LocalDate t) {
-    return projectionFuture(t).getValeurComptable();
+  public Argent valeurAObjectifT(LocalDate t) {
+    return projectionFuture(t).valeurComptable;
   }
 }

@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Supplier;
 import lombok.Getter;
+import school.hei.patrimoine.modele.Devise;
 import school.hei.patrimoine.modele.Patrimoine;
 import school.hei.patrimoine.modele.Personne;
 import school.hei.patrimoine.modele.objectif.Objectif;
@@ -26,7 +27,7 @@ public abstract class Cas {
     this.finSimulation = finSimulation;
     this.patrimoineSupplier =
         // lazy init required as spec is declarative, not procedural
-        () -> Patrimoine.of(nom(), possesseurs, ajd, possessions());
+        () -> Patrimoine.of(nom(), devise(), possesseurs, ajd, possessions());
   }
 
   public Patrimoine patrimoine() {
@@ -34,6 +35,8 @@ public abstract class Cas {
     suivi();
     return patrimoineSupplier.get();
   }
+
+  protected abstract Devise devise();
 
   protected abstract String nom();
 

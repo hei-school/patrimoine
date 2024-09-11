@@ -5,15 +5,16 @@ import static java.time.Month.SEPTEMBER;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static school.hei.patrimoine.cas.zety.PatrimoineZetyAu3Juillet2024.AU_14_FEVRIER_2025;
 import static school.hei.patrimoine.cas.zety.PatrimoineZetyAu3Juillet2024.AU_26_OCTOBRE_2025;
+import static school.hei.patrimoine.modele.Argent.ariary;
+import static school.hei.patrimoine.modele.Argent.euro;
 import static school.hei.patrimoine.modele.Devise.EUR;
 
 import java.time.LocalDate;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import school.hei.patrimoine.cas.zety.PatrimoineZetyAu3Juillet2024;
-import school.hei.patrimoine.modele.Devise;
 import school.hei.patrimoine.modele.Patrimoine;
-import school.hei.patrimoine.modele.possession.Argent;
+import school.hei.patrimoine.modele.possession.Compte;
 
 @Slf4j
 class PatrimoineDeZetyTest {
@@ -28,7 +29,7 @@ class PatrimoineDeZetyTest {
     return patrimoineDeZetyAu3JuilletSupplier.zetySendette();
   }
 
-  private Argent argentEnEspècesDeZetyEn20242025() {
+  private Compte argentEnEspècesDeZetyEn20242025() {
     return patrimoineDeZetyAu3JuilletSupplier.argentEnEspècesDeZetyEn20242025();
   }
 
@@ -36,8 +37,8 @@ class PatrimoineDeZetyTest {
     return patrimoineDeZetyAu3JuilletSupplier.patrimoineDeZetyLe14Fevrier2025();
   }
 
-  private Patrimoine patrimoineDeZetyLe26Octobre2025(Devise euro) {
-    return patrimoineDeZetyAu3JuilletSupplier.patrimoineDeZety26Octobre2025(euro);
+  private Patrimoine patrimoineDeZetyLe26Octobre2025() {
+    return patrimoineDeZetyAu3JuilletSupplier.patrimoineDeZety26Octobre2025();
   }
 
   @Test
@@ -45,8 +46,8 @@ class PatrimoineDeZetyTest {
     var patrimoineDeZetyAu3Jul = patrimoineDeZety3Jul2024();
     var projeté = patrimoineDeZetyAu3Jul.projectionFuture(LocalDate.of(2024, SEPTEMBER, 17));
 
-    assertEquals(3_600_000, patrimoineDeZetyAu3Jul.getValeurComptable());
-    assertEquals(2_978_848, projeté.getValeurComptable());
+    assertEquals(ariary(3_600_000), patrimoineDeZetyAu3Jul.getValeurComptable());
+    assertEquals(ariary(2_978_848), projeté.getValeurComptable());
   }
 
   @Test
@@ -57,11 +58,11 @@ class PatrimoineDeZetyTest {
     var patrimoineDeZetySendette = patrimoineDeZetySendette();
 
     var differenceEntreLesDeuxPatrimoines =
-        patrimoineDu17Septembre.getValeurComptable()
-            - patrimoineDeZetySendette.getValeurComptable();
+        patrimoineDu17Septembre.getValeurComptable().montant()
+            - patrimoineDeZetySendette.getValeurComptable().montant();
 
-    assertEquals(2_978_848, patrimoineDu17Septembre.getValeurComptable());
-    assertEquals(1_976_464, patrimoineDeZetySendette.getValeurComptable());
+    assertEquals(ariary(2_978_848), patrimoineDu17Septembre.getValeurComptable());
+    assertEquals(ariary(1_976_464), patrimoineDeZetySendette.getValeurComptable());
     assertEquals(1_002_384, differenceEntreLesDeuxPatrimoines);
   }
 
@@ -78,7 +79,7 @@ class PatrimoineDeZetyTest {
       LocalDate tFutur = dayOfFailureFrom18September.plusDays(i);
       var argentEnEspècesProjeté = argentEnEspècesDeZetyEn20242025.projectionFuture(tFutur);
       log.debug("à t={} montant = {}", argentEnEspècesProjeté.valeurComptable(), tFutur);
-      if (argentEnEspècesProjeté.valeurComptable() <= 0) {
+      if (argentEnEspècesProjeté.valeurComptable().montant() <= 0) {
         dayOfFailureFrom18September = tFutur;
         break;
       }
@@ -93,14 +94,14 @@ class PatrimoineDeZetyTest {
     var patrimoineDeZetyLe14Fevrier2025 =
         patrimoineDeZetyLe14Fev2025().projectionFuture(AU_14_FEVRIER_2025);
 
-    assertEquals(-1_528_686, patrimoineDeZetyLe14Fevrier2025.getValeurComptable());
+    assertEquals(ariary(-1_528_686), patrimoineDeZetyLe14Fevrier2025.getValeurComptable());
   }
 
   @Test
   void zety_part_en_Allemagne() {
     var patrimoineDeZetyLe14Fevrier2025 =
-        patrimoineDeZetyLe26Octobre2025(EUR).projectionFuture(AU_26_OCTOBRE_2025);
+        patrimoineDeZetyLe26Octobre2025().projectionFuture(AU_26_OCTOBRE_2025);
 
-    assertEquals(-9_964, patrimoineDeZetyLe14Fevrier2025.getValeurComptable(EUR));
+    assertEquals(euro(-9_964), patrimoineDeZetyLe14Fevrier2025.getValeurComptable(EUR));
   }
 }

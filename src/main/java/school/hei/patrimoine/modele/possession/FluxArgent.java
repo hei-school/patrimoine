@@ -1,35 +1,33 @@
 package school.hei.patrimoine.modele.possession;
 
-import static school.hei.patrimoine.modele.Devise.NON_NOMMEE;
 import static school.hei.patrimoine.modele.possession.TypeAgregat.FLUX;
 
 import java.time.LocalDate;
 import lombok.Getter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
-import school.hei.patrimoine.modele.Devise;
+import school.hei.patrimoine.modele.Argent;
 
 @ToString(callSuper = true)
 @Slf4j
 @Getter
 public final class FluxArgent extends Possession {
-  @ToString.Exclude private final Argent argent;
+  @ToString.Exclude private final Compte compte;
   private final LocalDate debut;
   private final LocalDate fin;
-  private final int fluxMensuel;
+  private final Argent fluxMensuel;
   private final int dateOperation;
 
   public FluxArgent(
       String nom,
-      Argent argent,
+      Compte compte,
       LocalDate debut,
       LocalDate fin,
-      int fluxMensuel,
-      int dateOperation,
-      Devise devise) {
-    super(nom, null, 0, devise);
-    this.argent = argent;
-    this.argent.addFinancés(this);
+      Argent fluxMensuel,
+      int dateOperation) {
+    super(nom, LocalDate.MIN, new Argent(0, fluxMensuel.devise()));
+    this.compte = compte;
+    this.compte.addFinancés(this);
 
     this.debut = debut;
     this.fin = fin;
@@ -37,24 +35,14 @@ public final class FluxArgent extends Possession {
     this.dateOperation = dateOperation;
   }
 
-  public FluxArgent(
-      String nom,
-      Argent argent,
-      LocalDate debut,
-      LocalDate fin,
-      int fluxMensuel,
-      int dateOperation) {
-    this(nom, argent, debut, fin, fluxMensuel, dateOperation, NON_NOMMEE);
-  }
-
-  public FluxArgent(String nom, Argent argent, LocalDate date, int montant) {
-    this(nom, argent, date, date, montant, date.getDayOfMonth());
+  public FluxArgent(String nom, Compte compte, LocalDate date, Argent montant) {
+    this(nom, compte, date, date, montant, date.getDayOfMonth());
   }
 
   @Override
   public FluxArgent projectionFuture(LocalDate tFutur) {
     var tFuturMajoréParFin = (tFutur.isBefore(fin)) ? tFutur : fin;
-    var debutOperationMinoréParDebut = argent.t.isBefore(debut) ? debut : argent.t;
+    var debutOperationMinoréParDebut = compte.t.isBefore(debut) ? debut : compte.t;
     if (debutOperationMinoréParDebut.isAfter(tFuturMajoréParFin)) {
       return this;
     }
@@ -65,12 +53,10 @@ public final class FluxArgent extends Possession {
                 .datesUntil(tFuturMajoréParFin.plusDays(1))
                 .filter(d -> d.getDayOfMonth() == dateOperation)
                 .count();
-    var valeurFutur = argent.valeurComptable() + fluxMensuel * nbOperations;
+    var valeurFutur = compte.valeurComptable().add(fluxMensuel.mult(nbOperations), tFutur);
     var argentFutur =
-        new Argent(
-            argent.nom + " réduit au financement de " + this, tFutur, valeurFutur, argent.devise);
-    return new FluxArgent(
-        nom, argentFutur, debut, tFuturMajoréParFin, fluxMensuel, dateOperation, devise);
+        new Compte(compte.nom + " réduit au financement de " + this, tFutur, valeurFutur);
+    return new FluxArgent(nom, argentFutur, debut, tFuturMajoréParFin, fluxMensuel, dateOperation);
   }
 
   @Override

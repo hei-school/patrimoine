@@ -1,26 +1,21 @@
 package school.hei.patrimoine.modele.possession;
 
-import static school.hei.patrimoine.modele.Devise.NON_NOMMEE;
 import static school.hei.patrimoine.modele.possession.TypeAgregat.OBLIGATION;
 
 import java.time.LocalDate;
-import school.hei.patrimoine.modele.Devise;
+import school.hei.patrimoine.modele.Argent;
 
-public final class Dette extends Argent {
+public final class Dette extends Compte {
 
-  public Dette(String nom, LocalDate t, int valeurComptable, Devise devise) {
-    super(nom, t, valeurComptable, devise);
-    if (valeurComptable > 0) {
+  public Dette(String nom, LocalDate t, Argent valeurComptable) {
+    super(nom, t, valeurComptable);
+    if (valeurComptable.montant() > 0) {
       throw new IllegalArgumentException();
     }
   }
 
-  public Dette(String nom, LocalDate t, int valeurComptable) {
-    this(nom, t, valeurComptable, NON_NOMMEE);
-  }
-
-  private Dette(Argent argent) {
-    this(argent.nom, argent.t, argent.valeurComptable, argent.devise);
+  private Dette(Compte compte) {
+    this(compte.nom, compte.t, compte.valeurComptable);
   }
 
   @Override

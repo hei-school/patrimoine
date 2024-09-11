@@ -39,7 +39,8 @@ public class SerieComptableTemporelle {
                       ep.getEvolutionJournaliere()
                           .get(d)
                           .possessionParNom(possession.getNom())
-                          .valeurComptable()));
+                          .valeurComptable()
+                          .montant()));
       map.put(possession, serie);
     }
     return map;
@@ -74,7 +75,9 @@ public class SerieComptableTemporelle {
 
   public List<Integer> serieValeursComptablesPatrimoine() {
     var serie = new ArrayList<Integer>();
-    serieDates().forEach(d -> serie.add(ep.getEvolutionJournaliere().get(d).getValeurComptable()));
+    serieDates()
+        .forEach(
+            d -> serie.add(ep.getEvolutionJournaliere().get(d).getValeurComptable().montant()));
     return serie;
   }
 }

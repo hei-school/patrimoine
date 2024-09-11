@@ -3,7 +3,6 @@ package school.hei.patrimoine.modele;
 import static java.util.function.Predicate.not;
 import static java.util.stream.Collectors.toSet;
 import static lombok.AccessLevel.PRIVATE;
-import static school.hei.patrimoine.modele.Devise.NON_NOMMEE;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -22,27 +21,23 @@ import school.hei.patrimoine.modele.possession.Possession;
 public class Patrimoine implements Serializable, Objectivable /*note(no-serializable)*/ {
 
   private final String nom;
+  private final Devise devise;
   private final Set<Personne> possesseurs;
   private final LocalDate t;
   private final Set<Possession> possessions;
 
   public static Patrimoine of(
-      String nom, Personne possesseur, LocalDate t, Set<Possession> possessions) {
-    return Patrimoine.of(nom, Set.of(possesseur), t, possessions);
+      String nom,
+      Devise devise,
+      Set<Personne> possesseurs,
+      LocalDate t,
+      Set<Possession> possessions) {
+    return new Patrimoine(nom, devise, possesseurs, t, withComptesCorrections(possessions));
   }
 
   public static Patrimoine of(
-      String nom, Set<Personne> possesseurs, LocalDate t, Set<Possession> possessions) {
-    return new Patrimoine(
-        nom, possesseurs, t, withComptesCorrections(validerPossessions(possessions)));
-  }
-
-  private static Set<Possession> validerPossessions(Set<Possession> possessions) {
-    var devises = possessions.stream().map(Possession::getDevise).distinct().toList();
-    if (devises.size() > 1 && devises.contains(NON_NOMMEE)) {
-      throw new IllegalArgumentException("On ne peut mixer Devise.NON_NOMMEE avec autres devises");
-    }
-    return possessions;
+      String nom, Devise devise, Personne possesseur, LocalDate t, Set<Possession> possessions) {
+    return new Patrimoine(nom, devise, Set.of(possesseur), t, withComptesCorrections(possessions));
   }
 
   private static Set<Possession> withComptesCorrections(Set<Possession> possessions) {
@@ -55,23 +50,22 @@ public class Patrimoine implements Serializable, Objectivable /*note(no-serializ
     return set;
   }
 
-  public int getValeurComptable() {
-    if (possessions.isEmpty()) {
-      return 0;
-    }
-    return getValeurComptable(possessions.toArray(new Possession[0])[0].getDevise());
+  public Argent getValeurComptable() {
+    return getValeurComptable(devise);
   }
 
-  public int getValeurComptable(Devise devise) {
-    return possessions.stream()
-        .filter(not(p -> p instanceof CompteCorrection))
-        .mapToInt(p -> valeurPartagéeEntrePossesseursDePatrimoine(p, devise))
-        .sum();
+  public Argent getValeurComptable(Devise devise) {
+    return new Argent(
+        possessions.stream()
+            .filter(not(p -> p instanceof CompteCorrection))
+            .mapToInt(p -> valeurPartagéeEntrePossesseursDePatrimoine(p, devise))
+            .sum(),
+        devise);
   }
 
-  private int valeurPartagéeEntrePossesseursDePatrimoine(Possession possession, Devise devise) {
+  private int valeurPartagéeEntrePossesseursDePatrimoine(Possession possession, Devise cible) {
     var possesseursDePossession = possession.getPossesseurs();
-    var possessionValeur = possession.valeurComptable(devise);
+    int possessionValeur = possession.valeurComptable().convertir(cible, t).montant();
     if (possesseursDePossession.isEmpty()) {
       return possessionValeur;
     }
@@ -88,6 +82,7 @@ public class Patrimoine implements Serializable, Objectivable /*note(no-serializ
   public Patrimoine projectionFuture(LocalDate tFutur) {
     return new Patrimoine(
         nom,
+        devise,
         possesseurs,
         tFutur,
         possessions.stream().map(p -> p.projectionFuture(tFutur)).collect(toSet()));
@@ -103,7 +98,7 @@ public class Patrimoine implements Serializable, Objectivable /*note(no-serializ
   }
 
   @Override
-  public int valeurAObjectifT(LocalDate t) {
+  public Argent valeurAObjectifT(LocalDate t) {
     return projectionFuture(t).getValeurComptable();
   }
 }

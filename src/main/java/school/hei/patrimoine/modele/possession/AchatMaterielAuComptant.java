@@ -1,11 +1,10 @@
 package school.hei.patrimoine.modele.possession;
 
-import static school.hei.patrimoine.modele.Devise.NON_NOMMEE;
 import static school.hei.patrimoine.modele.possession.TypeAgregat.IMMOBILISATION;
 
 import java.time.LocalDate;
 import java.util.Set;
-import school.hei.patrimoine.modele.Devise;
+import school.hei.patrimoine.modele.Argent;
 
 public final class AchatMaterielAuComptant extends Possession {
 
@@ -14,41 +13,25 @@ public final class AchatMaterielAuComptant extends Possession {
   public AchatMaterielAuComptant(
       String nom,
       LocalDate dateAchat,
-      int valeurComptableALAchat,
+      Argent valeurComptableALAchat,
       double tauxAppreciationAnnuelle,
-      Argent financeur) {
-    this(nom, dateAchat, valeurComptableALAchat, tauxAppreciationAnnuelle, financeur, NON_NOMMEE);
-  }
-
-  public AchatMaterielAuComptant(
-      String nom,
-      LocalDate dateAchat,
-      int valeurComptableALAchat,
-      double tauxAppreciationAnnuelle,
-      Argent financeur,
-      Devise devise) {
-    super(nom, dateAchat, valeurComptableALAchat, devise);
+      Compte financeur) {
+    super(nom, dateAchat, valeurComptableALAchat);
     this.achatCommeGroupe =
         new GroupePossession(
             nom,
             dateAchat,
             Set.of(
                 new Materiel(
-                    nom,
-                    dateAchat,
-                    valeurComptableALAchat,
-                    dateAchat,
-                    tauxAppreciationAnnuelle,
-                    devise),
+                    nom, dateAchat, valeurComptableALAchat, dateAchat, tauxAppreciationAnnuelle),
                 new FluxArgent(
                     "Financement AchatMaterielAuComptant: " + nom,
                     financeur,
                     dateAchat,
                     dateAchat,
-                    -1 * valeurComptableALAchat,
-                    dateAchat.getDayOfMonth(),
-                    devise)),
-            devise);
+                    valeurComptableALAchat.mult(-1),
+                    dateAchat.getDayOfMonth())),
+            valeurComptable.devise());
   }
 
   @Override

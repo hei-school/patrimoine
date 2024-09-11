@@ -11,21 +11,20 @@ public final class Correction extends Possession {
 
   public Correction(FluxArgent fluxArgent) {
     super(
-        String.format("Correction[p=%s,%s]", fluxArgent.getArgent().nom, fluxArgent.nom),
+        String.format("Correction[p=%s,%s]", fluxArgent.getCompte().nom, fluxArgent.nom),
         fluxArgent.t,
         fluxArgent.valeurComptable);
-    this.possession = fluxArgent.getArgent();
+    this.possession = fluxArgent.getCompte();
     this.compteCorrection = possession.getCompteCorrection();
 
     new FluxArgent(
         String.format(
             "Correction.Flux[compteCorrection=%s,%s]", compteCorrection.nom, fluxArgent.nom),
-        compteCorrection.getArgent(),
+        compteCorrection.getCompte(),
         fluxArgent.getDebut(),
         fluxArgent.getFin(),
         fluxArgent.getFluxMensuel(),
-        fluxArgent.getDateOperation(),
-        fluxArgent.getDevise());
+        fluxArgent.getDateOperation());
   }
 
   private Correction(Possession possession, CompteCorrection compteCorrection) {

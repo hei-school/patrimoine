@@ -4,18 +4,18 @@ import static java.util.stream.Collectors.joining;
 
 import java.time.LocalDate;
 import java.util.Set;
-import school.hei.patrimoine.modele.possession.Argent;
+import school.hei.patrimoine.modele.possession.Compte;
 import school.hei.patrimoine.modele.possession.FluxArgent;
 
-public record FluxJournalier(LocalDate date, Argent argent, Set<FluxArgent> flux) {
+public record FluxJournalier(LocalDate date, Compte compte, Set<FluxArgent> flux) {
   @Override
   public String toString() {
     return String.format(
         "[%s][%s=%d%s] %s",
         date,
-        argent.getNom(),
-        argent.valeurComptable(),
-        argent.getDevise().symbole(),
+        compte.getNom(),
+        compte.valeurComptable().montant(),
+        compte.valeurComptable().devise().symbole(),
         toFluxJournalierString(flux));
   }
 
@@ -24,6 +24,6 @@ public record FluxJournalier(LocalDate date, Argent argent, Set<FluxArgent> flux
   }
 
   private String toFluxJournalierString(FluxArgent flux) {
-    return String.format("(%s, %d)", flux.getNom(), flux.getFluxMensuel());
+    return String.format("(%s, %d)", flux.getNom(), flux.getFluxMensuel().montant());
   }
 }

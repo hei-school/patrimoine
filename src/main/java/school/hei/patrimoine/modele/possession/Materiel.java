@@ -2,11 +2,10 @@ package school.hei.patrimoine.modele.possession;
 
 import static java.lang.Math.max;
 import static java.time.temporal.ChronoUnit.DAYS;
-import static school.hei.patrimoine.modele.Devise.NON_NOMMEE;
 import static school.hei.patrimoine.modele.possession.TypeAgregat.IMMOBILISATION;
 
 import java.time.LocalDate;
-import school.hei.patrimoine.modele.Devise;
+import school.hei.patrimoine.modele.Argent;
 
 public final class Materiel extends Possession {
   private final LocalDate dateAcquisition;
@@ -15,35 +14,35 @@ public final class Materiel extends Possession {
   public Materiel(
       String nom,
       LocalDate t,
-      int valeurComptable,
-      LocalDate dateAcquisition,
-      double tauxDAppreciationAnnuelle,
-      Devise devise) {
-    super(nom, t, valeurComptable, devise);
-    this.dateAcquisition = dateAcquisition;
-    this.tauxDAppreciationAnnuelle = tauxDAppreciationAnnuelle;
-  }
-
-  public Materiel(
-      String nom,
-      LocalDate t,
-      int valeurComptable,
+      Argent valeurComptable,
       LocalDate dateAcquisition,
       double tauxDAppreciationAnnuelle) {
-    this(nom, t, valeurComptable, dateAcquisition, tauxDAppreciationAnnuelle, NON_NOMMEE);
+    super(nom, t, valeurComptable);
+    this.dateAcquisition = dateAcquisition;
+    this.tauxDAppreciationAnnuelle = tauxDAppreciationAnnuelle;
   }
 
   @Override
   public Possession projectionFuture(LocalDate tFutur) {
     if (tFutur.isBefore(dateAcquisition)) {
-      return new Materiel(nom, tFutur, 0, dateAcquisition, tauxDAppreciationAnnuelle, devise);
+      return new Materiel(
+          nom,
+          tFutur,
+          new Argent(0, valeurComptable.devise()),
+          dateAcquisition,
+          tauxDAppreciationAnnuelle);
     }
     var joursEcoules = DAYS.between(t, tFutur);
-    double valeurAjouteeJournaliere = valeurComptable * (tauxDAppreciationAnnuelle / 365.);
+    double valeurAjouteeJournaliere =
+        valeurComptable.montant() * (tauxDAppreciationAnnuelle / 365.);
     int valeurComptableFuture =
-        max(0, (int) (valeurComptable + valeurAjouteeJournaliere * joursEcoules));
+        max(0, (int) (valeurComptable.montant() + valeurAjouteeJournaliere * joursEcoules));
     return new Materiel(
-        nom, tFutur, valeurComptableFuture, dateAcquisition, tauxDAppreciationAnnuelle, devise);
+        nom,
+        tFutur,
+        new Argent(valeurComptableFuture, valeurComptable.devise()),
+        dateAcquisition,
+        tauxDAppreciationAnnuelle);
   }
 
   @Override

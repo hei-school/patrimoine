@@ -1,11 +1,11 @@
 package school.hei.patrimoine.modele.possession;
 
 import static java.util.stream.Collectors.toSet;
-import static school.hei.patrimoine.modele.Devise.NON_NOMMEE;
 import static school.hei.patrimoine.modele.possession.TypeAgregat.FLUX;
 
 import java.time.LocalDate;
 import java.util.Set;
+import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.Devise;
 
 public final class GroupePossession extends Possession {
@@ -13,13 +13,16 @@ public final class GroupePossession extends Possession {
   private final Set<Possession> possessions;
 
   public GroupePossession(String nom, LocalDate t, Set<Possession> possessions, Devise devise) {
-    super(nom, t, possessions.stream().mapToInt(Possession::valeurComptable).sum(), devise);
+    super(
+        nom,
+        t,
+        new Argent(
+            possessions.stream()
+                .mapToInt(p -> p.getValeurComptable().convertir(devise, t).montant())
+                .sum(),
+            devise));
     this.possessions = possessions;
     typeAgregat(possessions); // sanity check: fails if set is inconsistent
-  }
-
-  public GroupePossession(String nom, LocalDate t, Set<Possession> possessions) {
-    this(nom, t, possessions, NON_NOMMEE);
   }
 
   @Override
@@ -28,7 +31,7 @@ public final class GroupePossession extends Possession {
         nom,
         tFutur,
         possessions.stream().map(p -> p.projectionFuture(tFutur)).collect(toSet()),
-        devise);
+        valeurComptable.devise());
   }
 
   @Override
