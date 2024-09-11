@@ -5,12 +5,10 @@ import static school.hei.patrimoine.modele.possession.TypeAgregat.TRESORERIE;
 
 import java.time.LocalDate;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 import lombok.Getter;
 import lombok.ToString;
 import school.hei.patrimoine.modele.Argent;
-import school.hei.patrimoine.modele.Personne;
 
 @ToString
 @Getter
@@ -27,15 +25,14 @@ public sealed class Compte extends Possession permits Dette, Creance {
       LocalDate dateOuverture,
       LocalDate t,
       Argent valeurComptable,
-      Set<FluxArgent> fluxArgents,
-      Map<Personne, Double> possesseurs) {
-    super(nom, t, valeurComptable, possesseurs);
+      Set<FluxArgent> fluxArgents) {
+    super(nom, t, valeurComptable);
     this.fluxArgents = fluxArgents;
     this.dateOuverture = dateOuverture;
   }
 
   public Compte(String nom, LocalDate dateOuverture, LocalDate t, Argent valeurComptable) {
-    this(nom, dateOuverture, t, valeurComptable, new HashSet<>(), Map.of());
+    this(nom, dateOuverture, t, valeurComptable, new HashSet<>());
   }
 
   @Override
@@ -49,8 +46,7 @@ public sealed class Compte extends Possession permits Dette, Creance {
         dateOuverture,
         tFutur,
         valeurComptable.minus(financementsFuturs(tFutur), tFutur),
-        fluxArgents.stream().map(f -> f.projectionFuture(tFutur)).collect(toSet()),
-        possesseurs);
+        fluxArgents.stream().map(f -> f.projectionFuture(tFutur)).collect(toSet()));
   }
 
   @Override

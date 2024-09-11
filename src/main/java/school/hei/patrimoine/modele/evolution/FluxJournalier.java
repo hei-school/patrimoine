@@ -14,7 +14,7 @@ public record FluxJournalier(LocalDate date, Compte compte, Set<FluxArgent> flux
     return String.format(
         "[%s][%s=%d%s] %s",
         date,
-        compte.getNom(),
+        compte.nom(),
         parseMontant(compte.valeurComptable()),
         compte.valeurComptable().devise().symbole(),
         toFluxJournalierString(flux));
@@ -25,6 +25,6 @@ public record FluxJournalier(LocalDate date, Compte compte, Set<FluxArgent> flux
   }
 
   private String toFluxJournalierString(FluxArgent flux) {
-    return String.format("(%s, %d)", flux.getNom(), parseMontant((flux.getFluxMensuel())));
+    return String.format("(%s, %d)", flux.nom(), parseMontant((flux.getFluxMensuel())));
   }
 }

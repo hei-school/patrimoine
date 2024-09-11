@@ -2,18 +2,14 @@ package school.hei.patrimoine.modele.possession;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.Map;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
 import lombok.ToString;
 import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.Devise;
-import school.hei.patrimoine.modele.Personne;
 import school.hei.patrimoine.modele.objectif.Objectivable;
 
 @ToString
 @EqualsAndHashCode(callSuper = false)
-@Getter
 public abstract sealed class Possession extends Objectivable
     implements Serializable /*note(no-serializable)*/
     permits AchatMaterielAuComptant,
@@ -23,24 +19,19 @@ public abstract sealed class Possession extends Objectivable
         FluxArgent,
         GroupePossession,
         Materiel,
+        PatrimoinePersonnel,
+        RemboursementDette,
         TransfertArgent {
   protected final String nom;
   protected final LocalDate t;
   protected final Argent valeurComptable;
   @EqualsAndHashCode.Exclude @ToString.Exclude private CompteCorrection compteCorrection;
-  protected final Map<Personne, Double> possesseurs;
 
-  public Possession(
-      String nom, LocalDate t, Argent valeurComptable, Map<Personne, Double> possesseurs) {
+  public Possession(String nom, LocalDate t, Argent valeurComptable) {
     super();
     this.nom = nom;
     this.t = t;
     this.valeurComptable = valeurComptable;
-    this.possesseurs = possesseurs;
-  }
-
-  public Possession(String nom, LocalDate t, Argent valeurComptable) {
-    this(nom, t, valeurComptable, Map.of());
   }
 
   public CompteCorrection getCompteCorrection() {
@@ -50,7 +41,7 @@ public abstract sealed class Possession extends Objectivable
     return compteCorrection;
   }
 
-  public final Argent valeurComptable() {
+  public Argent valeurComptable() {
     return valeurComptable;
   }
 

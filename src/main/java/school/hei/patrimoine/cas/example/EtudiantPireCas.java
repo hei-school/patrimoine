@@ -22,7 +22,7 @@ public class EtudiantPireCas extends Cas {
   private final Compte financeur;
 
   public EtudiantPireCas() {
-    super(LocalDate.of(2024, SEPTEMBER, 17), LocalDate.MAX, Set.of(new Personne("Ilo")));
+    super(LocalDate.of(2024, SEPTEMBER, 17), LocalDate.MAX, new Personne("Ilo"));
     financeur = new Compte("Espèces", LocalDate.MIN, ariary(0));
   }
 

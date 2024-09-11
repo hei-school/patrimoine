@@ -1,6 +1,7 @@
 package school.hei.patrimoine.visualisation.xchart;
 
 import static java.awt.Color.BLACK;
+import static java.awt.Color.BLUE;
 import static java.awt.Color.DARK_GRAY;
 import static java.awt.Color.GREEN;
 import static java.awt.Color.MAGENTA;
@@ -17,6 +18,7 @@ import static org.knowm.xchart.style.markers.SeriesMarkers.NONE;
 import static school.hei.patrimoine.modele.possession.TypeAgregat.CORRECTION;
 import static school.hei.patrimoine.modele.possession.TypeAgregat.IMMOBILISATION;
 import static school.hei.patrimoine.modele.possession.TypeAgregat.OBLIGATION;
+import static school.hei.patrimoine.modele.possession.TypeAgregat.PATRIMOINE;
 import static school.hei.patrimoine.modele.possession.TypeAgregat.TRESORERIE;
 import static school.hei.patrimoine.visualisation.xchart.StyleSerie.SerieWidth.FAT;
 import static school.hei.patrimoine.visualisation.xchart.StyleSerie.SerieWidth.NORMAL;
@@ -50,7 +52,7 @@ public class GrapheurEvolutionPatrimoine
     var dates = serieComptableTemporelle.serieDates();
     var seriesParPossession = serieComptableTemporelle.serieValeursComptablesParPossession();
     seriesParPossession.keySet().stream()
-        .sorted(comparing(Possession::getNom))
+        .sorted(comparing(Possession::nom))
         .forEach(p -> configureSerie(chart, grapheConf, p, dates, seriesParPossession.get(p)));
     addSerie(
         chart,
@@ -65,6 +67,13 @@ public class GrapheurEvolutionPatrimoine
         serieComptableTemporelle.serieParPossessionsFiltrées(
             p -> CORRECTION.equals(p.typeAgregat())),
         new StyleSerie(MAGENTA, FAT, CONTINUOUS, false));
+    addSerie(
+        chart,
+        "Patrimoines",
+        dates,
+        serieComptableTemporelle.serieParPossessionsFiltrées(
+            p -> PATRIMOINE.equals(p.typeAgregat())),
+        new StyleSerie(BLUE, FAT, CONTINUOUS, false));
 
     if (!grapheConf.avecAgregat()) {
       return;
@@ -110,7 +119,7 @@ public class GrapheurEvolutionPatrimoine
       return;
     }
 
-    addSerie(chart, possession.getNom(), dates, serie, styleSerie(possession));
+    addSerie(chart, possession.nom(), dates, serie, styleSerie(possession));
   }
 
   private StyleSerie styleSerie(Possession possession) {

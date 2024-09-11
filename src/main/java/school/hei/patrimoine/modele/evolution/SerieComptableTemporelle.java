@@ -44,7 +44,7 @@ public class SerieComptableTemporelle {
                       parseMontant(
                           ep.getEvolutionJournaliere()
                               .get(d)
-                              .possessionParNom(possession.getNom())
+                              .possessionParNom(possession.nom())
                               .valeurComptable()
                               .convertir(devise, d))));
       map.put(possession, serie);

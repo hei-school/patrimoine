@@ -3,6 +3,7 @@ package school.hei.patrimoine.cas;
 import static java.util.stream.Collectors.toSet;
 
 import java.time.LocalDate;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
@@ -24,7 +25,7 @@ public abstract class Cas {
   private final Supplier<Patrimoine> newPatrimoineSupplier;
   protected Patrimoine patrimoine;
 
-  protected Cas(LocalDate ajd, LocalDate finSimulation, Set<Personne> possesseurs) {
+  protected Cas(LocalDate ajd, LocalDate finSimulation, Map<Personne, Double> possesseurs) {
     this.ajd = ajd;
     this.finSimulation = finSimulation;
     this.newPatrimoineSupplier =
@@ -34,6 +35,10 @@ public abstract class Cas {
           suivi();
           return patrimoine;
         };
+  }
+
+  protected Cas(LocalDate ajd, LocalDate finSimulation, Personne possesseur) {
+    this(ajd, finSimulation, Map.of(possesseur, 1.));
   }
 
   public Patrimoine patrimoine() {

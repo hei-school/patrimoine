@@ -17,14 +17,14 @@ public final class GroupePossession extends Possession {
         nom,
         t,
         possessions.stream()
-            .map(Possession::getValeurComptable)
+            .map(Possession::valeurComptable)
             .reduce(new Argent(0, devise), (a1, a2) -> a1.add(a2, t)));
     this.possessions = possessions;
     typeAgregat(possessions); // sanity check: fails if set is inconsistent
   }
 
   @Override
-  public Possession projectionFuture(LocalDate tFutur) {
+  public GroupePossession projectionFuture(LocalDate tFutur) {
     return new GroupePossession(
         nom,
         valeurComptable.devise(),

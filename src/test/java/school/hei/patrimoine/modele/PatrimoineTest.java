@@ -24,8 +24,7 @@ class PatrimoineTest {
     var ilo = new Personne("Ilo");
 
     var patrimoineIloAu13mai24 =
-        Patrimoine.of(
-            "patrimoineIloAu13mai24", MGA, LocalDate.of(2024, MAY, 13), Set.of(ilo), Set.of());
+        Patrimoine.of("patrimoineIloAu13mai24", MGA, LocalDate.of(2024, MAY, 13), ilo, Set.of());
 
     assertEquals(ariary(0), patrimoineIloAu13mai24.getValeurComptable());
   }
@@ -40,7 +39,7 @@ class PatrimoineTest {
             "patrimoineIloAu13mai24",
             MGA,
             au13mai24,
-            Set.of(ilo),
+            ilo,
             Set.of(
                 new Compte("Espèces", au13mai24, ariary(400_000)),
                 new Compte("Compte epargne", au13mai24, ariary(200_000)),
@@ -64,8 +63,7 @@ class PatrimoineTest {
             ariary(-100_000));
 
     var patrimoineIloAu13mai24 =
-        Patrimoine.of(
-            "patrimoineIloAu13mai24", MGA, au13mai24, Set.of(ilo), Set.of(financeur, trainDeVie));
+        Patrimoine.of("patrimoineIloAu13mai24", MGA, au13mai24, ilo, Set.of(financeur, trainDeVie));
 
     assertEquals(
         ariary(500_000),
@@ -107,8 +105,7 @@ class PatrimoineTest {
         new FluxArgent(
             "Correction à la baisse", financeur, au13mai24.plusDays(99), ariary(-10_000)));
     var patrimoineIloAu13mai24 =
-        Patrimoine.of(
-            "patrimoineIloAu13mai24", MGA, au13mai24, Set.of(ilo), Set.of(financeur, trainDeVie));
+        Patrimoine.of("patrimoineIloAu13mai24", MGA, au13mai24, ilo, Set.of(financeur, trainDeVie));
 
     assertEquals(
         ariary(500_000),
@@ -140,7 +137,7 @@ class PatrimoineTest {
             "patrimoineIloAu13mai24",
             MGA,
             au13mai24,
-            Set.of(ilo),
+            ilo,
             Set.of(
                 new GroupePossession("Le groupe", MGA, au13mai24, Set.of(financeur, trainDeVie))));
 
@@ -159,13 +156,12 @@ class PatrimoineTest {
   void notre_compte_joint_est_partage() {
     var moi = new Personne("Ilo");
     var lui = new Personne("Matthieu");
-    var joint =
-        new Compte("Compte joint", now(), now(), ariary(10), Set.of(), Map.of(moi, 0.4, lui, 0.6));
+    var joint = new Compte("Compte joint", now(), now(), ariary(10), Set.of());
 
-    var monPatrimoine = Patrimoine.of("Mon patrimoine", MGA, now(), moi, Set.of(joint));
-    var sonPatrimoine = Patrimoine.of("Son patrimoine", MGA, now(), lui, Set.of(joint));
     var notrePatrimoine =
-        Patrimoine.of("Notre patrimoine", MGA, now(), Set.of(lui, moi), Set.of(joint));
+        Patrimoine.of("Notre patrimoine", MGA, now(), Map.of(lui, 0.6, moi, 0.4), Set.of(joint));
+    var monPatrimoine = moi.patrimoine(MGA, now());
+    var sonPatrimoine = lui.patrimoine(MGA, now());
 
     assertEquals(ariary(4), monPatrimoine.getValeurComptable());
     assertEquals(ariary(6), sonPatrimoine.getValeurComptable());

@@ -3,15 +3,20 @@ package school.hei.patrimoine.visualisation.swing.ihm;
 import static java.awt.BorderLayout.CENTER;
 import static java.awt.BorderLayout.WEST;
 import static java.awt.Toolkit.getDefaultToolkit;
+import static java.time.LocalDate.now;
 import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toSet;
 import static javax.swing.BorderFactory.createEmptyBorder;
 import static javax.swing.BoxLayout.X_AXIS;
 import static javax.swing.BoxLayout.Y_AXIS;
+import static school.hei.patrimoine.modele.Devise.EUR;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Set;
 import javax.swing.*;
 import lombok.Getter;
 import lombok.SneakyThrows;
@@ -39,7 +44,10 @@ public class MainIHM extends JFrame implements Observer {
   private final SelecteurGrapheConfIHM selecteurGrapheConfIHM;
 
   public MainIHM(List<Patrimoine> patrimoines) {
-    this.patrimoinesVisualisables = new PatrimoinesVisualisables(patrimoines);
+    List<Patrimoine> patrimoinesAvecPersonnes = new ArrayList<>();
+    patrimoinesAvecPersonnes.addAll(patrimoines);
+    patrimoinesAvecPersonnes.addAll(patrimoinesPersonnels(patrimoines));
+    this.patrimoinesVisualisables = new PatrimoinesVisualisables(patrimoinesAvecPersonnes);
     this.patrimoinesVisualisables.addObserver(this);
 
     this.selecteurPatrimoineIHM =
@@ -55,6 +63,14 @@ public class MainIHM extends JFrame implements Observer {
 
     configureFrame();
     configureContentPane();
+  }
+
+  private static Set<Patrimoine> patrimoinesPersonnels(List<Patrimoine> patrimoines) {
+    var personnes =
+        patrimoines.stream()
+            .flatMap(patrimoine -> patrimoine.getPossesseurs().keySet().stream())
+            .collect(toSet());
+    return personnes.stream().map(personne -> personne.patrimoine(EUR, now())).collect(toSet());
   }
 
   @SneakyThrows
@@ -115,6 +131,7 @@ public class MainIHM extends JFrame implements Observer {
     setTitle(
         String.format(
             "Patrimoine : possesseur=%s, t=%s",
-            p.getPossesseurs().stream().map(Personne::nom).collect(joining(",")), p.getT()));
+            p.getPossesseurs().keySet().stream().map(Personne::nom).collect(joining(",")),
+            p.getT()));
   }
 }

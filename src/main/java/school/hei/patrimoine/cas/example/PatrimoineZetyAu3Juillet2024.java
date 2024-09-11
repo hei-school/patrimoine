@@ -153,7 +153,7 @@ public class PatrimoineZetyAu3Juillet2024 implements Supplier<Patrimoine> {
     Set<Possession> possessionsDu3Juillet =
         possessionsDu3Juillet2024(ordinateur, vêtements, espèces, compteBancaire);
     return Patrimoine.of(
-        "zety au 3 juillet 2024", MGA, AU_3_JUILLET_2024, Set.of(zety), possessionsDu3Juillet);
+        "zety au 3 juillet 2024", MGA, AU_3_JUILLET_2024, zety, possessionsDu3Juillet);
   }
 
   public Patrimoine zetySendette() {
@@ -179,7 +179,7 @@ public class PatrimoineZetyAu3Juillet2024 implements Supplier<Patrimoine> {
             "zety au 18 Septembre 2024",
             MGA,
             AU_18_SEPTEMBRE_2024,
-            Set.of(zety),
+            zety,
             Set.of(possessionsDu3Juillet, possessionsRajoutéesLe18Septembre))
         .projectionFuture(AU_18_SEPTEMBRE_2024);
   }
@@ -239,7 +239,7 @@ public class PatrimoineZetyAu3Juillet2024 implements Supplier<Patrimoine> {
         "zety au 14 Février 2025",
         MGA,
         AU_14_FEVRIER_2025,
-        Set.of(zety),
+        zety,
         Set.of(
             possessionsDu3Juillet2024,
             possessionsRajoutéesLe18Septembre2024,
@@ -285,7 +285,7 @@ public class PatrimoineZetyAu3Juillet2024 implements Supplier<Patrimoine> {
         "zety au 26 Octobre 2025",
         MGA,
         AU_26_OCTOBRE_2025,
-        Set.of(zety),
+        zety,
         Set.of(
             possessionsDu3Juillet2024,
             possessionsRajoutéesLe18Septembre2024,

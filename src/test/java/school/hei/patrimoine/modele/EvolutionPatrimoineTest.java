@@ -28,8 +28,7 @@ class EvolutionPatrimoineTest {
             15,
             ariary(-100_000));
     var patrimoineIloAu13mai24 =
-        Patrimoine.of(
-            "patrimoineIloAu13mai24", MGA, au13mai24, Set.of(ilo), Set.of(financeur, trainDeVie));
+        Patrimoine.of("patrimoineIloAu13mai24", MGA, au13mai24, ilo, Set.of(financeur, trainDeVie));
 
     var evolutionPatrimoine =
         new EvolutionPatrimoine(
