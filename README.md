@@ -37,7 +37,7 @@ soit à [partir du patrimoine](https://www.inegalites.fr/A-partir-de-quel-niveau
 
 Pour faire la distinction entre les deux, on dit souvent qu'une personne à haut revenu est riche,
 alors qu'une personne à haut patrimoine est fortuné.
-Ainsi, vous pourriez un jour payer des [impôts sur la fortune](https://fr.wikipedia.org/wiki/Imp%C3%B4t_sur_la_fortune) si vous êtes fortuné,
+Ainsi, vous pourriez un jour payer des [impôts sur la fortune](https://fr.wikipedia.org/wiki/Imp%C3%B4t_sur_la_fortune) si vous êtes fortunée,
 mais pas si vous êtes (seulement) riche.
 
 Sur un tout autre registre, il n'y a pas que l'argent comme richesse. Il y a aussi les relations sociales, la culture, le pouvoir.
