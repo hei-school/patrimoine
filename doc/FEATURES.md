@@ -54,7 +54,7 @@ Les [flux impossibles](https://github.com/hei-school/patrimoine/blob/main/src/ma
 arrivent quand vous essayer de faire déplacer de l'argent depuis une source qui n'en contient pas suffisamment.
 
 Idéalement, dérouler **une politique Zéro Flux Impossibles (ZFI)** :
-c'est-à-dire plannifier bien l'évolution de votre patrimoine de sorte à ce que trésorerie puisse toujours couvrir vos différents mouvement d'argent.
+c'est-à-dire plannifier bien l'évolution de votre patrimoine de sorte à ce que votre trésorerie puisse toujours couvrir vos différentes opérations.
 Si ZFI est atteint, alors vous devrez pouvoir faire face à toutes vos dépenses.
 
 👷‍♂️⚒️ Le visualiseur Swing permet de lister facilement les flux impossibles. Cette fonctionnalité sera portée dans l'interface web en cours de développement.
