@@ -42,9 +42,19 @@ sont la liste des opérations qui se sont déroulées depuis la date de la spéc
 Il faut suivre régulièrement cette liste et mettre à jour la spécification en fonction de quelles opérations se sont réellement réalisées,
 et quelles opérations ne se sont jamais réalisées.
 
-Idéalement, dérouler **une politique zéro flux journaliers** :
+Idéalement, dérouler **une politique Zéro Flux Journaliers (ZFJ)** :
 c'est-à-dire mettre à jour la spécification jusqu'à une date dont la fraîcheur permet d'éliminer tous les flux journaliers listés.
+Si ZFJ est atteint, alors votre specification représente fidèlement la réalité à la date de `LocalDate.now()`.
 
 👷‍♂️⚒️ Le visualiseur Swing permet de lister facilement les flux journaliers. Cette fonctionnalité sera portée dans l'interface web en cours de développement.
 
 # Alerter
+
+Les [flux impossibles](https://github.com/hei-school/patrimoine/blob/main/src/main/java/school/hei/patrimoine/modele/evolution/EvolutionPatrimoine.java#L68)
+arrivent quand vous essayer de faire déplacer de l'argent depuis une source qui n'en contient pas suffisamment.
+
+Idéalement, dérouler **une politique Zéro Flux Impossibles (ZFI)** :
+c'est-à-dire plannifier bien l'évolution de votre patrimoine de sorte à ce que trésorerie puisse toujours couvrir vos différents mouvement d'argent.
+Si ZFI est atteint, alors vous devrez pouvoir faire face à toutes vos dépenses.
+
+👷‍♂️⚒️ Le visualiseur Swing permet de lister facilement les flux impossibles. Cette fonctionnalité sera portée dans l'interface web en cours de développement.
