@@ -11,7 +11,7 @@ import school.hei.patrimoine.modele.Personne;
 import school.hei.patrimoine.modele.possession.Argent;
 import school.hei.patrimoine.modele.possession.FluxArgent;
 
-class SerialiseurTest {
+class ByteSerialiseurTest {
 
   @Test
   void serialise_et_deserialise() {
@@ -29,7 +29,7 @@ class SerialiseurTest {
     var patrimoineIloAu13mai24 =
         new Patrimoine("patrimoineIloAu13mai24", ilo, au13mai24, Set.of(financeur, trainDeVie));
 
-    var serialiseur = new Serialiseur<Patrimoine>();
+    var serialiseur = new ByteSerialiseur<Patrimoine>();
     var serialisé = serialiseur.serialise(patrimoineIloAu13mai24);
 
     var désérialisé = serialiseur.deserialise(serialisé);
