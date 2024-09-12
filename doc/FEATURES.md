@@ -30,6 +30,8 @@ Le graphe est configurable :
 Un [visualiseur Swing](https://github.com/hei-school/patrimoine/blob/ihm/src/main/java/school/hei/patrimoine/visualisation/swing/ihm/VisualiseurCas.java),
 sur la branch [ihm](https://github.com/hei-school/patrimoine/tree/ihm), permet de visualiser facilement les projections d'une spécification donnée.
 
+![](https://github.com/hei-school/patrimoine/blob/main/doc/ihm-swing.png)
+
 Un visualiseur web est en cours de développement.
 
 # Recouper
