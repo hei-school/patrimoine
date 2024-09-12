@@ -22,7 +22,7 @@ Cette librairie **Java** vous aidera à le faire !
 
 La librairie Patrimoine permet de raisonner holistiquement sur son patrimoine en permettant de :
 - le **spécifier** finement à un instant précis du temps,
-- le **projetter** à n'importe quel instant futur souhaité afin d'en étudier l'évolution,
+- le **projeter** à n'importe quel instant futur souhaité afin d'en étudier l'évolution,
 - **recouper** quotidiennement les évènements issus de la spécification avec ceux issus de la vie réelle, et de mesurer l'ampleur des éventuelles différences,
 - **alerter** sur les risques encourus avec leur instant précis d'occurence, tel le paiement d'un montant qu'un compte bancaire ne pourrait supporter.
 
