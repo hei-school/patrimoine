@@ -45,6 +45,6 @@ et quelles opérations ne se sont jamais réalisées.
 Idéalement, dérouler **une politique zéro flux journaliers** :
 c'est-à-dire mettre à jour la spécification jusqu'à une date dont la fraîcheur permet d'éliminer tous les flux journaliers listés.
 
-👷‍♂️⚒️ Le visualiseur Swing permet de lister facilement les flux journaliers mais cette fonctionnalité sera portée dans l'interface web en cours de développement.
+👷‍♂️⚒️ Le visualiseur Swing permet de lister facilement les flux journaliers. Cette fonctionnalité sera portée dans l'interface web en cours de développement.
 
 # Alerter
