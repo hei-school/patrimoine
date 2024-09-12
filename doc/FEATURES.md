@@ -55,6 +55,6 @@ arrivent quand vous essayer de faire déplacer de l'argent depuis une source qui
 
 Idéalement, dérouler **une politique Zéro Flux Impossibles (ZFI)** :
 c'est-à-dire plannifier bien l'évolution de votre patrimoine de sorte à ce que votre trésorerie puisse toujours couvrir vos différentes opérations.
-Si ZFI est atteint, alors vous devrez pouvoir faire face à toutes vos dépenses.
+Si ZFI est atteint, alors vous devrez pouvoir réaliser toutes vos opérations.
 
 👷‍♂️⚒️ Le visualiseur Swing permet de lister facilement les flux impossibles. Cette fonctionnalité sera portée dans l'interface web en cours de développement.
