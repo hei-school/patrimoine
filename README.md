@@ -26,6 +26,8 @@ La librairie Patrimoine permet de raisonner holistiquement sur son patrimoine en
 - **recouper** quotidiennement les évènements issus de la spécification avec ceux issus de la vie réelle, et de mesurer l'ampleur des éventuelles différences,
 - **alerter** sur les risques encourus avec leur instant précis d'occurence, tel le paiement d'un montant qu'un compte bancaire ne pourrait supporter.
 
+Ces différentes fonctionnalités sont détaillées [ici](https://github.com/hei-school/patrimoine/blob/main/doc/FEATURES.md).
+
 ---------------
 
 ## D'autres définitions de la richesse
