@@ -8,8 +8,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
 import school.hei.patrimoine.ResourceFileGetter;
-import school.hei.patrimoine.cas.PatrimoineRicheMoyenCas;
-import school.hei.patrimoine.cas.PatrimoineRichePireCas;
+import school.hei.patrimoine.cas.PatrimoineCresusCas;
+import school.hei.patrimoine.cas.PatrimoineRicheCas;
 import school.hei.patrimoine.modele.evolution.EvolutionPatrimoine;
 import school.hei.patrimoine.visualisation.AreImagesEqual;
 
@@ -24,32 +24,85 @@ class GrapheurEvolutionPatrimoinePatrimoineRicheTest {
     var patrimoine =
         new EvolutionPatrimoine(
             "Dummy",
-            new PatrimoineRichePireCas().get(),
+            new PatrimoineRicheCas().get(),
             LocalDate.of(2024, MAY, 12),
             LocalDate.of(2026, NOVEMBER, 5));
 
-    var imageGeneree = grapheurEvolutionPatrimoine.apply(patrimoine, false);
+    var imageGeneree = grapheurEvolutionPatrimoine.apply(patrimoine);
 
     assertTrue(
         areImagesEqual.apply(
-            resourceFileGetter.apply("patrimoine-riche-pire-sur-quelques-annees.png"),
+            resourceFileGetter.apply("patrimoine-riche-sur-quelques-annees.png"), imageGeneree));
+  }
+
+  @Test
+  void visualise_riche_moyen_sur_quelques_annees_avec_tous_les_agregats() {
+    var patrimoine =
+        new EvolutionPatrimoine(
+            "Dummy",
+            new PatrimoineCresusCas().get(),
+            LocalDate.of(2024, MAY, 12),
+            LocalDate.of(2025, MARCH, 5));
+
+    var imageGeneree =
+        grapheurEvolutionPatrimoine.apply(patrimoine, new GrapheConf(true, true, true, true));
+
+    assertTrue(
+        areImagesEqual.apply(
+            resourceFileGetter.apply("patrimoine-cresus-sur-quelques-annees.png"), imageGeneree));
+  }
+
+  @Test
+  void visualise_riche_moyen_sur_quelques_annees_avec_tresorie_et_agregat_seulement() {
+    var patrimoine =
+        new EvolutionPatrimoine(
+            "Dummy",
+            new PatrimoineCresusCas().get(),
+            LocalDate.of(2024, MAY, 12),
+            LocalDate.of(2025, MARCH, 5));
+
+    var imageGeneree =
+        grapheurEvolutionPatrimoine.apply(patrimoine, new GrapheConf(true, true, false, false));
+
+    assertTrue(
+        areImagesEqual.apply(
+            resourceFileGetter.apply("patrimoine-cresus-sur-quelques-annees_treso.png"),
             imageGeneree));
   }
 
   @Test
-  void visualise_riche_moyen_sur_quelques_annees() {
+  void visualise_riche_moyen_sur_quelques_annees_avec_immo_et_agregat_seulement() {
     var patrimoine =
         new EvolutionPatrimoine(
             "Dummy",
-            new PatrimoineRicheMoyenCas().get(),
+            new PatrimoineCresusCas().get(),
             LocalDate.of(2024, MAY, 12),
             LocalDate.of(2025, MARCH, 5));
 
-    var imageGeneree = grapheurEvolutionPatrimoine.apply(patrimoine, true);
+    var imageGeneree =
+        grapheurEvolutionPatrimoine.apply(patrimoine, new GrapheConf(true, false, true, false));
 
     assertTrue(
         areImagesEqual.apply(
-            resourceFileGetter.apply("patrimoine-riche-moyen-sur-quelques-annees.png"),
+            resourceFileGetter.apply("patrimoine-cresus-sur-quelques-annees_immo.png"),
+            imageGeneree));
+  }
+
+  @Test
+  void visualise_riche_moyen_sur_quelques_annees_avec_obli_et_agregat_seulement() {
+    var patrimoine =
+        new EvolutionPatrimoine(
+            "Dummy",
+            new PatrimoineCresusCas().get(),
+            LocalDate.of(2024, MAY, 12),
+            LocalDate.of(2025, MARCH, 5));
+
+    var imageGeneree =
+        grapheurEvolutionPatrimoine.apply(patrimoine, new GrapheConf(true, false, false, true));
+
+    assertTrue(
+        areImagesEqual.apply(
+            resourceFileGetter.apply("patrimoine-cresus-sur-quelques-annees_obli.png"),
             imageGeneree));
   }
 }

@@ -28,7 +28,7 @@ class GrapheurEvolutionPatrimoinePatrimoineEtudiantTest {
         new EvolutionPatrimoine(
             "Dummy", patrimoine(), LocalDate.of(2024, MAY, 12), LocalDate.of(2024, MAY, 17));
 
-    var imageGeneree = grapheurEvolutionPatrimoine.apply(patrimoine, false);
+    var imageGeneree = grapheurEvolutionPatrimoine.apply(patrimoine);
 
     assertTrue(
         areImagesEqual.apply(
@@ -41,7 +41,7 @@ class GrapheurEvolutionPatrimoinePatrimoineEtudiantTest {
         new EvolutionPatrimoine(
             "Dummy", patrimoine(), LocalDate.of(2024, MAY, 12), LocalDate.of(2024, NOVEMBER, 5));
 
-    var imageGeneree = grapheurEvolutionPatrimoine.apply(patrimoine, false);
+    var imageGeneree = grapheurEvolutionPatrimoine.apply(patrimoine);
 
     assertTrue(
         areImagesEqual.apply(
@@ -54,7 +54,7 @@ class GrapheurEvolutionPatrimoinePatrimoineEtudiantTest {
         new EvolutionPatrimoine(
             "Dummy", patrimoine(), LocalDate.of(2024, MAY, 12), LocalDate.of(2026, NOVEMBER, 5));
 
-    var imageGeneree = grapheurEvolutionPatrimoine.apply(patrimoine, false);
+    var imageGeneree = grapheurEvolutionPatrimoine.apply(patrimoine);
 
     assertTrue(
         areImagesEqual.apply(

@@ -38,39 +38,29 @@ import org.knowm.xchart.style.theme.MatlabTheme;
 import school.hei.patrimoine.modele.evolution.EvolutionPatrimoine;
 import school.hei.patrimoine.modele.possession.Possession;
 
-public class GrapheurEvolutionPatrimoine implements BiFunction<EvolutionPatrimoine, Boolean, File> {
+public class GrapheurEvolutionPatrimoine
+    implements BiFunction<EvolutionPatrimoine, GrapheConf, File> {
 
   private static final int DPI = 300;
 
-  private static void configureSeries(
-      EvolutionPatrimoine ep, XYChart chart, boolean withAggregates) {
+  private void configureSeries(EvolutionPatrimoine ep, XYChart chart, GrapheConf grapheConf) {
     var serieComptableTemporelle = ep.getSerieComptableTemporelle();
     var dates = serieComptableTemporelle.serieDates();
     var seriesParPossession = serieComptableTemporelle.serieValeursComptablesParPossession();
     seriesParPossession.keySet().stream()
         .sorted(comparing(Possession::getNom))
-        .forEach(
-            possession ->
-                addSerie(
-                    chart,
-                    possession.getNom(),
-                    dates,
-                    seriesParPossession.get(possession),
-                    styleSerie(possession)));
+        .forEach(p -> configureSerie(chart, grapheConf, p, dates, seriesParPossession.get(p)));
     addSerie(
         chart,
         "Patrimoine",
         dates,
         serieComptableTemporelle.serieValeursComptablesPatrimoine(),
         new StyleSerie(GREEN, FAT, CONTINUOUS, false));
-    if (withAggregates) {
-      addSerie(
-          chart,
-          "Immobilisation",
-          dates,
-          serieComptableTemporelle.serieParPossessionsFiltrées(
-              p -> IMMOBILISATION.equals(p.typeAgregat())),
-          new StyleSerie(BLACK, FAT, CONTINUOUS, false));
+
+    if (!grapheConf.avecAgregat()) {
+      return;
+    }
+    if (grapheConf.avecTresorerie()) {
       addSerie(
           chart,
           "Trésorerie",
@@ -78,6 +68,17 @@ public class GrapheurEvolutionPatrimoine implements BiFunction<EvolutionPatrimoi
           serieComptableTemporelle.serieParPossessionsFiltrées(
               p -> TRESORIE.equals(p.typeAgregat())),
           new StyleSerie(RED, FAT, CONTINUOUS, false));
+    }
+    if (grapheConf.avecImmobilisations()) {
+      addSerie(
+          chart,
+          "Immobilisations",
+          dates,
+          serieComptableTemporelle.serieParPossessionsFiltrées(
+              p -> IMMOBILISATION.equals(p.typeAgregat())),
+          new StyleSerie(BLACK, FAT, CONTINUOUS, false));
+    }
+    if (grapheConf.avecObligations()) {
       addSerie(
           chart,
           "Obligations",
@@ -88,7 +89,22 @@ public class GrapheurEvolutionPatrimoine implements BiFunction<EvolutionPatrimoi
     }
   }
 
-  private static StyleSerie styleSerie(Possession possession) {
+  private void configureSerie(
+      XYChart chart,
+      GrapheConf grapheConf,
+      Possession possession,
+      List<LocalDate> dates,
+      List<Integer> serie) {
+    if (!grapheConf.avecTresorerie() && TRESORIE.equals(possession.typeAgregat())
+        || !grapheConf.avecImmobilisations() && IMMOBILISATION.equals(possession.typeAgregat())
+        || !grapheConf.avecObligations() && OBLIGATION.equals(possession.typeAgregat())) {
+      return;
+    }
+
+    addSerie(chart, possession.getNom(), dates, serie, styleSerie(possession));
+  }
+
+  private StyleSerie styleSerie(Possession possession) {
     var typeAgregat = possession.typeAgregat();
     if (IMMOBILISATION.equals(typeAgregat)) {
       return new StyleSerie(null, NORMAL, CONTINUOUS, true);
@@ -99,7 +115,7 @@ public class GrapheurEvolutionPatrimoine implements BiFunction<EvolutionPatrimoi
         : new StyleSerie(null, NORMAL, CONTINUOUS, false);
   }
 
-  private static void addSerie(
+  private void addSerie(
       XYChart chart,
       String nom,
       List<LocalDate> localDates,
@@ -125,7 +141,7 @@ public class GrapheurEvolutionPatrimoine implements BiFunction<EvolutionPatrimoi
     serie.setLineStyle(style.stroke().getValue());
   }
 
-  private static Color color(String nom) {
+  private Color color(String nom) {
     var nomEnNb = Arrays.stream(nom.split("")).mapToInt(s -> s.charAt(0)).sum();
 
     // do not use same value for rgb as it will cause gray-scaled images in most cases
@@ -138,16 +154,20 @@ public class GrapheurEvolutionPatrimoine implements BiFunction<EvolutionPatrimoi
 
   @SneakyThrows
   @Override
-  public File apply(EvolutionPatrimoine evolutionPatrimoine, Boolean withAggregates) {
+  public File apply(EvolutionPatrimoine evolutionPatrimoine, GrapheConf grapheConf) {
     XYChart chart = new XYChartBuilder().width(800).height(600).build();
     configureStyle(chart);
-    configureSeries(evolutionPatrimoine, chart, withAggregates);
+    configureSeries(evolutionPatrimoine, chart, grapheConf);
 
     var temp = createTempFile(randomUUID().toString(), ".png").toFile();
     saveBitmapWithDPI(chart, temp.getAbsolutePath(), PNG, DPI);
     System.out.println("Image générée: " + temp.getAbsolutePath());
 
     return temp;
+  }
+
+  public File apply(EvolutionPatrimoine ep) {
+    return apply(ep, new GrapheConf(false, true, true, true));
   }
 
   private void configureStyle(XYChart chart) {

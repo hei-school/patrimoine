@@ -18,7 +18,7 @@ import school.hei.patrimoine.modele.possession.GroupePossession;
 import school.hei.patrimoine.modele.possession.Materiel;
 import school.hei.patrimoine.modele.possession.TransfertArgent;
 
-public class PatrimoineRichePireCas implements Supplier<Patrimoine> {
+public class PatrimoineRicheCas implements Supplier<Patrimoine> {
 
   @Override
   public Patrimoine get() {
@@ -70,9 +70,6 @@ public class PatrimoineRichePireCas implements Supplier<Patrimoine> {
             3);
 
     return new Patrimoine(
-        "Cresus (pire)",
-        ilo,
-        au13mai24,
-        Set.of(compteCourant, compteEpargne, trainDeVie, voiture, mac));
+        "Riche", ilo, au13mai24, Set.of(compteCourant, compteEpargne, trainDeVie, voiture, mac));
   }
 }
