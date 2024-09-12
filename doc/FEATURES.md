@@ -44,7 +44,7 @@ et quelles opérations ne se sont jamais réalisées.
 
 Idéalement, dérouler **une politique Zéro Flux Journaliers (ZFJ)** :
 c'est-à-dire mettre à jour la spécification jusqu'à une date dont la fraîcheur permet d'éliminer tous les flux journaliers listés.
-Si ZFJ est atteint, alors votre specification représente fidèlement la réalité à la date de `LocalDate.now()`.
+Si ZFJ est atteint, alors votre specification représente fidèlement la réalité à date de `LocalDate.now()`.
 
 👷‍♂️⚒️ Le visualiseur Swing permet de lister facilement les flux journaliers. Cette fonctionnalité sera portée dans l'interface web en cours de développement.
 
