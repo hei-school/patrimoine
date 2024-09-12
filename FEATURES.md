@@ -19,5 +19,18 @@ et sur lequel vous pouvez vous entraîner à spécifier.
 Des interfaces visuelles sont en cours de développement afin de permettre de spécifier sans coder en Java.
 
 # Projeter
+
+Un grapheur permet de générer sous forme de graphe l'évolution du patrimoine sur une période de temps donnée.
+Le graphe est configurable :
+- il peut afficher [la trésorerie uniquement](https://github.com/hei-school/patrimoine/blob/main/src/test/resources/patrimoine-cresus-sur-quelques-annees_treso.png),
+- ou [les immobilisations uniquement](https://github.com/hei-school/patrimoine/blob/main/src/test/resources/patrimoine-cresus-sur-quelques-annees_immo.png),
+- ou [les obligations uniquement](https://github.com/hei-school/patrimoine/blob/main/src/test/resources/patrimoine-cresus-sur-quelques-annees_obli.png),
+- ou [n'importe quelle combinaison](https://github.com/hei-school/patrimoine/blob/main/src/test/resources/patrimoine-cresus-sur-quelques-annees.png) d'entre eux.
+
+Un [visualiseur Swing](https://github.com/hei-school/patrimoine/blob/ihm/src/main/java/school/hei/patrimoine/visualisation/swing/ihm/VisualiseurCas.java),
+sur la branch [ihm](https://github.com/hei-school/patrimoine/tree/ihm), permet de visualiser facilement les projections d'une spécification donnée.
+
+Un visualiseur web est en cours de développement.
+
 # Recouper
 # Alerter
