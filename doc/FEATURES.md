@@ -20,7 +20,7 @@ et sur lequel vous pouvez vous entraîner à spécifier.
 
 # Projeter
 
-Un grapheur permet de générer sous forme de graphe l'évolution du patrimoine sur une période de temps donnée.
+[Un grapheur](https://github.com/hei-school/patrimoine/blob/main/src/main/java/school/hei/patrimoine/visualisation/xchart/GrapheurEvolutionPatrimoine.java) permet de générer sous forme de graphe l'évolution du patrimoine sur une période de temps donnée.
 Le graphe est configurable :
 - il peut afficher [la trésorerie uniquement](https://github.com/hei-school/patrimoine/blob/main/src/test/resources/patrimoine-cresus-sur-quelques-annees_treso.png),
 - ou [les immobilisations uniquement](https://github.com/hei-school/patrimoine/blob/main/src/test/resources/patrimoine-cresus-sur-quelques-annees_immo.png),
