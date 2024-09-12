@@ -35,4 +35,16 @@ sur la branch [ihm](https://github.com/hei-school/patrimoine/tree/ihm), permet d
 👷‍♂️⚒️  Un visualiseur de projections sera intégré à l'interface web en cours développement.
 
 # Recouper
+
+Les [flux journaliers](https://github.com/hei-school/patrimoine/blob/main/src/main/java/school/hei/patrimoine/modele/evolution/FluxJournalier.java)
+sont la liste des opérations qui se sont déroulées depuis la date de la spécification **jusqu'à aujourd'hui (`LocalDate.now()`)**.
+
+Il faut suivre régulièrement cette liste et mettre à jour la spécification en fonction de quelles opérations se sont réellement réalisées,
+et quelles opérations ne se sont jamais réalisées.
+
+Idéalement, dérouler **une politique zéro flux journaliers** :
+c'est-à-dire mettre à jour la spécification jusqu'à une date dont la fraîcheur permet d'éliminer tous les flux journaliers listés.
+
+👷‍♂️⚒️ Le visualiseur Swing permet de lister facilement les flux journaliers mais cette fonctionnalité sera portée dans l'interface web en cours de développement.
+
 # Alerter
