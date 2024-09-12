@@ -1,20 +1,5 @@
 package school.hei.patrimoine.cas;
 
-import static java.time.Month.APRIL;
-import static java.time.Month.AUGUST;
-import static java.time.Month.DECEMBER;
-import static java.time.Month.JANUARY;
-import static java.time.Month.JULY;
-import static java.time.Month.MARCH;
-import static java.time.Month.MAY;
-import static java.time.Month.SEPTEMBER;
-import static java.time.temporal.ChronoUnit.MONTHS;
-import static java.util.stream.Collectors.toSet;
-
-import java.time.LocalDate;
-import java.util.Set;
-import java.util.function.Supplier;
-import java.util.stream.Stream;
 import school.hei.patrimoine.modele.Patrimoine;
 import school.hei.patrimoine.modele.Personne;
 import school.hei.patrimoine.modele.possession.AchatMaterielAuComptant;
@@ -26,6 +11,22 @@ import school.hei.patrimoine.modele.possession.GroupePossession;
 import school.hei.patrimoine.modele.possession.Materiel;
 import school.hei.patrimoine.modele.possession.Possession;
 import school.hei.patrimoine.modele.possession.TransfertArgent;
+
+import java.time.LocalDate;
+import java.util.Set;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
+
+import static java.time.Month.APRIL;
+import static java.time.Month.AUGUST;
+import static java.time.Month.DECEMBER;
+import static java.time.Month.JANUARY;
+import static java.time.Month.JULY;
+import static java.time.Month.MARCH;
+import static java.time.Month.MAY;
+import static java.time.Month.SEPTEMBER;
+import static java.time.temporal.ChronoUnit.MONTHS;
+import static java.util.stream.Collectors.toSet;
 
 public class PatrimoineCresusCas implements Supplier<Patrimoine> {
 
@@ -268,7 +269,7 @@ public class PatrimoineCresusCas implements Supplier<Patrimoine> {
     var myriadeMg = new Argent("Myriade Mg", ajd, 0);
 
     return new Patrimoine(
-        "Cresus (moyen)",
+        "Crésus",
         cresus,
         ajd,
         Stream.concat(
