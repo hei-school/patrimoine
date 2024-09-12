@@ -37,7 +37,7 @@ sur la branch [ihm](https://github.com/hei-school/patrimoine/tree/ihm), permet d
 # Recouper
 
 Les [flux journaliers](https://github.com/hei-school/patrimoine/blob/main/src/main/java/school/hei/patrimoine/modele/evolution/FluxJournalier.java)
-sont la liste des opérations qui se sont déroulées depuis la date de la spécification **jusqu'à aujourd'hui (`LocalDate.now()`)**.
+sont la liste des opérations qui se sont déroulées depuis la date de la spécification **jusqu'à `LocalDate.now()`**.
 
 Il faut suivre régulièrement cette liste et mettre à jour la spécification en fonction de quelles opérations se sont réellement réalisées,
 et quelles opérations ne se sont jamais réalisées.
