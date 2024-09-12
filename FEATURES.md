@@ -12,6 +12,12 @@ Ces possessions peuvent être groupées en 3 grands [agrégats](https://github.c
 - 🗞️ **Les obligations**. C'est ce que vous devez aux autres ou [dettes](https://github.com/hei-school/patrimoine/blob/main/src/main/java/school/hei/patrimoine/modele/possession/Dette.java),
   ainsi que ce que les autres vous doivent ou [créances](https://github.com/hei-school/patrimoine/blob/main/src/main/java/school/hei/patrimoine/modele/possession/Creance.java).
 
+[Voici](https://owncloud.hei.school/s/VzAvh2EEr34BAJC) le sujet d'exercice initial pour lequel la librairie a été créée chez [HEI](https://hei.school),
+et sur lequel vous pouvez vous entraîner à spécifier.
+[Voici](https://owncloud.hei.school/s/SiVASYtItCESdRp) l'examen qui a suivi, ainsi que sa spécification [corrigée](https://github.com/hei-school/patrimoine/blob/main/src/main/java/school/hei/patrimoine/cas/zety/PatrimoineZetyAu3Juillet2024.java).
+
+Des interfaces visuelles sont en cours de développement afin de permettre de spécifier sans coder en Java.
+
 # Projeter
 # Recouper
 # Alerter
