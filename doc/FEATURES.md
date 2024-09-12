@@ -16,7 +16,7 @@ Ces possessions peuvent être groupées en 3 grands [agrégats](https://github.c
 et sur lequel vous pouvez vous entraîner à spécifier.
 [Voici](https://owncloud.hei.school/s/SiVASYtItCESdRp) l'examen qui a suivi, ainsi que sa spécification [corrigée](https://github.com/hei-school/patrimoine/blob/main/src/main/java/school/hei/patrimoine/cas/zety/PatrimoineZetyAu3Juillet2024.java).
 
-Des interfaces visuelles sont en cours de développement afin de permettre de spécifier sans coder en Java.
+Une interface web est en cours de développement afin de permettre de spécifier sans coder en Java.
 
 # Projeter
 
