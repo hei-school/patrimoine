@@ -16,7 +16,7 @@ Ces possessions peuvent être groupées en 3 grands [agrégats](https://github.c
 et sur lequel vous pouvez vous entraîner à spécifier.
 [Voici](https://owncloud.hei.school/s/SiVASYtItCESdRp) l'examen qui a suivi, ainsi que sa spécification [corrigée](https://github.com/hei-school/patrimoine/blob/main/src/main/java/school/hei/patrimoine/cas/zety/PatrimoineZetyAu3Juillet2024.java).
 
-👷‍♂️⚒️ Une interface web est en cours de développement afin de permettre de spécifier sans coder en Java.
+👷‍♂️⚒️ Des travaux sont en cours afin de permettre de spécifier plus facilement, idéalement sans coder en Java.
 
 # Projeter
 
@@ -27,12 +27,9 @@ Le graphe est configurable :
 - ou [les obligations uniquement](https://github.com/hei-school/patrimoine/blob/main/src/test/resources/patrimoine-cresus-sur-quelques-annees_obli.png),
 - ou [n'importe quelle combinaison](https://github.com/hei-school/patrimoine/blob/main/src/test/resources/patrimoine-cresus-sur-quelques-annees.png) d'entre eux.
 
-Un [visualiseur Swing](https://github.com/hei-school/patrimoine/blob/ihm/src/main/java/school/hei/patrimoine/visualisation/swing/ihm/VisualiseurCas.java),
-sur la branch [ihm](https://github.com/hei-school/patrimoine/tree/ihm), permet de visualiser facilement les projections d'une spécification donnée.
+Un [visualiseur Swing](https://github.com/hei-school/patrimoine/blob/main/src/main/java/school/hei/patrimoine/visualisation/swing/ihm/VisualiseurCas.java) permet de visualiser facilement les projections d'une spécification donnée.
 
 ![](https://github.com/hei-school/patrimoine/blob/main/doc/ihm-swing.png)
-
-👷‍♂️⚒️  Un visualiseur de projections sera intégré à l'interface web en cours développement.
 
 # Recouper
 
@@ -46,7 +43,7 @@ Idéalement, dérouler **une politique Zéro Flux Journaliers (ZFJ)** :
 c'est-à-dire mettre à jour la spécification jusqu'à une date dont la fraîcheur permet d'éliminer tous les flux journaliers listés.
 Si ZFJ est atteint, alors votre specification représente fidèlement la réalité à date de `LocalDate.now()`.
 
-👷‍♂️⚒️ Le visualiseur Swing permet de lister facilement les flux journaliers. Cette fonctionnalité sera portée dans l'interface web en cours de développement.
+Le visualiseur Swing permet de lister facilement les flux journaliers.
 
 # Alerter
 
@@ -57,4 +54,4 @@ Idéalement, dérouler **une politique Zéro Flux Impossibles (ZFI)** :
 c'est-à-dire plannifier bien l'évolution de votre patrimoine de sorte à ce que votre trésorerie puisse toujours couvrir vos différentes opérations.
 Si ZFI est atteint, alors vous devrez pouvoir réaliser toutes vos opérations.
 
-👷‍♂️⚒️ Le visualiseur Swing permet de lister facilement les flux impossibles. Cette fonctionnalité sera portée dans l'interface web en cours de développement.
+Le visualiseur Swing permet de lister facilement les flux impossibles.
