@@ -4,11 +4,10 @@ import static java.time.LocalDate.now;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Observable;
 import school.hei.patrimoine.modele.Patrimoine;
 import school.hei.patrimoine.modele.evolution.EvolutionPatrimoine;
 
-public class PatrimoinesVisualisables extends Observable {
+public final class PatrimoinesVisualisables extends ChangingObservable {
 
   private final List<Patrimoine> patrimoines;
   private Patrimoine patrimoineSélectionné;
@@ -43,11 +42,6 @@ public class PatrimoinesVisualisables extends Observable {
 
     change();
     return this.patrimoineSélectionné;
-  }
-
-  private void change() {
-    setChanged();
-    notifyObservers();
   }
 
   public EvolutionPatrimoine getEvolutionPatrimoine() {
