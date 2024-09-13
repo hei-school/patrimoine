@@ -6,10 +6,12 @@ import static school.hei.patrimoine.modele.possession.TypeAgregat.TRESORIE;
 
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import lombok.Getter;
 import lombok.ToString;
 import school.hei.patrimoine.modele.Devise;
+import school.hei.patrimoine.modele.Personne;
 
 @ToString
 @Getter
@@ -26,16 +28,17 @@ public sealed class Argent extends Possession permits Dette, Creance {
       LocalDate dateOuverture,
       LocalDate t,
       int valeurComptable,
+      Devise devise,
       Set<FluxArgent> fluxArgents,
-      Devise devise) {
-    super(nom, t, valeurComptable, devise);
+      Map<Personne, Double> possesseurs) {
+    super(nom, t, valeurComptable, devise, possesseurs);
     this.fluxArgents = fluxArgents;
     this.dateOuverture = dateOuverture;
   }
 
   public Argent(
       String nom, LocalDate dateOuverture, LocalDate t, int valeurComptable, Devise devise) {
-    this(nom, dateOuverture, t, valeurComptable, new HashSet<>(), devise);
+    this(nom, dateOuverture, t, valeurComptable, devise, new HashSet<>(), Map.of());
   }
 
   public Argent(String nom, LocalDate t, int valeurComptable) {
@@ -52,7 +55,31 @@ public sealed class Argent extends Possession permits Dette, Creance {
       LocalDate t,
       int valeurComptable,
       Set<FluxArgent> fluxArgents) {
-    this(nom, dateOuverture, t, valeurComptable, fluxArgents, NON_NOMMEE);
+    this(nom, dateOuverture, t, valeurComptable, NON_NOMMEE, fluxArgents, Map.of());
+  }
+
+  private Argent(
+      String nom,
+      LocalDate dateOuverture,
+      LocalDate t,
+      int valeurComptable,
+      Set<FluxArgent> fluxArgents,
+      Map<Personne, Double> possesseurs) {
+    this(nom, dateOuverture, t, valeurComptable, NON_NOMMEE, fluxArgents, possesseurs);
+  }
+
+  private Argent(
+      String nom,
+      LocalDate dateOuverture,
+      LocalDate t,
+      int valeurComptable,
+      Devise devise,
+      Set<FluxArgent> fluxArgents) {
+    this(nom, dateOuverture, t, valeurComptable, devise, fluxArgents, Map.of());
+  }
+
+  public Argent(String nom, LocalDate t, int valeurComptable, Map<Personne, Double> possesseurs) {
+    this(nom, t, t, valeurComptable, NON_NOMMEE, new HashSet<>(), possesseurs);
   }
 
   @Override
@@ -66,8 +93,8 @@ public sealed class Argent extends Possession permits Dette, Creance {
         dateOuverture,
         tFutur,
         valeurComptable - financementsFuturs(tFutur),
-        fluxArgents.stream().map(f -> f.projectionFuture(tFutur)).collect(toSet()),
-        devise);
+        devise,
+        fluxArgents.stream().map(f -> f.projectionFuture(tFutur)).collect(toSet()));
   }
 
   @Override

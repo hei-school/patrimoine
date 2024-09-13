@@ -1,11 +1,13 @@
 package school.hei.patrimoine.modele;
 
+import static java.time.LocalDate.now;
 import static java.time.Month.MAY;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static school.hei.patrimoine.modele.Devise.MGA;
 
 import java.time.LocalDate;
+import java.util.Map;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
 import school.hei.patrimoine.modele.possession.Argent;
@@ -118,15 +120,27 @@ class PatrimoineTest {
 
     assertThrows(
         IllegalArgumentException.class,
-        () -> {
-          new Patrimoine(
-              "patrimoineIloAu13mai24",
-              ilo,
-              au13mai24,
-              Set.of(
-                  new GroupePossession("Le groupe", au13mai24, Set.of(financeur, trainDeVie)),
-                  new GroupePossession(
-                      "un autre groupe", au13mai24, Set.of(financeur, trainDeVie), MGA)));
-        });
+        () ->
+            new Patrimoine(
+                "patrimoineIloAu13mai24",
+                ilo,
+                au13mai24,
+                Set.of(
+                    new GroupePossession("Le groupe", au13mai24, Set.of(financeur, trainDeVie)),
+                    new GroupePossession(
+                        "un autre groupe", au13mai24, Set.of(financeur, trainDeVie), MGA))));
+  }
+
+  @Test
+  void notre_compte_joint_est_partage() {
+    var moi = new Personne("Ilo");
+    var lui = new Personne("Matthieu");
+    var joint = new Argent("Compte joint", now(), 10, Map.of(moi, 0.4, lui, 0.6));
+
+    var monPatrimoine = new Patrimoine("Mon patrimoine", moi, now(), Set.of(joint));
+    var sonPatrimoine = new Patrimoine("Son patrimoine", lui, now(), Set.of(joint));
+
+    assertEquals(4, monPatrimoine.getValeurComptable());
+    assertEquals(6, sonPatrimoine.getValeurComptable());
   }
 }

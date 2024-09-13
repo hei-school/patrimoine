@@ -27,7 +27,13 @@ public record Patrimoine(String nom, Personne possesseur, LocalDate t, Set<Posse
   }
 
   public int getValeurComptable() {
-    return possessions.stream().mapToInt(Possession::getValeurComptable).sum();
+    return possessions.stream().mapToInt(this::getValeurComptable).sum();
+  }
+
+  private int getValeurComptable(Possession possession) {
+    return (int)
+        (possession.getValeurComptable()
+            * possession.getPossesseurs().getOrDefault(possesseur, 1.));
   }
 
   public Patrimoine projectionFuture(LocalDate tFutur) {

@@ -4,11 +4,13 @@ import static school.hei.patrimoine.modele.Devise.NON_NOMMEE;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 import school.hei.patrimoine.modele.Devise;
+import school.hei.patrimoine.modele.Personne;
 
 @ToString
 @EqualsAndHashCode
@@ -25,12 +27,14 @@ public abstract sealed class Possession implements Serializable /*note(no-serial
   protected final LocalDate t;
   protected final int valeurComptable;
   protected final Devise devise;
+  protected final Map<Personne, Double> possesseurs;
+
+  public Possession(String nom, LocalDate t, int valeurComptable, Devise devise) {
+    this(nom, t, valeurComptable, devise, Map.of());
+  }
 
   public Possession(String nom, LocalDate t, int valeurComptable) {
-    this.nom = nom;
-    this.t = t;
-    this.valeurComptable = valeurComptable;
-    this.devise = NON_NOMMEE;
+    this(nom, t, valeurComptable, NON_NOMMEE, Map.of());
   }
 
   public final int valeurComptableFuture(LocalDate tFutur) {
