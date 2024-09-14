@@ -139,8 +139,11 @@ class PatrimoineTest {
 
     var monPatrimoine = Patrimoine.of("Mon patrimoine", moi, now(), Set.of(joint));
     var sonPatrimoine = Patrimoine.of("Son patrimoine", lui, now(), Set.of(joint));
+    var notrePatrimoine =
+        new Patrimoine("Notre patrimoine", Set.of(lui, moi), now(), Set.of(joint));
 
     assertEquals(4, monPatrimoine.getValeurComptable());
     assertEquals(6, sonPatrimoine.getValeurComptable());
+    assertEquals(10, notrePatrimoine.getValeurComptable());
   }
 }

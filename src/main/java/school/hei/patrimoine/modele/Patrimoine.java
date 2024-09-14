@@ -38,11 +38,19 @@ public record Patrimoine(
   }
 
   private int getValeurComptable(Possession possession) {
-    return possession.getValeurComptable()
-        * possesseurs.stream()
-            .mapToInt(
-                possesseur -> possession.getPossesseurs().getOrDefault(possesseur, 1.).intValue())
-            .sum();
+    var possesseursDePossession = possession.getPossesseurs();
+    var possessionValeur = possession.getValeurComptable();
+    if (possesseursDePossession.isEmpty()) {
+      return possessionValeur;
+    }
+
+    return possesseurs.stream()
+        .mapToInt(
+            possesseurDePatrimoine ->
+                (int)
+                    (possessionValeur
+                        * possesseursDePossession.getOrDefault(possesseurDePatrimoine, 0.)))
+        .sum();
   }
 
   public Patrimoine projectionFuture(LocalDate tFutur) {
