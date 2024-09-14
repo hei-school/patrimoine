@@ -145,5 +145,9 @@ class PatrimoineTest {
     assertEquals(4, monPatrimoine.getValeurComptable());
     assertEquals(6, sonPatrimoine.getValeurComptable());
     assertEquals(10, notrePatrimoine.getValeurComptable());
+    var dans1an = now().plusYears(1);
+    assertEquals(4, monPatrimoine.projectionFuture(dans1an).getValeurComptable());
+    assertEquals(6, sonPatrimoine.projectionFuture(dans1an).getValeurComptable());
+    assertEquals(10, notrePatrimoine.projectionFuture(dans1an).getValeurComptable());
   }
 }

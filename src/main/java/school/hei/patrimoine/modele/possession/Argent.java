@@ -94,7 +94,8 @@ public sealed class Argent extends Possession permits Dette, Creance {
         tFutur,
         valeurComptable - financementsFuturs(tFutur),
         devise,
-        fluxArgents.stream().map(f -> f.projectionFuture(tFutur)).collect(toSet()));
+        fluxArgents.stream().map(f -> f.projectionFuture(tFutur)).collect(toSet()),
+        possesseurs);
   }
 
   @Override
