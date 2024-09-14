@@ -67,7 +67,7 @@ public class PatrimoineRicheCas implements Supplier<Patrimoine> {
         3_200,
         3);
 
-    return new Patrimoine(
+    return Patrimoine.of(
         "Riche", ilo, au13mai24, Set.of(compteCourant, compteEpargne, trainDeVie, voiture, mac));
   }
 }

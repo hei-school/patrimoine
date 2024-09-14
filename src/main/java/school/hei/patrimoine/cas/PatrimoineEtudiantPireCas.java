@@ -28,6 +28,6 @@ public class PatrimoineEtudiantPireCas implements Supplier<Patrimoine> {
 
     var mac = new Materiel("MacBook Pro", au13mai24, 500_000, au13mai24.minusDays(3), -0.9);
 
-    return new Patrimoine("Ilo (pire)", ilo, au13mai24, Set.of(financeur, trainDeVie, mac));
+    return Patrimoine.of("Ilo (pire)", ilo, au13mai24, Set.of(financeur, trainDeVie, mac));
   }
 }

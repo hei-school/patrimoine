@@ -21,7 +21,7 @@ class PatrimoineTest {
     var ilo = new Personne("Ilo");
 
     var patrimoineIloAu13mai24 =
-        new Patrimoine("patrimoineIloAu13mai24", ilo, LocalDate.of(2024, MAY, 13), Set.of());
+        Patrimoine.of("patrimoineIloAu13mai24", ilo, LocalDate.of(2024, MAY, 13), Set.of());
 
     assertEquals(0, patrimoineIloAu13mai24.getValeurComptable());
   }
@@ -32,7 +32,7 @@ class PatrimoineTest {
 
     var au13mai24 = LocalDate.of(2024, MAY, 13);
     var patrimoineIloAu13mai24 =
-        new Patrimoine(
+        Patrimoine.of(
             "patrimoineIloAu13mai24",
             ilo,
             au13mai24,
@@ -59,7 +59,7 @@ class PatrimoineTest {
             15);
 
     var patrimoineIloAu13mai24 =
-        new Patrimoine("patrimoineIloAu13mai24", ilo, au13mai24, Set.of(financeur, trainDeVie));
+        Patrimoine.of("patrimoineIloAu13mai24", ilo, au13mai24, Set.of(financeur, trainDeVie));
 
     assertEquals(
         500_000,
@@ -87,7 +87,7 @@ class PatrimoineTest {
             15);
 
     var patrimoineIloAu13mai24 =
-        new Patrimoine(
+        Patrimoine.of(
             "patrimoineIloAu13mai24",
             ilo,
             au13mai24,
@@ -121,7 +121,7 @@ class PatrimoineTest {
     assertThrows(
         IllegalArgumentException.class,
         () ->
-            new Patrimoine(
+            Patrimoine.of(
                 "patrimoineIloAu13mai24",
                 ilo,
                 au13mai24,
@@ -137,8 +137,8 @@ class PatrimoineTest {
     var lui = new Personne("Matthieu");
     var joint = new Argent("Compte joint", now(), 10, Map.of(moi, 0.4, lui, 0.6));
 
-    var monPatrimoine = new Patrimoine("Mon patrimoine", moi, now(), Set.of(joint));
-    var sonPatrimoine = new Patrimoine("Son patrimoine", lui, now(), Set.of(joint));
+    var monPatrimoine = Patrimoine.of("Mon patrimoine", moi, now(), Set.of(joint));
+    var sonPatrimoine = Patrimoine.of("Son patrimoine", lui, now(), Set.of(joint));
 
     assertEquals(4, monPatrimoine.getValeurComptable());
     assertEquals(6, sonPatrimoine.getValeurComptable());

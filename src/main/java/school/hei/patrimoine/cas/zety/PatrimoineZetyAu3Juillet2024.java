@@ -158,7 +158,7 @@ public class PatrimoineZetyAu3Juillet2024 implements Supplier<Patrimoine> {
 
     Set<Possession> possessionsDu3Juillet =
         possessionsDu3Juillet2024(ordinateur, vêtements, espèces, compteBancaire);
-    return new Patrimoine("zety au 3 juillet 2024", zety, AU_3_JUILLET_2024, possessionsDu3Juillet);
+    return Patrimoine.of("zety au 3 juillet 2024", zety, AU_3_JUILLET_2024, possessionsDu3Juillet);
   }
 
   public Patrimoine zetySendette() {
@@ -180,7 +180,7 @@ public class PatrimoineZetyAu3Juillet2024 implements Supplier<Patrimoine> {
             possessionsRajoutéesLe18Septembre2024(compteBancaire),
             MGA);
 
-    return new Patrimoine(
+    return Patrimoine.of(
             "zety au 18 Septembre 2024",
             zety,
             AU_18_SEPTEMBRE_2024,
@@ -239,7 +239,7 @@ public class PatrimoineZetyAu3Juillet2024 implements Supplier<Patrimoine> {
             possessionsRajoutéesAprèsLe18Septembre2024(espèces, compteBancaire),
             MGA);
 
-    return new Patrimoine(
+    return Patrimoine.of(
         "zety au 14 Février 2025",
         zety,
         AU_14_FEVRIER_2025,
@@ -284,7 +284,7 @@ public class PatrimoineZetyAu3Juillet2024 implements Supplier<Patrimoine> {
             euro);
 
     // patrimoine avec possessions mixtes
-    return new Patrimoine(
+    return Patrimoine.of(
         "zety au 26 Octobre 2025",
         zety,
         AU_26_OCTOBRE_2025,

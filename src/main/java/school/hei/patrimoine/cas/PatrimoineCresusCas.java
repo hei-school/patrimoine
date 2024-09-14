@@ -267,7 +267,7 @@ public class PatrimoineCresusCas implements Supplier<Patrimoine> {
     var detteMyriadeFr = new Dette("Dette Myriade Fr", ajd, 0);
     var myriadeMg = new Argent("Myriade Mg", ajd, 0);
 
-    return new Patrimoine(
+    return Patrimoine.of(
         "Crésus",
         cresus,
         ajd,

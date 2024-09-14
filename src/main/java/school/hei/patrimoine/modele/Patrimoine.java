@@ -9,13 +9,20 @@ import java.util.List;
 import java.util.Set;
 import school.hei.patrimoine.modele.possession.Possession;
 
-public record Patrimoine(String nom, Personne possesseur, LocalDate t, Set<Possession> possessions)
+public record Patrimoine(
+    String nom, Set<Personne> possesseurs, LocalDate t, Set<Possession> possessions)
     implements Serializable /*note(no-serializable)*/ {
-  public Patrimoine(String nom, Personne possesseur, LocalDate t, Set<Possession> possessions) {
+  public Patrimoine(
+      String nom, Set<Personne> possesseurs, LocalDate t, Set<Possession> possessions) {
     this.nom = nom;
-    this.possesseur = possesseur;
+    this.possesseurs = possesseurs;
     this.t = t;
     this.possessions = validerPossessions(possessions);
+  }
+
+  public static Patrimoine of(
+      String nom, Personne possesseur, LocalDate t, Set<Possession> possessions) {
+    return new Patrimoine(nom, Set.of(possesseur), t, possessions);
   }
 
   private Set<Possession> validerPossessions(Set<Possession> possessions) {
@@ -31,15 +38,17 @@ public record Patrimoine(String nom, Personne possesseur, LocalDate t, Set<Posse
   }
 
   private int getValeurComptable(Possession possession) {
-    return (int)
-        (possession.getValeurComptable()
-            * possession.getPossesseurs().getOrDefault(possesseur, 1.));
+    return possession.getValeurComptable()
+        * possesseurs.stream()
+            .mapToInt(
+                possesseur -> possession.getPossesseurs().getOrDefault(possesseur, 1.).intValue())
+            .sum();
   }
 
   public Patrimoine projectionFuture(LocalDate tFutur) {
     return new Patrimoine(
         nom,
-        possesseur,
+        possesseurs,
         tFutur,
         possessions.stream().map(p -> p.projectionFuture(tFutur)).collect(toSet()));
   }

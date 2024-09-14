@@ -3,6 +3,7 @@ package school.hei.patrimoine.visualisation.swing.ihm;
 import static java.awt.BorderLayout.CENTER;
 import static java.awt.BorderLayout.WEST;
 import static java.awt.Toolkit.getDefaultToolkit;
+import static java.util.stream.Collectors.joining;
 import static javax.swing.BorderFactory.createEmptyBorder;
 import static javax.swing.BoxLayout.Y_AXIS;
 
@@ -14,6 +15,7 @@ import javax.swing.*;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import school.hei.patrimoine.modele.Patrimoine;
+import school.hei.patrimoine.modele.Personne;
 import school.hei.patrimoine.visualisation.swing.ihm.flux.FluxImpossiblesIHM;
 import school.hei.patrimoine.visualisation.swing.ihm.flux.FluxJournaliersIHM;
 import school.hei.patrimoine.visualisation.swing.ihm.selecteur.SelecteurGrapheConfIHM;
@@ -91,6 +93,9 @@ public class MainIHM extends JFrame implements Observer {
 
   private void setTitle() {
     var p = patrimoinesVisualisables.getEvolutionPatrimoine().getPatrimoine();
-    setTitle(String.format("Patrimoine : possesseur=%s, t=%s", p.possesseur().nom(), p.t()));
+    setTitle(
+        String.format(
+            "Patrimoine : possesseur=%s, t=%s",
+            p.possesseurs().stream().map(Personne::nom).collect(joining(",")), p.t()));
   }
 }
