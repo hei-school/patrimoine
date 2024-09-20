@@ -4,8 +4,6 @@ import org.junit.jupiter.api.Test;
 import school.hei.patrimoine.cas.PatrimoineCresusCas;
 import school.hei.patrimoine.modele.Patrimoine;
 
-import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class PatrimoineControllerTest {
@@ -16,8 +14,8 @@ class PatrimoineControllerTest {
                 "import java.util.ArrayList;" +
                 "import school.hei.patrimoine.modele.Patrimoine;" +
                 "public class DynamicClass {" +
-                "   public static List<Patrimoine> compileCode(Patrimoine patrimoine) {" +
-                "       " + "return List.of(patrimoine);" +
+                "   public static Patrimoine compileCode(Patrimoine patrimoine) {" +
+                "       " + "return patrimoine;" +
                 "   }" +
                 "}";
 
@@ -26,8 +24,8 @@ class PatrimoineControllerTest {
 
         Patrimoine patrimoineCresus = patrimoineCresusCas.get();
 
-        List<Patrimoine> patrimoines = PatrimoineCompiler.stringCompiler(code);
+        Patrimoine patrimoine = PatrimoineCompiler.stringCompiler(code);
 
-        assertEquals(patrimoineCresus.getValeurComptable(), patrimoines.getFirst().getValeurComptable());
+        assertEquals(patrimoineCresus.getValeurComptable(), patrimoine.getValeurComptable());
     }
 }

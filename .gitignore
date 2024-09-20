@@ -2,4 +2,6 @@
 target
 .DS_Store
 
-src/main/java/school/hei/patrimoine/compiler/dynamic
+out/production/classes/*
+src/main/resources/harena-client.json
+tokens

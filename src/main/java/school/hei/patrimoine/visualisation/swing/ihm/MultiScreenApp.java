@@ -3,6 +3,7 @@ package school.hei.patrimoine.visualisation.swing.ihm;
 import static java.awt.BorderLayout.CENTER;
 import static java.awt.BorderLayout.NORTH;
 import static java.awt.Font.BOLD;
+import static java.awt.Toolkit.getDefaultToolkit;
 import static javax.swing.BoxLayout.Y_AXIS;
 import static javax.swing.JOptionPane.showMessageDialog;
 import static javax.swing.SwingUtilities.invokeLater;
@@ -21,13 +22,19 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.SwingWorker;
+import lombok.extern.slf4j.Slf4j;
 import school.hei.patrimoine.cas.PatrimoineCresusCas;
-import school.hei.patrimoine.cas.PatrimoineEtudiantPireCas;
 import school.hei.patrimoine.cas.PatrimoineRicheCas;
+import school.hei.patrimoine.compiler.PatrimoineCompiler;
 import school.hei.patrimoine.modele.Patrimoine;
+import school.hei.patrimoine.visualisation.utils.GoogleApi;
+import school.hei.patrimoine.visualisation.utils.GoogleApi.GoogleAuthenticationDetails;
 import school.hei.patrimoine.visualisation.utils.GoogleDocsLinkIdInputVerifier;
 import school.hei.patrimoine.visualisation.utils.GoogleDocsLinkIdParser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+@Slf4j
 public class MultiScreenApp {
   private final JFrame inputFrame; // Original frame for input
   private final JPanel inputPanel;
@@ -37,9 +44,13 @@ public class MultiScreenApp {
   private final GoogleDocsLinkIdInputVerifier linkIdInputVerifier =
       new GoogleDocsLinkIdInputVerifier();
   private final GoogleDocsLinkIdParser linkIdParser = new GoogleDocsLinkIdParser();
+  private final GoogleApi googleApi;
+  private final GoogleAuthenticationDetails authDetails;
+  private static final Logger logger = LoggerFactory.getLogger(MultiScreenApp.class);
 
-  public MultiScreenApp() {
-    inputFrame = new JFrame("Input Screen");
+  public MultiScreenApp(GoogleApi googleApi, GoogleAuthenticationDetails authDetails) {
+    this.googleApi = googleApi;
+    inputFrame = newInputFrame();
     inputPanel = new JPanel();
     inputPanel.setLayout(new BoxLayout(inputPanel, Y_AXIS));
 
@@ -47,16 +58,28 @@ public class MultiScreenApp {
     addButtons();
     addInitialInput();
 
+    configureInputFrame();
+    this.authDetails = authDetails;
+  }
+
+  private void configureInputFrame() {
     inputFrame.getContentPane().add(inputPanel, NORTH);
     inputFrame.setDefaultCloseOperation(EXIT_ON_CLOSE);
     inputFrame.pack();
+  }
+
+  private JFrame newInputFrame() {
+    final JFrame inputFrame = new JFrame("Input Screen");
+    inputFrame.setSize(getDefaultToolkit().getScreenSize());
+    inputFrame.setResizable(true);
     inputFrame.setVisible(true);
+    return inputFrame;
   }
 
   private void addButtons() {
-    JButton addButton = getAddButton();
-    JButton removeButton = getRemoveButton();
-    JButton submitButton = getSubmitButton();
+    JButton addButton = newAddButton();
+    JButton removeButton = newRemoveButton();
+    JButton submitButton = newSubmitButton();
 
     JLabel buttonTitle = new JLabel("Input Controls:");
     buttonTitle.setFont(new Font("Arial", BOLD, 14));
@@ -71,13 +94,13 @@ public class MultiScreenApp {
     inputPanel.add(buttonPanel);
   }
 
-  private JButton getSubmitButton() {
+  private JButton newSubmitButton() {
     JButton submitButton = new JButton("Submit");
-    submitButton.addActionListener(e -> showLoadingScreen());
+    submitButton.addActionListener(e -> loadDataInBackground());
     return submitButton;
   }
 
-  private JButton getRemoveButton() {
+  private JButton newRemoveButton() {
     JButton removeButton = new JButton("Remove Input");
     removeButton.addActionListener(
         e -> {
@@ -90,7 +113,7 @@ public class MultiScreenApp {
     return removeButton;
   }
 
-  private JButton getAddButton() {
+  private JButton newAddButton() {
     JButton addButton = new JButton("Add Input");
     addButton.addActionListener(
         e -> {
@@ -129,7 +152,7 @@ public class MultiScreenApp {
     inputFrame.pack();
   }
 
-  private void showLoadingScreen() {
+  private void loadDataInBackground() {
     JDialog loadingDialog = new JDialog(inputFrame, "Processing", true);
     JLabel loadingLabel = new JLabel("Processing, please wait...");
     loadingLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -140,20 +163,17 @@ public class MultiScreenApp {
     SwingWorker<List<Patrimoine>, Void> worker =
         new SwingWorker<>() {
           @Override
-          protected List<Patrimoine> doInBackground() {
+          protected List<Patrimoine> doInBackground() throws Exception {
             var ids = extractInputIds();
-            List<Patrimoine> patrimoinesVisualisables = new ArrayList<>();
+            List<String> codePatrimoinesVisualisables = new ArrayList<>();
             for (var id : ids) {
-              if (id.equals("1")) {
-                patrimoinesVisualisables.add(new PatrimoineEtudiantPireCas().get());
-              }
-              if (id.equals("2")) {
-                patrimoinesVisualisables.add(new PatrimoineRicheCas().get());
-              }
-              if (id.equals("3")) {
-                patrimoinesVisualisables.add(new PatrimoineCresusCas().get());
-              }
+              var code = googleApi.readDocsContent(authDetails, id);
+              codePatrimoinesVisualisables.add(code);
             }
+            List<Patrimoine> patrimoinesVisualisables = new ArrayList<>();
+            Patrimoine patrimoineVisualisable = PatrimoineCompiler.stringCompiler(codePatrimoinesVisualisables.getFirst());
+
+            patrimoinesVisualisables.add(patrimoineVisualisable);
             return patrimoinesVisualisables;
           }
 
@@ -186,9 +206,5 @@ public class MultiScreenApp {
 
   private void openResultFrame(List<Patrimoine> patrimoinesVisualisables) {
     invokeLater(() -> new MainIHM(patrimoinesVisualisables));
-  }
-
-  public static void main(String[] args) {
-    invokeLater(MultiScreenApp::new);
   }
 }
