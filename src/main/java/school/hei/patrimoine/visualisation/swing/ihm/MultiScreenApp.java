@@ -23,16 +23,14 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.SwingWorker;
 import lombok.extern.slf4j.Slf4j;
-import school.hei.patrimoine.cas.PatrimoineCresusCas;
-import school.hei.patrimoine.cas.PatrimoineRicheCas;
 import school.hei.patrimoine.compiler.PatrimoineCompiler;
 import school.hei.patrimoine.modele.Patrimoine;
 import school.hei.patrimoine.visualisation.utils.GoogleApi;
 import school.hei.patrimoine.visualisation.utils.GoogleApi.GoogleAuthenticationDetails;
 import school.hei.patrimoine.visualisation.utils.GoogleDocsLinkIdInputVerifier;
 import school.hei.patrimoine.visualisation.utils.GoogleDocsLinkIdParser;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Slf4j
 public class MultiScreenApp {
@@ -46,7 +44,6 @@ public class MultiScreenApp {
   private final GoogleDocsLinkIdParser linkIdParser = new GoogleDocsLinkIdParser();
   private final GoogleApi googleApi;
   private final GoogleAuthenticationDetails authDetails;
-  private static final Logger logger = LoggerFactory.getLogger(MultiScreenApp.class);
 
   public MultiScreenApp(GoogleApi googleApi, GoogleAuthenticationDetails authDetails) {
     this.googleApi = googleApi;
@@ -165,15 +162,23 @@ public class MultiScreenApp {
           @Override
           protected List<Patrimoine> doInBackground() throws Exception {
             var ids = extractInputIds();
-            List<String> codePatrimoinesVisualisables = new ArrayList<>();
-            for (var id : ids) {
-              var code = googleApi.readDocsContent(authDetails, id);
-              codePatrimoinesVisualisables.add(code);
-            }
-            List<Patrimoine> patrimoinesVisualisables = new ArrayList<>();
-            Patrimoine patrimoineVisualisable = PatrimoineCompiler.stringCompiler(codePatrimoinesVisualisables.getFirst());
+              List<String> codePatrimoinesVisualisables = new ArrayList<>();
+              for (var id : ids) {
+                var code = googleApi.readDocsContent(authDetails, id);
+                codePatrimoinesVisualisables.add(code);
+              }
+              List<Patrimoine> patrimoinesVisualisables = new ArrayList<>();
+              Pattern pattern = Pattern.compile("public class (\\w+)");
+            for (String codePatrimoine : codePatrimoinesVisualisables) {
+              Matcher matcher = pattern.matcher(codePatrimoine);
 
-            patrimoinesVisualisables.add(patrimoineVisualisable);
+              if (matcher.find()) {
+                String className = matcher.group(1);
+
+                Patrimoine patrimoineVisualisable = PatrimoineCompiler.stringCompiler(className, codePatrimoine);
+                patrimoinesVisualisables.add(patrimoineVisualisable);
+              }
+            }
             return patrimoinesVisualisables;
           }
 
