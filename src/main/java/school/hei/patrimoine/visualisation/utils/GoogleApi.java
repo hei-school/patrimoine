@@ -14,7 +14,6 @@ import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.docs.v1.Docs;
 import com.google.api.services.docs.v1.model.Document;
-import com.google.api.services.docs.v1.model.Paragraph;
 import com.google.api.services.docs.v1.model.ParagraphElement;
 import com.google.api.services.docs.v1.model.StructuralElement;
 import com.google.api.services.docs.v1.model.TextRun;
@@ -23,7 +22,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
-import java.util.Objects;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import school.hei.patrimoine.visualisation.swing.ihm.GoogleAuthScreen;
@@ -81,21 +79,30 @@ public class GoogleApi {
 
   public String readDocsContent(GoogleAuthenticationDetails authDetails, String docId) {
     Docs service =
-        new Docs.Builder(authDetails.httpTransport(), JSON_FACTORY, authDetails.credential())
-            .setApplicationName(APPLICATION_NAME)
-            .build();
+            new Docs.Builder(authDetails.httpTransport(), JSON_FACTORY, authDetails.credential())
+                    .setApplicationName(APPLICATION_NAME)
+                    .build();
     try {
       Document doc = service.documents().get(docId).execute();
-      var list =
-          doc.getBody().getContent().stream()
-              .map(StructuralElement::getParagraph)
-              .filter(Objects::nonNull)
-              .map(Paragraph::getElements)
-              .flatMap(List::stream)
-              .map(ParagraphElement::getTextRun)
-              .map(TextRun::getContent)
-              .toList();
-      return String.join(" ", list);
+      List<StructuralElement> bodyElements = doc.getBody().getContent();
+
+      StringBuilder combinedContent = new StringBuilder();
+
+      // Iterate through the body elements
+      for (StructuralElement element : bodyElements) {
+        if (element.getParagraph() != null) {
+          // For each paragraph, get the text content
+          List<ParagraphElement> elements = element.getParagraph().getElements();
+          for (ParagraphElement e : elements) {
+            TextRun textRun = e.getTextRun();
+            if (textRun != null && textRun.getContent() != null) {
+              combinedContent.append(textRun.getContent());
+            }
+          }
+        }
+      }
+
+      return combinedContent.toString();
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
