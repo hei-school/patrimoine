@@ -79,9 +79,9 @@ public class GoogleApi {
 
   public String readDocsContent(GoogleAuthenticationDetails authDetails, String docId) {
     Docs service =
-            new Docs.Builder(authDetails.httpTransport(), JSON_FACTORY, authDetails.credential())
-                    .setApplicationName(APPLICATION_NAME)
-                    .build();
+        new Docs.Builder(authDetails.httpTransport(), JSON_FACTORY, authDetails.credential())
+            .setApplicationName(APPLICATION_NAME)
+            .build();
     try {
       Document doc = service.documents().get(docId).execute();
       List<StructuralElement> bodyElements = doc.getBody().getContent();

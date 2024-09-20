@@ -13,6 +13,8 @@ import java.awt.Font;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -29,8 +31,6 @@ import school.hei.patrimoine.visualisation.utils.GoogleApi;
 import school.hei.patrimoine.visualisation.utils.GoogleApi.GoogleAuthenticationDetails;
 import school.hei.patrimoine.visualisation.utils.GoogleDocsLinkIdInputVerifier;
 import school.hei.patrimoine.visualisation.utils.GoogleDocsLinkIdParser;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @Slf4j
 public class MultiScreenApp {
@@ -162,20 +162,21 @@ public class MultiScreenApp {
           @Override
           protected List<Patrimoine> doInBackground() throws Exception {
             var ids = extractInputIds();
-              List<String> codePatrimoinesVisualisables = new ArrayList<>();
-              for (var id : ids) {
-                var code = googleApi.readDocsContent(authDetails, id);
-                codePatrimoinesVisualisables.add(code);
-              }
-              List<Patrimoine> patrimoinesVisualisables = new ArrayList<>();
-              Pattern pattern = Pattern.compile("public class (\\w+)");
+            List<String> codePatrimoinesVisualisables = new ArrayList<>();
+            for (var id : ids) {
+              var code = googleApi.readDocsContent(authDetails, id);
+              codePatrimoinesVisualisables.add(code);
+            }
+            List<Patrimoine> patrimoinesVisualisables = new ArrayList<>();
+            Pattern pattern = Pattern.compile("public class (\\w+)");
             for (String codePatrimoine : codePatrimoinesVisualisables) {
               Matcher matcher = pattern.matcher(codePatrimoine);
 
               if (matcher.find()) {
                 String className = matcher.group(1);
 
-                Patrimoine patrimoineVisualisable = PatrimoineCompiler.stringCompiler(className, codePatrimoine);
+                Patrimoine patrimoineVisualisable =
+                    PatrimoineCompiler.stringCompiler(className, codePatrimoine);
                 patrimoinesVisualisables.add(patrimoineVisualisable);
               }
             }
