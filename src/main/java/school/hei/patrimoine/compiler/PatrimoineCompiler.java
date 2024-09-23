@@ -30,7 +30,8 @@ public class PatrimoineCompiler implements BiFunction<String, String, Patrimoine
       }
 
       File outputDir = new File(CLASS_OUTPUT_DIR);
-      URLClassLoader classLoader = URLClassLoader.newInstance(new URL[] {outputDir.toURI().toURL()});
+      URLClassLoader classLoader =
+          URLClassLoader.newInstance(new URL[] {outputDir.toURI().toURL()});
       Class<?> dynamicClass = Class.forName(className, true, classLoader);
 
       if (!Supplier.class.isAssignableFrom(dynamicClass)) {
@@ -38,7 +39,7 @@ public class PatrimoineCompiler implements BiFunction<String, String, Patrimoine
       }
 
       Supplier<Patrimoine> instance =
-              (Supplier<Patrimoine>) dynamicClass.getDeclaredConstructor().newInstance();
+          (Supplier<Patrimoine>) dynamicClass.getDeclaredConstructor().newInstance();
 
       return instance.get();
     } catch (Exception e) {

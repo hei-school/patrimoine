@@ -13,8 +13,6 @@ import java.awt.Font;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -174,10 +172,9 @@ public class GoogleDocsSubmitScreen {
               String className = ClassNameExtractor.extractClassName(codePatrimoine);
 
               Patrimoine patrimoineVisualisable =
-                    patrimoineCompiler.apply(className, codePatrimoine);
+                  patrimoineCompiler.apply(className, codePatrimoine);
 
               patrimoinesVisualisables.add(patrimoineVisualisable);
-
             }
             return patrimoinesVisualisables;
           }
