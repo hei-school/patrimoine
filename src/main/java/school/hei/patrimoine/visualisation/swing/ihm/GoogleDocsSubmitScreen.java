@@ -33,7 +33,7 @@ import school.hei.patrimoine.visualisation.utils.GoogleDocsLinkIdInputVerifier;
 import school.hei.patrimoine.visualisation.utils.GoogleDocsLinkIdParser;
 
 @Slf4j
-public class MultiScreenApp {
+public class GoogleDocsSubmitScreen {
   private final JFrame inputFrame; // Original frame for input
   private final JPanel inputPanel;
   private final List<JTextField> inputFields;
@@ -45,7 +45,7 @@ public class MultiScreenApp {
   private final GoogleApi googleApi;
   private final GoogleAuthenticationDetails authDetails;
 
-  public MultiScreenApp(GoogleApi googleApi, GoogleAuthenticationDetails authDetails) {
+  public GoogleDocsSubmitScreen(GoogleApi googleApi, GoogleAuthenticationDetails authDetails) {
     this.googleApi = googleApi;
     inputFrame = newInputFrame();
     inputPanel = new JPanel();

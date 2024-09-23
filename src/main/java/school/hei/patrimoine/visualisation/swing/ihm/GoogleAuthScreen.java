@@ -36,7 +36,7 @@ public class GoogleAuthScreen extends JFrame {
   private ActionListener onSignin() {
     return e -> {
       var authReqRes = handleGoogleSignIn();
-      invokeLater(() -> new MultiScreenApp(googleApi, authReqRes));
+      invokeLater(() -> new GoogleDocsSubmitScreen(googleApi, authReqRes));
       setVisible(false);
     };
   }
