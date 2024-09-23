@@ -107,11 +107,4 @@ public class GoogleApi {
       throw new RuntimeException(e);
     }
   }
-
-  public static void main(String[] args) {
-    var api = new GoogleApi();
-    var auth = api.requestAuthentication();
-    var content = api.readDocsContent(auth, "1mI6dI4ubJboQIzvlhjXkoZm9XnCQSV0p0D-LYQra5NQ");
-    log.info("content {}", content);
-  }
 }
