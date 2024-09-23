@@ -27,6 +27,7 @@ import javax.swing.SwingWorker;
 import lombok.extern.slf4j.Slf4j;
 import school.hei.patrimoine.compiler.PatrimoineCompiler;
 import school.hei.patrimoine.modele.Patrimoine;
+import school.hei.patrimoine.visualisation.utils.ClassNameExtractor;
 import school.hei.patrimoine.visualisation.utils.GoogleApi;
 import school.hei.patrimoine.visualisation.utils.GoogleApi.GoogleAuthenticationDetails;
 import school.hei.patrimoine.visualisation.utils.GoogleDocsLinkIdInputVerifier;
@@ -160,7 +161,7 @@ public class GoogleDocsSubmitScreen {
     SwingWorker<List<Patrimoine>, Void> worker =
         new SwingWorker<>() {
           @Override
-          protected List<Patrimoine> doInBackground() throws Exception {
+          protected List<Patrimoine> doInBackground() {
             var ids = extractInputIds();
             List<String> codePatrimoinesVisualisables = new ArrayList<>();
             for (var id : ids) {
@@ -168,19 +169,15 @@ public class GoogleDocsSubmitScreen {
               codePatrimoinesVisualisables.add(code);
             }
             List<Patrimoine> patrimoinesVisualisables = new ArrayList<>();
-            Pattern pattern = Pattern.compile("public class (\\w+)");
             PatrimoineCompiler patrimoineCompiler = new PatrimoineCompiler();
             for (String codePatrimoine : codePatrimoinesVisualisables) {
-              Matcher matcher = pattern.matcher(codePatrimoine);
+              String className = ClassNameExtractor.extractClassName(codePatrimoine);
 
-              if (matcher.find()) {
-                String className = matcher.group(1);
-
-                Patrimoine patrimoineVisualisable =
+              Patrimoine patrimoineVisualisable =
                     patrimoineCompiler.apply(className, codePatrimoine);
 
-                patrimoinesVisualisables.add(patrimoineVisualisable);
-              }
+              patrimoinesVisualisables.add(patrimoineVisualisable);
+
             }
             return patrimoinesVisualisables;
           }
