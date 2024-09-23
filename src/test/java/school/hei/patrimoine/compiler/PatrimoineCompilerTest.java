@@ -89,7 +89,9 @@ public class PatrimoineRicheCas implements Supplier<Patrimoine> {
 
     Patrimoine patrimoineRiche = patrimoineRicheCas.get();
 
-    Patrimoine patrimoine = PatrimoineCompiler.stringCompiler("PatrimoineRicheCas", code);
+    PatrimoineCompiler patrimoineCompiler = new PatrimoineCompiler();
+
+    Patrimoine patrimoine = patrimoineCompiler.apply("PatrimoineRicheCas", code);
 
     assertEquals(patrimoineRiche.getValeurComptable(), patrimoine.getValeurComptable());
   }

@@ -169,6 +169,7 @@ public class MultiScreenApp {
             }
             List<Patrimoine> patrimoinesVisualisables = new ArrayList<>();
             Pattern pattern = Pattern.compile("public class (\\w+)");
+            PatrimoineCompiler patrimoineCompiler = new PatrimoineCompiler();
             for (String codePatrimoine : codePatrimoinesVisualisables) {
               Matcher matcher = pattern.matcher(codePatrimoine);
 
@@ -176,7 +177,8 @@ public class MultiScreenApp {
                 String className = matcher.group(1);
 
                 Patrimoine patrimoineVisualisable =
-                    PatrimoineCompiler.stringCompiler(className, codePatrimoine);
+                    patrimoineCompiler.apply(className, codePatrimoine);
+
                 patrimoinesVisualisables.add(patrimoineVisualisable);
               }
             }
