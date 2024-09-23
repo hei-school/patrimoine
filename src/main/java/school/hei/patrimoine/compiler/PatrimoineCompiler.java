@@ -13,22 +13,23 @@ import school.hei.patrimoine.modele.Patrimoine;
 
 public class PatrimoineCompiler implements BiFunction<String, String, Patrimoine> {
 
+  private static final String CLASS_OUTPUT_DIR = "out/production/classes/";
+
   @Override
   public Patrimoine apply(String className, String javaSource) {
     try {
-      String javaFile = "out/production/classes/" + className + ".java";
-      String classOutputDir = "out/production/classes/";
+      String javaFile = CLASS_OUTPUT_DIR + className + ".java";
 
       Files.write(Paths.get(javaFile), javaSource.getBytes());
 
       JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-      int result = compiler.run(null, null, null, "-d", classOutputDir, javaFile);
+      int result = compiler.run(null, null, null, "-d", CLASS_OUTPUT_DIR, javaFile);
 
       if (result != 0) {
         throw new RuntimeException("Compilation failed.");
       }
 
-      File outputDir = new File(classOutputDir);
+      File outputDir = new File(CLASS_OUTPUT_DIR);
       URLClassLoader classLoader = URLClassLoader.newInstance(new URL[] {outputDir.toURI().toURL()});
       Class<?> dynamicClass = Class.forName(className, true, classLoader);
 
