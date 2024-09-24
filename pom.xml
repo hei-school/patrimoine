@@ -116,6 +116,7 @@
                         <configuration>
                             <excludes>
                                 <exclude>school/hei/patrimoine/visualisation/swing/**/*</exclude>
+                                <exclude>school/hei/patrimoine/google/**/*</exclude>
                             </excludes>
                             <rules>
                                 <rule>
