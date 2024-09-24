@@ -1,9 +1,3 @@
 .idea
 target
 .DS_Store
-
-### Google Credentials ###
-src/main/resources/harena-client.json
-
-### Google Tokens ###
-tokens

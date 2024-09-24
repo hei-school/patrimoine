@@ -17,6 +17,8 @@ import com.google.api.services.docs.v1.model.Document;
 import com.google.api.services.docs.v1.model.ParagraphElement;
 import com.google.api.services.docs.v1.model.StructuralElement;
 import com.google.api.services.docs.v1.model.TextRun;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,7 +26,6 @@ import java.io.InputStreamReader;
 import java.util.List;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import school.hei.patrimoine.visualisation.swing.ihm.google.GoogleAuthScreen;
 
 @Slf4j
 public class GoogleApi {
@@ -37,10 +38,16 @@ public class GoogleApi {
   private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
 
   /** Directory to store authorization tokens for this application. */
-  private static final String TOKENS_DIRECTORY_PATH = "tokens";
+  private static final String TOKENS_DIRECTORY_PATH =
+      System.getProperty("user.home") + "/.patrimoine/google/tokens";
+
+  static {
+    new File(TOKENS_DIRECTORY_PATH).mkdirs();
+  }
 
   private static final List<String> SCOPES = List.of(DOCUMENTS_READONLY);
-  private static final String CREDENTIALS_FILE_PATH = "/harena-client.json";
+  private static final String CREDENTIALS_FILE_PATH =
+      System.getProperty("user.home") + "/.patrimoine/google/client.json";
 
   /**
    * Creates an authorized Credential object.
@@ -52,7 +59,7 @@ public class GoogleApi {
   private static Credential getCredentials(final NetHttpTransport HTTP_TRANSPORT)
       throws IOException {
     // Load client secrets.
-    InputStream in = GoogleAuthScreen.class.getResourceAsStream(CREDENTIALS_FILE_PATH);
+    InputStream in = new FileInputStream(CREDENTIALS_FILE_PATH);
     if (in == null) {
       throw new FileNotFoundException("Resource not found: " + CREDENTIALS_FILE_PATH);
     }
