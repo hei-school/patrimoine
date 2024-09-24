@@ -1,12 +1,14 @@
-package school.hei.patrimoine.visualisation.utils;
+package school.hei.patrimoine.compiler;
 
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ClassNameExtractor {
+public class ClassNameExtractor implements Function<String, String> {
   private static final Pattern CLASS_NAME_PATTERN = Pattern.compile("public class (\\w+)");
 
-  public static String extractClassName(String code) {
+  @Override
+  public String apply(String code) {
     Matcher matcher = CLASS_NAME_PATTERN.matcher(code);
     if (matcher.find()) {
       return matcher.group(1);

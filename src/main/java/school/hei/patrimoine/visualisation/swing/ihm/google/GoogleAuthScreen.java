@@ -1,4 +1,4 @@
-package school.hei.patrimoine.visualisation.swing.ihm;
+package school.hei.patrimoine.visualisation.swing.ihm.google;
 
 import static javax.swing.SwingUtilities.invokeLater;
 
@@ -10,10 +10,10 @@ import java.util.Objects;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import lombok.SneakyThrows;
-import school.hei.patrimoine.visualisation.utils.GoogleApi;
-import school.hei.patrimoine.visualisation.utils.GoogleApi.GoogleAuthenticationDetails;
-import school.hei.patrimoine.visualisation.utils.RoundedBorder;
-import school.hei.patrimoine.visualisation.utils.RoundedButton;
+import school.hei.patrimoine.google.GoogleApi;
+import school.hei.patrimoine.google.GoogleApi.GoogleAuthenticationDetails;
+import school.hei.patrimoine.visualisation.swing.ihm.component.RoundedBorder;
+import school.hei.patrimoine.visualisation.swing.ihm.component.RoundedButton;
 
 public class GoogleAuthScreen extends JFrame {
 

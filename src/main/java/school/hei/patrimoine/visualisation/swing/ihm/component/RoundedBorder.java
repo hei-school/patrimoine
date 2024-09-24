@@ -1,4 +1,4 @@
-package school.hei.patrimoine.visualisation.utils;
+package school.hei.patrimoine.visualisation.swing.ihm.component;
 
 import java.awt.*;
 import javax.swing.border.Border;

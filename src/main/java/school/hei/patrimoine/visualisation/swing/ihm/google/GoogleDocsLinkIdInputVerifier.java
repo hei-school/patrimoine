@@ -1,8 +1,8 @@
-package school.hei.patrimoine.visualisation.utils;
+package school.hei.patrimoine.visualisation.swing.ihm.google;
 
 import static java.awt.Color.GREEN;
 import static java.awt.Color.RED;
-import static school.hei.patrimoine.visualisation.utils.GoogleDocsLinkIdParser.GOOGLE_DOCS_ID_PATTERN;
+import static school.hei.patrimoine.google.GoogleDocsLinkIdParser.GOOGLE_DOCS_ID_PATTERN;
 
 import javax.swing.InputVerifier;
 import javax.swing.JComponent;

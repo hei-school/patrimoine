@@ -1,4 +1,4 @@
-package school.hei.patrimoine.visualisation.utils;
+package school.hei.patrimoine.google;
 
 import static com.google.api.services.docs.v1.DocsScopes.DOCUMENTS_READONLY;
 
@@ -24,7 +24,7 @@ import java.io.InputStreamReader;
 import java.util.List;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import school.hei.patrimoine.visualisation.swing.ihm.GoogleAuthScreen;
+import school.hei.patrimoine.visualisation.swing.ihm.google.GoogleAuthScreen;
 
 @Slf4j
 public class GoogleApi {

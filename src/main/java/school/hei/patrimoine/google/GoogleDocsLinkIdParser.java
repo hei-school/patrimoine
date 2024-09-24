@@ -1,4 +1,4 @@
-package school.hei.patrimoine.visualisation.utils;
+package school.hei.patrimoine.google;
 
 import java.util.function.Function;
 import java.util.regex.Matcher;

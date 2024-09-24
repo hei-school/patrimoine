@@ -1,4 +1,4 @@
-package school.hei.patrimoine.visualisation.swing.ihm;
+package school.hei.patrimoine.visualisation.swing.ihm.google;
 
 import static java.awt.BorderLayout.CENTER;
 import static java.awt.BorderLayout.NORTH;
@@ -23,13 +23,13 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.SwingWorker;
 import lombok.extern.slf4j.Slf4j;
+import school.hei.patrimoine.compiler.ClassNameExtractor;
 import school.hei.patrimoine.compiler.PatrimoineCompiler;
+import school.hei.patrimoine.google.GoogleApi;
+import school.hei.patrimoine.google.GoogleApi.GoogleAuthenticationDetails;
+import school.hei.patrimoine.google.GoogleDocsLinkIdParser;
 import school.hei.patrimoine.modele.Patrimoine;
-import school.hei.patrimoine.visualisation.utils.ClassNameExtractor;
-import school.hei.patrimoine.visualisation.utils.GoogleApi;
-import school.hei.patrimoine.visualisation.utils.GoogleApi.GoogleAuthenticationDetails;
-import school.hei.patrimoine.visualisation.utils.GoogleDocsLinkIdInputVerifier;
-import school.hei.patrimoine.visualisation.utils.GoogleDocsLinkIdParser;
+import school.hei.patrimoine.visualisation.swing.ihm.MainIHM;
 
 @Slf4j
 public class GoogleDocsSubmitScreen {
@@ -169,7 +169,7 @@ public class GoogleDocsSubmitScreen {
             List<Patrimoine> patrimoinesVisualisables = new ArrayList<>();
             PatrimoineCompiler patrimoineCompiler = new PatrimoineCompiler();
             for (String codePatrimoine : codePatrimoinesVisualisables) {
-              String className = ClassNameExtractor.extractClassName(codePatrimoine);
+              String className = new ClassNameExtractor().apply(codePatrimoine);
 
               Patrimoine patrimoineVisualisable =
                   patrimoineCompiler.apply(className, codePatrimoine);
