@@ -31,7 +31,7 @@ public class GoogleApi {
   public record GoogleAuthenticationDetails(
       NetHttpTransport httpTransport, Credential credential) {}
 
-  private static final String APPLICATION_NAME = "harena";
+  private static final String APPLICATION_NAME = "patrimoine";
 
   /** Global instance of the JSON factory. */
   private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
