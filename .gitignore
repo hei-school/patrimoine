@@ -1,3 +1,12 @@
 .idea
 target
 .DS_Store
+
+### Generated Dynamic Class ###
+out/production/classes/*
+
+### Google Credentials ###
+src/main/resources/harena-client.json
+
+### Google Tokens ###
+tokens
