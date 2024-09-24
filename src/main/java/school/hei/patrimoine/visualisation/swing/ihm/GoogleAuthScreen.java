@@ -1,16 +1,20 @@
 package school.hei.patrimoine.visualisation.swing.ihm;
 
-import static java.awt.BorderLayout.CENTER;
 import static javax.swing.SwingUtilities.invokeLater;
 
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.awt.event.ActionListener;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.SwingUtilities;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.util.Objects;
+import javax.imageio.ImageIO;
+import javax.swing.*;
+
 import lombok.SneakyThrows;
 import school.hei.patrimoine.visualisation.utils.GoogleApi;
 import school.hei.patrimoine.visualisation.utils.GoogleApi.GoogleAuthenticationDetails;
+import school.hei.patrimoine.visualisation.utils.RoundedBorder;
+import school.hei.patrimoine.visualisation.utils.RoundedButton;
 
 public class GoogleAuthScreen extends JFrame {
 
@@ -21,15 +25,30 @@ public class GoogleAuthScreen extends JFrame {
    * your previously saved tokens/ folder.
    */
   public GoogleAuthScreen() {
-    JButton signInButton = new JButton("Sign in with Google");
+    RoundedButton signInButton = new RoundedButton("Sign in with Google", loadGoogleLogo());
+    signInButton.setBackground(new Color(100, 175, 255));
+    signInButton.setForeground(Color.WHITE);
+    signInButton.setFocusPainted(false);
+    signInButton.setFont(new Font("Arial", Font.BOLD, 16));
+    signInButton.setPreferredSize(new Dimension(250, 50));
+    signInButton.setBorder(new RoundedBorder(50));
+
     signInButton.addActionListener(onSignin());
 
-    setLayout(new BorderLayout());
-    add(signInButton, CENTER);
+    JPanel buttonPanel = new JPanel();
+    buttonPanel.setLayout(new GridBagLayout());
+    buttonPanel.add(signInButton);
 
-    setSize(400, 200);
+    setTitle("Google Authentication");
+    setLayout(new BorderLayout());
+    add(buttonPanel, BorderLayout.CENTER);
+    getContentPane().setBackground(Color.WHITE);
+
+    setSize(700, 400);
     setDefaultCloseOperation(EXIT_ON_CLOSE);
+    setLocationRelativeTo(null);
     setVisible(true);
+
     googleApi = new GoogleApi();
   }
 
@@ -39,6 +58,16 @@ public class GoogleAuthScreen extends JFrame {
       invokeLater(() -> new GoogleDocsSubmitScreen(googleApi, authReqRes));
       setVisible(false);
     };
+  }
+
+  private Image loadGoogleLogo() {
+    try {
+      BufferedImage googleLogo = ImageIO.read(Objects.requireNonNull(getClass().getResource("/google_logo.png")));
+      return googleLogo.getScaledInstance(30, 30, Image.SCALE_SMOOTH);
+    } catch (IOException e) {
+      e.printStackTrace();
+      return null;
+    }
   }
 
   @SneakyThrows
