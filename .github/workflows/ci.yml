@@ -9,7 +9,7 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: [ ubuntu-latest, windows-latest ]
     timeout-minutes: 20
     steps:
       - name: Setup mvn

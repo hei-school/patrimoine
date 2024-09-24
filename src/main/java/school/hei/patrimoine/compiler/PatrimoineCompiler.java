@@ -36,7 +36,7 @@ public class PatrimoineCompiler implements BiFunction<String, String, Patrimoine
     return patrimoineSupplier.get();
   }
 
-  private static Class<?> loadClass(String className, Path ioDirPath)
+  private Class<?> loadClass(String className, Path ioDirPath)
       throws MalformedURLException, ClassNotFoundException {
     var classLoader = URLClassLoader.newInstance(new URL[] {ioDirPath.toUri().toURL()});
 
