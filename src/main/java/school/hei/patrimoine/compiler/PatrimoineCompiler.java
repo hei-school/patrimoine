@@ -15,16 +15,17 @@ import school.hei.patrimoine.modele.Patrimoine;
 
 public class PatrimoineCompiler implements BiFunction<String, String, Patrimoine> {
 
-  private static final String IO_DIR_NAME = System.getProperty("user.home") + "/patrimoine-io";
+  private static final String COMPILE_DIR_NAME =
+      System.getProperty("user.home") + "/.patrimoine/compile";
 
   static {
-    new File(IO_DIR_NAME).mkdir();
+    new File(COMPILE_DIR_NAME).mkdirs();
   }
 
   @SneakyThrows
   @Override
   public Patrimoine apply(String className, String javaSource) {
-    var ioDirPath = Path.of(IO_DIR_NAME);
+    var ioDirPath = Path.of(COMPILE_DIR_NAME);
     var sourcePath = Path.of(ioDirPath + "/" + className + ".java");
     Files.write(sourcePath, javaSource.getBytes());
 
