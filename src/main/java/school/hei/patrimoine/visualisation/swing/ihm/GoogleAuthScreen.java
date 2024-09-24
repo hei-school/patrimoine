@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.util.Objects;
 import javax.imageio.ImageIO;
 import javax.swing.*;
-
 import lombok.SneakyThrows;
 import school.hei.patrimoine.visualisation.utils.GoogleApi;
 import school.hei.patrimoine.visualisation.utils.GoogleApi.GoogleAuthenticationDetails;
@@ -62,7 +61,8 @@ public class GoogleAuthScreen extends JFrame {
 
   private Image loadGoogleLogo() {
     try {
-      BufferedImage googleLogo = ImageIO.read(Objects.requireNonNull(getClass().getResource("/google_logo.png")));
+      BufferedImage googleLogo =
+          ImageIO.read(Objects.requireNonNull(getClass().getResource("/google_logo.png")));
       return googleLogo.getScaledInstance(30, 30, Image.SCALE_SMOOTH);
     } catch (IOException e) {
       e.printStackTrace();
