@@ -105,7 +105,7 @@ public class GoogleDocsSubmitScreen {
   }
 
   private JTextArea newGoogleDocsLinkTextArea() {
-    JTextArea textArea = new JTextArea(3, 50);
+    JTextArea textArea = new JTextArea(3, 70);
     textArea.setLineWrap(true);
     textArea.setWrapStyleWord(true);
     textArea.setInputVerifier(linkIdInputVerifier);
@@ -159,11 +159,23 @@ public class GoogleDocsSubmitScreen {
 
   private List<String> extractInputIds() {
     List<String> ids = new ArrayList<>();
+
     for (JTextArea field : inputFields) {
-      String rawLink = field.getText();
-      var parsedId = linkIdParser.apply(rawLink);
-      ids.add(parsedId);
+      String rawText = field.getText();
+
+      String[] lines = rawText.split("\n");
+
+      for (String line : lines) {
+        String[] parts = line.split(":", 2);
+
+        if (parts.length == 2) {
+          String linkValue = parts[1].trim();
+          var parsedId = linkIdParser.apply(linkValue);
+          ids.add(parsedId);
+        }
+      }
     }
+
     return ids;
   }
 
