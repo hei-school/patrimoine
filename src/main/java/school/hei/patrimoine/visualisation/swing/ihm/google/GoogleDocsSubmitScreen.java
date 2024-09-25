@@ -1,19 +1,12 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google;
 
 import static java.awt.BorderLayout.CENTER;
-import static java.awt.BorderLayout.NORTH;
-import static java.awt.Font.BOLD;
-import static java.awt.Toolkit.getDefaultToolkit;
-import static javax.swing.BoxLayout.Y_AXIS;
-import static javax.swing.JOptionPane.showMessageDialog;
 import static javax.swing.SwingUtilities.invokeLater;
-import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 
-import java.awt.Font;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -48,7 +41,7 @@ public class GoogleDocsSubmitScreen {
     this.googleApi = googleApi;
     inputFrame = newInputFrame();
     inputPanel = new JPanel();
-    inputPanel.setLayout(new BoxLayout(inputPanel, Y_AXIS));
+    inputPanel.setLayout(new GridBagLayout());
 
     inputFields = new ArrayList<>();
     addButtons();
@@ -59,94 +52,84 @@ public class GoogleDocsSubmitScreen {
   }
 
   private void configureInputFrame() {
-    inputFrame.getContentPane().add(inputPanel, NORTH);
-    inputFrame.setDefaultCloseOperation(EXIT_ON_CLOSE);
+    inputFrame.getContentPane().add(inputPanel);
+    inputFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     inputFrame.pack();
+    inputFrame.setLocationRelativeTo(null);
   }
 
   private JFrame newInputFrame() {
-    final JFrame inputFrame = new JFrame("Input Screen");
-    inputFrame.setSize(getDefaultToolkit().getScreenSize());
+    JFrame inputFrame = new JFrame("Google Docs Submission");
+    inputFrame.setSize(1200, 1000);
     inputFrame.setResizable(true);
     inputFrame.setVisible(true);
     return inputFrame;
   }
 
   private void addButtons() {
-    JButton addButton = newAddButton();
-    JButton removeButton = newRemoveButton();
     JButton submitButton = newSubmitButton();
 
-    JLabel buttonTitle = new JLabel("Input Controls:");
-    buttonTitle.setFont(new Font("Arial", BOLD, 14));
+    JLabel buttonTitle = new JLabel("Submit Your Google Docs Links:"); // Texte personnalisé
+    buttonTitle.setFont(new Font("Arial", Font.BOLD, 24)); // Police plus grande et en gras
     buttonTitle.setHorizontalAlignment(SwingConstants.CENTER);
 
     JPanel buttonPanel = new JPanel();
-    buttonPanel.add(addButton);
-    buttonPanel.add(removeButton);
     buttonPanel.add(submitButton);
+    buttonPanel.setOpaque(false); // Rendre le panneau transparent pour un look plus élégant
 
-    inputPanel.add(buttonTitle);
-    inputPanel.add(buttonPanel);
+    // Utilisation de GridBagConstraints pour centrer les composants
+    GridBagConstraints gbc = new GridBagConstraints();
+    gbc.gridx = 0;
+    gbc.gridy = 0;
+    gbc.insets = new Insets(10, 0, 10, 0); // Espacement autour du texte
+    gbc.anchor = GridBagConstraints.CENTER; // Centrer le texte
+    inputPanel.add(buttonTitle, gbc);
+
+    gbc.gridy = 1; // Ajouter le panneau de boutons en dessous
+    inputPanel.add(buttonPanel, gbc);
   }
 
   private JButton newSubmitButton() {
     JButton submitButton = new JButton("Submit");
+    submitButton.setPreferredSize(new Dimension(200, 50)); // Bouton plus grand
+    submitButton.setFont(new Font("Arial", Font.BOLD, 18)); // Police plus grande
+    submitButton.setFocusPainted(false);
     submitButton.addActionListener(e -> loadDataInBackground());
     return submitButton;
-  }
-
-  private JButton newRemoveButton() {
-    JButton removeButton = new JButton("Remove Input");
-    removeButton.addActionListener(
-        e -> {
-          if (inputFields.size() > MIN_INPUTS) {
-            removeInputField();
-          } else {
-            showMessageDialog(inputFrame, "At least 1 input is required.");
-          }
-        });
-    return removeButton;
-  }
-
-  private JButton newAddButton() {
-    JButton addButton = new JButton("Add Input");
-    addButton.addActionListener(
-        e -> {
-          if (inputFields.size() < MAX_INPUTS) {
-            addInputField();
-          } else {
-            showMessageDialog(inputFrame, "Maximum of 9 inputs allowed.");
-          }
-        });
-    return addButton;
   }
 
   private void addInitialInput() {
     JTextField initialField = newGoogleDocsLinkTextField();
     inputFields.add(initialField);
-    inputPanel.add(initialField);
+
+    GridBagConstraints gbc = new GridBagConstraints();
+    gbc.gridx = 0;
+    gbc.gridy = 2; // Positionner sous les boutons
+    gbc.fill = GridBagConstraints.HORIZONTAL;
+    gbc.insets = new Insets(10, 50, 10, 50); // Espacement latéral
+    inputPanel.add(initialField, gbc);
   }
 
   private JTextField newGoogleDocsLinkTextField() {
-    var textField = new JTextField(20);
+    JTextField textField = new JTextField(30); // Agrandir le champ de texte
     textField.setInputVerifier(linkIdInputVerifier);
+    textField.setFont(new Font("Arial", Font.PLAIN, 16)); // Police de texte plus grande
     return textField;
   }
 
-  private void addInputField() {
+  /*private void addInputField() {
     JTextField newField = newGoogleDocsLinkTextField();
     inputFields.add(newField);
     inputPanel.add(newField);
     inputFrame.pack();
-  }
+  }*/
 
-  private void removeInputField() {
+  /*private void removeInputField() {
     JTextField fieldToRemove = inputFields.getLast();
     inputPanel.remove(fieldToRemove);
     inputFields.remove(fieldToRemove);
     inputFrame.pack();
-  }
+  }*/
 
   private void loadDataInBackground() {
     JDialog loadingDialog = new JDialog(inputFrame, "Processing", true);

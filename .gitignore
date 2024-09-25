@@ -1,3 +1,6 @@
 .idea
 target
 .DS_Store
+
+### Generated Dynamic Class ###
+out/production/classes/*
