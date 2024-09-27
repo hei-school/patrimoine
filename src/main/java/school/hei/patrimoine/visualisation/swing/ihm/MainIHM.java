@@ -77,13 +77,23 @@ public class MainIHM extends JFrame implements Observer {
     westPanel.setAlignmentY(TOP_ALIGNMENT);
     var westMargin = 5;
     westPanel.setBorder(createEmptyBorder(westMargin, westMargin, westMargin, westMargin));
+
     westPanel.add(selecteurPatrimoineIHM);
     westPanel.add(selecteurGrapheConfIHM);
     westPanel.add(selecteurPeriodeIHM);
     westPanel.add(fluxImpossiblesIHM);
+
+    var fluxJournaliersBox = new BoxLayout(fluxJournaliersIHM, BoxLayout.X_AXIS);
+    fluxJournaliersIHM.setLayout(fluxJournaliersBox);
+    fluxJournaliersIHM.setBorder(BorderFactory.createEmptyBorder(10, 5, 0, 5));
+
+    Dimension fixedWidth = new Dimension(fluxImpossiblesIHM.getPreferredSize().width, fluxJournaliersIHM.getPreferredSize().height);
+    fluxJournaliersIHM.setPreferredSize(fixedWidth);
+    fluxJournaliersIHM.setMaximumSize(fixedWidth);
+    fluxJournaliersIHM.setMinimumSize(fixedWidth);
+
     westPanel.add(fluxJournaliersIHM);
     contentPane.add(westPanel, WEST);
-
     contentPane.add(evolutionPatrimoineSelectionnéIHM, CENTER);
   }
 
