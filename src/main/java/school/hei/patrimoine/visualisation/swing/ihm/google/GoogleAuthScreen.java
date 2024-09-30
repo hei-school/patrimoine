@@ -69,11 +69,6 @@ public class GoogleAuthScreen extends JFrame {
     }
   }
 
-  @SneakyThrows
-  private GoogleAuthenticationDetails handleGoogleSignIn() {
-    return googleApi.requestAuthentication();
-  }
-
   public static void main(String[] args) {
     SwingUtilities.invokeLater(GoogleAuthScreen::new);
   }
