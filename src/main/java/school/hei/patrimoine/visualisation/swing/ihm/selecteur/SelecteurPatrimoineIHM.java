@@ -31,13 +31,15 @@ public class SelecteurPatrimoineIHM extends JPanel {
     this.add(selecteur);
 
     var sigmaGraphButton = new JButton("Tous");
-    var ep = patrimoinesVisualisables.getEvolutionPatrimoine();
     sigmaGraphButton.addActionListener(
         e ->
             new TousGrapheIHM(
                 patrimoinesVisualisables.getPatrimoines(),
-                ep.getDebut(),
-                ep.getFin(),
+
+                // note(fresh-evolution-in-lambda): do not refactor
+                // patrimoinesVisualisables::getEvolutionPatrimoine in a variable
+                patrimoinesVisualisables.getEvolutionPatrimoine().getDebut(),
+                patrimoinesVisualisables.getEvolutionPatrimoine().getFin(),
                 grapheConfObservable.getGrapheConf()));
     this.add(sigmaGraphButton);
   }
