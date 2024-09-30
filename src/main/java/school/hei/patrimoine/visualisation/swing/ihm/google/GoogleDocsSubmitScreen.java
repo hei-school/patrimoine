@@ -141,9 +141,7 @@ public class GoogleDocsSubmitScreen {
   private List<Map<String, String>> extractInputData() {
     List<Map<String, String>> linkDataList = new ArrayList<>();
 
-    for (JTextArea field : inputFields) {
-      String rawText = field.getText();
-
+      String rawText = inputFields.getFirst().getText();
       String[] lines = rawText.split("\n");
 
       for (String line : lines) {
@@ -160,7 +158,6 @@ public class GoogleDocsSubmitScreen {
           linkDataList.add(linkData);
         }
       }
-    }
 
     return linkDataList;
   }
