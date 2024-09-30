@@ -7,7 +7,6 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import javax.swing.*;
 import lombok.extern.slf4j.Slf4j;
@@ -31,9 +30,7 @@ public class GoogleDocsLinkVerfierScreen {
   private final GoogleAuthenticationDetails authDetails;
 
   public GoogleDocsLinkVerfierScreen(
-      GoogleApi googleApi,
-      GoogleAuthenticationDetails authDetails,
-      List<Map<String, String>> linksData) {
+      GoogleApi googleApi, GoogleAuthenticationDetails authDetails, List<NamedLink> linksData) {
     this.googleApi = googleApi;
     this.authDetails = authDetails;
     inputFrame = newInputFrame();
@@ -102,22 +99,22 @@ public class GoogleDocsLinkVerfierScreen {
     return returnButton;
   }
 
-  private void addInputFieldsFromData(List<Map<String, String>> linksData) {
+  private void addInputFieldsFromData(List<NamedLink> linksData) {
     GridBagConstraints gbc = new GridBagConstraints();
     gbc.gridx = 0;
     gbc.fill = GridBagConstraints.HORIZONTAL;
     gbc.insets = new Insets(10, 50, 10, 50);
 
     int yPosition = 2;
-    for (Map<String, String> linkData : linksData) {
-      JLabel nameLabel = new JLabel(linkData.get("name"));
+    for (NamedLink linkData : linksData) {
+      JLabel nameLabel = new JLabel(linkData.getName());
       nameLabel.setFont(new Font("Arial", Font.BOLD, 18));
       nameLabel.setHorizontalAlignment(SwingConstants.LEFT);
 
       gbc.gridy = yPosition++;
       inputPanel.add(nameLabel, gbc);
 
-      JTextField newField = newGoogleDocsLinkTextField(linkData.get("link"));
+      JTextField newField = newGoogleDocsLinkTextField(linkData.getValue());
       inputFields.add(newField);
 
       JScrollPane scrollPane = new JScrollPane(newField);

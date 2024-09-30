@@ -5,9 +5,7 @@ import static javax.swing.SwingUtilities.invokeLater;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import javax.swing.*;
 import lombok.SneakyThrows;
@@ -118,7 +116,7 @@ public class GoogleDocsSubmitScreen {
     SwingWorker<Object, Void> worker =
         new SwingWorker<>() {
           @Override
-          protected List<Map<String, String>> doInBackground() {
+          protected List<NamedLink> doInBackground() {
             return extractInputData();
           }
 
@@ -126,7 +124,7 @@ public class GoogleDocsSubmitScreen {
           protected void done() {
             loadingDialog.dispose();
             try {
-              final List<Map<String, String>> docsLink = (List<Map<String, String>>) get();
+              final List<NamedLink> docsLink = (List<NamedLink>) get();
               openResultFrame(docsLink);
             } catch (InterruptedException | ExecutionException e) {
               throw new RuntimeException(e);
@@ -138,8 +136,8 @@ public class GoogleDocsSubmitScreen {
     loadingDialog.setVisible(true);
   }
 
-  private List<Map<String, String>> extractInputData() {
-    List<Map<String, String>> linkDataList = new ArrayList<>();
+  private List<NamedLink> extractInputData() {
+    List<NamedLink> linkDataList = new ArrayList<>();
 
     String rawText = inputFields.getFirst().getText();
     String[] lines = rawText.split("\n");
@@ -151,10 +149,7 @@ public class GoogleDocsSubmitScreen {
         String linkName = parts[0].trim();
         String linkValue = parts[1].trim();
 
-        Map<String, String> linkData = new HashMap<>();
-        linkData.put("name", linkName);
-        linkData.put("link", linkValue);
-
+        NamedLink linkData = new NamedLink(linkName, linkValue);
         linkDataList.add(linkData);
       }
     }
@@ -167,7 +162,7 @@ public class GoogleDocsSubmitScreen {
     return googleApi.requestAuthentication();
   }
 
-  private void openResultFrame(List<Map<String, String>> docsLink) {
+  private void openResultFrame(List<NamedLink> docsLink) {
     var authReqRes = handleGoogleSignIn();
     invokeLater(() -> new GoogleDocsLinkVerfierScreen(googleApi, authReqRes, docsLink));
     inputFrame.setVisible(false);
