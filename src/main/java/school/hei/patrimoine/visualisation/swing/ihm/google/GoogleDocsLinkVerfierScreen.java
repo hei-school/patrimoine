@@ -11,6 +11,7 @@ import school.hei.patrimoine.visualisation.swing.ihm.MainIHM;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -58,12 +59,14 @@ public class GoogleDocsLinkVerfierScreen {
 
   private void addButtons() {
     JButton submitButton = newSubmitButton();
+    JButton returnButton = newReturnButton();
 
     JLabel buttonTitle = new JLabel("Submit Your Google Docs Links:");
     buttonTitle.setFont(new Font("Arial", Font.BOLD, 24));
     buttonTitle.setHorizontalAlignment(SwingConstants.CENTER);
 
     JPanel buttonPanel = new JPanel();
+    buttonPanel.add(returnButton);
     buttonPanel.add(submitButton);
     buttonPanel.setOpaque(false);
 
@@ -85,6 +88,15 @@ public class GoogleDocsLinkVerfierScreen {
     submitButton.setFocusPainted(false);
     submitButton.addActionListener(e -> loadDataInBackground());
     return submitButton;
+  }
+
+  private JButton newReturnButton() {
+    JButton returnButton = new JButton("Return");
+    returnButton.setPreferredSize(new Dimension(200, 50));
+    returnButton.setFont(new Font("Arial", Font.BOLD, 18));
+    returnButton.setFocusPainted(false);
+    returnButton.addActionListener(returnToPreviousScreen());
+    return returnButton;
   }
 
   private void addInputFieldsFromData(List<Map<String, String>> linksData) {
@@ -118,6 +130,13 @@ public class GoogleDocsLinkVerfierScreen {
     textField.setText(initialValue);
     linkIdInputVerifier.verify(textField);
     return textField;
+  }
+
+  private ActionListener returnToPreviousScreen() {
+    return e -> {
+      invokeLater(() -> new GoogleDocsSubmitScreen(googleApi));
+      inputFrame.setVisible(false);
+    };
   }
 
   private void loadDataInBackground() {
