@@ -67,6 +67,22 @@ public class MainIHM extends JFrame implements Observer {
     setLocationRelativeTo(null);
   }
 
+  private JPanel getFluxJournaliersIHM() {
+    var fluxJournaliersBox = new BoxLayout(fluxJournaliersIHM, BoxLayout.X_AXIS);
+    fluxJournaliersIHM.setLayout(fluxJournaliersBox);
+    fluxJournaliersIHM.setBorder(BorderFactory.createEmptyBorder(10, 5, 0, 5));
+
+    Dimension fixedWidth =
+        new Dimension(
+            fluxImpossiblesIHM.getPreferredSize().width,
+            fluxJournaliersIHM.getPreferredSize().height);
+    fluxJournaliersIHM.setPreferredSize(fixedWidth);
+    fluxJournaliersIHM.setMaximumSize(fixedWidth);
+    fluxJournaliersIHM.setMinimumSize(fixedWidth);
+
+    return fluxJournaliersIHM;
+  }
+
   private void configureContentPane() {
     var contentPane = new JPanel();
     setContentPane(contentPane);
@@ -83,19 +99,7 @@ public class MainIHM extends JFrame implements Observer {
     westPanel.add(selecteurPeriodeIHM);
     westPanel.add(fluxImpossiblesIHM);
 
-    var fluxJournaliersBox = new BoxLayout(fluxJournaliersIHM, BoxLayout.X_AXIS);
-    fluxJournaliersIHM.setLayout(fluxJournaliersBox);
-    fluxJournaliersIHM.setBorder(BorderFactory.createEmptyBorder(10, 5, 0, 5));
-
-    Dimension fixedWidth =
-        new Dimension(
-            fluxImpossiblesIHM.getPreferredSize().width,
-            fluxJournaliersIHM.getPreferredSize().height);
-    fluxJournaliersIHM.setPreferredSize(fixedWidth);
-    fluxJournaliersIHM.setMaximumSize(fixedWidth);
-    fluxJournaliersIHM.setMinimumSize(fixedWidth);
-
-    westPanel.add(fluxJournaliersIHM);
+    westPanel.add(getFluxJournaliersIHM());
     contentPane.add(westPanel, WEST);
     contentPane.add(evolutionPatrimoineSelectionnéIHM, CENTER);
   }

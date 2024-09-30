@@ -141,23 +141,23 @@ public class GoogleDocsSubmitScreen {
   private List<Map<String, String>> extractInputData() {
     List<Map<String, String>> linkDataList = new ArrayList<>();
 
-      String rawText = inputFields.getFirst().getText();
-      String[] lines = rawText.split("\n");
+    String rawText = inputFields.getFirst().getText();
+    String[] lines = rawText.split("\n");
 
-      for (String line : lines) {
-        String[] parts = line.split(":", 2);
+    for (String line : lines) {
+      String[] parts = line.split(":", 2);
 
-        if (parts.length == 2) {
-          String linkName = parts[0].trim();
-          String linkValue = parts[1].trim();
+      if (parts.length == 2) {
+        String linkName = parts[0].trim();
+        String linkValue = parts[1].trim();
 
-          Map<String, String> linkData = new HashMap<>();
-          linkData.put("name", linkName);
-          linkData.put("link", linkValue);
+        Map<String, String> linkData = new HashMap<>();
+        linkData.put("name", linkName);
+        linkData.put("link", linkValue);
 
-          linkDataList.add(linkData);
-        }
+        linkDataList.add(linkData);
       }
+    }
 
     return linkDataList;
   }
