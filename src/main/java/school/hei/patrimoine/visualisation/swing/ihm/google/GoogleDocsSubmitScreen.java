@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import javax.swing.*;
-
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import school.hei.patrimoine.google.GoogleApi;
@@ -22,12 +21,13 @@ public class GoogleDocsSubmitScreen {
   private final List<JTextArea> inputFields;
   private static final int MAX_INPUTS = 9;
   private static final int MIN_INPUTS = 1;
-  private final GoogleDocsLinkIdInputVerifier linkIdInputVerifier = new GoogleDocsLinkIdInputVerifier();
+  private final GoogleDocsLinkIdInputVerifier linkIdInputVerifier =
+      new GoogleDocsLinkIdInputVerifier();
   private final GoogleApi googleApi;
 
   public GoogleDocsSubmitScreen(GoogleApi googleApi) {
-      this.googleApi = googleApi;
-      inputFrame = newInputFrame();
+    this.googleApi = googleApi;
+    inputFrame = newInputFrame();
     inputPanel = new JPanel();
     inputPanel.setLayout(new GridBagLayout());
 
@@ -85,7 +85,7 @@ public class GoogleDocsSubmitScreen {
   }
 
   private void addInitialInput() {
-    JTextArea initialField = newGoogleDocsLinkTextArea(); 
+    JTextArea initialField = newGoogleDocsLinkTextArea();
     inputFields.add(initialField);
 
     GridBagConstraints gbc = new GridBagConstraints();
@@ -115,23 +115,24 @@ public class GoogleDocsSubmitScreen {
     loadingDialog.setSize(300, 100);
     loadingDialog.setLocationRelativeTo(inputFrame);
 
-    SwingWorker<Object, Void> worker = new SwingWorker<>() {
-        @Override
-        protected List<Map<String, String>> doInBackground() {
+    SwingWorker<Object, Void> worker =
+        new SwingWorker<>() {
+          @Override
+          protected List<Map<String, String>> doInBackground() {
             return extractInputData();
-        }
+          }
 
-        @Override
-        protected void done() {
+          @Override
+          protected void done() {
             loadingDialog.dispose();
             try {
-                final List<Map<String, String>> docsLink = (List<Map<String, String>>) get();
-                openResultFrame(docsLink);
+              final List<Map<String, String>> docsLink = (List<Map<String, String>>) get();
+              openResultFrame(docsLink);
             } catch (InterruptedException | ExecutionException e) {
-                throw new RuntimeException(e);
+              throw new RuntimeException(e);
             }
-        }
-    };
+          }
+        };
 
     worker.execute();
     loadingDialog.setVisible(true);

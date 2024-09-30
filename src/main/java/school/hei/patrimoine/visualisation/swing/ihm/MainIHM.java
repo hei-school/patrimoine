@@ -87,7 +87,10 @@ public class MainIHM extends JFrame implements Observer {
     fluxJournaliersIHM.setLayout(fluxJournaliersBox);
     fluxJournaliersIHM.setBorder(BorderFactory.createEmptyBorder(10, 5, 0, 5));
 
-    Dimension fixedWidth = new Dimension(fluxImpossiblesIHM.getPreferredSize().width, fluxJournaliersIHM.getPreferredSize().height);
+    Dimension fixedWidth =
+        new Dimension(
+            fluxImpossiblesIHM.getPreferredSize().width,
+            fluxJournaliersIHM.getPreferredSize().height);
     fluxJournaliersIHM.setPreferredSize(fixedWidth);
     fluxJournaliersIHM.setMaximumSize(fixedWidth);
     fluxJournaliersIHM.setMinimumSize(fixedWidth);
