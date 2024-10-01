@@ -1,7 +1,9 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google;
 
 import static java.awt.BorderLayout.CENTER;
+import static java.awt.Font.BOLD;
 import static javax.swing.SwingUtilities.invokeLater;
+import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -36,7 +38,7 @@ public class GoogleDocsSubmitScreen {
 
   private void configureInputFrame() {
     inputFrame.getContentPane().add(inputPanel);
-    inputFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    inputFrame.setDefaultCloseOperation(EXIT_ON_CLOSE);
     inputFrame.pack();
     inputFrame.setLocationRelativeTo(null);
   }
@@ -53,7 +55,7 @@ public class GoogleDocsSubmitScreen {
     JButton submitButton = newSubmitButton();
 
     JLabel buttonTitle = new JLabel("Enter Your Google Docs Links:");
-    buttonTitle.setFont(new Font("Arial", Font.BOLD, 24));
+    buttonTitle.setFont(new Font("Arial", BOLD, 24));
     buttonTitle.setHorizontalAlignment(SwingConstants.CENTER);
 
     JPanel buttonPanel = new JPanel();
@@ -74,7 +76,7 @@ public class GoogleDocsSubmitScreen {
   private JButton newSubmitButton() {
     JButton submitButton = new JButton("Verify");
     submitButton.setPreferredSize(new Dimension(200, 50));
-    submitButton.setFont(new Font("Arial", Font.BOLD, 18));
+    submitButton.setFont(new Font("Arial", BOLD, 18));
     submitButton.setFocusPainted(false);
     submitButton.addActionListener(e -> loadDataInBackground());
     return submitButton;

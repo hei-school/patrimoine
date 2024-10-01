@@ -1,7 +1,10 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google;
 
 import static java.awt.BorderLayout.CENTER;
+import static java.awt.Font.BOLD;
+import static java.awt.Font.PLAIN;
 import static javax.swing.SwingUtilities.invokeLater;
+import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 
 import java.awt.*;
 import java.awt.event.ActionListener;
@@ -44,7 +47,7 @@ public class GoogleDocsLinkVerfierScreen {
 
   private void configureInputFrame() {
     inputFrame.getContentPane().add(inputPanel);
-    inputFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    inputFrame.setDefaultCloseOperation(EXIT_ON_CLOSE);
     inputFrame.pack();
     inputFrame.setLocationRelativeTo(null);
   }
@@ -62,7 +65,7 @@ public class GoogleDocsLinkVerfierScreen {
     JButton returnButton = newReturnButton();
 
     JLabel buttonTitle = new JLabel("Submit Your Google Docs Links:");
-    buttonTitle.setFont(new Font("Arial", Font.BOLD, 24));
+    buttonTitle.setFont(new Font("Arial", BOLD, 24));
     buttonTitle.setHorizontalAlignment(SwingConstants.CENTER);
 
     JPanel buttonPanel = new JPanel();
@@ -84,7 +87,7 @@ public class GoogleDocsLinkVerfierScreen {
   private JButton newSubmitButton() {
     JButton submitButton = new JButton("Submit");
     submitButton.setPreferredSize(new Dimension(200, 50));
-    submitButton.setFont(new Font("Arial", Font.BOLD, 18));
+    submitButton.setFont(new Font("Arial", BOLD, 18));
     submitButton.setFocusPainted(false);
     submitButton.addActionListener(e -> loadDataInBackground());
     return submitButton;
@@ -93,7 +96,7 @@ public class GoogleDocsLinkVerfierScreen {
   private JButton newReturnButton() {
     JButton returnButton = new JButton("Return");
     returnButton.setPreferredSize(new Dimension(200, 50));
-    returnButton.setFont(new Font("Arial", Font.BOLD, 18));
+    returnButton.setFont(new Font("Arial", BOLD, 18));
     returnButton.setFocusPainted(false);
     returnButton.addActionListener(returnToPreviousScreen());
     return returnButton;
@@ -108,7 +111,7 @@ public class GoogleDocsLinkVerfierScreen {
     int yPosition = 2;
     for (NamedLink linkData : linksData) {
       JLabel nameLabel = new JLabel(linkData.name());
-      nameLabel.setFont(new Font("Arial", Font.BOLD, 18));
+      nameLabel.setFont(new Font("Arial", BOLD, 18));
       nameLabel.setHorizontalAlignment(SwingConstants.LEFT);
 
       gbc.gridy = yPosition++;
@@ -126,7 +129,7 @@ public class GoogleDocsLinkVerfierScreen {
   private JTextField newGoogleDocsLinkTextField(String initialValue) {
     var textField = new JTextField(70);
     textField.setInputVerifier(linkIdInputVerifier);
-    textField.setFont(new Font("Arial", Font.PLAIN, 16));
+    textField.setFont(new Font("Arial", PLAIN, 16));
     textField.setText(initialValue);
     linkIdInputVerifier.verify(textField);
     return textField;
