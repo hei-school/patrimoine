@@ -16,9 +16,7 @@ import school.hei.patrimoine.google.GoogleApi;
 public class GoogleDocsSubmitScreen {
   private final JFrame inputFrame;
   private final JPanel inputPanel;
-  private final List<JTextArea> inputFields;
-  private static final int MAX_INPUTS = 9;
-  private static final int MIN_INPUTS = 1;
+  private final JTextArea inputField;
   private final GoogleDocsLinkIdInputVerifier linkIdInputVerifier =
       new GoogleDocsLinkIdInputVerifier();
   private final GoogleApi googleApi;
@@ -29,7 +27,7 @@ public class GoogleDocsSubmitScreen {
     inputPanel = new JPanel();
     inputPanel.setLayout(new GridBagLayout());
 
-    inputFields = new ArrayList<>();
+    inputField = new JTextArea(3, 70);
     addButtons();
     addInitialInput();
 
@@ -83,8 +81,10 @@ public class GoogleDocsSubmitScreen {
   }
 
   private void addInitialInput() {
-    JTextArea initialField = newGoogleDocsLinkTextArea();
-    inputFields.add(initialField);
+    inputField.setLineWrap(true);
+    inputField.setWrapStyleWord(true);
+    inputField.setInputVerifier(linkIdInputVerifier);
+    inputField.setFont(new Font("Arial", Font.PLAIN, 16));
 
     GridBagConstraints gbc = new GridBagConstraints();
     gbc.gridx = 0;
@@ -92,17 +92,8 @@ public class GoogleDocsSubmitScreen {
     gbc.fill = GridBagConstraints.HORIZONTAL;
     gbc.insets = new Insets(10, 50, 10, 50);
 
-    JScrollPane scrollPane = new JScrollPane(initialField);
+    JScrollPane scrollPane = new JScrollPane(inputField);
     inputPanel.add(scrollPane, gbc);
-  }
-
-  private JTextArea newGoogleDocsLinkTextArea() {
-    JTextArea textArea = new JTextArea(3, 70);
-    textArea.setLineWrap(true);
-    textArea.setWrapStyleWord(true);
-    textArea.setInputVerifier(linkIdInputVerifier);
-    textArea.setFont(new Font("Arial", Font.PLAIN, 16));
-    return textArea;
   }
 
   private void loadDataInBackground() {
@@ -113,7 +104,7 @@ public class GoogleDocsSubmitScreen {
     loadingDialog.setSize(300, 100);
     loadingDialog.setLocationRelativeTo(inputFrame);
 
-    SwingWorker<Object, Void> worker =
+    SwingWorker<List<NamedLink>, Void> worker =
         new SwingWorker<>() {
           @Override
           protected List<NamedLink> doInBackground() {
@@ -124,7 +115,7 @@ public class GoogleDocsSubmitScreen {
           protected void done() {
             loadingDialog.dispose();
             try {
-              final List<NamedLink> docsLink = (List<NamedLink>) get();
+              final List<NamedLink> docsLink = get();
               openResultFrame(docsLink);
             } catch (InterruptedException | ExecutionException e) {
               throw new RuntimeException(e);
@@ -139,7 +130,7 @@ public class GoogleDocsSubmitScreen {
   private List<NamedLink> extractInputData() {
     List<NamedLink> linkDataList = new ArrayList<>();
 
-    String rawText = inputFields.getFirst().getText();
+    String rawText = inputField.getText();
     String[] lines = rawText.split("\n");
 
     for (String line : lines) {

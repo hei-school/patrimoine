@@ -107,14 +107,14 @@ public class GoogleDocsLinkVerfierScreen {
 
     int yPosition = 2;
     for (NamedLink linkData : linksData) {
-      JLabel nameLabel = new JLabel(linkData.getName());
+      JLabel nameLabel = new JLabel(linkData.name());
       nameLabel.setFont(new Font("Arial", Font.BOLD, 18));
       nameLabel.setHorizontalAlignment(SwingConstants.LEFT);
 
       gbc.gridy = yPosition++;
       inputPanel.add(nameLabel, gbc);
 
-      JTextField newField = newGoogleDocsLinkTextField(linkData.getValue());
+      JTextField newField = newGoogleDocsLinkTextField(linkData.value());
       inputFields.add(newField);
 
       JScrollPane scrollPane = new JScrollPane(newField);
