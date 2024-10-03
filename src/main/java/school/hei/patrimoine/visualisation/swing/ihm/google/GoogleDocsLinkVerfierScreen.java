@@ -20,6 +20,8 @@ import school.hei.patrimoine.google.GoogleApi.GoogleAuthenticationDetails;
 import school.hei.patrimoine.google.GoogleDocsLinkIdParser;
 import school.hei.patrimoine.modele.Patrimoine;
 import school.hei.patrimoine.visualisation.swing.ihm.MainIHM;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.NamedString;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.NamedURL;
 
 @Slf4j
 public class GoogleDocsLinkVerfierScreen {
@@ -33,14 +35,14 @@ public class GoogleDocsLinkVerfierScreen {
   private final GoogleAuthenticationDetails authDetails;
 
   public GoogleDocsLinkVerfierScreen(
-      GoogleApi googleApi, GoogleAuthenticationDetails authDetails, List<NamedLink> linksData) {
+      GoogleApi googleApi, GoogleAuthenticationDetails authDetails, List<NamedString> linksData) {
     this.googleApi = googleApi;
     this.authDetails = authDetails;
     inputFrame = newInputFrame();
     inputPanel = new JPanel(new GridBagLayout());
     inputFields = new ArrayList<>();
 
-    addButtons();
+    addButtons(linksData);
     addInputFieldsFromData(linksData);
     configureInputFrame();
   }
@@ -60,8 +62,8 @@ public class GoogleDocsLinkVerfierScreen {
     return inputFrame;
   }
 
-  private void addButtons() {
-    JButton submitButton = newSubmitButton();
+  private void addButtons(List<NamedString> linksData) {
+    JButton submitButton = newSubmitButton(linksData);
     JButton returnButton = newReturnButton();
 
     JLabel buttonTitle = new JLabel("Submit Your Google Docs Links:");
@@ -84,12 +86,12 @@ public class GoogleDocsLinkVerfierScreen {
     inputPanel.add(buttonPanel, gbc);
   }
 
-  private JButton newSubmitButton() {
+  private JButton newSubmitButton(List<NamedString> linksData) {
     JButton submitButton = new JButton("Submit");
     submitButton.setPreferredSize(new Dimension(200, 50));
     submitButton.setFont(new Font("Arial", BOLD, 18));
     submitButton.setFocusPainted(false);
-    submitButton.addActionListener(e -> loadDataInBackground());
+    submitButton.addActionListener(e -> loadDataInBackground(linksData));
     return submitButton;
   }
 
@@ -102,14 +104,14 @@ public class GoogleDocsLinkVerfierScreen {
     return returnButton;
   }
 
-  private void addInputFieldsFromData(List<NamedLink> linksData) {
+  private void addInputFieldsFromData(List<NamedString> linksData) {
     GridBagConstraints gbc = new GridBagConstraints();
     gbc.gridx = 0;
     gbc.fill = GridBagConstraints.HORIZONTAL;
     gbc.insets = new Insets(10, 50, 10, 50);
 
     int yPosition = 2;
-    for (NamedLink linkData : linksData) {
+    for (NamedString linkData : linksData) {
       JLabel nameLabel = new JLabel(linkData.name());
       nameLabel.setFont(new Font("Arial", BOLD, 18));
       nameLabel.setHorizontalAlignment(SwingConstants.LEFT);
@@ -142,7 +144,7 @@ public class GoogleDocsLinkVerfierScreen {
     };
   }
 
-  private void loadDataInBackground() {
+  private void loadDataInBackground(List<NamedString> linksData) {
     JDialog loadingDialog = new JDialog(inputFrame, "Processing", true);
     JLabel loadingLabel = new JLabel("Processing, please wait...");
     loadingLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -154,10 +156,11 @@ public class GoogleDocsLinkVerfierScreen {
         new SwingWorker<>() {
           @Override
           protected List<Patrimoine> doInBackground() {
-            var ids = extractInputIds();
+            var ids = extractInputIds(linksData);
             List<String> codePatrimoinesVisualisables = new ArrayList<>();
             for (var id : ids) {
-              var code = googleApi.readDocsContent(authDetails, id);
+              var code = googleApi.readDocsContent(authDetails, id.URL());
+              System.out.println(code);
               codePatrimoinesVisualisables.add(code);
             }
             List<Patrimoine> patrimoinesVisualisables = new ArrayList<>();
@@ -188,13 +191,15 @@ public class GoogleDocsLinkVerfierScreen {
     loadingDialog.setVisible(true);
   }
 
-  private List<String> extractInputIds() {
-    List<String> ids = new ArrayList<>();
+  private List<NamedURL> extractInputIds(List<NamedString> linksData) {
+    List<NamedURL> ids = new ArrayList<>();
 
     for (JTextField field : inputFields) {
       String rawText = field.getText();
       var parsedId = linkIdParser.apply(rawText.trim());
-      ids.add(parsedId);
+      String urlName = linksData.get(inputFields.indexOf(field)).name();
+      NamedURL namedURL = new NamedURL(urlName, parsedId);
+      ids.add(namedURL);
     }
 
     return ids;

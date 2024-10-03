@@ -13,6 +13,8 @@ import javax.swing.*;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import school.hei.patrimoine.google.GoogleApi;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.NamedString;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.NamedURL;
 
 @Slf4j
 public class GoogleDocsSubmitScreen {
@@ -106,10 +108,10 @@ public class GoogleDocsSubmitScreen {
     loadingDialog.setSize(300, 100);
     loadingDialog.setLocationRelativeTo(inputFrame);
 
-    SwingWorker<List<NamedLink>, Void> worker =
+    SwingWorker<List<NamedString>, Void> worker =
         new SwingWorker<>() {
           @Override
-          protected List<NamedLink> doInBackground() {
+          protected List<NamedString> doInBackground() {
             return extractInputData();
           }
 
@@ -117,7 +119,7 @@ public class GoogleDocsSubmitScreen {
           protected void done() {
             loadingDialog.dispose();
             try {
-              final List<NamedLink> docsLink = get();
+              final List<NamedString> docsLink = get();
               openResultFrame(docsLink);
             } catch (InterruptedException | ExecutionException e) {
               throw new RuntimeException(e);
@@ -129,8 +131,8 @@ public class GoogleDocsSubmitScreen {
     loadingDialog.setVisible(true);
   }
 
-  private List<NamedLink> extractInputData() {
-    List<NamedLink> linkDataList = new ArrayList<>();
+  private List<NamedString> extractInputData() {
+    List<NamedString> linkDataList = new ArrayList<>();
 
     String rawText = inputField.getText();
     String[] lines = rawText.split("\n");
@@ -142,7 +144,7 @@ public class GoogleDocsSubmitScreen {
         String linkName = parts[0].trim();
         String linkValue = parts[1].trim();
 
-        NamedLink linkData = new NamedLink(linkName, linkValue);
+        NamedString linkData = new NamedString(linkName, linkValue);
         linkDataList.add(linkData);
       }
     }
@@ -155,7 +157,7 @@ public class GoogleDocsSubmitScreen {
     return googleApi.requestAuthentication();
   }
 
-  private void openResultFrame(List<NamedLink> docsLink) {
+  private void openResultFrame(List<NamedString> docsLink) {
     var authReqRes = handleGoogleSignIn();
     invokeLater(() -> new GoogleDocsLinkVerfierScreen(googleApi, authReqRes, docsLink));
     inputFrame.setVisible(false);
