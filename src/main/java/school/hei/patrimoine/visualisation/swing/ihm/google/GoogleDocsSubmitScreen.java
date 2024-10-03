@@ -46,7 +46,7 @@ public class GoogleDocsSubmitScreen {
   }
 
   private JFrame newInputFrame() {
-    JFrame inputFrame = new JFrame("Google Docs Submission");
+    var inputFrame = new JFrame("Google Docs Submission");
     inputFrame.setSize(1200, 1000);
     inputFrame.setResizable(true);
     inputFrame.setVisible(true);
@@ -64,7 +64,7 @@ public class GoogleDocsSubmitScreen {
     buttonPanel.add(submitButton);
     buttonPanel.setOpaque(false);
 
-    GridBagConstraints gbc = new GridBagConstraints();
+    var gbc = new GridBagConstraints();
     gbc.gridx = 0;
     gbc.gridy = 0;
     gbc.insets = new Insets(10, 0, 10, 0);
@@ -76,7 +76,7 @@ public class GoogleDocsSubmitScreen {
   }
 
   private JButton newSubmitButton() {
-    JButton submitButton = new JButton("Verify");
+    var submitButton = new JButton("Verify");
     submitButton.setPreferredSize(new Dimension(200, 50));
     submitButton.setFont(new Font("Arial", BOLD, 18));
     submitButton.setFocusPainted(false);
@@ -90,7 +90,7 @@ public class GoogleDocsSubmitScreen {
     inputField.setInputVerifier(linkIdInputVerifier);
     inputField.setFont(new Font("Arial", Font.PLAIN, 16));
 
-    GridBagConstraints gbc = new GridBagConstraints();
+    var gbc = new GridBagConstraints();
     gbc.gridx = 0;
     gbc.gridy = 2;
     gbc.fill = GridBagConstraints.HORIZONTAL;

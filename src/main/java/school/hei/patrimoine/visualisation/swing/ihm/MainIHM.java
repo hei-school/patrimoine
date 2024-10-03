@@ -5,6 +5,7 @@ import static java.awt.BorderLayout.WEST;
 import static java.awt.Toolkit.getDefaultToolkit;
 import static java.util.stream.Collectors.joining;
 import static javax.swing.BorderFactory.createEmptyBorder;
+import static javax.swing.BoxLayout.X_AXIS;
 import static javax.swing.BoxLayout.Y_AXIS;
 
 import java.awt.*;
@@ -68,11 +69,11 @@ public class MainIHM extends JFrame implements Observer {
   }
 
   private JPanel getFluxJournaliersIHM() {
-    var fluxJournaliersBox = new BoxLayout(fluxJournaliersIHM, BoxLayout.X_AXIS);
+    var fluxJournaliersBox = new BoxLayout(fluxJournaliersIHM, X_AXIS);
     fluxJournaliersIHM.setLayout(fluxJournaliersBox);
     fluxJournaliersIHM.setBorder(BorderFactory.createEmptyBorder(10, 5, 0, 5));
 
-    Dimension fixedWidth =
+    var fixedWidth =
         new Dimension(
             fluxJournaliersIHM.getPreferredSize().width,
             fluxJournaliersIHM.getPreferredSize().height);
