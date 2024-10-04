@@ -36,17 +36,19 @@ public class GoogleDocsLinkVerfierScreen {
   private final GoogleDocsLinkIdParser linkIdParser = new GoogleDocsLinkIdParser();
   private final GoogleApi googleApi;
   private final GoogleAuthenticationDetails authDetails;
+  private final List<NamedString> linksData;
 
   public GoogleDocsLinkVerfierScreen(
       GoogleApi googleApi, GoogleAuthenticationDetails authDetails, List<NamedString> linksData) {
     this.googleApi = googleApi;
     this.authDetails = authDetails;
+    this.linksData = linksData;
     inputFrame = newInputFrame();
     inputPanel = new JPanel(new GridBagLayout());
     inputFields = new ArrayList<>();
 
-    addButtons(linksData);
-    addInputFieldsFromData(linksData);
+    addButtons();
+    addInputFieldsFromData();
     configureInputFrame();
   }
 
@@ -65,8 +67,8 @@ public class GoogleDocsLinkVerfierScreen {
     return inputFrame;
   }
 
-  private void addButtons(List<NamedString> linksData) {
-    var submitButton = newSubmitButton(linksData);
+  private void addButtons() {
+    var submitButton = newSubmitButton();
     var returnButton = newReturnButton();
 
     var buttonTitle = new JLabel("Submit Your Google Docs Links:");
@@ -89,12 +91,12 @@ public class GoogleDocsLinkVerfierScreen {
     inputPanel.add(buttonPanel, gbc);
   }
 
-  private JButton newSubmitButton(List<NamedString> linksData) {
+  private JButton newSubmitButton() {
     var submitButton = new JButton("Submit");
     submitButton.setPreferredSize(new Dimension(200, 50));
     submitButton.setFont(new Font("Arial", BOLD, 18));
     submitButton.setFocusPainted(false);
-    submitButton.addActionListener(e -> loadDataInBackground(linksData));
+    submitButton.addActionListener(e -> loadDataInBackground());
     return submitButton;
   }
 
@@ -107,7 +109,7 @@ public class GoogleDocsLinkVerfierScreen {
     return returnButton;
   }
 
-  private void addInputFieldsFromData(List<NamedString> linksData) {
+  private void addInputFieldsFromData() {
     GridBagConstraints gbc = new GridBagConstraints();
     gbc.gridx = 0;
     gbc.fill = HORIZONTAL;
@@ -147,7 +149,7 @@ public class GoogleDocsLinkVerfierScreen {
     };
   }
 
-  private void loadDataInBackground(List<NamedString> linksData) {
+  private void loadDataInBackground() {
     var loadingDialog = new JDialog(inputFrame, "Processing", true);
     var loadingLabel = new JLabel("Processing, please wait...");
     loadingLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -159,21 +161,14 @@ public class GoogleDocsLinkVerfierScreen {
         new SwingWorker<>() {
           @Override
           protected List<Patrimoine> doInBackground() {
-            var ids = extractInputIds(linksData);
+            var ids = extractInputIds();
             List<NamedSnippet> codePatrimoinesVisualisables = new ArrayList<>();
             for (var id : ids) {
-              var code = googleApi.readDocsContent(authDetails, String.valueOf(id.url()));
-              NamedSnippet namedSnippet = new NamedSnippet(id.name(), code);
-              codePatrimoinesVisualisables.add(namedSnippet);
+              codePatrimoinesVisualisables.add(extractSnippet(id));
             }
             List<Patrimoine> patrimoinesVisualisables = new ArrayList<>();
-            PatrimoineCompiler patrimoineCompiler = new PatrimoineCompiler();
             for (NamedSnippet codePatrimoine : codePatrimoinesVisualisables) {
-              String className = new ClassNameExtractor().apply(codePatrimoine.snippet());
-
-              Patrimoine patrimoineVisualisable =
-                  patrimoineCompiler.apply(className, codePatrimoine.snippet());
-              patrimoinesVisualisables.add(patrimoineVisualisable);
+              patrimoinesVisualisables.add(compilePatrimoine(codePatrimoine));
             }
             return patrimoinesVisualisables;
           }
@@ -194,7 +189,7 @@ public class GoogleDocsLinkVerfierScreen {
     loadingDialog.setVisible(true);
   }
 
-  private List<NamedURL> extractInputIds(List<NamedString> linksData) {
+  private List<NamedURL> extractInputIds() {
     List<NamedURL> ids = new ArrayList<>();
 
     for (JTextField field : inputFields) {
@@ -206,6 +201,18 @@ public class GoogleDocsLinkVerfierScreen {
     }
 
     return ids;
+  }
+
+  private NamedSnippet extractSnippet(NamedURL namedURL) {
+    var code = googleApi.readDocsContent(authDetails, String.valueOf(namedURL.url()));
+    return new NamedSnippet(namedURL.name(), code);
+  }
+
+  private Patrimoine compilePatrimoine(NamedSnippet namedSnippet) {
+    PatrimoineCompiler patrimoineCompiler = new PatrimoineCompiler();
+    String className = new ClassNameExtractor().apply(namedSnippet.snippet());
+
+    return (patrimoineCompiler.apply(className, namedSnippet.snippet()));
   }
 
   private void openResultFrame(List<Patrimoine> patrimoinesVisualisables) {

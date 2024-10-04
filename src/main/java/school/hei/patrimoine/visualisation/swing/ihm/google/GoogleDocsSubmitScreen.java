@@ -22,14 +22,18 @@ public class GoogleDocsSubmitScreen {
   private final JTextArea inputField;
   private final GoogleDocsLinkIdInputVerifier linkIdInputVerifier =
       new GoogleDocsLinkIdInputVerifier();
+  private final GoogleApi googleApi;
+  private final GoogleAuthenticationDetails authDetails;
 
   public GoogleDocsSubmitScreen(GoogleApi googleApi, GoogleAuthenticationDetails authDetails) {
+    this.googleApi = googleApi;
+    this.authDetails = authDetails;
     inputFrame = newInputFrame();
     inputPanel = new JPanel();
     inputPanel.setLayout(new GridBagLayout());
 
     inputField = new JTextArea(3, 70);
-    addButtons(googleApi, authDetails);
+    addButtons();
     addInitialInput();
 
     configureInputFrame();
@@ -50,8 +54,8 @@ public class GoogleDocsSubmitScreen {
     return inputFrame;
   }
 
-  private void addButtons(GoogleApi googleApi, GoogleAuthenticationDetails authDetails) {
-    JButton submitButton = newSubmitButton(googleApi, authDetails);
+  private void addButtons() {
+    JButton submitButton = newSubmitButton();
 
     JLabel buttonTitle = new JLabel("Enter Your Google Docs Links:");
     buttonTitle.setFont(new Font("Arial", BOLD, 24));
@@ -72,12 +76,12 @@ public class GoogleDocsSubmitScreen {
     inputPanel.add(buttonPanel, gbc);
   }
 
-  private JButton newSubmitButton(GoogleApi googleApi, GoogleAuthenticationDetails authDetails) {
+  private JButton newSubmitButton() {
     var submitButton = new JButton("Verify");
     submitButton.setPreferredSize(new Dimension(200, 50));
     submitButton.setFont(new Font("Arial", BOLD, 18));
     submitButton.setFocusPainted(false);
-    submitButton.addActionListener(e -> loadDataInBackground(googleApi, authDetails));
+    submitButton.addActionListener(e -> loadDataInBackground());
     return submitButton;
   }
 
@@ -97,7 +101,7 @@ public class GoogleDocsSubmitScreen {
     inputPanel.add(scrollPane, gbc);
   }
 
-  private void loadDataInBackground(GoogleApi googleApi, GoogleAuthenticationDetails authDetails) {
+  private void loadDataInBackground() {
     JDialog loadingDialog = new JDialog(inputFrame, "Processing", true);
     JLabel loadingLabel = new JLabel("Processing, please wait...");
     loadingLabel.setHorizontalAlignment(SwingConstants.CENTER);
