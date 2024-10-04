@@ -24,7 +24,7 @@ import school.hei.patrimoine.modele.Patrimoine;
 import school.hei.patrimoine.visualisation.swing.ihm.MainIHM;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.NamedSnippet;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.NamedString;
-import school.hei.patrimoine.visualisation.swing.ihm.google.modele.NamedURL;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.NamedID;
 
 @Slf4j
 public class GoogleDocsLinkVerfierScreen {
@@ -189,22 +189,22 @@ public class GoogleDocsLinkVerfierScreen {
     loadingDialog.setVisible(true);
   }
 
-  private List<NamedURL> extractInputIds() {
-    List<NamedURL> ids = new ArrayList<>();
+  private List<NamedID> extractInputIds() {
+    List<NamedID> ids = new ArrayList<>();
 
     for (JTextField field : inputFields) {
       var rawText = field.getText();
       var parsedId = linkIdParser.apply(rawText.trim());
       String urlName = linksData.get(inputFields.indexOf(field)).name();
-      NamedURL namedURL = new NamedURL(urlName, parsedId);
+      NamedID namedURL = new NamedID(urlName, parsedId);
       ids.add(namedURL);
     }
 
     return ids;
   }
 
-  private NamedSnippet extractSnippet(NamedURL namedURL) {
-    var code = googleApi.readDocsContent(authDetails, String.valueOf(namedURL.url()));
+  private NamedSnippet extractSnippet(NamedID namedURL) {
+    var code = googleApi.readDocsContent(authDetails, String.valueOf(namedURL.id()));
     return new NamedSnippet(namedURL.name(), code);
   }
 
