@@ -22,9 +22,9 @@ import school.hei.patrimoine.google.GoogleApi.GoogleAuthenticationDetails;
 import school.hei.patrimoine.google.GoogleDocsLinkIdParser;
 import school.hei.patrimoine.modele.Patrimoine;
 import school.hei.patrimoine.visualisation.swing.ihm.MainIHM;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.NamedID;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.NamedSnippet;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.NamedString;
-import school.hei.patrimoine.visualisation.swing.ihm.google.modele.NamedID;
 
 @Slf4j
 public class GoogleDocsLinkVerfierScreen {
