@@ -78,12 +78,12 @@ public class GoogleDocsLinkVerfierScreen {
     buttonPanel.add(submitButton);
     buttonPanel.setOpaque(false);
 
-      GridBagConstraints gbc = new GridBagConstraints();
-      gbc.gridx = 0;
-      gbc.gridy = 0;
-      gbc.insets = new Insets(10, 0, 10, 0);
-      gbc.anchor = GridBagConstraints.CENTER;
-      inputPanel.add(buttonTitle, gbc);
+    GridBagConstraints gbc = new GridBagConstraints();
+    gbc.gridx = 0;
+    gbc.gridy = 0;
+    gbc.insets = new Insets(10, 0, 10, 0);
+    gbc.anchor = GridBagConstraints.CENTER;
+    inputPanel.add(buttonTitle, gbc);
 
     gbc.gridy = 1;
     inputPanel.add(buttonPanel, gbc);
@@ -142,7 +142,7 @@ public class GoogleDocsLinkVerfierScreen {
 
   private ActionListener returnToPreviousScreen() {
     return e -> {
-      invokeLater(() -> new GoogleDocsSubmitScreen(googleApi));
+      invokeLater(() -> new GoogleDocsSubmitScreen(googleApi, authDetails));
       inputFrame.setVisible(false);
     };
   }
@@ -162,7 +162,7 @@ public class GoogleDocsLinkVerfierScreen {
             var ids = extractInputIds(linksData);
             List<NamedSnippet> codePatrimoinesVisualisables = new ArrayList<>();
             for (var id : ids) {
-              var code = googleApi.readDocsContent(authDetails, id.URL());
+              var code = googleApi.readDocsContent(authDetails, String.valueOf(id.url()));
               NamedSnippet namedSnippet = new NamedSnippet(id.name(), code);
               codePatrimoinesVisualisables.add(namedSnippet);
             }

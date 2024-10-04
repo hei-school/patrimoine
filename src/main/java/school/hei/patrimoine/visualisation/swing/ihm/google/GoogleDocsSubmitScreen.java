@@ -10,11 +10,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import javax.swing.*;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import school.hei.patrimoine.google.GoogleApi;
+import school.hei.patrimoine.google.GoogleApi.GoogleAuthenticationDetails;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.NamedString;
-import school.hei.patrimoine.visualisation.swing.ihm.google.modele.NamedURL;
 
 @Slf4j
 public class GoogleDocsSubmitScreen {
@@ -23,16 +22,14 @@ public class GoogleDocsSubmitScreen {
   private final JTextArea inputField;
   private final GoogleDocsLinkIdInputVerifier linkIdInputVerifier =
       new GoogleDocsLinkIdInputVerifier();
-  private final GoogleApi googleApi;
 
-  public GoogleDocsSubmitScreen(GoogleApi googleApi) {
-    this.googleApi = googleApi;
+  public GoogleDocsSubmitScreen(GoogleApi googleApi, GoogleAuthenticationDetails authDetails) {
     inputFrame = newInputFrame();
     inputPanel = new JPanel();
     inputPanel.setLayout(new GridBagLayout());
 
     inputField = new JTextArea(3, 70);
-    addButtons();
+    addButtons(googleApi, authDetails);
     addInitialInput();
 
     configureInputFrame();
@@ -53,8 +50,8 @@ public class GoogleDocsSubmitScreen {
     return inputFrame;
   }
 
-  private void addButtons() {
-    JButton submitButton = newSubmitButton();
+  private void addButtons(GoogleApi googleApi, GoogleAuthenticationDetails authDetails) {
+    JButton submitButton = newSubmitButton(googleApi, authDetails);
 
     JLabel buttonTitle = new JLabel("Enter Your Google Docs Links:");
     buttonTitle.setFont(new Font("Arial", BOLD, 24));
@@ -75,12 +72,12 @@ public class GoogleDocsSubmitScreen {
     inputPanel.add(buttonPanel, gbc);
   }
 
-  private JButton newSubmitButton() {
+  private JButton newSubmitButton(GoogleApi googleApi, GoogleAuthenticationDetails authDetails) {
     var submitButton = new JButton("Verify");
     submitButton.setPreferredSize(new Dimension(200, 50));
     submitButton.setFont(new Font("Arial", BOLD, 18));
     submitButton.setFocusPainted(false);
-    submitButton.addActionListener(e -> loadDataInBackground());
+    submitButton.addActionListener(e -> loadDataInBackground(googleApi, authDetails));
     return submitButton;
   }
 
@@ -100,7 +97,7 @@ public class GoogleDocsSubmitScreen {
     inputPanel.add(scrollPane, gbc);
   }
 
-  private void loadDataInBackground() {
+  private void loadDataInBackground(GoogleApi googleApi, GoogleAuthenticationDetails authDetails) {
     JDialog loadingDialog = new JDialog(inputFrame, "Processing", true);
     JLabel loadingLabel = new JLabel("Processing, please wait...");
     loadingLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -119,8 +116,8 @@ public class GoogleDocsSubmitScreen {
           protected void done() {
             loadingDialog.dispose();
             try {
-              final List<NamedString> docsLink = get();
-              openResultFrame(docsLink);
+              final List<NamedString> inputData = get();
+              openResultFrame(inputData, googleApi, authDetails);
             } catch (InterruptedException | ExecutionException e) {
               throw new RuntimeException(e);
             }
@@ -152,13 +149,8 @@ public class GoogleDocsSubmitScreen {
     return linkDataList;
   }
 
-  @SneakyThrows
-  private GoogleApi.GoogleAuthenticationDetails handleGoogleSignIn() {
-    return googleApi.requestAuthentication();
-  }
-
-  private void openResultFrame(List<NamedString> docsLink) {
-    var authReqRes = handleGoogleSignIn();
+  private void openResultFrame(
+      List<NamedString> docsLink, GoogleApi googleApi, GoogleAuthenticationDetails authReqRes) {
     invokeLater(() -> new GoogleDocsLinkVerfierScreen(googleApi, authReqRes, docsLink));
     inputFrame.setVisible(false);
   }

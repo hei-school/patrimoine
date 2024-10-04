@@ -9,7 +9,9 @@ import java.io.IOException;
 import java.util.Objects;
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import lombok.SneakyThrows;
 import school.hei.patrimoine.google.GoogleApi;
+import school.hei.patrimoine.google.GoogleApi.GoogleAuthenticationDetails;
 import school.hei.patrimoine.visualisation.swing.ihm.component.RoundedBorder;
 import school.hei.patrimoine.visualisation.swing.ihm.component.RoundedButton;
 
@@ -51,7 +53,8 @@ public class GoogleAuthScreen extends JFrame {
 
   private ActionListener onSignin() {
     return e -> {
-      invokeLater(() -> new GoogleDocsSubmitScreen(googleApi));
+      var authReqRes = handleGoogleSignIn();
+      invokeLater(() -> new GoogleDocsSubmitScreen(googleApi, authReqRes));
       setVisible(false);
     };
   }
@@ -65,6 +68,11 @@ public class GoogleAuthScreen extends JFrame {
       e.printStackTrace();
       return null;
     }
+  }
+
+  @SneakyThrows
+  private GoogleAuthenticationDetails handleGoogleSignIn() {
+    return googleApi.requestAuthentication();
   }
 
   public static void main(String[] args) {
