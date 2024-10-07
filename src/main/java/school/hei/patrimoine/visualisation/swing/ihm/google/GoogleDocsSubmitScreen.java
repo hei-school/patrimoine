@@ -156,6 +156,6 @@ public class GoogleDocsSubmitScreen {
   private void openResultFrame(
       List<NamedString> docsLink, GoogleApi googleApi, GoogleAuthenticationDetails authReqRes) {
     invokeLater(() -> new GoogleDocsLinkVerfierScreen(googleApi, authReqRes, docsLink));
-    inputFrame.setVisible(false);
+    inputFrame.dispose();
   }
 }
