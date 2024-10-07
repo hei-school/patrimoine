@@ -14,10 +14,10 @@ public class GoogleDocsLinkIdInputVerifier extends InputVerifier {
     if (input instanceof JTextField textField) {
       String text = textField.getText();
       if (GOOGLE_DOCS_ID_PATTERN.matcher(text).find()) {
-        textField.setBackground(GREEN); // Valid input
+        textField.setBackground(GREEN);
         return true;
       } else {
-        textField.setBackground(RED); // Invalid input
+        textField.setBackground(RED);
         return false;
       }
     }

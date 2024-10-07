@@ -5,6 +5,7 @@ import static java.awt.BorderLayout.WEST;
 import static java.awt.Toolkit.getDefaultToolkit;
 import static java.util.stream.Collectors.joining;
 import static javax.swing.BorderFactory.createEmptyBorder;
+import static javax.swing.BoxLayout.X_AXIS;
 import static javax.swing.BoxLayout.Y_AXIS;
 
 import java.awt.*;
@@ -67,6 +68,22 @@ public class MainIHM extends JFrame implements Observer {
     setLocationRelativeTo(null);
   }
 
+  private JPanel getFluxJournaliersIHM() {
+    var fluxJournaliersBox = new BoxLayout(fluxJournaliersIHM, X_AXIS);
+    fluxJournaliersIHM.setLayout(fluxJournaliersBox);
+    fluxJournaliersIHM.setBorder(BorderFactory.createEmptyBorder(10, 5, 0, 5));
+
+    var fixedWidth =
+        new Dimension(
+            fluxJournaliersIHM.getPreferredSize().width,
+            fluxJournaliersIHM.getPreferredSize().height);
+    fluxJournaliersIHM.setPreferredSize(fixedWidth);
+    fluxJournaliersIHM.setMaximumSize(fixedWidth);
+    fluxJournaliersIHM.setMinimumSize(fixedWidth);
+
+    return fluxJournaliersIHM;
+  }
+
   private void configureContentPane() {
     var contentPane = new JPanel();
     setContentPane(contentPane);
@@ -77,13 +94,14 @@ public class MainIHM extends JFrame implements Observer {
     westPanel.setAlignmentY(TOP_ALIGNMENT);
     var westMargin = 5;
     westPanel.setBorder(createEmptyBorder(westMargin, westMargin, westMargin, westMargin));
+
     westPanel.add(selecteurPatrimoineIHM);
     westPanel.add(selecteurGrapheConfIHM);
     westPanel.add(selecteurPeriodeIHM);
     westPanel.add(fluxImpossiblesIHM);
-    westPanel.add(fluxJournaliersIHM);
-    contentPane.add(westPanel, WEST);
 
+    westPanel.add(getFluxJournaliersIHM());
+    contentPane.add(westPanel, WEST);
     contentPane.add(evolutionPatrimoineSelectionnéIHM, CENTER);
   }
 
