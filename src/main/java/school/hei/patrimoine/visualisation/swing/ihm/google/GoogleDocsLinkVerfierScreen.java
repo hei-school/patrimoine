@@ -22,6 +22,7 @@ import school.hei.patrimoine.google.GoogleApi.GoogleAuthenticationDetails;
 import school.hei.patrimoine.google.GoogleDocsLinkIdParser;
 import school.hei.patrimoine.modele.Patrimoine;
 import school.hei.patrimoine.visualisation.swing.ihm.MainIHM;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.ExtractedData;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.NamedID;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.NamedSnippet;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.NamedString;
@@ -36,10 +37,10 @@ public class GoogleDocsLinkVerfierScreen {
   private final GoogleDocsLinkIdParser linkIdParser = new GoogleDocsLinkIdParser();
   private final GoogleApi googleApi;
   private final GoogleAuthenticationDetails authDetails;
-  private final List<NamedString> linksData;
+  private final ExtractedData<NamedString> linksData;
 
   public GoogleDocsLinkVerfierScreen(
-      GoogleApi googleApi, GoogleAuthenticationDetails authDetails, List<NamedString> linksData) {
+      GoogleApi googleApi, GoogleAuthenticationDetails authDetails, ExtractedData<NamedString> linksData) {
     this.googleApi = googleApi;
     this.authDetails = authDetails;
     this.linksData = linksData;
@@ -116,7 +117,7 @@ public class GoogleDocsLinkVerfierScreen {
     gbc.insets = new Insets(10, 50, 10, 50);
 
     int yPosition = 2;
-    for (NamedString linkData : linksData) {
+    for (NamedString linkData : linksData.linkDataList()) {
       var nameLabel = new JLabel(linkData.name());
       nameLabel.setFont(new Font("Arial", BOLD, 18));
       nameLabel.setHorizontalAlignment(LEFT);
@@ -195,7 +196,7 @@ public class GoogleDocsLinkVerfierScreen {
     for (JTextField field : inputFields) {
       var rawText = field.getText();
       var parsedId = linkIdParser.apply(rawText.trim());
-      String urlName = linksData.get(inputFields.indexOf(field)).name();
+      String urlName = linksData.linkDataList().get(inputFields.indexOf(field)).name();
       NamedID namedURL = new NamedID(urlName, parsedId);
       ids.add(namedURL);
     }
