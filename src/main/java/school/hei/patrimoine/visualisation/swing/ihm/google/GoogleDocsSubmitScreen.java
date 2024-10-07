@@ -13,6 +13,7 @@ import javax.swing.*;
 import lombok.extern.slf4j.Slf4j;
 import school.hei.patrimoine.google.GoogleApi;
 import school.hei.patrimoine.google.GoogleApi.GoogleAuthenticationDetails;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.ExtractedData;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.NamedString;
 
 @Slf4j
@@ -20,6 +21,7 @@ public class GoogleDocsSubmitScreen {
   private final JFrame inputFrame;
   private final JPanel inputPanel;
   private final JTextArea inputField;
+  private final JTextField variableField;
   private final GoogleDocsLinkIdInputVerifier linkIdInputVerifier =
       new GoogleDocsLinkIdInputVerifier();
   private final GoogleApi googleApi;
@@ -32,7 +34,8 @@ public class GoogleDocsSubmitScreen {
     inputPanel = new JPanel();
     inputPanel.setLayout(new GridBagLayout());
 
-    inputField = new JTextArea(3, 70);
+    inputField = new JTextArea(5, 70);
+    variableField = new JTextField();
     addButtons();
     addInitialInput();
 
@@ -86,20 +89,42 @@ public class GoogleDocsSubmitScreen {
   }
 
   private void addInitialInput() {
+
+    var variableLabel = new JLabel("Variables partagées");
+    var patrimoinesLabel = new JLabel("Patrimoines");
+
+    variableLabel.setFont(new Font("Arial", Font.BOLD, 18));
+    variableLabel.setHorizontalAlignment(SwingConstants.LEFT);
+    patrimoinesLabel.setFont(new Font("Arial", Font.BOLD, 18));
+    patrimoinesLabel.setHorizontalAlignment(SwingConstants.LEFT);
+
     inputField.setLineWrap(true);
     inputField.setWrapStyleWord(true);
     inputField.setInputVerifier(linkIdInputVerifier);
     inputField.setFont(new Font("Arial", Font.PLAIN, 16));
 
+    variableField.setInputVerifier(linkIdInputVerifier);
+    variableField.setFont(new Font("Arial", Font.PLAIN, 16));
+
     var gbc = new GridBagConstraints();
     gbc.gridx = 0;
-    gbc.gridy = 2;
     gbc.fill = GridBagConstraints.HORIZONTAL;
     gbc.insets = new Insets(10, 50, 10, 50);
 
+    gbc.gridy = 2;
+    inputPanel.add(variableLabel, gbc);
+
+    gbc.gridy = 3;
+    inputPanel.add(variableField, gbc);
+
+    gbc.gridy = 6;
+    inputPanel.add(patrimoinesLabel, gbc);
+
+    gbc.gridy = 7;
     JScrollPane scrollPane = new JScrollPane(inputField);
     inputPanel.add(scrollPane, gbc);
   }
+
 
   private void loadDataInBackground() {
     JDialog loadingDialog = new JDialog(inputFrame, "Processing", true);
@@ -109,10 +134,10 @@ public class GoogleDocsSubmitScreen {
     loadingDialog.setSize(300, 100);
     loadingDialog.setLocationRelativeTo(inputFrame);
 
-    SwingWorker<List<NamedString>, Void> worker =
+    SwingWorker<ExtractedData<NamedString>, Void> worker =
         new SwingWorker<>() {
           @Override
-          protected List<NamedString> doInBackground() {
+          protected ExtractedData<NamedString> doInBackground() {
             return extractInputData();
           }
 
@@ -120,7 +145,7 @@ public class GoogleDocsSubmitScreen {
           protected void done() {
             loadingDialog.dispose();
             try {
-              final List<NamedString> inputData = get();
+              final ExtractedData<NamedString> inputData = get();
               openResultFrame(inputData, googleApi, authDetails);
             } catch (InterruptedException | ExecutionException e) {
               throw new RuntimeException(e);
@@ -132,9 +157,10 @@ public class GoogleDocsSubmitScreen {
     loadingDialog.setVisible(true);
   }
 
-  private List<NamedString> extractInputData() {
+  private ExtractedData<NamedString> extractInputData() {
     List<NamedString> linkDataList = new ArrayList<>();
 
+    String variableText = variableField.getText();
     String rawText = inputField.getText();
     String[] lines = rawText.split("\n");
 
@@ -150,11 +176,11 @@ public class GoogleDocsSubmitScreen {
       }
     }
 
-    return linkDataList;
+    return new ExtractedData<>(variableText, linkDataList);
   }
 
   private void openResultFrame(
-      List<NamedString> docsLink, GoogleApi googleApi, GoogleAuthenticationDetails authReqRes) {
+      ExtractedData<NamedString> docsLink, GoogleApi googleApi, GoogleAuthenticationDetails authReqRes) {
     invokeLater(() -> new GoogleDocsLinkVerfierScreen(googleApi, authReqRes, docsLink));
     inputFrame.dispose();
   }
