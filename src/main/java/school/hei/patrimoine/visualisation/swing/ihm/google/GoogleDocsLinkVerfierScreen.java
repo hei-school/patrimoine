@@ -17,12 +17,13 @@ import javax.swing.*;
 import lombok.extern.slf4j.Slf4j;
 import school.hei.patrimoine.compiler.ClassNameExtractor;
 import school.hei.patrimoine.compiler.PatrimoineCompiler;
+import school.hei.patrimoine.compiler.PossessionExtractor;
 import school.hei.patrimoine.google.GoogleApi;
 import school.hei.patrimoine.google.GoogleApi.GoogleAuthenticationDetails;
 import school.hei.patrimoine.google.GoogleDocsLinkIdParser;
 import school.hei.patrimoine.modele.Patrimoine;
 import school.hei.patrimoine.visualisation.swing.ihm.MainIHM;
-import school.hei.patrimoine.visualisation.swing.ihm.google.modele.ExtractedData;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.ExtractedPatrimoine;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.NamedID;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.NamedSnippet;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.NamedString;
@@ -37,10 +38,12 @@ public class GoogleDocsLinkVerfierScreen {
   private final GoogleDocsLinkIdParser linkIdParser = new GoogleDocsLinkIdParser();
   private final GoogleApi googleApi;
   private final GoogleAuthenticationDetails authDetails;
-  private final ExtractedData<NamedString> linksData;
+  private final ExtractedPatrimoine<NamedString> linksData;
 
   public GoogleDocsLinkVerfierScreen(
-      GoogleApi googleApi, GoogleAuthenticationDetails authDetails, ExtractedData<NamedString> linksData) {
+      GoogleApi googleApi,
+      GoogleAuthenticationDetails authDetails,
+      ExtractedPatrimoine<NamedString> linksData) {
     this.googleApi = googleApi;
     this.authDetails = authDetails;
     this.linksData = linksData;
@@ -117,7 +120,7 @@ public class GoogleDocsLinkVerfierScreen {
     gbc.insets = new Insets(10, 50, 10, 50);
 
     int yPosition = 2;
-    for (NamedString linkData : linksData.linkDataList()) {
+    for (NamedString linkData : linksData.patrimoineLinkList()) {
       var nameLabel = new JLabel(linkData.name());
       nameLabel.setFont(new Font("Arial", BOLD, 18));
       nameLabel.setHorizontalAlignment(LEFT);
@@ -164,12 +167,19 @@ public class GoogleDocsLinkVerfierScreen {
           protected List<Patrimoine> doInBackground() {
             var ids = extractInputIds();
             List<NamedSnippet> codePatrimoinesVisualisables = new ArrayList<>();
-            for (var id : ids) {
+            var parsedVariable = linkIdParser.apply(ids.possessionLink().trim());
+            var possessionContent =
+                googleApi.readDocsContent(authDetails, String.valueOf(parsedVariable));
+            for (var id : ids.patrimoineLinkList()) {
               codePatrimoinesVisualisables.add(extractSnippet(id));
             }
+            PossessionExtractor possessionExtractor = new PossessionExtractor();
+            var possessionsData = possessionExtractor.apply(possessionContent);
             List<Patrimoine> patrimoinesVisualisables = new ArrayList<>();
             for (NamedSnippet codePatrimoine : codePatrimoinesVisualisables) {
-              patrimoinesVisualisables.add(compilePatrimoine(codePatrimoine));
+              patrimoinesVisualisables.add(
+                  compilePatrimoine(
+                      possessionsData.imports(), possessionsData.possessions(), codePatrimoine));
             }
             return patrimoinesVisualisables;
           }
@@ -190,30 +200,44 @@ public class GoogleDocsLinkVerfierScreen {
     loadingDialog.setVisible(true);
   }
 
-  private List<NamedID> extractInputIds() {
+  private ExtractedPatrimoine<NamedID> extractInputIds() {
     List<NamedID> ids = new ArrayList<>();
 
     for (JTextField field : inputFields) {
       var rawText = field.getText();
       var parsedId = linkIdParser.apply(rawText.trim());
-      String urlName = linksData.linkDataList().get(inputFields.indexOf(field)).name();
+      String urlName = linksData.patrimoineLinkList().get(inputFields.indexOf(field)).name();
       NamedID namedURL = new NamedID(urlName, parsedId);
       ids.add(namedURL);
     }
 
-    return ids;
+    return new ExtractedPatrimoine<>(linksData.possessionLink(), ids);
   }
 
-  private NamedSnippet extractSnippet(NamedID namedURL) {
-    var code = googleApi.readDocsContent(authDetails, String.valueOf(namedURL.id()));
-    return new NamedSnippet(namedURL.name(), code);
+  private NamedSnippet extractSnippet(NamedID namedID) {
+    var code = googleApi.readDocsContent(authDetails, String.valueOf(namedID.id()));
+    return new NamedSnippet(namedID.name(), code);
   }
 
-  private Patrimoine compilePatrimoine(NamedSnippet namedSnippet) {
+  private Patrimoine compilePatrimoine(
+      String imports, String possessions, NamedSnippet namedSnippet) {
     PatrimoineCompiler patrimoineCompiler = new PatrimoineCompiler();
     String className = new ClassNameExtractor().apply(namedSnippet.snippet());
 
-    return (patrimoineCompiler.apply(className, namedSnippet.snippet()));
+    String snippet = imports + "\n" + namedSnippet.snippet();
+
+    int getMethodIndex = snippet.indexOf("get() {");
+    if (getMethodIndex != -1) {
+      int insertPosition = getMethodIndex + "get() {".length();
+      snippet =
+          snippet.substring(0, insertPosition)
+              + "\n"
+              + possessions
+              + "\n"
+              + snippet.substring(insertPosition);
+    }
+
+    return (patrimoineCompiler.apply(className, snippet));
   }
 
   private void openResultFrame(List<Patrimoine> patrimoinesVisualisables) {

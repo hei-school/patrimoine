@@ -13,7 +13,7 @@ import javax.swing.*;
 import lombok.extern.slf4j.Slf4j;
 import school.hei.patrimoine.google.GoogleApi;
 import school.hei.patrimoine.google.GoogleApi.GoogleAuthenticationDetails;
-import school.hei.patrimoine.visualisation.swing.ihm.google.modele.ExtractedData;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.ExtractedPatrimoine;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.NamedString;
 
 @Slf4j
@@ -90,7 +90,7 @@ public class GoogleDocsSubmitScreen {
 
   private void addInitialInput() {
 
-    var variableLabel = new JLabel("Variables partagées");
+    var variableLabel = new JLabel("Possessions partagées");
     var patrimoinesLabel = new JLabel("Patrimoines");
 
     variableLabel.setFont(new Font("Arial", Font.BOLD, 18));
@@ -125,7 +125,6 @@ public class GoogleDocsSubmitScreen {
     inputPanel.add(scrollPane, gbc);
   }
 
-
   private void loadDataInBackground() {
     JDialog loadingDialog = new JDialog(inputFrame, "Processing", true);
     JLabel loadingLabel = new JLabel("Processing, please wait...");
@@ -134,10 +133,10 @@ public class GoogleDocsSubmitScreen {
     loadingDialog.setSize(300, 100);
     loadingDialog.setLocationRelativeTo(inputFrame);
 
-    SwingWorker<ExtractedData<NamedString>, Void> worker =
+    SwingWorker<ExtractedPatrimoine<NamedString>, Void> worker =
         new SwingWorker<>() {
           @Override
-          protected ExtractedData<NamedString> doInBackground() {
+          protected ExtractedPatrimoine<NamedString> doInBackground() {
             return extractInputData();
           }
 
@@ -145,7 +144,7 @@ public class GoogleDocsSubmitScreen {
           protected void done() {
             loadingDialog.dispose();
             try {
-              final ExtractedData<NamedString> inputData = get();
+              final ExtractedPatrimoine<NamedString> inputData = get();
               openResultFrame(inputData, googleApi, authDetails);
             } catch (InterruptedException | ExecutionException e) {
               throw new RuntimeException(e);
@@ -157,7 +156,7 @@ public class GoogleDocsSubmitScreen {
     loadingDialog.setVisible(true);
   }
 
-  private ExtractedData<NamedString> extractInputData() {
+  private ExtractedPatrimoine<NamedString> extractInputData() {
     List<NamedString> linkDataList = new ArrayList<>();
 
     String variableText = variableField.getText();
@@ -176,11 +175,13 @@ public class GoogleDocsSubmitScreen {
       }
     }
 
-    return new ExtractedData<>(variableText, linkDataList);
+    return new ExtractedPatrimoine<>(variableText, linkDataList);
   }
 
   private void openResultFrame(
-      ExtractedData<NamedString> docsLink, GoogleApi googleApi, GoogleAuthenticationDetails authReqRes) {
+      ExtractedPatrimoine<NamedString> docsLink,
+      GoogleApi googleApi,
+      GoogleAuthenticationDetails authReqRes) {
     invokeLater(() -> new GoogleDocsLinkVerfierScreen(googleApi, authReqRes, docsLink));
     inputFrame.dispose();
   }
