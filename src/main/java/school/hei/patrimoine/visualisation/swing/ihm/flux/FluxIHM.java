@@ -30,8 +30,10 @@ public abstract sealed class FluxIHM extends JPanel implements Observer
   }
 
   private void fixPanelSize() {
-    new FixedSizer().accept(fluxTextPane, new Dimension(500, 600));
+    new FixedSizer().accept(fluxTextPane, new Dimension(500, getIHMHeight()));
   }
+
+  protected abstract int getIHMHeight();
 
   private void updateTextPane() {
     var flux =

@@ -11,6 +11,11 @@ public final class FluxJournaliersIHM extends FluxIHM {
   }
 
   @Override
+  protected int getIHMHeight() {
+    return 500;
+  }
+
+  @Override
   protected String titre() {
     return "FLUX JOURNALIERS";
   }

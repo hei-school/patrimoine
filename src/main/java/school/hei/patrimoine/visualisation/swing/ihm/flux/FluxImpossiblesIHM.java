@@ -11,6 +11,11 @@ public final class FluxImpossiblesIHM extends FluxIHM {
   }
 
   @Override
+  protected int getIHMHeight() {
+    return 300;
+  }
+
+  @Override
   protected String titre() {
     return "FLUX IMPOSSIBLES";
   }
