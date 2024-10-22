@@ -158,7 +158,6 @@ public class GoogleDocsSubmitScreen {
     return new LinkedPatrimoine<>(possessionLink, linkDataList);
   }
 
-
   private void openResultFrame(
       LinkedPatrimoine<NamedString> docsLink,
       GoogleApi googleApi,
