@@ -13,7 +13,7 @@ import javax.swing.*;
 import lombok.extern.slf4j.Slf4j;
 import school.hei.patrimoine.google.GoogleApi;
 import school.hei.patrimoine.google.GoogleApi.GoogleAuthenticationDetails;
-import school.hei.patrimoine.visualisation.swing.ihm.google.modele.ExtractedPatrimoine;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.LinkedPatrimoine;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.NamedString;
 
 @Slf4j
@@ -109,10 +109,10 @@ public class GoogleDocsSubmitScreen {
     loadingDialog.setSize(300, 100);
     loadingDialog.setLocationRelativeTo(inputFrame);
 
-    SwingWorker<ExtractedPatrimoine<NamedString>, Void> worker =
+    SwingWorker<LinkedPatrimoine<NamedString>, Void> worker =
         new SwingWorker<>() {
           @Override
-          protected ExtractedPatrimoine<NamedString> doInBackground() {
+          protected LinkedPatrimoine<NamedString> doInBackground() {
             return extractInputData();
           }
 
@@ -120,7 +120,7 @@ public class GoogleDocsSubmitScreen {
           protected void done() {
             loadingDialog.dispose();
             try {
-              final ExtractedPatrimoine<NamedString> inputData = get();
+              final LinkedPatrimoine<NamedString> inputData = get();
               openResultFrame(inputData, googleApi, authDetails);
             } catch (InterruptedException | ExecutionException e) {
               throw new RuntimeException(e);
@@ -132,7 +132,7 @@ public class GoogleDocsSubmitScreen {
     loadingDialog.setVisible(true);
   }
 
-  private ExtractedPatrimoine<NamedString> extractInputData() {
+  private LinkedPatrimoine<NamedString> extractInputData() {
     List<NamedString> linkDataList = new ArrayList<>();
     String possessionLink = null;
 
@@ -155,12 +155,12 @@ public class GoogleDocsSubmitScreen {
       }
     }
 
-    return new ExtractedPatrimoine<>(possessionLink, linkDataList);
+    return new LinkedPatrimoine<>(possessionLink, linkDataList);
   }
 
 
   private void openResultFrame(
-      ExtractedPatrimoine<NamedString> docsLink,
+      LinkedPatrimoine<NamedString> docsLink,
       GoogleApi googleApi,
       GoogleAuthenticationDetails authReqRes) {
     invokeLater(() -> new GoogleDocsLinkVerfierScreen(googleApi, authReqRes, docsLink));

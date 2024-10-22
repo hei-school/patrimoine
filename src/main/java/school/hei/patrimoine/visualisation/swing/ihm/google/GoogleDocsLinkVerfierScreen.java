@@ -23,7 +23,7 @@ import school.hei.patrimoine.google.GoogleApi.GoogleAuthenticationDetails;
 import school.hei.patrimoine.google.GoogleDocsLinkIdParser;
 import school.hei.patrimoine.modele.Patrimoine;
 import school.hei.patrimoine.visualisation.swing.ihm.MainIHM;
-import school.hei.patrimoine.visualisation.swing.ihm.google.modele.ExtractedPatrimoine;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.LinkedPatrimoine;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.NamedID;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.NamedSnippet;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.NamedString;
@@ -38,12 +38,12 @@ public class GoogleDocsLinkVerfierScreen {
   private final GoogleDocsLinkIdParser linkIdParser = new GoogleDocsLinkIdParser();
   private final GoogleApi googleApi;
   private final GoogleAuthenticationDetails authDetails;
-  private final ExtractedPatrimoine<NamedString> linksData;
+  private final LinkedPatrimoine<NamedString> linksData;
 
   public GoogleDocsLinkVerfierScreen(
       GoogleApi googleApi,
       GoogleAuthenticationDetails authDetails,
-      ExtractedPatrimoine<NamedString> linksData) {
+      LinkedPatrimoine<NamedString> linksData) {
     this.googleApi = googleApi;
     this.authDetails = authDetails;
     this.linksData = linksData;
@@ -200,7 +200,7 @@ public class GoogleDocsLinkVerfierScreen {
     loadingDialog.setVisible(true);
   }
 
-  private ExtractedPatrimoine<NamedID> extractInputIds() {
+  private LinkedPatrimoine<NamedID> extractInputIds() {
     List<NamedID> ids = new ArrayList<>();
 
     for (JTextField field : inputFields) {
@@ -211,7 +211,7 @@ public class GoogleDocsLinkVerfierScreen {
       ids.add(namedURL);
     }
 
-    return new ExtractedPatrimoine<>(linksData.possessionLink(), ids);
+    return new LinkedPatrimoine<>(linksData.possessionLink(), ids);
   }
 
   private NamedSnippet extractSnippet(NamedID namedID) {
