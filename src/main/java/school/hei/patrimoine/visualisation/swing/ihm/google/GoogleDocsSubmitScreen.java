@@ -13,7 +13,7 @@ import javax.swing.*;
 import lombok.extern.slf4j.Slf4j;
 import school.hei.patrimoine.google.GoogleApi;
 import school.hei.patrimoine.google.GoogleApi.GoogleAuthenticationDetails;
-import school.hei.patrimoine.visualisation.swing.ihm.google.modele.ExtractedPatrimoine;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.LinkedPatrimoine;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.NamedString;
 
 @Slf4j
@@ -21,7 +21,6 @@ public class GoogleDocsSubmitScreen {
   private final JFrame inputFrame;
   private final JPanel inputPanel;
   private final JTextArea inputField;
-  private final JTextField variableField;
   private final GoogleDocsLinkIdInputVerifier linkIdInputVerifier =
       new GoogleDocsLinkIdInputVerifier();
   private final GoogleApi googleApi;
@@ -35,7 +34,6 @@ public class GoogleDocsSubmitScreen {
     inputPanel.setLayout(new GridBagLayout());
 
     inputField = new JTextArea(5, 70);
-    variableField = new JTextField();
     addButtons();
     addInitialInput();
 
@@ -89,38 +87,16 @@ public class GoogleDocsSubmitScreen {
   }
 
   private void addInitialInput() {
-
-    var variableLabel = new JLabel("Possessions partagées");
-    var patrimoinesLabel = new JLabel("Patrimoines");
-
-    variableLabel.setFont(new Font("Arial", Font.BOLD, 18));
-    variableLabel.setHorizontalAlignment(SwingConstants.LEFT);
-    patrimoinesLabel.setFont(new Font("Arial", Font.BOLD, 18));
-    patrimoinesLabel.setHorizontalAlignment(SwingConstants.LEFT);
-
     inputField.setLineWrap(true);
     inputField.setWrapStyleWord(true);
     inputField.setInputVerifier(linkIdInputVerifier);
     inputField.setFont(new Font("Arial", Font.PLAIN, 16));
-
-    variableField.setInputVerifier(linkIdInputVerifier);
-    variableField.setFont(new Font("Arial", Font.PLAIN, 16));
 
     var gbc = new GridBagConstraints();
     gbc.gridx = 0;
     gbc.fill = GridBagConstraints.HORIZONTAL;
     gbc.insets = new Insets(10, 50, 10, 50);
 
-    gbc.gridy = 2;
-    inputPanel.add(variableLabel, gbc);
-
-    gbc.gridy = 3;
-    inputPanel.add(variableField, gbc);
-
-    gbc.gridy = 6;
-    inputPanel.add(patrimoinesLabel, gbc);
-
-    gbc.gridy = 7;
     JScrollPane scrollPane = new JScrollPane(inputField);
     inputPanel.add(scrollPane, gbc);
   }
@@ -133,10 +109,10 @@ public class GoogleDocsSubmitScreen {
     loadingDialog.setSize(300, 100);
     loadingDialog.setLocationRelativeTo(inputFrame);
 
-    SwingWorker<ExtractedPatrimoine<NamedString>, Void> worker =
+    SwingWorker<LinkedPatrimoine<NamedString>, Void> worker =
         new SwingWorker<>() {
           @Override
-          protected ExtractedPatrimoine<NamedString> doInBackground() {
+          protected LinkedPatrimoine<NamedString> doInBackground() {
             return extractInputData();
           }
 
@@ -144,7 +120,7 @@ public class GoogleDocsSubmitScreen {
           protected void done() {
             loadingDialog.dispose();
             try {
-              final ExtractedPatrimoine<NamedString> inputData = get();
+              final LinkedPatrimoine<NamedString> inputData = get();
               openResultFrame(inputData, googleApi, authDetails);
             } catch (InterruptedException | ExecutionException e) {
               throw new RuntimeException(e);
@@ -156,10 +132,10 @@ public class GoogleDocsSubmitScreen {
     loadingDialog.setVisible(true);
   }
 
-  private ExtractedPatrimoine<NamedString> extractInputData() {
+  private LinkedPatrimoine<NamedString> extractInputData() {
     List<NamedString> linkDataList = new ArrayList<>();
+    String possessionLink = null;
 
-    String variableText = variableField.getText();
     String rawText = inputField.getText();
     String[] lines = rawText.split("\n");
 
@@ -170,16 +146,20 @@ public class GoogleDocsSubmitScreen {
         String linkName = parts[0].trim();
         String linkValue = parts[1].trim();
 
-        NamedString linkData = new NamedString(linkName, linkValue);
-        linkDataList.add(linkData);
+        if ("possessions".equals(linkName)) {
+          possessionLink = linkValue;
+        } else {
+          NamedString linkData = new NamedString(linkName, linkValue);
+          linkDataList.add(linkData);
+        }
       }
     }
 
-    return new ExtractedPatrimoine<>(variableText, linkDataList);
+    return new LinkedPatrimoine<>(possessionLink, linkDataList);
   }
 
   private void openResultFrame(
-      ExtractedPatrimoine<NamedString> docsLink,
+      LinkedPatrimoine<NamedString> docsLink,
       GoogleApi googleApi,
       GoogleAuthenticationDetails authReqRes) {
     invokeLater(() -> new GoogleDocsLinkVerfierScreen(googleApi, authReqRes, docsLink));

@@ -2,26 +2,25 @@ package school.hei.patrimoine.compiler;
 
 import java.util.function.Function;
 import lombok.SneakyThrows;
-import school.hei.patrimoine.visualisation.swing.ihm.google.modele.ExtractedPossession;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.PossessionSource;
 
-public class PossessionExtractor implements Function<String, ExtractedPossession> {
+public class PossessionExtractor implements Function<String, PossessionSource> {
 
   @SneakyThrows
   @Override
-  public ExtractedPossession apply(String javaSource) {
+  public PossessionSource apply(String javaSource) {
     String importsData = extractImports(javaSource);
     String possessionsData = extractPossessions(javaSource);
 
-    return new ExtractedPossession(importsData, possessionsData);
+    return new PossessionSource(importsData, possessionsData);
   }
 
   private String extractImports(String javaSource) {
     int classIndex = javaSource.indexOf("public class");
-    if (classIndex != -1) {
-      return javaSource.substring(0, classIndex).trim();
-    } else {
-      return "";
+    if (classIndex == -1) {
+      throw new RuntimeException("The source does not contain a 'public class' declaration.");
     }
+    return javaSource.substring(0, classIndex).trim();
   }
 
   private String extractPossessions(String javaSource) {
