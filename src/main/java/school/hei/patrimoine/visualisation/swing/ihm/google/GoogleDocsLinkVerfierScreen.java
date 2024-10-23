@@ -12,6 +12,7 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import javax.swing.*;
 import lombok.extern.slf4j.Slf4j;
@@ -167,20 +168,31 @@ public class GoogleDocsLinkVerfierScreen {
           protected List<Patrimoine> doInBackground() {
             var ids = extractInputIds();
             List<NamedSnippet> codePatrimoinesVisualisables = new ArrayList<>();
-            var parsedVariable = linkIdParser.apply(ids.possessionLink().trim());
-            var possessionContent =
-                googleApi.readDocsContent(authDetails, String.valueOf(parsedVariable));
+            List<Patrimoine> patrimoinesVisualisables = new ArrayList<>();
+
             for (var id : ids.patrimoineLinkList()) {
               codePatrimoinesVisualisables.add(extractSnippet(id));
             }
-            PossessionExtractor possessionExtractor = new PossessionExtractor();
-            var possessionsData = possessionExtractor.apply(possessionContent);
-            List<Patrimoine> patrimoinesVisualisables = new ArrayList<>();
-            for (NamedSnippet codePatrimoine : codePatrimoinesVisualisables) {
-              patrimoinesVisualisables.add(
-                  compilePatrimoine(
-                      possessionsData.imports(), possessionsData.possessions(), codePatrimoine));
+
+            if(!Objects.equals(ids.possessionLink(), "")){
+              var parsedVariable = linkIdParser.apply(ids.possessionLink().trim());
+              var possessionContent =
+                      googleApi.readDocsContent(authDetails, String.valueOf(parsedVariable));
+              PossessionExtractor possessionExtractor = new PossessionExtractor();
+              var possessionsData = possessionExtractor.apply(possessionContent);
+
+              for (NamedSnippet codePatrimoine : codePatrimoinesVisualisables) {
+                patrimoinesVisualisables.add(
+                        compilePatrimoine(
+                                possessionsData.imports(), possessionsData.possessions(), codePatrimoine));
+              }
+            }else {
+              for (NamedSnippet codePatrimoine : codePatrimoinesVisualisables) {
+                patrimoinesVisualisables.add(
+                        compilePatrimoine(codePatrimoine));
+              }
             }
+
             return patrimoinesVisualisables;
           }
 
@@ -238,6 +250,13 @@ public class GoogleDocsLinkVerfierScreen {
     }
 
     return (patrimoineCompiler.apply(className, snippet));
+  }
+
+  private Patrimoine compilePatrimoine(NamedSnippet namedSnippet) {
+    PatrimoineCompiler patrimoineCompiler = new PatrimoineCompiler();
+    String className = new ClassNameExtractor().apply(namedSnippet.snippet());
+
+    return (patrimoineCompiler.apply(className, namedSnippet.snippet()));
   }
 
   private void openResultFrame(List<Patrimoine> patrimoinesVisualisables) {
