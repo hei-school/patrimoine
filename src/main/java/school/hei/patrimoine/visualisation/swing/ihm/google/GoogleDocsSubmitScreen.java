@@ -134,10 +134,11 @@ public class GoogleDocsSubmitScreen {
 
   private LinkedPatrimoine<NamedString> extractInputData() {
     List<NamedString> linkDataList = new ArrayList<>();
-    String possessionLink = null;
+    String possessionLink = "";
 
     String rawText = inputField.getText();
     String[] lines = rawText.split("\n");
+    var keyWord = "possessions";
 
     for (String line : lines) {
       String[] parts = line.split(":", 2);
@@ -146,7 +147,7 @@ public class GoogleDocsSubmitScreen {
         String linkName = parts[0].trim();
         String linkValue = parts[1].trim();
 
-        if ("possessions".equals(linkName)) {
+        if (keyWord.equals(linkName)) {
           possessionLink = linkValue;
         } else {
           NamedString linkData = new NamedString(linkName, linkValue);
