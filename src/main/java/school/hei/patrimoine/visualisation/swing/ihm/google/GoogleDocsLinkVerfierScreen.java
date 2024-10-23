@@ -174,22 +174,21 @@ public class GoogleDocsLinkVerfierScreen {
               codePatrimoinesVisualisables.add(extractSnippet(id));
             }
 
-            if(!Objects.equals(ids.possessionLink(), "")){
+            if (!Objects.equals(ids.possessionLink(), "")) {
               var parsedVariable = linkIdParser.apply(ids.possessionLink().trim());
               var possessionContent =
-                      googleApi.readDocsContent(authDetails, String.valueOf(parsedVariable));
+                  googleApi.readDocsContent(authDetails, String.valueOf(parsedVariable));
               PossessionExtractor possessionExtractor = new PossessionExtractor();
               var possessionsData = possessionExtractor.apply(possessionContent);
 
               for (NamedSnippet codePatrimoine : codePatrimoinesVisualisables) {
                 patrimoinesVisualisables.add(
-                        compilePatrimoine(
-                                possessionsData.imports(), possessionsData.possessions(), codePatrimoine));
+                    compilePatrimoine(
+                        possessionsData.imports(), possessionsData.possessions(), codePatrimoine));
               }
-            }else {
+            } else {
               for (NamedSnippet codePatrimoine : codePatrimoinesVisualisables) {
-                patrimoinesVisualisables.add(
-                        compilePatrimoine(codePatrimoine));
+                patrimoinesVisualisables.add(compilePatrimoine(codePatrimoine));
               }
             }
 
