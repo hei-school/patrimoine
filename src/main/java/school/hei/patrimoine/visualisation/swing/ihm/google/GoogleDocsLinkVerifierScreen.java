@@ -10,8 +10,6 @@ import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 
 import java.awt.*;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -229,8 +227,8 @@ public class GoogleDocsLinkVerifierScreen {
   }
 
   private NamedSnippet extractSnippet(NamedID namedID) {
-      var code = googleApi.readDocsContent(authDetails, String.valueOf(namedID.id()));
-      return new NamedSnippet(namedID.name(), code);
+    var code = googleApi.readDocsContent(authDetails, String.valueOf(namedID.id()));
+    return new NamedSnippet(namedID.name(), code);
   }
 
   private void showErrorPage(String errorMessage) {

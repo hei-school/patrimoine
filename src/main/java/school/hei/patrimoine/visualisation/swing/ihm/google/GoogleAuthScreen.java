@@ -53,7 +53,8 @@ public class GoogleAuthScreen extends JFrame {
 
   private ActionListener onSignin() {
     return e -> {
-      var authReqRes = googleApi.isTokenExpired(handleGoogleSignIn(false))
+      var authReqRes =
+          googleApi.isTokenExpired(handleGoogleSignIn(false))
               ? handleGoogleSignIn(true)
               : handleGoogleSignIn(false);
       invokeLater(() -> new GoogleDocsSubmitScreen(googleApi, authReqRes));
@@ -74,7 +75,7 @@ public class GoogleAuthScreen extends JFrame {
 
   @SneakyThrows
   private GoogleAuthenticationDetails handleGoogleSignIn(boolean isTokenExpired) {
-    if(isTokenExpired) {
+    if (isTokenExpired) {
       googleApi.disconnect();
     }
     return googleApi.requestAuthentication();
