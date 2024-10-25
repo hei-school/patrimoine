@@ -115,6 +115,13 @@ public class GoogleApi {
     }
   }
 
+  public boolean isTokenExpired(GoogleAuthenticationDetails authDetails) {
+    Credential credential = authDetails.credential();
+    Long expiresInSeconds = credential.getExpiresInSeconds();
+
+    return expiresInSeconds == null || expiresInSeconds <= 0;
+  }
+
   public void disconnect() {
     File tokenDirectory = new File(TOKENS_DIRECTORY_PATH);
 

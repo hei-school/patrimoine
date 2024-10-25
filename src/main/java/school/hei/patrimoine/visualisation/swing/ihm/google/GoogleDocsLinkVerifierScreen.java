@@ -62,14 +62,6 @@ public class GoogleDocsLinkVerifierScreen {
   private void configureInputFrame() {
     inputFrame.getContentPane().add(inputPanel);
     inputFrame.setDefaultCloseOperation(EXIT_ON_CLOSE);
-
-    inputFrame.addWindowListener(new WindowAdapter() {
-      @Override
-      public void windowClosing(WindowEvent e) {
-        googleApi.disconnect();
-      }
-    });
-
     inputFrame.pack();
     inputFrame.setLocationRelativeTo(null);
   }
