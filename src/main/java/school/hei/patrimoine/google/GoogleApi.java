@@ -114,4 +114,16 @@ public class GoogleApi {
       throw new RuntimeException(e);
     }
   }
+
+  public void disconnect() {
+    File tokenDirectory = new File(TOKENS_DIRECTORY_PATH);
+
+    if (tokenDirectory.exists() && tokenDirectory.isDirectory()) {
+      for (File file : tokenDirectory.listFiles()) {
+        if (file.isFile()) {
+          file.delete();
+        }
+      }
+    }
+  }
 }

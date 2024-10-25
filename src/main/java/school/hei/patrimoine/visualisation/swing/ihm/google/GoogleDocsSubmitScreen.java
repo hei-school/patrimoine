@@ -6,6 +6,8 @@ import static javax.swing.SwingUtilities.invokeLater;
 import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -43,6 +45,14 @@ public class GoogleDocsSubmitScreen {
   private void configureInputFrame() {
     inputFrame.getContentPane().add(inputPanel);
     inputFrame.setDefaultCloseOperation(EXIT_ON_CLOSE);
+
+    inputFrame.addWindowListener(new WindowAdapter() {
+      @Override
+      public void windowClosing(WindowEvent e) {
+        googleApi.disconnect();
+      }
+    });
+
     inputFrame.pack();
     inputFrame.setLocationRelativeTo(null);
   }
@@ -163,7 +173,7 @@ public class GoogleDocsSubmitScreen {
       LinkedPatrimoine<NamedString> docsLink,
       GoogleApi googleApi,
       GoogleAuthenticationDetails authReqRes) {
-    invokeLater(() -> new GoogleDocsLinkVerfierScreen(googleApi, authReqRes, docsLink));
+    invokeLater(() -> new GoogleDocsLinkVerifierScreen(googleApi, authReqRes, docsLink));
     inputFrame.dispose();
   }
 }

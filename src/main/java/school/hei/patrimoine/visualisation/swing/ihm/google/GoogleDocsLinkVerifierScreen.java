@@ -10,6 +10,8 @@ import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -30,7 +32,7 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.modele.NamedSnippet;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.NamedString;
 
 @Slf4j
-public class GoogleDocsLinkVerfierScreen {
+public class GoogleDocsLinkVerifierScreen {
   private final JFrame inputFrame;
   private final JPanel inputPanel;
   private final List<JTextField> inputFields;
@@ -41,7 +43,7 @@ public class GoogleDocsLinkVerfierScreen {
   private final GoogleAuthenticationDetails authDetails;
   private final LinkedPatrimoine<NamedString> linksData;
 
-  public GoogleDocsLinkVerfierScreen(
+  public GoogleDocsLinkVerifierScreen(
       GoogleApi googleApi,
       GoogleAuthenticationDetails authDetails,
       LinkedPatrimoine<NamedString> linksData) {
@@ -60,6 +62,14 @@ public class GoogleDocsLinkVerfierScreen {
   private void configureInputFrame() {
     inputFrame.getContentPane().add(inputPanel);
     inputFrame.setDefaultCloseOperation(EXIT_ON_CLOSE);
+
+    inputFrame.addWindowListener(new WindowAdapter() {
+      @Override
+      public void windowClosing(WindowEvent e) {
+        googleApi.disconnect();
+      }
+    });
+
     inputFrame.pack();
     inputFrame.setLocationRelativeTo(null);
   }
