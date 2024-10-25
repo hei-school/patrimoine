@@ -97,16 +97,22 @@ public class GoogleDocsSubmitScreen {
   }
 
   private void addInitialInput() {
+    JLabel instructionLabel = new JLabel("The key word for shared possessions is: 'possessions'");
+    instructionLabel.setFont(new Font("Arial", Font.CENTER_BASELINE, 14));
+
+    var gbc = new GridBagConstraints();
+    gbc.gridx = 0;
+    gbc.fill = GridBagConstraints.HORIZONTAL;
+    gbc.insets = new Insets(10, 50, 5, 50);
+
+    inputPanel.add(instructionLabel, gbc);
+
     inputField.setLineWrap(true);
     inputField.setWrapStyleWord(true);
     inputField.setInputVerifier(linkIdInputVerifier);
     inputField.setFont(new Font("Arial", Font.PLAIN, 16));
 
-    var gbc = new GridBagConstraints();
-    gbc.gridx = 0;
-    gbc.fill = GridBagConstraints.HORIZONTAL;
-    gbc.insets = new Insets(10, 50, 10, 50);
-
+    gbc.insets = new Insets(5, 50, 10, 50);
     JScrollPane scrollPane = new JScrollPane(inputField);
     inputPanel.add(scrollPane, gbc);
   }

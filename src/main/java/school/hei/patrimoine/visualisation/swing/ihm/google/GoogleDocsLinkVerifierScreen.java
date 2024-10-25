@@ -75,7 +75,7 @@ public class GoogleDocsLinkVerifierScreen {
   }
 
   private JFrame newInputFrame() {
-    var inputFrame = new JFrame("Google Docs Submission");
+    var inputFrame = new JFrame("Google Docs Verifier");
     inputFrame.setSize(1200, 1000);
     inputFrame.setResizable(true);
     inputFrame.setVisible(true);
@@ -212,6 +212,7 @@ public class GoogleDocsLinkVerifierScreen {
               final List<Patrimoine> patrimoinesVisualisables = get();
               openResultFrame(patrimoinesVisualisables);
             } catch (InterruptedException | ExecutionException e) {
+              showErrorPage("Veuillez vérifier le contenu de vos documents");
               throw new RuntimeException(e);
             }
           }
@@ -236,8 +237,27 @@ public class GoogleDocsLinkVerifierScreen {
   }
 
   private NamedSnippet extractSnippet(NamedID namedID) {
-    var code = googleApi.readDocsContent(authDetails, String.valueOf(namedID.id()));
-    return new NamedSnippet(namedID.name(), code);
+      var code = googleApi.readDocsContent(authDetails, String.valueOf(namedID.id()));
+      return new NamedSnippet(namedID.name(), code);
+  }
+
+  private void showErrorPage(String errorMessage) {
+    JFrame errorFrame = new JFrame("Erreur");
+    errorFrame.setSize(400, 200);
+    errorFrame.setLocationRelativeTo(null);
+    errorFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+    JPanel panel = new JPanel();
+    panel.setLayout(new BorderLayout());
+
+    JLabel errorLabel = new JLabel(errorMessage, SwingConstants.CENTER);
+    errorLabel.setFont(new Font("Arial", Font.BOLD, 16));
+    errorLabel.setForeground(Color.RED);
+
+    panel.add(errorLabel, BorderLayout.CENTER);
+
+    errorFrame.getContentPane().add(panel);
+    errorFrame.setVisible(true);
   }
 
   private Patrimoine compilePatrimoine(
