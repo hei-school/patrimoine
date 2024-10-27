@@ -14,7 +14,7 @@ public record FluxJournalier(LocalDate date, Argent argent, Set<FluxArgent> flux
         "[%s][%s=%d%s] %s",
         date,
         argent.getNom(),
-        argent.getValeurComptable(),
+        argent.valeurComptable(),
         argent.getDevise().symbole(),
         toFluxJournalierString(flux));
   }

@@ -39,7 +39,7 @@ public class SerieComptableTemporelle {
                       ep.getEvolutionJournaliere()
                           .get(d)
                           .possessionParNom(possession.getNom())
-                          .getValeurComptable()));
+                          .valeurComptable()));
       map.put(possession, serie);
     }
     return map;

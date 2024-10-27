@@ -3,6 +3,7 @@ package school.hei.patrimoine.visualisation.xchart;
 import static java.awt.Color.BLACK;
 import static java.awt.Color.DARK_GRAY;
 import static java.awt.Color.GREEN;
+import static java.awt.Color.MAGENTA;
 import static java.awt.Color.RED;
 import static java.awt.Color.WHITE;
 import static java.awt.Color.YELLOW;
@@ -13,9 +14,10 @@ import static org.knowm.xchart.BitmapEncoder.BitmapFormat.PNG;
 import static org.knowm.xchart.BitmapEncoder.saveBitmapWithDPI;
 import static org.knowm.xchart.style.Styler.LegendPosition.OutsideE;
 import static org.knowm.xchart.style.markers.SeriesMarkers.NONE;
+import static school.hei.patrimoine.modele.possession.TypeAgregat.CORRECTION;
 import static school.hei.patrimoine.modele.possession.TypeAgregat.IMMOBILISATION;
 import static school.hei.patrimoine.modele.possession.TypeAgregat.OBLIGATION;
-import static school.hei.patrimoine.modele.possession.TypeAgregat.TRESORIE;
+import static school.hei.patrimoine.modele.possession.TypeAgregat.TRESORERIE;
 import static school.hei.patrimoine.visualisation.xchart.StyleSerie.SerieWidth.FAT;
 import static school.hei.patrimoine.visualisation.xchart.StyleSerie.SerieWidth.NORMAL;
 import static school.hei.patrimoine.visualisation.xchart.StyleSerie.SerieWidth.THIN;
@@ -56,6 +58,13 @@ public class GrapheurEvolutionPatrimoine
         dates,
         serieComptableTemporelle.serieValeursComptablesPatrimoine(),
         new StyleSerie(GREEN, FAT, CONTINUOUS, false));
+    addSerie(
+        chart,
+        "Correction",
+        dates,
+        serieComptableTemporelle.serieParPossessionsFiltrées(
+            p -> CORRECTION.equals(p.typeAgregat())),
+        new StyleSerie(MAGENTA, FAT, CONTINUOUS, false));
 
     if (!grapheConf.avecAgregat()) {
       return;
@@ -66,7 +75,7 @@ public class GrapheurEvolutionPatrimoine
           "Trésorerie",
           dates,
           serieComptableTemporelle.serieParPossessionsFiltrées(
-              p -> TRESORIE.equals(p.typeAgregat())),
+              p -> TRESORERIE.equals(p.typeAgregat())),
           new StyleSerie(RED, FAT, CONTINUOUS, false));
     }
     if (grapheConf.avecImmobilisations()) {
@@ -95,7 +104,7 @@ public class GrapheurEvolutionPatrimoine
       Possession possession,
       List<LocalDate> dates,
       List<Integer> serie) {
-    if (!grapheConf.avecTresorerie() && TRESORIE.equals(possession.typeAgregat())
+    if (!grapheConf.avecTresorerie() && TRESORERIE.equals(possession.typeAgregat())
         || !grapheConf.avecImmobilisations() && IMMOBILISATION.equals(possession.typeAgregat())
         || !grapheConf.avecObligations() && OBLIGATION.equals(possession.typeAgregat())) {
       return;

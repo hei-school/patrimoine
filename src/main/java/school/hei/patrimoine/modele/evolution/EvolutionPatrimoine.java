@@ -12,8 +12,10 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import school.hei.patrimoine.modele.Patrimoine;
 import school.hei.patrimoine.modele.possession.Argent;
+import school.hei.patrimoine.modele.possession.CompteCorrection;
 import school.hei.patrimoine.modele.possession.Dette;
 import school.hei.patrimoine.modele.possession.FluxArgent;
+import school.hei.patrimoine.modele.possession.Possession;
 
 @Getter
 @Slf4j
@@ -47,27 +49,29 @@ public class EvolutionPatrimoine {
   private Set<FluxJournalier> fluxJournaliers() {
     var res = new HashSet<FluxJournalier>();
     evolutionJournaliere.forEach(
-        (date, patrimoine) ->
-            patrimoine
-                .possessions()
-                .forEach(
-                    p -> {
-                      if (p instanceof Argent argent) {
-                        var fluxJournalierADate =
-                            argent.getFluxArgents().stream()
-                                .filter(f -> estDateDOperation(f, date))
-                                .collect(toSet());
-                        if (!fluxJournalierADate.isEmpty()) {
-                          res.add(new FluxJournalier(date, argent, fluxJournalierADate));
-                        }
-                      }
-                    }));
+        (date, patrimoine) -> patrimoine.possessions().forEach(p -> fluxDuJour(date, p, res)));
     return res;
+  }
+
+  private static void fluxDuJour(LocalDate date, Possession p, HashSet<FluxJournalier> res) {
+    if (p instanceof Argent argent) {
+      fluxDuJour(date, argent, res);
+    } else if (p instanceof CompteCorrection compteCorrection) {
+      fluxDuJour(date, compteCorrection.getArgent(), res);
+    }
+  }
+
+  private static void fluxDuJour(LocalDate date, Argent argent, HashSet<FluxJournalier> res) {
+    var fluxJournalierADate =
+        argent.getFluxArgents().stream().filter(f -> estDateDOperation(f, date)).collect(toSet());
+    if (!fluxJournalierADate.isEmpty()) {
+      res.add(new FluxJournalier(date, argent, fluxJournalierADate));
+    }
   }
 
   public Set<FluxJournalier> fluxJournaliersImpossibles() {
     return fluxJournaliers.stream()
-        .filter(fj -> !(fj.argent() instanceof Dette) && fj.argent().getValeurComptable() < 0)
+        .filter(fj -> !(fj.argent() instanceof Dette) && fj.argent().valeurComptable() < 0)
         .collect(toSet());
   }
 

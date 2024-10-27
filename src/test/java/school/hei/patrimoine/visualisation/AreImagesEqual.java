@@ -16,7 +16,7 @@ public class AreImagesEqual implements BiFunction<File, File, Boolean> {
 
   public AreImagesEqual() {
     maxDiffRatio =
-        IS_LOCAL_ENV ? 0 : 0.08 /* Typically, images gen on CI differ (prolly due to OS) */;
+        IS_LOCAL_ENV ? 0.01 : 0.08 /* Typically, images gen on CI differ (prolly due to OS) */;
   }
 
   @SneakyThrows

@@ -2,7 +2,7 @@ package school.hei.patrimoine.modele.possession;
 
 import static java.util.stream.Collectors.toSet;
 import static school.hei.patrimoine.modele.Devise.NON_NOMMEE;
-import static school.hei.patrimoine.modele.possession.TypeAgregat.TRESORIE;
+import static school.hei.patrimoine.modele.possession.TypeAgregat.TRESORERIE;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -100,13 +100,12 @@ public sealed class Argent extends Possession permits Dette, Creance {
 
   @Override
   public TypeAgregat typeAgregat() {
-    return TRESORIE;
+    return TRESORERIE;
   }
 
   private int financementsFuturs(LocalDate tFutur) {
     return fluxArgents.stream()
-        .mapToInt(
-            f -> valeurComptable - f.projectionFuture(tFutur).getArgent().getValeurComptable())
+        .mapToInt(f -> valeurComptable - f.projectionFuture(tFutur).getArgent().valeurComptable())
         .sum();
   }
 

@@ -70,15 +70,15 @@ class PatrimoineDeZetyTest {
     var argentEnEspècesDeZetyEn20242025 = argentEnEspècesDeZetyEn20242025();
     log.debug(
         "montant valeur comptable 2024 2025 {} ",
-        argentEnEspècesDeZetyEn20242025.getValeurComptable());
+        argentEnEspècesDeZetyEn20242025.valeurComptable());
     LocalDate dayOfFailureFrom18September = LocalDate.of(2024, SEPTEMBER, 18);
 
     int i = 0;
     do {
       LocalDate tFutur = dayOfFailureFrom18September.plusDays(i);
       var argentEnEspècesProjeté = argentEnEspècesDeZetyEn20242025.projectionFuture(tFutur);
-      log.debug("à t={} montant = {}", argentEnEspècesProjeté.getValeurComptable(), tFutur);
-      if (argentEnEspècesProjeté.getValeurComptable() <= 0) {
+      log.debug("à t={} montant = {}", argentEnEspècesProjeté.valeurComptable(), tFutur);
+      if (argentEnEspècesProjeté.valeurComptable() <= 0) {
         dayOfFailureFrom18September = tFutur;
         break;
       }
@@ -101,7 +101,6 @@ class PatrimoineDeZetyTest {
     var patrimoineDeZetyLe14Fevrier2025 =
         patrimoineDeZetyLe26Octobre2025(EUR).projectionFuture(AU_26_OCTOBRE_2025);
 
-    assertEquals(
-        -9_964, patrimoineDeZetyLe14Fevrier2025.getValeurComptable(EUR, AU_26_OCTOBRE_2025));
+    assertEquals(-9_964, patrimoineDeZetyLe14Fevrier2025.getValeurComptable(EUR));
   }
 }
