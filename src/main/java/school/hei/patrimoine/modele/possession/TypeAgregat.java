@@ -1,8 +1,9 @@
 package school.hei.patrimoine.modele.possession;
 
 public enum TypeAgregat {
-  TRESORIE,
+  TRESORERIE,
   IMMOBILISATION,
   OBLIGATION,
-  FLUX
+  FLUX,
+  CORRECTION
 }

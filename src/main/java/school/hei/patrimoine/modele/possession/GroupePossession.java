@@ -13,7 +13,7 @@ public final class GroupePossession extends Possession {
   private final Set<Possession> possessions;
 
   public GroupePossession(String nom, LocalDate t, Set<Possession> possessions, Devise devise) {
-    super(nom, t, possessions.stream().mapToInt(Possession::getValeurComptable).sum(), devise);
+    super(nom, t, possessions.stream().mapToInt(Possession::valeurComptable).sum(), devise);
     this.possessions = possessions;
     typeAgregat(possessions); // sanity check: fails if set is inconsistent
   }

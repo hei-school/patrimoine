@@ -1,12 +1,15 @@
 package school.hei.patrimoine.modele;
 
+import static java.util.function.Predicate.not;
 import static java.util.stream.Collectors.toSet;
 import static school.hei.patrimoine.modele.Devise.NON_NOMMEE;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import school.hei.patrimoine.modele.possession.CompteCorrection;
 import school.hei.patrimoine.modele.possession.Possession;
 
 public record Patrimoine(
@@ -22,7 +25,7 @@ public record Patrimoine(
 
   public static Patrimoine of(
       String nom, Personne possesseur, LocalDate t, Set<Possession> possessions) {
-    return new Patrimoine(nom, Set.of(possesseur), t, possessions);
+    return new Patrimoine(nom, Set.of(possesseur), t, withComptesCorrections(possessions));
   }
 
   private Set<Possession> validerPossessions(Set<Possession> possessions) {
@@ -33,13 +36,33 @@ public record Patrimoine(
     return possessions;
   }
 
-  public int getValeurComptable() {
-    return possessions.stream().mapToInt(this::getValeurComptable).sum();
+  private static Set<Possession> withComptesCorrections(Set<Possession> possessions) {
+    var set = new HashSet<Possession>();
+    possessions.forEach(
+        p -> {
+          set.add(p);
+          set.add(p.getCompteCorrection());
+        });
+    return set;
   }
 
-  private int getValeurComptable(Possession possession) {
+  public int getValeurComptable() {
+    if (possessions.isEmpty()) {
+      return 0;
+    }
+    return getValeurComptable(possessions.toArray(new Possession[0])[0].getDevise());
+  }
+
+  public int getValeurComptable(Devise devise) {
+    return possessions.stream()
+        .filter(not(p -> p instanceof CompteCorrection))
+        .mapToInt(p -> valeurPartagéeEntrePossesseursDePatrimoine(p, devise))
+        .sum();
+  }
+
+  private int valeurPartagéeEntrePossesseursDePatrimoine(Possession possession, Devise devise) {
     var possesseursDePossession = possession.getPossesseurs();
-    var possessionValeur = possession.getValeurComptable();
+    var possessionValeur = possession.valeurComptable(devise);
     if (possesseursDePossession.isEmpty()) {
       return possessionValeur;
     }
@@ -63,9 +86,5 @@ public record Patrimoine(
 
   public Possession possessionParNom(String nom) {
     return possessions.stream().filter(p -> nom.equals(p.getNom())).findFirst().orElseThrow();
-  }
-
-  public int getValeurComptable(Devise devise, LocalDate t) {
-    return possessions.stream().mapToInt(p -> p.getValeurComptable(devise, t)).sum();
   }
 }

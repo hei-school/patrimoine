@@ -65,7 +65,7 @@ public final class FluxArgent extends Possession {
                 .datesUntil(tFuturMajoréParFin.plusDays(1))
                 .filter(d -> d.getDayOfMonth() == dateOperation)
                 .count();
-    var valeurFutur = argent.getValeurComptable() + fluxMensuel * nbOperations;
+    var valeurFutur = argent.valeurComptable() + fluxMensuel * nbOperations;
     var argentFutur =
         new Argent(
             argent.nom + " réduit au financement de " + this, tFutur, valeurFutur, argent.devise);
