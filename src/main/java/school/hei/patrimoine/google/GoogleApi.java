@@ -122,9 +122,8 @@ public class GoogleApi {
     return expiresInSeconds == null || expiresInSeconds <= 0;
   }
 
-  public void disconnect() {
+  public void clearCredentials() {
     File tokenDirectory = new File(TOKENS_DIRECTORY_PATH);
-
     if (tokenDirectory.exists() && tokenDirectory.isDirectory()) {
       for (File file : tokenDirectory.listFiles()) {
         if (file.isFile()) {

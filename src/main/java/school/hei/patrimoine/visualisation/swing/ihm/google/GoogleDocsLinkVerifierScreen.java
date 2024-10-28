@@ -1,11 +1,13 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google;
 
 import static java.awt.BorderLayout.CENTER;
+import static java.awt.Color.RED;
 import static java.awt.Font.BOLD;
 import static java.awt.Font.PLAIN;
 import static java.awt.GridBagConstraints.HORIZONTAL;
 import static javax.swing.SwingConstants.LEFT;
 import static javax.swing.SwingUtilities.invokeLater;
+import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
 import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 
 import java.awt.*;
@@ -235,14 +237,14 @@ public class GoogleDocsLinkVerifierScreen {
     JFrame errorFrame = new JFrame("Erreur");
     errorFrame.setSize(400, 200);
     errorFrame.setLocationRelativeTo(null);
-    errorFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    errorFrame.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
     JPanel panel = new JPanel();
     panel.setLayout(new BorderLayout());
 
     JLabel errorLabel = new JLabel(errorMessage, SwingConstants.CENTER);
-    errorLabel.setFont(new Font("Arial", Font.BOLD, 16));
-    errorLabel.setForeground(Color.RED);
+    errorLabel.setFont(new Font("Arial", BOLD, 16));
+    errorLabel.setForeground(RED);
 
     panel.add(errorLabel, BorderLayout.CENTER);
 

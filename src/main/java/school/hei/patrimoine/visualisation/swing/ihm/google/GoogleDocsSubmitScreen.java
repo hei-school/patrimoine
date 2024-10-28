@@ -1,7 +1,7 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google;
 
 import static java.awt.BorderLayout.CENTER;
-import static java.awt.Font.BOLD;
+import static java.awt.Font.*;
 import static javax.swing.SwingUtilities.invokeLater;
 import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 
@@ -88,7 +88,7 @@ public class GoogleDocsSubmitScreen {
 
   private void addInitialInput() {
     JLabel instructionLabel = new JLabel("The key word for shared possessions is: 'possessions'");
-    instructionLabel.setFont(new Font("Arial", Font.CENTER_BASELINE, 14));
+    instructionLabel.setFont(new Font("Arial", CENTER_BASELINE, 14));
 
     var gbc = new GridBagConstraints();
     gbc.gridx = 0;
@@ -100,7 +100,7 @@ public class GoogleDocsSubmitScreen {
     inputField.setLineWrap(true);
     inputField.setWrapStyleWord(true);
     inputField.setInputVerifier(linkIdInputVerifier);
-    inputField.setFont(new Font("Arial", Font.PLAIN, 16));
+    inputField.setFont(new Font("Arial", PLAIN, 16));
 
     gbc.insets = new Insets(5, 50, 10, 50);
     JScrollPane scrollPane = new JScrollPane(inputField);
