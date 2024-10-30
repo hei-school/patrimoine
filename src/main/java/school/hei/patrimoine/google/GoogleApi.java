@@ -30,7 +30,14 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class GoogleApi {
   public record GoogleAuthenticationDetails(
-      NetHttpTransport httpTransport, Credential credential) {}
+      NetHttpTransport httpTransport, Credential credential) {
+
+    public boolean isTokenExpired() {
+      Long expiresInSeconds = credential.getExpiresInSeconds();
+
+      return expiresInSeconds == null || expiresInSeconds <= 0;
+    }
+  }
 
   private static final String APPLICATION_NAME = "patrimoine";
 
@@ -113,13 +120,6 @@ public class GoogleApi {
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
-  }
-
-  public boolean isTokenExpired(GoogleAuthenticationDetails authDetails) {
-    Credential credential = authDetails.credential();
-    Long expiresInSeconds = credential.getExpiresInSeconds();
-
-    return expiresInSeconds == null || expiresInSeconds <= 0;
   }
 
   public void clearCredentials() {

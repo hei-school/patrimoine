@@ -53,9 +53,9 @@ public class GoogleAuthScreen extends JFrame {
 
   private ActionListener onSignin() {
     return e -> {
-      var credentials = handleGoogleSignIn();
+      var currentCredentials = handleGoogleSignIn();
       var authReqRes =
-          googleApi.isTokenExpired(credentials)
+          currentCredentials.isTokenExpired()
               ? refreshGoogleCredentials()
               : handleGoogleSignIn();
       invokeLater(() -> new GoogleDocsSubmitScreen(googleApi, authReqRes));
