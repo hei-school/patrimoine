@@ -70,24 +70,19 @@ class PatrimoineTest {
     assertEquals(
         200_000,
         patrimoineIloAu13mai24.projectionFuture(au13mai24.plusDays(100)).getValeurComptable());
-    patrimoineIloAu13mai24.verifier(
-        Set.of(
-            new Objectif(au13mai24.plusDays(10), 500_000),
-            new Objectif(au13mai24.plusDays(100), 200_000, 200_000)));
-    financeur.verifier(Set.of(new Objectif(au13mai24.plusDays(10), 500_000)));
+    new Objectif(patrimoineIloAu13mai24, au13mai24.plusDays(10), 500_000).verifier();
+    new Objectif(patrimoineIloAu13mai24, au13mai24.plusDays(100), 200_000, 200_000).verifier();
+    new Objectif(financeur, au13mai24.plusDays(10), 500_000).verifier();
     assertEquals(
         200_000,
         patrimoineIloAu13mai24.projectionFuture(au13mai24.plusDays(1_000)).getValeurComptable());
     assertThrows(
         ObjectifNonAtteintException.class,
-        () ->
-            patrimoineIloAu13mai24.verifier(
-                Set.of(new Objectif(au13mai24.plusDays(1_000), 200_001))));
+        () -> new Objectif(patrimoineIloAu13mai24, au13mai24.plusDays(1_000), 200_001).verifier());
     assertThrows(
         ObjectifNonAtteintException.class,
         () ->
-            patrimoineIloAu13mai24.verifier(
-                Set.of(new Objectif(au13mai24.plusDays(1_000), 0, 199_999))));
+            new Objectif(patrimoineIloAu13mai24, au13mai24.plusDays(1_000), 0, 199_999).verifier());
   }
 
   @Test
