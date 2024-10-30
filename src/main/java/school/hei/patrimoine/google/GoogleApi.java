@@ -29,8 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class GoogleApi {
-  public record GoogleAuthenticationDetails(
-      NetHttpTransport httpTransport, Credential credential) {
+  public record GoogleAuthenticationDetails(NetHttpTransport httpTransport, Credential credential) {
 
     public boolean isTokenExpired() {
       Long expiresInSeconds = credential.getExpiresInSeconds();
