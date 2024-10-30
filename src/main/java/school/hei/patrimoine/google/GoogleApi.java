@@ -86,8 +86,20 @@ public class GoogleApi {
   @SneakyThrows
   public GoogleAuthenticationDetails requestAuthentication() {
     final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
-    final var credentials = getCredentials(HTTP_TRANSPORT);
-    return new GoogleAuthenticationDetails(HTTP_TRANSPORT, credentials);
+    final var currentCredentials = getCredentials(HTTP_TRANSPORT);
+    var creds =  new GoogleAuthenticationDetails(HTTP_TRANSPORT, currentCredentials);
+    if (creds.isTokenExpired()){
+      File tokenDirectory = new File(TOKENS_DIRECTORY_PATH);
+      if (tokenDirectory.exists() && tokenDirectory.isDirectory()) {
+        for (File file : tokenDirectory.listFiles()) {
+          if (file.isFile()) {
+            file.delete();
+          }
+        }
+      }
+    }
+    final var newCredentials = getCredentials(HTTP_TRANSPORT);
+    return new GoogleAuthenticationDetails(HTTP_TRANSPORT, newCredentials);
   }
 
   public String readDocsContent(GoogleAuthenticationDetails authDetails, String docId) {
@@ -121,14 +133,4 @@ public class GoogleApi {
     }
   }
 
-  public void clearCredentials() {
-    File tokenDirectory = new File(TOKENS_DIRECTORY_PATH);
-    if (tokenDirectory.exists() && tokenDirectory.isDirectory()) {
-      for (File file : tokenDirectory.listFiles()) {
-        if (file.isFile()) {
-          file.delete();
-        }
-      }
-    }
-  }
 }

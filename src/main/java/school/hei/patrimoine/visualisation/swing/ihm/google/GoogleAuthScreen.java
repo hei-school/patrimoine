@@ -53,9 +53,7 @@ public class GoogleAuthScreen extends JFrame {
 
   private ActionListener onSignin() {
     return e -> {
-      var currentCredentials = handleGoogleSignIn();
-      var authReqRes =
-          currentCredentials.isTokenExpired() ? refreshGoogleCredentials() : handleGoogleSignIn();
+      var authReqRes = handleGoogleSignIn();
       invokeLater(() -> new GoogleDocsSubmitScreen(googleApi, authReqRes));
       dispose();
     };
@@ -75,12 +73,6 @@ public class GoogleAuthScreen extends JFrame {
   @SneakyThrows
   private GoogleAuthenticationDetails handleGoogleSignIn() {
     return googleApi.requestAuthentication();
-  }
-
-  @SneakyThrows
-  private GoogleAuthenticationDetails refreshGoogleCredentials() {
-    googleApi.clearCredentials();
-    return handleGoogleSignIn();
   }
 
   public static void main(String[] args) {
