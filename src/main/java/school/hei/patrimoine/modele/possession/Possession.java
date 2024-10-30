@@ -10,11 +10,13 @@ import lombok.Getter;
 import lombok.ToString;
 import school.hei.patrimoine.modele.Devise;
 import school.hei.patrimoine.modele.Personne;
+import school.hei.patrimoine.modele.objectif.Objectivable;
 
 @ToString
 @EqualsAndHashCode
 @Getter
-public abstract sealed class Possession implements Serializable /*note(no-serializable)*/
+public abstract sealed class Possession
+    implements Objectivable, Serializable /*note(no-serializable)*/
     permits AchatMaterielAuComptant,
         Argent,
         CompteCorrection,
@@ -76,4 +78,14 @@ public abstract sealed class Possession implements Serializable /*note(no-serial
   public abstract Possession projectionFuture(LocalDate tFutur);
 
   public abstract TypeAgregat typeAgregat();
+
+  @Override
+  public String nom() {
+    return nom;
+  }
+
+  @Override
+  public int valeurAObjectifT(LocalDate t) {
+    return projectionFuture(t).getValeurComptable();
+  }
 }

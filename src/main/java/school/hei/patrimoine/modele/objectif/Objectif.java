@@ -1,4 +1,4 @@
-package school.hei.patrimoine.modele;
+package school.hei.patrimoine.modele.objectif;
 
 import java.time.LocalDate;
 import java.util.Set;
@@ -11,30 +11,27 @@ public record Objectif(LocalDate t, int valeurComptableMin, Integer valeurCompta
 
   @Getter
   public static class ObjectifNonAtteintException extends RuntimeException {
-    private final Patrimoine patrimoine;
+    private final Objectivable objectivable;
     private final Objectif objectif;
 
-    public ObjectifNonAtteintException(Patrimoine patrimoine, Objectif objectif) {
+    public ObjectifNonAtteintException(Objectivable objectivable, Objectif objectif) {
       super(
           String.format(
-              "patrimoine.nom=%s, objectif=%s, patrimoine.valeurComptable=%d",
-              patrimoine.nom(),
-              objectif,
-              patrimoine.projectionFuture(objectif.t).getValeurComptable()));
-      this.patrimoine = patrimoine;
+              "objectivable.nom=%s, objectif=%s, objectivable.valeurComptable=%d",
+              objectivable.nom(), objectif, objectivable.valeurAObjectifT(objectif.t)));
+      this.objectivable = objectivable;
       this.objectif = objectif;
     }
   }
 
-  public static void verifierObjectifs(Patrimoine patrimoine, Set<Objectif> objectifs) {
+  public static void verifierObjectifs(Objectivable objectivable, Set<Objectif> objectifs) {
     objectifs.forEach(
         objectif -> {
-          var valeurComptableAObjectifT =
-              patrimoine.projectionFuture(objectif.t()).getValeurComptable();
+          var valeurComptableAObjectifT = objectivable.valeurAObjectifT(objectif.t());
           var valeurComptableMax = objectif.valeurComptableMax();
           if (valeurComptableAObjectifT < objectif.valeurComptableMin()
               || valeurComptableMax != null && valeurComptableAObjectifT > valeurComptableMax) {
-            throw new ObjectifNonAtteintException(patrimoine, objectif);
+            throw new ObjectifNonAtteintException(objectivable, objectif);
           }
         });
   }

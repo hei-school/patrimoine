@@ -9,12 +9,13 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import school.hei.patrimoine.modele.objectif.Objectivable;
 import school.hei.patrimoine.modele.possession.CompteCorrection;
 import school.hei.patrimoine.modele.possession.Possession;
 
 public record Patrimoine(
     String nom, Set<Personne> possesseurs, LocalDate t, Set<Possession> possessions)
-    implements Serializable /*note(no-serializable)*/ {
+    implements Serializable, Objectivable /*note(no-serializable)*/ {
   public Patrimoine(
       String nom, Set<Personne> possesseurs, LocalDate t, Set<Possession> possessions) {
     this.nom = nom;
@@ -86,5 +87,10 @@ public record Patrimoine(
 
   public Possession possessionParNom(String nom) {
     return possessions.stream().filter(p -> nom.equals(p.getNom())).findFirst().orElseThrow();
+  }
+
+  @Override
+  public int valeurAObjectifT(LocalDate t) {
+    return projectionFuture(t).getValeurComptable();
   }
 }

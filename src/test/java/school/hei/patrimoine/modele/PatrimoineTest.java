@@ -5,13 +5,14 @@ import static java.time.Month.MAY;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static school.hei.patrimoine.modele.Devise.MGA;
-import static school.hei.patrimoine.modele.Objectif.verifierObjectifs;
+import static school.hei.patrimoine.modele.objectif.Objectif.verifierObjectifs;
 
 import java.time.LocalDate;
 import java.util.Map;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
-import school.hei.patrimoine.modele.Objectif.ObjectifNonAtteintException;
+import school.hei.patrimoine.modele.objectif.Objectif;
+import school.hei.patrimoine.modele.objectif.Objectif.ObjectifNonAtteintException;
 import school.hei.patrimoine.modele.possession.Argent;
 import school.hei.patrimoine.modele.possession.Correction;
 import school.hei.patrimoine.modele.possession.FluxArgent;
@@ -75,6 +76,7 @@ class PatrimoineTest {
         Set.of(
             new Objectif(au13mai24.plusDays(10), 500_000),
             new Objectif(au13mai24.plusDays(100), 200_000, 200_000)));
+    verifierObjectifs(financeur, Set.of(new Objectif(au13mai24.plusDays(10), 500_000)));
     assertEquals(
         200_000,
         patrimoineIloAu13mai24.projectionFuture(au13mai24.plusDays(1_000)).getValeurComptable());
