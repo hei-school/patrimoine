@@ -87,8 +87,8 @@ public class GoogleApi {
   public GoogleAuthenticationDetails requestAuthentication() {
     final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
     final var currentCredentials = getCredentials(HTTP_TRANSPORT);
-    var creds =  new GoogleAuthenticationDetails(HTTP_TRANSPORT, currentCredentials);
-    if (creds.isTokenExpired()){
+    var creds = new GoogleAuthenticationDetails(HTTP_TRANSPORT, currentCredentials);
+    if (creds.isTokenExpired()) {
       File tokenDirectory = new File(TOKENS_DIRECTORY_PATH);
       if (tokenDirectory.exists() && tokenDirectory.isDirectory()) {
         for (File file : tokenDirectory.listFiles()) {
@@ -132,5 +132,4 @@ public class GoogleApi {
       throw new RuntimeException(e);
     }
   }
-
 }
