@@ -3,9 +3,9 @@ package school.hei.patrimoine.visualisation.swing.ihm;
 import static java.awt.EventQueue.invokeLater;
 
 import java.util.List;
-import school.hei.patrimoine.cas.PatrimoineCresusCas;
-import school.hei.patrimoine.cas.PatrimoineEtudiantPireCas;
-import school.hei.patrimoine.cas.PatrimoineRicheCas;
+import school.hei.patrimoine.cas.EtudiantPireCas;
+import school.hei.patrimoine.cas.PatrimoineCresusSupplier;
+import school.hei.patrimoine.cas.PatrimoineRicheSupplier;
 
 public class VisualiseurCas {
 
@@ -14,8 +14,8 @@ public class VisualiseurCas {
         () ->
             new MainIHM(
                 List.of(
-                    new PatrimoineEtudiantPireCas().get(),
-                    new PatrimoineRicheCas().get(),
-                    new PatrimoineCresusCas().get())));
+                    new EtudiantPireCas().get(),
+                    new PatrimoineRicheSupplier().get(),
+                    new PatrimoineCresusSupplier().get())));
   }
 }

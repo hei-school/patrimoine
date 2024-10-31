@@ -27,7 +27,7 @@ import school.hei.patrimoine.modele.possession.Materiel;
 import school.hei.patrimoine.modele.possession.Possession;
 import school.hei.patrimoine.modele.possession.TransfertArgent;
 
-public class PatrimoineCresusCas implements Supplier<Patrimoine> {
+public class PatrimoineCresusSupplier implements Supplier<Patrimoine> {
 
   private final LocalDate ajd = LocalDate.of(2024, JULY, 8);
   private final LocalDate dans1mois = ajd.plusMonths(1);

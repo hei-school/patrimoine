@@ -8,8 +8,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
 import school.hei.patrimoine.ResourceFileGetter;
-import school.hei.patrimoine.cas.PatrimoineCresusCas;
-import school.hei.patrimoine.cas.PatrimoineRicheCas;
+import school.hei.patrimoine.cas.PatrimoineCresusSupplier;
+import school.hei.patrimoine.cas.PatrimoineRicheSupplier;
 import school.hei.patrimoine.modele.evolution.EvolutionPatrimoine;
 import school.hei.patrimoine.visualisation.AreImagesEqual;
 
@@ -24,7 +24,7 @@ class GrapheurEvolutionPatrimoinePatrimoineRicheTest {
     var patrimoine =
         new EvolutionPatrimoine(
             "Dummy",
-            new PatrimoineRicheCas().get(),
+            new PatrimoineRicheSupplier().get(),
             LocalDate.of(2024, MAY, 12),
             LocalDate.of(2026, NOVEMBER, 5));
 
@@ -40,7 +40,7 @@ class GrapheurEvolutionPatrimoinePatrimoineRicheTest {
     var patrimoine =
         new EvolutionPatrimoine(
             "Dummy",
-            new PatrimoineCresusCas().get(),
+            new PatrimoineCresusSupplier().get(),
             LocalDate.of(2024, MAY, 12),
             LocalDate.of(2025, MARCH, 5));
 
@@ -58,7 +58,7 @@ class GrapheurEvolutionPatrimoinePatrimoineRicheTest {
     var patrimoine =
         new EvolutionPatrimoine(
             "Dummy",
-            new PatrimoineCresusCas().get(),
+            new PatrimoineCresusSupplier().get(),
             LocalDate.of(2024, MAY, 12),
             LocalDate.of(2025, MARCH, 5));
 
@@ -77,7 +77,7 @@ class GrapheurEvolutionPatrimoinePatrimoineRicheTest {
     var patrimoine =
         new EvolutionPatrimoine(
             "Dummy",
-            new PatrimoineCresusCas().get(),
+            new PatrimoineCresusSupplier().get(),
             LocalDate.of(2024, MAY, 12),
             LocalDate.of(2025, MARCH, 5));
 
@@ -96,7 +96,7 @@ class GrapheurEvolutionPatrimoinePatrimoineRicheTest {
     var patrimoine =
         new EvolutionPatrimoine(
             "Dummy",
-            new PatrimoineCresusCas().get(),
+            new PatrimoineCresusSupplier().get(),
             LocalDate.of(2024, MAY, 12),
             LocalDate.of(2025, MARCH, 5));
 

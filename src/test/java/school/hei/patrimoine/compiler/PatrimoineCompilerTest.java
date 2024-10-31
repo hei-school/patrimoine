@@ -3,7 +3,7 @@ package school.hei.patrimoine.compiler;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
-import school.hei.patrimoine.cas.PatrimoineRicheCas;
+import school.hei.patrimoine.cas.PatrimoineRicheSupplier;
 import school.hei.patrimoine.modele.Patrimoine;
 
 class PatrimoineCompilerTest {
@@ -86,8 +86,8 @@ public class PatrimoineRicheCas implements Supplier<Patrimoine> {
 }
 """;
 
-    PatrimoineRicheCas patrimoineRicheCas = new PatrimoineRicheCas();
-    Patrimoine patrimoineRiche = patrimoineRicheCas.get();
+    PatrimoineRicheSupplier patrimoineRicheSupplier = new PatrimoineRicheSupplier();
+    Patrimoine patrimoineRiche = patrimoineRicheSupplier.get();
 
     PatrimoineCompiler patrimoineCompiler = new PatrimoineCompiler();
     Patrimoine patrimoine = patrimoineCompiler.apply("PatrimoineRicheCas", code);

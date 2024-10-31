@@ -18,7 +18,7 @@ import school.hei.patrimoine.modele.possession.GroupePossession;
 import school.hei.patrimoine.modele.possession.Materiel;
 import school.hei.patrimoine.modele.possession.TransfertArgent;
 
-public class PatrimoineRicheCas implements Supplier<Patrimoine> {
+public class PatrimoineRicheSupplier implements Supplier<Patrimoine> {
 
   @Override
   public Patrimoine get() {
