@@ -115,6 +115,6 @@ public class MainIHM extends JFrame implements Observer {
     setTitle(
         String.format(
             "Patrimoine : possesseur=%s, t=%s",
-            p.possesseurs().stream().map(Personne::nom).collect(joining(",")), p.t()));
+            p.getPossesseurs().stream().map(Personne::nom).collect(joining(",")), p.getT()));
   }
 }

@@ -19,7 +19,7 @@ public final class PatrimoinesVisualisables extends ChangingObservable {
     super();
     this.patrimoines = patrimoines;
     this.patrimoineSélectionné = patrimoines.get(0);
-    this.débutEvolution = patrimoineSélectionné.t();
+    this.débutEvolution = patrimoineSélectionné.getT();
     this.finEvolution = LocalDate.of(2025, DECEMBER, 31);
   }
 

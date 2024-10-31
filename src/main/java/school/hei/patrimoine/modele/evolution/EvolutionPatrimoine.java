@@ -49,7 +49,7 @@ public class EvolutionPatrimoine {
   private Set<FluxJournalier> fluxJournaliers() {
     var res = new HashSet<FluxJournalier>();
     evolutionJournaliere.forEach(
-        (date, patrimoine) -> patrimoine.possessions().forEach(p -> fluxDuJour(date, p, res)));
+        (date, patrimoine) -> patrimoine.getPossessions().forEach(p -> fluxDuJour(date, p, res)));
     return res;
   }
 

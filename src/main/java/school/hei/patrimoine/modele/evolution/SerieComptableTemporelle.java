@@ -26,7 +26,7 @@ public class SerieComptableTemporelle {
   public Map<Possession, List<Integer>> serieValeursComptablesParPossession() {
     var map = new HashMap<Possession, List<Integer>>();
 
-    for (var possession : ep.getPatrimoine().possessions()) {
+    for (var possession : ep.getPatrimoine().getPossessions()) {
       if (possession instanceof FluxArgent) {
         continue; // valeur comptable toujours 0
       }

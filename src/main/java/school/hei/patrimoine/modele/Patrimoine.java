@@ -2,36 +2,44 @@ package school.hei.patrimoine.modele;
 
 import static java.util.function.Predicate.not;
 import static java.util.stream.Collectors.toSet;
+import static lombok.AccessLevel.PRIVATE;
 import static school.hei.patrimoine.modele.Devise.NON_NOMMEE;
 
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import school.hei.patrimoine.modele.objectif.Objectivable;
 import school.hei.patrimoine.modele.possession.CompteCorrection;
 import school.hei.patrimoine.modele.possession.Possession;
 
-public record Patrimoine(
-    String nom, Set<Personne> possesseurs, LocalDate t, Set<Possession> possessions)
-    implements Serializable, Objectivable /*note(no-serializable)*/ {
-  public Patrimoine(
-      String nom, Set<Personne> possesseurs, LocalDate t, Set<Possession> possessions) {
-    this.nom = nom;
-    this.possesseurs = possesseurs;
-    this.t = t;
-    this.possessions = validerPossessions(possessions);
-  }
+@AllArgsConstructor(access = PRIVATE)
+@EqualsAndHashCode
+@Getter
+public class Patrimoine implements Serializable, Objectivable /*note(no-serializable)*/ {
+
+  private final String nom;
+  private final Set<Personne> possesseurs;
+  private final LocalDate t;
+  private final Set<Possession> possessions;
 
   public static Patrimoine of(
       String nom, Personne possesseur, LocalDate t, Set<Possession> possessions) {
-    return new Patrimoine(nom, Set.of(possesseur), t, withComptesCorrections(possessions));
+    return Patrimoine.of(nom, Set.of(possesseur), t, possessions);
   }
 
-  private Set<Possession> validerPossessions(Set<Possession> possessions) {
-    List<Devise> distinct = possessions.stream().map(Possession::getDevise).distinct().toList();
-    if (distinct.size() > 1 && distinct.contains(NON_NOMMEE)) {
+  public static Patrimoine of(
+      String nom, Set<Personne> possesseurs, LocalDate t, Set<Possession> possessions) {
+    return new Patrimoine(
+        nom, possesseurs, t, withComptesCorrections(validerPossessions(possessions)));
+  }
+
+  private static Set<Possession> validerPossessions(Set<Possession> possessions) {
+    var devises = possessions.stream().map(Possession::getDevise).distinct().toList();
+    if (devises.size() > 1 && devises.contains(NON_NOMMEE)) {
       throw new IllegalArgumentException("On ne peut mixer Devise.NON_NOMMEE avec autres devises");
     }
     return possessions;
@@ -87,6 +95,11 @@ public record Patrimoine(
 
   public Possession possessionParNom(String nom) {
     return possessions.stream().filter(p -> nom.equals(p.getNom())).findFirst().orElseThrow();
+  }
+
+  @Override
+  public String nom() {
+    return nom;
   }
 
   @Override
