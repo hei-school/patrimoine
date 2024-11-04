@@ -1,11 +1,13 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google;
 
 import static java.awt.BorderLayout.CENTER;
+import static java.awt.Color.RED;
 import static java.awt.Font.BOLD;
 import static java.awt.Font.PLAIN;
 import static java.awt.GridBagConstraints.HORIZONTAL;
 import static javax.swing.SwingConstants.LEFT;
 import static javax.swing.SwingUtilities.invokeLater;
+import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
 import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 
 import java.awt.*;
@@ -30,7 +32,7 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.modele.NamedSnippet;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.NamedString;
 
 @Slf4j
-public class GoogleDocsLinkVerfierScreen {
+public class GoogleDocsLinkVerifierScreen {
   private final JFrame inputFrame;
   private final JPanel inputPanel;
   private final List<JTextField> inputFields;
@@ -41,7 +43,7 @@ public class GoogleDocsLinkVerfierScreen {
   private final GoogleAuthenticationDetails authDetails;
   private final LinkedPatrimoine<NamedString> linksData;
 
-  public GoogleDocsLinkVerfierScreen(
+  public GoogleDocsLinkVerifierScreen(
       GoogleApi googleApi,
       GoogleAuthenticationDetails authDetails,
       LinkedPatrimoine<NamedString> linksData) {
@@ -65,7 +67,7 @@ public class GoogleDocsLinkVerfierScreen {
   }
 
   private JFrame newInputFrame() {
-    var inputFrame = new JFrame("Google Docs Submission");
+    var inputFrame = new JFrame("Google Docs Verifier");
     inputFrame.setSize(1200, 1000);
     inputFrame.setResizable(true);
     inputFrame.setVisible(true);
@@ -202,6 +204,7 @@ public class GoogleDocsLinkVerfierScreen {
               final List<Patrimoine> patrimoinesVisualisables = get();
               openResultFrame(patrimoinesVisualisables);
             } catch (InterruptedException | ExecutionException e) {
+              showErrorPage("Veuillez vérifier le contenu de vos documents");
               throw new RuntimeException(e);
             }
           }
@@ -228,6 +231,25 @@ public class GoogleDocsLinkVerfierScreen {
   private NamedSnippet extractSnippet(NamedID namedID) {
     var code = googleApi.readDocsContent(authDetails, String.valueOf(namedID.id()));
     return new NamedSnippet(namedID.name(), code);
+  }
+
+  private void showErrorPage(String errorMessage) {
+    JFrame errorFrame = new JFrame("Erreur");
+    errorFrame.setSize(400, 200);
+    errorFrame.setLocationRelativeTo(null);
+    errorFrame.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+
+    JPanel panel = new JPanel();
+    panel.setLayout(new BorderLayout());
+
+    JLabel errorLabel = new JLabel(errorMessage, SwingConstants.CENTER);
+    errorLabel.setFont(new Font("Arial", BOLD, 16));
+    errorLabel.setForeground(RED);
+
+    panel.add(errorLabel, BorderLayout.CENTER);
+
+    errorFrame.getContentPane().add(panel);
+    errorFrame.setVisible(true);
   }
 
   private Patrimoine compilePatrimoine(

@@ -1,7 +1,7 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google;
 
 import static java.awt.BorderLayout.CENTER;
-import static java.awt.Font.BOLD;
+import static java.awt.Font.*;
 import static javax.swing.SwingUtilities.invokeLater;
 import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 
@@ -87,16 +87,22 @@ public class GoogleDocsSubmitScreen {
   }
 
   private void addInitialInput() {
-    inputField.setLineWrap(true);
-    inputField.setWrapStyleWord(true);
-    inputField.setInputVerifier(linkIdInputVerifier);
-    inputField.setFont(new Font("Arial", Font.PLAIN, 16));
+    JLabel instructionLabel = new JLabel("The key word for shared possessions is: 'possessions'");
+    instructionLabel.setFont(new Font("Arial", CENTER_BASELINE, 14));
 
     var gbc = new GridBagConstraints();
     gbc.gridx = 0;
     gbc.fill = GridBagConstraints.HORIZONTAL;
-    gbc.insets = new Insets(10, 50, 10, 50);
+    gbc.insets = new Insets(10, 50, 5, 50);
 
+    inputPanel.add(instructionLabel, gbc);
+
+    inputField.setLineWrap(true);
+    inputField.setWrapStyleWord(true);
+    inputField.setInputVerifier(linkIdInputVerifier);
+    inputField.setFont(new Font("Arial", PLAIN, 16));
+
+    gbc.insets = new Insets(5, 50, 10, 50);
     JScrollPane scrollPane = new JScrollPane(inputField);
     inputPanel.add(scrollPane, gbc);
   }
@@ -163,7 +169,7 @@ public class GoogleDocsSubmitScreen {
       LinkedPatrimoine<NamedString> docsLink,
       GoogleApi googleApi,
       GoogleAuthenticationDetails authReqRes) {
-    invokeLater(() -> new GoogleDocsLinkVerfierScreen(googleApi, authReqRes, docsLink));
+    invokeLater(() -> new GoogleDocsLinkVerifierScreen(googleApi, authReqRes, docsLink));
     inputFrame.dispose();
   }
 }

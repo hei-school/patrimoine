@@ -60,7 +60,7 @@ public class MainIHM extends JFrame implements Observer {
   @SneakyThrows
   private void configureFrame() {
     setTitle();
-    setDefaultCloseOperation(EXIT_ON_CLOSE);
+    setDefaultCloseOperation(DISPOSE_ON_CLOSE);
     pack();
     setSize(getDefaultToolkit().getScreenSize());
     setResizable(true);
