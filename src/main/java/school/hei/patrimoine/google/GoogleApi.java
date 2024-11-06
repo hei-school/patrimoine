@@ -17,13 +17,11 @@ import com.google.api.services.docs.v1.model.Document;
 import com.google.api.services.docs.v1.model.ParagraphElement;
 import com.google.api.services.docs.v1.model.StructuralElement;
 import com.google.api.services.docs.v1.model.TextRun;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+
+import java.io.*;
 import java.util.List;
+
+import com.google.api.services.drive.Drive;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
@@ -54,6 +52,9 @@ public class GoogleApi {
   private static final List<String> SCOPES = List.of(DOCUMENTS_READONLY);
   private static final String CREDENTIALS_FILE_PATH =
       System.getProperty("user.home") + "/.patrimoine/google/client.json";
+
+  private static final String DOWNLOADS_DIRECTORY_PATH =
+          System.getProperty("user.home") + "/Downloads";
 
   /**
    * Creates an authorized Credential object.
@@ -132,4 +133,26 @@ public class GoogleApi {
       throw new RuntimeException(e);
     }
   }
+
+  public void downloadFile(GoogleAuthenticationDetails authDetails, String fileId, String fileName){
+    Drive driveService = new Drive.Builder(authDetails.httpTransport(), JSON_FACTORY, authDetails.credential())
+            .setApplicationName(APPLICATION_NAME)
+            .build();
+
+    try (InputStream inputStream = driveService.files().get(fileId).executeMediaAsInputStream()) {
+      File downloadFile = new File(DOWNLOADS_DIRECTORY_PATH, fileName);
+
+      try (FileOutputStream outputStream = new FileOutputStream(downloadFile)) {
+        byte[] buffer = new byte[1024];
+        int bytesRead;
+        while ((bytesRead = inputStream.read(buffer)) != -1) {
+          outputStream.write(buffer, 0, bytesRead);
+        }
+      }
+
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
 }
