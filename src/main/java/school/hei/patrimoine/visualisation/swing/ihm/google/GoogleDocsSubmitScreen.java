@@ -20,7 +20,8 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.modele.NamedString;
 public class GoogleDocsSubmitScreen {
   private final JFrame inputFrame;
   private final JPanel inputPanel;
-  private final JTextArea inputField;
+  private final JTextArea docsField;
+  private final JTextArea driveField;
   private final GoogleDocsLinkIdInputVerifier linkIdInputVerifier =
       new GoogleDocsLinkIdInputVerifier();
   private final GoogleApi googleApi;
@@ -33,7 +34,8 @@ public class GoogleDocsSubmitScreen {
     inputPanel = new JPanel();
     inputPanel.setLayout(new GridBagLayout());
 
-    inputField = new JTextArea(5, 70);
+    docsField = new JTextArea(5, 70);
+    driveField = new JTextArea(5, 70);
     addButtons();
     addInitialInput();
 
@@ -58,7 +60,7 @@ public class GoogleDocsSubmitScreen {
   private void addButtons() {
     JButton submitButton = newSubmitButton();
 
-    JLabel buttonTitle = new JLabel("Enter Your Google Docs Links:");
+    JLabel buttonTitle = new JLabel("Enter Google Links:");
     buttonTitle.setFont(new Font("Arial", BOLD, 24));
     buttonTitle.setHorizontalAlignment(SwingConstants.CENTER);
 
@@ -87,24 +89,46 @@ public class GoogleDocsSubmitScreen {
   }
 
   private void addInitialInput() {
-    JLabel instructionLabel = new JLabel("The key word for shared possessions is: 'possessions'");
-    instructionLabel.setFont(new Font("Arial", CENTER_BASELINE, 14));
+    // Google docs field label
+    JLabel docsLabel = new JLabel("Google Docs Links");
+    docsLabel.setFont(new Font("Arial", CENTER_BASELINE, 14));
 
     var gbc = new GridBagConstraints();
     gbc.gridx = 0;
+    gbc.gridy = 2;
     gbc.fill = GridBagConstraints.HORIZONTAL;
     gbc.insets = new Insets(10, 50, 5, 50);
+    inputPanel.add(docsLabel, gbc);
 
-    inputPanel.add(instructionLabel, gbc);
+    // Google docs input field
+    docsField.setLineWrap(true);
+    docsField.setWrapStyleWord(true);
+    docsField.setInputVerifier(linkIdInputVerifier);
+    docsField.setFont(new Font("Arial", PLAIN, 16));
 
-    inputField.setLineWrap(true);
-    inputField.setWrapStyleWord(true);
-    inputField.setInputVerifier(linkIdInputVerifier);
-    inputField.setFont(new Font("Arial", PLAIN, 16));
-
+    gbc.gridy = 3;
     gbc.insets = new Insets(5, 50, 10, 50);
-    JScrollPane scrollPane = new JScrollPane(inputField);
+    JScrollPane scrollPane = new JScrollPane(docsField);
     inputPanel.add(scrollPane, gbc);
+
+    // Google drive field label
+    JLabel driveLabel = new JLabel("Google Drive Links");
+    driveLabel.setFont(new Font("Arial", CENTER_BASELINE, 14));
+
+    gbc.gridy = 4;
+    gbc.insets = new Insets(10, 50, 5, 50);
+    inputPanel.add(driveLabel, gbc);
+
+    // Google docs input field
+    driveField.setLineWrap(true);
+    driveField.setWrapStyleWord(true);
+    driveField.setInputVerifier(linkIdInputVerifier);
+    driveField.setFont(new Font("Arial", PLAIN, 16));
+
+    gbc.gridy = 5;
+    gbc.insets = new Insets(5, 50, 10, 50);
+    JScrollPane driveScrollPane = new JScrollPane(driveField);
+    inputPanel.add(driveScrollPane, gbc);
   }
 
   private void loadDataInBackground() {
@@ -142,7 +166,7 @@ public class GoogleDocsSubmitScreen {
     List<NamedString> linkDataList = new ArrayList<>();
     String possessionLink = "";
 
-    String rawText = inputField.getText();
+    String rawText = docsField.getText();
     String[] lines = rawText.split("\n");
     var keyWord = "possessions";
 
