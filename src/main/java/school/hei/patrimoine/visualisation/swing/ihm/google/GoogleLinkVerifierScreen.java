@@ -14,39 +14,41 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import javax.swing.*;
 import lombok.extern.slf4j.Slf4j;
 import school.hei.patrimoine.compiler.ClassNameExtractor;
 import school.hei.patrimoine.compiler.PatrimoineCompiler;
-import school.hei.patrimoine.compiler.PossessionExtractor;
 import school.hei.patrimoine.google.GoogleApi;
 import school.hei.patrimoine.google.GoogleApi.GoogleAuthenticationDetails;
 import school.hei.patrimoine.google.GoogleDocsLinkIdParser;
+import school.hei.patrimoine.google.GoogleDriveLinkIdParser;
 import school.hei.patrimoine.modele.Patrimoine;
 import school.hei.patrimoine.visualisation.swing.ihm.MainIHM;
-import school.hei.patrimoine.visualisation.swing.ihm.google.modele.LinkedPatrimoine;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.GoogleLinkList;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.NamedID;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.NamedSnippet;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.NamedString;
 
 @Slf4j
-public class GoogleDocsLinkVerifierScreen {
+public class GoogleLinkVerifierScreen {
   private final JFrame inputFrame;
   private final JPanel inputPanel;
   private final List<JTextField> inputFields;
-  private final GoogleDocsLinkIdInputVerifier linkIdInputVerifier =
+  private final GoogleDocsLinkIdInputVerifier docslinkIdInputVerifier =
       new GoogleDocsLinkIdInputVerifier();
-  private final GoogleDocsLinkIdParser linkIdParser = new GoogleDocsLinkIdParser();
+  private final GoogleDriveLinkIdInputVerifier drivelinkIdInputVerifier =
+          new GoogleDriveLinkIdInputVerifier();
+  private final GoogleDocsLinkIdParser docsLinkIdParser = new GoogleDocsLinkIdParser();
+  private final GoogleDriveLinkIdParser driveLinkIdParser = new GoogleDriveLinkIdParser();
   private final GoogleApi googleApi;
   private final GoogleAuthenticationDetails authDetails;
-  private final LinkedPatrimoine<NamedString> linksData;
+  private final GoogleLinkList<NamedString> linksData;
 
-  public GoogleDocsLinkVerifierScreen(
+  public GoogleLinkVerifierScreen(
       GoogleApi googleApi,
       GoogleAuthenticationDetails authDetails,
-      LinkedPatrimoine<NamedString> linksData) {
+      GoogleLinkList<NamedString> linksData) {
     this.googleApi = googleApi;
     this.authDetails = authDetails;
     this.linksData = linksData;
@@ -123,7 +125,8 @@ public class GoogleDocsLinkVerifierScreen {
     gbc.insets = new Insets(10, 50, 10, 50);
 
     int yPosition = 2;
-    for (NamedString linkData : linksData.patrimoineLinkList()) {
+
+    for (NamedString linkData : linksData.docsLinkList()) {
       var nameLabel = new JLabel(linkData.name());
       nameLabel.setFont(new Font("Arial", BOLD, 18));
       nameLabel.setHorizontalAlignment(LEFT);
@@ -138,20 +141,45 @@ public class GoogleDocsLinkVerifierScreen {
       gbc.gridy = yPosition++;
       inputPanel.add(scrollPane, gbc);
     }
+
+    for (NamedString linkData : linksData.driveLinkList()) {
+      var nameLabel = new JLabel(linkData.name());
+      nameLabel.setFont(new Font("Arial", BOLD, 18));
+      nameLabel.setHorizontalAlignment(LEFT);
+
+      gbc.gridy = yPosition++;
+      inputPanel.add(nameLabel, gbc);
+
+      JTextField newField = newGoogleDriveLinkTextField(linkData.value());
+      inputFields.add(newField);
+
+      JScrollPane scrollPane = new JScrollPane(newField);
+      gbc.gridy = yPosition++;
+      inputPanel.add(scrollPane, gbc);
+    }
   }
 
   private JTextField newGoogleDocsLinkTextField(String initialValue) {
     var textField = new JTextField(70);
-    textField.setInputVerifier(linkIdInputVerifier);
+    textField.setInputVerifier(docslinkIdInputVerifier);
     textField.setFont(new Font("Arial", PLAIN, 16));
     textField.setText(initialValue);
-    linkIdInputVerifier.verify(textField);
+    docslinkIdInputVerifier.verify(textField);
+    return textField;
+  }
+
+  private JTextField newGoogleDriveLinkTextField(String initialValue) {
+    var textField = new JTextField(70);
+    textField.setInputVerifier(drivelinkIdInputVerifier);
+    textField.setFont(new Font("Arial", PLAIN, 16));
+    textField.setText(initialValue);
+    drivelinkIdInputVerifier.verify(textField);
     return textField;
   }
 
   private ActionListener returnToPreviousScreen() {
     return e -> {
-      invokeLater(() -> new GoogleDocsSubmitScreen(googleApi, authDetails));
+      invokeLater(() -> new GoogleSubmitScreen(googleApi, authDetails));
       inputFrame.setVisible(false);
     };
   }
@@ -172,26 +200,18 @@ public class GoogleDocsLinkVerifierScreen {
             List<NamedSnippet> codePatrimoinesVisualisables = new ArrayList<>();
             List<Patrimoine> patrimoinesVisualisables = new ArrayList<>();
 
-            for (var id : ids.patrimoineLinkList()) {
+            System.out.println("...traitement");
+
+            for(var namedId : ids.driveLinkList()) {
+              googleApi.downloadFile(authDetails, namedId.id(), "Code.java");
+            }
+
+            for (var id : ids.docsLinkList()) {
               codePatrimoinesVisualisables.add(extractSnippet(id));
             }
 
-            if (!Objects.equals(ids.possessionLink(), "")) {
-              var parsedVariable = linkIdParser.apply(ids.possessionLink().trim());
-              var possessionContent =
-                  googleApi.readDocsContent(authDetails, String.valueOf(parsedVariable));
-              PossessionExtractor possessionExtractor = new PossessionExtractor();
-              var possessionsData = possessionExtractor.apply(possessionContent);
-
-              for (NamedSnippet codePatrimoine : codePatrimoinesVisualisables) {
-                patrimoinesVisualisables.add(
-                    compilePatrimoine(
-                        possessionsData.imports(), possessionsData.possessions(), codePatrimoine));
-              }
-            } else {
-              for (NamedSnippet codePatrimoine : codePatrimoinesVisualisables) {
-                patrimoinesVisualisables.add(compilePatrimoine(codePatrimoine));
-              }
+            for (NamedSnippet codePatrimoine : codePatrimoinesVisualisables) {
+              patrimoinesVisualisables.add(compilePatrimoine(codePatrimoine));
             }
 
             return patrimoinesVisualisables;
@@ -214,18 +234,27 @@ public class GoogleDocsLinkVerifierScreen {
     loadingDialog.setVisible(true);
   }
 
-  private LinkedPatrimoine<NamedID> extractInputIds() {
-    List<NamedID> ids = new ArrayList<>();
+  private GoogleLinkList<NamedID> extractInputIds() {
+    List<NamedID> docsIds = new ArrayList<>();
+    List<NamedID> driveIds = new ArrayList<>();
 
     for (JTextField field : inputFields) {
       var rawText = field.getText();
-      var parsedId = linkIdParser.apply(rawText.trim());
-      String urlName = linksData.patrimoineLinkList().get(inputFields.indexOf(field)).name();
-      NamedID namedURL = new NamedID(urlName, parsedId);
-      ids.add(namedURL);
+
+      if (rawText.contains("drive")) {
+        var parsedId = driveLinkIdParser.apply(rawText.trim());
+        String urlName = linksData.driveLinkList().get(inputFields.indexOf(field)).name();
+        NamedID namedURL = new NamedID(urlName, parsedId);
+        driveIds.add(namedURL);
+      } else {
+        var parsedId = docsLinkIdParser.apply(rawText.trim());
+        String urlName = linksData.docsLinkList().get(inputFields.indexOf(field)).name();
+        NamedID namedURL = new NamedID(urlName, parsedId);
+        docsIds.add(namedURL);
+      }
     }
 
-    return new LinkedPatrimoine<>(linksData.possessionLink(), ids);
+    return new GoogleLinkList<>(docsIds, driveIds);
   }
 
   private NamedSnippet extractSnippet(NamedID namedID) {
@@ -250,27 +279,6 @@ public class GoogleDocsLinkVerifierScreen {
 
     errorFrame.getContentPane().add(panel);
     errorFrame.setVisible(true);
-  }
-
-  private Patrimoine compilePatrimoine(
-      String imports, String possessions, NamedSnippet namedSnippet) {
-    PatrimoineCompiler patrimoineCompiler = new PatrimoineCompiler();
-    String className = new ClassNameExtractor().apply(namedSnippet.snippet());
-
-    String snippet = imports + "\n" + namedSnippet.snippet();
-
-    int getMethodIndex = snippet.indexOf("get() {");
-    if (getMethodIndex != -1) {
-      int insertPosition = getMethodIndex + "get() {".length();
-      snippet =
-          snippet.substring(0, insertPosition)
-              + "\n"
-              + possessions
-              + "\n"
-              + snippet.substring(insertPosition);
-    }
-
-    return (patrimoineCompiler.apply(className, snippet));
   }
 
   private Patrimoine compilePatrimoine(NamedSnippet namedSnippet) {

@@ -13,11 +13,11 @@ import javax.swing.*;
 import lombok.extern.slf4j.Slf4j;
 import school.hei.patrimoine.google.GoogleApi;
 import school.hei.patrimoine.google.GoogleApi.GoogleAuthenticationDetails;
-import school.hei.patrimoine.visualisation.swing.ihm.google.modele.LinkedPatrimoine;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.GoogleLinkList;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.NamedString;
 
 @Slf4j
-public class GoogleDocsSubmitScreen {
+public class GoogleSubmitScreen {
   private final JFrame inputFrame;
   private final JPanel inputPanel;
   private final JTextArea docsField;
@@ -27,7 +27,7 @@ public class GoogleDocsSubmitScreen {
   private final GoogleApi googleApi;
   private final GoogleAuthenticationDetails authDetails;
 
-  public GoogleDocsSubmitScreen(GoogleApi googleApi, GoogleAuthenticationDetails authDetails) {
+  public GoogleSubmitScreen(GoogleApi googleApi, GoogleAuthenticationDetails authDetails) {
     this.googleApi = googleApi;
     this.authDetails = authDetails;
     inputFrame = newInputFrame();
@@ -139,10 +139,10 @@ public class GoogleDocsSubmitScreen {
     loadingDialog.setSize(300, 100);
     loadingDialog.setLocationRelativeTo(inputFrame);
 
-    SwingWorker<LinkedPatrimoine<NamedString>, Void> worker =
+    SwingWorker<GoogleLinkList<NamedString>, Void> worker =
         new SwingWorker<>() {
           @Override
-          protected LinkedPatrimoine<NamedString> doInBackground() {
+          protected GoogleLinkList<NamedString> doInBackground() {
             return extractInputData();
           }
 
@@ -150,7 +150,7 @@ public class GoogleDocsSubmitScreen {
           protected void done() {
             loadingDialog.dispose();
             try {
-              final LinkedPatrimoine<NamedString> inputData = get();
+              final GoogleLinkList<NamedString> inputData = get();
               openResultFrame(inputData, googleApi, authDetails);
             } catch (InterruptedException | ExecutionException e) {
               throw new RuntimeException(e);
@@ -162,38 +162,48 @@ public class GoogleDocsSubmitScreen {
     loadingDialog.setVisible(true);
   }
 
-  private LinkedPatrimoine<NamedString> extractInputData() {
-    List<NamedString> linkDataList = new ArrayList<>();
-    String possessionLink = "";
+  private GoogleLinkList<NamedString> extractInputData() {
+    List<NamedString> docslinkDataList = new ArrayList<>();
+    List<NamedString> drivelinkDataList = new ArrayList<>();
 
-    String rawText = docsField.getText();
-    String[] lines = rawText.split("\n");
-    var keyWord = "possessions";
+    String docsRawText = docsField.getText();
+    String[] docsLines = docsRawText.split("\n");
 
-    for (String line : lines) {
+    String driveRawText = driveField.getText();
+    String[] driveLines = driveRawText.split("\n");
+
+    for (String line : docsLines) {
       String[] parts = line.split(":", 2);
 
       if (parts.length == 2) {
         String linkName = parts[0].trim();
         String linkValue = parts[1].trim();
 
-        if (keyWord.equals(linkName)) {
-          possessionLink = linkValue;
-        } else {
-          NamedString linkData = new NamedString(linkName, linkValue);
-          linkDataList.add(linkData);
-        }
+        NamedString linkData = new NamedString(linkName, linkValue);
+        docslinkDataList.add(linkData);
       }
     }
 
-    return new LinkedPatrimoine<>(possessionLink, linkDataList);
+    for (String line : driveLines) {
+      String[] parts = line.split(":", 2);
+
+      if (parts.length == 2) {
+        String linkName = parts[0].trim();
+        String linkValue = parts[1].trim();
+
+        NamedString linkData = new NamedString(linkName, linkValue);
+        drivelinkDataList.add(linkData);
+      }
+    }
+
+    return new GoogleLinkList<>(docslinkDataList, drivelinkDataList);
   }
 
   private void openResultFrame(
-      LinkedPatrimoine<NamedString> docsLink,
+      GoogleLinkList<NamedString> googleLinkList,
       GoogleApi googleApi,
       GoogleAuthenticationDetails authReqRes) {
-    invokeLater(() -> new GoogleDocsLinkVerifierScreen(googleApi, authReqRes, docsLink));
+    invokeLater(() -> new GoogleLinkVerifierScreen(googleApi, authReqRes, googleLinkList));
     inputFrame.dispose();
   }
 }

@@ -1,6 +1,7 @@
 package school.hei.patrimoine.google;
 
 import static com.google.api.services.docs.v1.DocsScopes.DOCUMENTS_READONLY;
+import static com.google.api.services.drive.DriveScopes.DRIVE_READONLY;
 
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
@@ -49,7 +50,7 @@ public class GoogleApi {
     new File(TOKENS_DIRECTORY_PATH).mkdirs();
   }
 
-  private static final List<String> SCOPES = List.of(DOCUMENTS_READONLY);
+  private static final List<String> SCOPES = List.of(DOCUMENTS_READONLY, DRIVE_READONLY);
   private static final String CREDENTIALS_FILE_PATH =
       System.getProperty("user.home") + "/.patrimoine/google/client.json";
 
