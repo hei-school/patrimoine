@@ -20,11 +20,14 @@ import com.google.api.services.docs.v1.model.StructuralElement;
 import com.google.api.services.docs.v1.model.TextRun;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.List;
 
 import com.google.api.services.drive.Drive;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import school.hei.patrimoine.compiler.ClassNameExtractor;
 
 @Slf4j
 public class GoogleApi {
@@ -55,7 +58,11 @@ public class GoogleApi {
       System.getProperty("user.home") + "/.patrimoine/google/client.json";
 
   private static final String DOWNLOADS_DIRECTORY_PATH =
-          System.getProperty("user.home") + "/Downloads";
+          System.getProperty("user.home") + "/Downloads/drive";
+
+  static {
+    new File(DOWNLOADS_DIRECTORY_PATH).mkdirs();
+  }
 
   /**
    * Creates an authorized Credential object.
@@ -135,19 +142,46 @@ public class GoogleApi {
     }
   }
 
-  public void downloadFile(GoogleAuthenticationDetails authDetails, String fileId, String fileName){
+  public void downloadFile(GoogleAuthenticationDetails authDetails, String fileId) {
     Drive driveService = new Drive.Builder(authDetails.httpTransport(), JSON_FACTORY, authDetails.credential())
             .setApplicationName(APPLICATION_NAME)
             .build();
 
-    try (InputStream inputStream = driveService.files().get(fileId).executeMediaAsInputStream()) {
-      File downloadFile = new File(DOWNLOADS_DIRECTORY_PATH, fileName);
+    // Create a temporary file to store downloaded content
+    File tempFile = new File(System.getProperty("java.io.tmpdir"), "temp_download.java");
 
-      try (FileOutputStream outputStream = new FileOutputStream(downloadFile)) {
-        byte[] buffer = new byte[1024];
-        int bytesRead;
-        while ((bytesRead = inputStream.read(buffer)) != -1) {
-          outputStream.write(buffer, 0, bytesRead);
+    try (InputStream inputStream = driveService.files().get(fileId).executeMediaAsInputStream();
+         FileOutputStream tempOutputStream = new FileOutputStream(tempFile)) {
+
+      // Download content to temporary file
+      byte[] buffer = new byte[1024];
+      int bytesRead;
+      while ((bytesRead = inputStream.read(buffer)) != -1) {
+        tempOutputStream.write(buffer, 0, bytesRead);
+      }
+
+      // Read the contents of the temporary file as a String
+      String fileContent = new String(Files.readAllBytes(tempFile.toPath()), StandardCharsets.UTF_8);
+
+      // Extract class name
+      String className = new ClassNameExtractor().apply(fileContent);
+      if (className == null || className.isEmpty()) {
+        throw new RuntimeException("The class name could not be extracted");
+      }
+
+      // Define final file name based on class name
+      File finalFile = new File(DOWNLOADS_DIRECTORY_PATH, className + ".java");
+
+      try (FileOutputStream finalOutputStream = new FileOutputStream(finalFile);
+           FileInputStream tempInputStream = new FileInputStream(tempFile)) {
+
+        while ((bytesRead = tempInputStream.read(buffer)) != -1) {
+          finalOutputStream.write(buffer, 0, bytesRead);
+        }
+
+      } finally {
+        if (tempFile.exists()) {
+          tempFile.delete();
         }
       }
 

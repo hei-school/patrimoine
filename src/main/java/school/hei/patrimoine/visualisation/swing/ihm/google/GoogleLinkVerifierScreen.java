@@ -203,7 +203,7 @@ public class GoogleLinkVerifierScreen {
             System.out.println("...traitement");
 
             for(var namedId : ids.driveLinkList()) {
-              googleApi.downloadFile(authDetails, namedId.id(), "Code.java");
+              googleApi.downloadFile(authDetails, namedId.id());
             }
 
             for (var id : ids.docsLinkList()) {
