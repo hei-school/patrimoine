@@ -9,16 +9,20 @@ import static javax.swing.SwingConstants.LEFT;
 import static javax.swing.SwingUtilities.invokeLater;
 import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
 import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
+import static school.hei.patrimoine.google.GoogleApi.DOWNLOADS_DIRECTORY_PATH;
 
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import javax.swing.*;
 import lombok.extern.slf4j.Slf4j;
 import school.hei.patrimoine.compiler.ClassNameExtractor;
-import school.hei.patrimoine.compiler.PatrimoineCompiler;
+import school.hei.patrimoine.compiler.FileCompiler;
+import school.hei.patrimoine.compiler.StringCompiler;
 import school.hei.patrimoine.google.GoogleApi;
 import school.hei.patrimoine.google.GoogleApi.GoogleAuthenticationDetails;
 import school.hei.patrimoine.google.GoogleDocsLinkIdParser;
@@ -200,18 +204,25 @@ public class GoogleLinkVerifierScreen {
             List<NamedSnippet> codePatrimoinesVisualisables = new ArrayList<>();
             List<Patrimoine> patrimoinesVisualisables = new ArrayList<>();
 
-            System.out.println("...traitement");
+            for (var id : ids.docsLinkList()) {
+              codePatrimoinesVisualisables.add(extractSnippet(id));
+            }
 
             for(var namedId : ids.driveLinkList()) {
               googleApi.downloadFile(authDetails, namedId.id());
             }
 
-            for (var id : ids.docsLinkList()) {
-              codePatrimoinesVisualisables.add(extractSnippet(id));
-            }
+            File driveDirectory = new File(DOWNLOADS_DIRECTORY_PATH);
+            File[] driveFiles = driveDirectory.listFiles((dir, name) -> name.endsWith(".java"));
 
             for (NamedSnippet codePatrimoine : codePatrimoinesVisualisables) {
               patrimoinesVisualisables.add(compilePatrimoine(codePatrimoine));
+            }
+
+            System.out.println(Arrays.toString(driveFiles));
+
+            for (File driveFile : driveFiles) {
+              patrimoinesVisualisables.add(compilePatrimoine(driveFile.getAbsolutePath()));
             }
 
             return patrimoinesVisualisables;
@@ -282,10 +293,16 @@ public class GoogleLinkVerifierScreen {
   }
 
   private Patrimoine compilePatrimoine(NamedSnippet namedSnippet) {
-    PatrimoineCompiler patrimoineCompiler = new PatrimoineCompiler();
+    StringCompiler stringCompiler = new StringCompiler();
     String className = new ClassNameExtractor().apply(namedSnippet.snippet());
 
-    return (patrimoineCompiler.apply(className, namedSnippet.snippet()));
+    return (stringCompiler.apply(className, namedSnippet.snippet()));
+  }
+
+  private Patrimoine compilePatrimoine(String filePath){
+    FileCompiler fileCompiler = new FileCompiler();
+
+    return (fileCompiler.apply(filePath));
   }
 
   private void openResultFrame(List<Patrimoine> patrimoinesVisualisables) {

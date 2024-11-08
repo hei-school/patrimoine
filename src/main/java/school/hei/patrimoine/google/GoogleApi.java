@@ -22,6 +22,8 @@ import com.google.api.services.docs.v1.model.TextRun;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 import com.google.api.services.drive.Drive;
@@ -57,11 +59,11 @@ public class GoogleApi {
   private static final String CREDENTIALS_FILE_PATH =
       System.getProperty("user.home") + "/.patrimoine/google/client.json";
 
-  private static final String DOWNLOADS_DIRECTORY_PATH =
+  public static final String DOWNLOADS_DIRECTORY_PATH =
           System.getProperty("user.home") + "/Downloads/drive";
 
   static {
-    new File(DOWNLOADS_DIRECTORY_PATH).mkdirs();
+    createOrResetDirectory(DOWNLOADS_DIRECTORY_PATH);
   }
 
   /**
@@ -139,6 +141,23 @@ public class GoogleApi {
       return combinedContent.toString();
     } catch (IOException e) {
       throw new RuntimeException(e);
+    }
+  }
+
+  public static void createOrResetDirectory(String directoryPath) {
+    Path path = Paths.get(directoryPath);
+    File directory = path.toFile();
+
+    try {
+      // Deletes existing directory if present
+      if (directory.exists()) {
+        Files.walk(path)
+                .map(Path::toFile)
+                .forEach(File::delete);
+      }
+      Files.createDirectories(path);
+    } catch (IOException e) {
+      throw new RuntimeException("Directory reset error : " + directoryPath, e);
     }
   }
 

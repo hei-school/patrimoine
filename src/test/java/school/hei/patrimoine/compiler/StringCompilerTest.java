@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import school.hei.patrimoine.cas.example.PatrimoineRicheSupplier;
 import school.hei.patrimoine.modele.Patrimoine;
 
-class PatrimoineCompilerTest {
+class StringCompilerTest {
 
   @Test
   void convert_a_string_to_patrimoine() {
@@ -97,8 +97,8 @@ public class PatrimoineRicheSupplier implements Supplier<Patrimoine> {
     PatrimoineRicheSupplier patrimoineRicheSupplier = new PatrimoineRicheSupplier();
     Patrimoine patrimoineRiche = patrimoineRicheSupplier.get();
 
-    PatrimoineCompiler patrimoineCompiler = new PatrimoineCompiler();
-    Patrimoine patrimoine = patrimoineCompiler.apply("PatrimoineRicheSupplier", code);
+    StringCompiler stringCompiler = new StringCompiler();
+    Patrimoine patrimoine = stringCompiler.apply("PatrimoineRicheSupplier", code);
 
     assertEquals(patrimoineRiche.getValeurComptable(), patrimoine.getValeurComptable());
   }
