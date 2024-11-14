@@ -13,7 +13,7 @@ import java.util.function.Supplier;
 import lombok.SneakyThrows;
 import school.hei.patrimoine.modele.Patrimoine;
 
-public class StringCompiler implements BiFunction<String, String, Patrimoine> {
+public class PatrimoineDocsCompiler implements BiFunction<String, String, Patrimoine> {
 
   private static final String COMPILE_DIR_NAME =
       System.getProperty("user.home") + "/.patrimoine/compile";

@@ -63,7 +63,7 @@ public class GoogleApi {
           System.getProperty("user.home") + "/Downloads/drive";
 
   static {
-    createOrResetDirectory(DOWNLOADS_DIRECTORY_PATH);
+    resetIfExist(DOWNLOADS_DIRECTORY_PATH);
   }
 
   /**
@@ -101,6 +101,8 @@ public class GoogleApi {
     var creds = new GoogleAuthenticationDetails(HTTP_TRANSPORT, currentCredentials);
     if (creds.isTokenExpired()) {
       File tokenDirectory = new File(TOKENS_DIRECTORY_PATH);
+
+      // Delete the old stored token
       if (tokenDirectory.exists() && tokenDirectory.isDirectory()) {
         for (File file : tokenDirectory.listFiles()) {
           if (file.isFile()) {
@@ -144,7 +146,7 @@ public class GoogleApi {
     }
   }
 
-  public static void createOrResetDirectory(String directoryPath) {
+  public static void resetIfExist(String directoryPath) {
     Path path = Paths.get(directoryPath);
     File directory = path.toFile();
 

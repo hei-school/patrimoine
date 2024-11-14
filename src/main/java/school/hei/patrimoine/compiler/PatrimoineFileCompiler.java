@@ -13,7 +13,7 @@ import java.util.function.Supplier;
 
 import static javax.tools.ToolProvider.getSystemJavaCompiler;
 
-public class FileCompiler implements Function<String, Patrimoine> {
+public class PatrimoineFileCompiler implements Function<String, Patrimoine> {
 
   private static final String COMPILE_DIR_NAME =
       System.getProperty("user.home") + "/.patrimoine/compile";

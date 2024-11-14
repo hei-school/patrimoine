@@ -13,16 +13,17 @@ import static school.hei.patrimoine.google.GoogleApi.DOWNLOADS_DIRECTORY_PATH;
 
 import java.awt.*;
 import java.awt.event.ActionListener;
-import java.io.File;
+import java.io.*;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.function.Supplier;
 import javax.swing.*;
 import lombok.extern.slf4j.Slf4j;
-import school.hei.patrimoine.compiler.ClassNameExtractor;
-import school.hei.patrimoine.compiler.FileCompiler;
-import school.hei.patrimoine.compiler.StringCompiler;
+import school.hei.patrimoine.cas.CasSet;
+import school.hei.patrimoine.cas.CasSetAnalyzer;
+import school.hei.patrimoine.compiler.*;
 import school.hei.patrimoine.google.GoogleApi;
 import school.hei.patrimoine.google.GoogleApi.GoogleAuthenticationDetails;
 import school.hei.patrimoine.google.GoogleDocsLinkIdParser;
@@ -199,7 +200,7 @@ public class GoogleLinkVerifierScreen {
     SwingWorker<List<Patrimoine>, Void> worker =
         new SwingWorker<>() {
           @Override
-          protected List<Patrimoine> doInBackground() {
+          protected List<Patrimoine> doInBackground() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
             var ids = extractInputIds();
             List<NamedSnippet> codePatrimoinesVisualisables = new ArrayList<>();
             List<Patrimoine> patrimoinesVisualisables = new ArrayList<>();
@@ -214,15 +215,24 @@ public class GoogleLinkVerifierScreen {
 
             File driveDirectory = new File(DOWNLOADS_DIRECTORY_PATH);
             File[] driveFiles = driveDirectory.listFiles((dir, name) -> name.endsWith(".java"));
+            File casSetFile = new File("");
 
             for (NamedSnippet codePatrimoine : codePatrimoinesVisualisables) {
               patrimoinesVisualisables.add(compilePatrimoine(codePatrimoine));
             }
 
-            System.out.println(Arrays.toString(driveFiles));
-
             for (File driveFile : driveFiles) {
-              patrimoinesVisualisables.add(compilePatrimoine(driveFile.getAbsolutePath()));
+              if (isCasSetFile(driveFile)){
+                casSetFile = driveFile;
+              } else if (isCasFile(driveFile)) {
+                compileCas(driveFile.getAbsolutePath());
+              } else {
+                patrimoinesVisualisables.add(compilePatrimoine(driveFile.getAbsolutePath()));
+              }
+            }
+
+            if(casSetFile.exists()) {
+              compileCasSet(casSetFile.getAbsolutePath());
             }
 
             return patrimoinesVisualisables;
@@ -235,7 +245,12 @@ public class GoogleLinkVerifierScreen {
               final List<Patrimoine> patrimoinesVisualisables = get();
               openResultFrame(patrimoinesVisualisables);
             } catch (InterruptedException | ExecutionException e) {
-              showErrorPage("Veuillez vérifier le contenu de vos documents");
+              Throwable cause = e.getCause();
+              if (cause instanceof RuntimeException && cause.getMessage().contains("Objectifs non atteints")) {
+                showErrorPage("Objectifs non atteints");
+              } else {
+                showErrorPage("Veuillez vérifier le contenu de vos documents");
+              }
               throw new RuntimeException(e);
             }
           }
@@ -292,17 +307,64 @@ public class GoogleLinkVerifierScreen {
     errorFrame.setVisible(true);
   }
 
+  private boolean isCasFile(File file) {
+    var casImport = "import school.hei.patrimoine.cas.Cas;";
+    try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+      String line;
+      while ((line = reader.readLine()) != null) {
+        if (line.contains(casImport)) {
+          return true;
+        }
+      }
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+    return false;
+  }
+
+  private boolean isCasSetFile(File file) {
+    var casSetImport = "import school.hei.patrimoine.cas.CasSet;";
+    try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+      String line;
+      while ((line = reader.readLine()) != null) {
+        if (line.contains(casSetImport)) {
+          return true;
+        }
+      }
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+    return false;
+  }
+
+
   private Patrimoine compilePatrimoine(NamedSnippet namedSnippet) {
-    StringCompiler stringCompiler = new StringCompiler();
+    PatrimoineDocsCompiler patrimoineDocsCompiler = new PatrimoineDocsCompiler();
     String className = new ClassNameExtractor().apply(namedSnippet.snippet());
 
-    return (stringCompiler.apply(className, namedSnippet.snippet()));
+    return (patrimoineDocsCompiler.apply(className, namedSnippet.snippet()));
   }
 
   private Patrimoine compilePatrimoine(String filePath){
-    FileCompiler fileCompiler = new FileCompiler();
+    PatrimoineFileCompiler patrimoineFileCompiler = new PatrimoineFileCompiler();
 
-    return (fileCompiler.apply(filePath));
+    return (patrimoineFileCompiler.apply(filePath));
+  }
+
+  private void compileCas(String filePath){
+    CasFileCompiler casFileCompiler = new CasFileCompiler();
+
+    casFileCompiler.apply(filePath);
+  }
+
+  private void compileCasSet(String filePath) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+    CasFileCompiler casFileCompiler = new CasFileCompiler();
+    CasSetAnalyzer casSetAnalyzer = new CasSetAnalyzer();
+    var casSet = casFileCompiler.apply(filePath);
+    var casSetSupplier =
+            (Supplier<CasSet>) casSet.getDeclaredConstructor().newInstance();
+
+    casSetAnalyzer.accept(casSetSupplier.get());
   }
 
   private void openResultFrame(List<Patrimoine> patrimoinesVisualisables) {
