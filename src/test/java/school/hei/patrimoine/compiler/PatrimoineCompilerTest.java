@@ -13,8 +13,6 @@ class PatrimoineCompilerTest {
 
     String code =
         """
-package school.hei.patrimoine.cas.example;
-
 import static java.time.Month.DECEMBER;
 import static java.time.Month.JANUARY;
 import static java.time.Month.MAY;
