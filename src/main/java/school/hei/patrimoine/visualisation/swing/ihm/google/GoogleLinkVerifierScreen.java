@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Supplier;
 import javax.swing.*;
-
 import lombok.extern.slf4j.Slf4j;
 import school.hei.patrimoine.cas.CasSet;
 import school.hei.patrimoine.cas.CasSetAnalyzer;
@@ -45,7 +44,7 @@ public class GoogleLinkVerifierScreen {
   private final GoogleDocsLinkIdInputVerifier docslinkIdInputVerifier =
       new GoogleDocsLinkIdInputVerifier();
   private final GoogleDriveLinkIdInputVerifier drivelinkIdInputVerifier =
-          new GoogleDriveLinkIdInputVerifier();
+      new GoogleDriveLinkIdInputVerifier();
   private final GoogleDocsLinkIdParser docsLinkIdParser = new GoogleDocsLinkIdParser();
   private final GoogleDriveLinkIdParser driveLinkIdParser = new GoogleDriveLinkIdParser();
   private final GoogleApi googleApi;
@@ -202,7 +201,11 @@ public class GoogleLinkVerifierScreen {
     SwingWorker<List<Patrimoine>, Void> worker =
         new SwingWorker<>() {
           @Override
-          protected List<Patrimoine> doInBackground() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+          protected List<Patrimoine> doInBackground()
+              throws InvocationTargetException,
+                  NoSuchMethodException,
+                  InstantiationException,
+                  IllegalAccessException {
             var ids = extractInputIds();
             List<NamedSnippet> codePatrimoinesVisualisables = new ArrayList<>();
             List<Patrimoine> patrimoinesVisualisables = new ArrayList<>();
@@ -217,7 +220,7 @@ public class GoogleLinkVerifierScreen {
               codePatrimoinesVisualisables.add(extractSnippet(id));
             }
 
-            for(var namedId : ids.driveLinkList()) {
+            for (var namedId : ids.driveLinkList()) {
               googleApi.downloadDriveFile(authDetails, namedId.id());
             }
 
@@ -230,7 +233,7 @@ public class GoogleLinkVerifierScreen {
             }
 
             for (File driveFile : driveFiles) {
-              if (isCasSetFile(driveFile)){
+              if (isCasSetFile(driveFile)) {
                 casSetFile = driveFile;
               } else if (isCasFile(driveFile)) {
                 compileCas(driveFile.getAbsolutePath());
@@ -239,7 +242,7 @@ public class GoogleLinkVerifierScreen {
               }
             }
 
-            if(casSetFile.exists()) {
+            if (casSetFile.exists()) {
               compileCasSet(casSetFile.getAbsolutePath());
             }
 
@@ -254,7 +257,8 @@ public class GoogleLinkVerifierScreen {
               openResultFrame(patrimoinesVisualisables);
             } catch (InterruptedException | ExecutionException e) {
               Throwable cause = e.getCause();
-              if (cause instanceof RuntimeException && cause.getMessage().contains("Objectifs non atteints")) {
+              if (cause instanceof RuntimeException
+                  && cause.getMessage().contains("Objectifs non atteints")) {
                 showErrorPage("Objectifs non atteints");
               } else {
                 showErrorPage("Veuillez vérifier le contenu de vos documents");
@@ -345,7 +349,6 @@ public class GoogleLinkVerifierScreen {
     return false;
   }
 
-
   private Patrimoine compilePatrimoine(NamedSnippet namedSnippet) {
     PatrimoineDocsCompiler patrimoineDocsCompiler = new PatrimoineDocsCompiler();
     String className = new ClassNameExtractor().apply(namedSnippet.snippet());
@@ -353,24 +356,27 @@ public class GoogleLinkVerifierScreen {
     return (patrimoineDocsCompiler.apply(className, namedSnippet.snippet()));
   }
 
-  private Patrimoine compilePatrimoine(String filePath){
+  private Patrimoine compilePatrimoine(String filePath) {
     PatrimoineFileCompiler patrimoineFileCompiler = new PatrimoineFileCompiler();
 
     return (patrimoineFileCompiler.apply(filePath));
   }
 
-  private void compileCas(String filePath){
+  private void compileCas(String filePath) {
     CasFileCompiler casFileCompiler = new CasFileCompiler();
 
     casFileCompiler.apply(filePath);
   }
 
-  private void compileCasSet(String filePath) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+  private void compileCasSet(String filePath)
+      throws NoSuchMethodException,
+          InvocationTargetException,
+          InstantiationException,
+          IllegalAccessException {
     CasFileCompiler casFileCompiler = new CasFileCompiler();
     CasSetAnalyzer casSetAnalyzer = new CasSetAnalyzer();
     var casSet = casFileCompiler.apply(filePath);
-    var casSetSupplier =
-            (Supplier<CasSet>) casSet.getDeclaredConstructor().newInstance();
+    var casSetSupplier = (Supplier<CasSet>) casSet.getDeclaredConstructor().newInstance();
 
     casSetAnalyzer.accept(casSetSupplier.get());
   }
@@ -378,5 +384,4 @@ public class GoogleLinkVerifierScreen {
   private void openResultFrame(List<Patrimoine> patrimoinesVisualisables) {
     invokeLater(() -> new MainIHM(patrimoinesVisualisables));
   }
-
 }

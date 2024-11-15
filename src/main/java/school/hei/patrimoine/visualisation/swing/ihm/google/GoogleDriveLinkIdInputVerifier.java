@@ -1,10 +1,10 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google;
 
-import javax.swing.*;
-
 import static java.awt.Color.GREEN;
 import static java.awt.Color.RED;
 import static school.hei.patrimoine.google.GoogleDriveLinkIdParser.GOOGLE_DRIVE_ID_PATTERN;
+
+import javax.swing.*;
 
 public class GoogleDriveLinkIdInputVerifier extends InputVerifier {
   @Override

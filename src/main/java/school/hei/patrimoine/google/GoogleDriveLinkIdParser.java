@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
 
 public class GoogleDriveLinkIdParser implements Function<String, String> {
   public static final Pattern GOOGLE_DRIVE_ID_PATTERN =
-          Pattern.compile("/(?:file/d/|open?id=|uc\\?id=|folders/)([a-zA-Z0-9-_]+)");
+      Pattern.compile("/(?:file/d/|open?id=|uc\\?id=|folders/)([a-zA-Z0-9-_]+)");
 
   @Override
   public String apply(String s) {

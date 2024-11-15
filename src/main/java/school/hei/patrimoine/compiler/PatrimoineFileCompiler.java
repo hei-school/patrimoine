@@ -1,7 +1,6 @@
 package school.hei.patrimoine.compiler;
 
-import lombok.SneakyThrows;
-import school.hei.patrimoine.modele.Patrimoine;
+import static javax.tools.ToolProvider.getSystemJavaCompiler;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -10,8 +9,8 @@ import java.net.URLClassLoader;
 import java.nio.file.Path;
 import java.util.function.Function;
 import java.util.function.Supplier;
-
-import static javax.tools.ToolProvider.getSystemJavaCompiler;
+import lombok.SneakyThrows;
+import school.hei.patrimoine.modele.Patrimoine;
 
 public class PatrimoineFileCompiler implements Function<String, Patrimoine> {
 
@@ -33,7 +32,7 @@ public class PatrimoineFileCompiler implements Function<String, Patrimoine> {
 
     var dynamicClass = loadClass(className, ioDirPath);
     var patrimoineSupplier =
-            (Supplier<Patrimoine>) dynamicClass.getDeclaredConstructor().newInstance();
+        (Supplier<Patrimoine>) dynamicClass.getDeclaredConstructor().newInstance();
     return patrimoineSupplier.get();
   }
 

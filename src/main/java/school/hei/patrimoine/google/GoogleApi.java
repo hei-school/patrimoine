@@ -19,15 +19,13 @@ import com.google.api.services.docs.v1.model.Document;
 import com.google.api.services.docs.v1.model.ParagraphElement;
 import com.google.api.services.docs.v1.model.StructuralElement;
 import com.google.api.services.docs.v1.model.TextRun;
-
+import com.google.api.services.drive.Drive;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-
-import com.google.api.services.drive.Drive;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import school.hei.patrimoine.compiler.ClassNameExtractor;
@@ -43,10 +41,10 @@ public class GoogleApi {
     }
   }
 
-  public static final String APPLICATION_NAME = "patrimoine";
+  private static final String APPLICATION_NAME = "patrimoine";
 
   /** Global instance of the JSON factory. */
-  public static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
+  private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
 
   /** Directory to store authorization tokens for this application. */
   private static final String TOKENS_DIRECTORY_PATH =
@@ -61,10 +59,10 @@ public class GoogleApi {
       System.getProperty("user.home") + "/.patrimoine/google/client.json";
 
   public static final String DOWNLOADS_DIRECTORY_PATH =
-          System.getProperty("user.home") + "/Downloads/drive";
+      System.getProperty("user.home") + "/Downloads/drive";
 
   public static final String PATRIMOINE_JAR_URL =
-          "https://drive.google.com/file/d/1WJWcsNpfDNUlbD0EYQHiYgJlbSBNIX7g/view?usp=drive_link";
+      "https://drive.google.com/file/d/1WJWcsNpfDNUlbD0EYQHiYgJlbSBNIX7g/view?usp=drive_link";
 
   static {
     resetIfExist(DOWNLOADS_DIRECTORY_PATH);
@@ -157,9 +155,7 @@ public class GoogleApi {
     try {
       // Deletes existing directory if present
       if (directory.exists()) {
-        Files.walk(path)
-                .map(Path::toFile)
-                .forEach(File::delete);
+        Files.walk(path).map(Path::toFile).forEach(File::delete);
       }
       Files.createDirectories(path);
     } catch (IOException e) {
@@ -168,7 +164,8 @@ public class GoogleApi {
   }
 
   public void downloadDriveFile(GoogleAuthenticationDetails authDetails, String fileId) {
-    Drive driveService = new Drive.Builder(authDetails.httpTransport(), JSON_FACTORY, authDetails.credential())
+    Drive driveService =
+        new Drive.Builder(authDetails.httpTransport(), JSON_FACTORY, authDetails.credential())
             .setApplicationName(APPLICATION_NAME)
             .build();
 
@@ -176,7 +173,7 @@ public class GoogleApi {
     File tempFile = new File(System.getProperty("java.io.tmpdir"), "temp_download.java");
 
     try (InputStream inputStream = driveService.files().get(fileId).executeMediaAsInputStream();
-         FileOutputStream tempOutputStream = new FileOutputStream(tempFile)) {
+        FileOutputStream tempOutputStream = new FileOutputStream(tempFile)) {
 
       // Download content to temporary file
       byte[] buffer = new byte[1024];
@@ -186,7 +183,8 @@ public class GoogleApi {
       }
 
       // Read the contents of the temporary file as a String
-      String fileContent = new String(Files.readAllBytes(tempFile.toPath()), StandardCharsets.UTF_8);
+      String fileContent =
+          new String(Files.readAllBytes(tempFile.toPath()), StandardCharsets.UTF_8);
 
       // Extract class name
       String className = new ClassNameExtractor().apply(fileContent);
@@ -198,7 +196,7 @@ public class GoogleApi {
       File finalFile = new File(DOWNLOADS_DIRECTORY_PATH, className + ".java");
 
       try (FileOutputStream finalOutputStream = new FileOutputStream(finalFile);
-           FileInputStream tempInputStream = new FileInputStream(tempFile)) {
+          FileInputStream tempInputStream = new FileInputStream(tempFile)) {
 
         while ((bytesRead = tempInputStream.read(buffer)) != -1) {
           finalOutputStream.write(buffer, 0, bytesRead);
@@ -216,7 +214,8 @@ public class GoogleApi {
   }
 
   public void downloadJDependencyFile(GoogleAuthenticationDetails authDetails, String fileId) {
-    Drive driveService = new Drive.Builder(authDetails.httpTransport(), JSON_FACTORY, authDetails.credential())
+    Drive driveService =
+        new Drive.Builder(authDetails.httpTransport(), JSON_FACTORY, authDetails.credential())
             .setApplicationName(APPLICATION_NAME)
             .build();
 
@@ -224,7 +223,7 @@ public class GoogleApi {
     File tempFile = new File(System.getProperty("java.io.tmpdir"), "temp_download.java");
 
     try (InputStream inputStream = driveService.files().get(fileId).executeMediaAsInputStream();
-         FileOutputStream tempOutputStream = new FileOutputStream(tempFile)) {
+        FileOutputStream tempOutputStream = new FileOutputStream(tempFile)) {
 
       // Download content to temporary file
       byte[] buffer = new byte[1024];
@@ -234,13 +233,14 @@ public class GoogleApi {
       }
 
       // Read the contents of the temporary file as a String
-      String fileContent = new String(Files.readAllBytes(tempFile.toPath()), StandardCharsets.UTF_8);
+      String fileContent =
+          new String(Files.readAllBytes(tempFile.toPath()), StandardCharsets.UTF_8);
 
       // Define final file name based on class name
       File finalFile = new File(DEPENDENCY_JAR_PATH, "patrimoine-1.0-SNAPSHOT.jar");
 
       try (FileOutputStream finalOutputStream = new FileOutputStream(finalFile);
-           FileInputStream tempInputStream = new FileInputStream(tempFile)) {
+          FileInputStream tempInputStream = new FileInputStream(tempFile)) {
 
         while ((bytesRead = tempInputStream.read(buffer)) != -1) {
           finalOutputStream.write(buffer, 0, bytesRead);
@@ -256,5 +256,4 @@ public class GoogleApi {
       throw new RuntimeException(e);
     }
   }
-
 }
