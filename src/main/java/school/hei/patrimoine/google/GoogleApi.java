@@ -2,6 +2,7 @@ package school.hei.patrimoine.google;
 
 import static com.google.api.services.docs.v1.DocsScopes.DOCUMENTS_READONLY;
 import static com.google.api.services.drive.DriveScopes.DRIVE_READONLY;
+import static school.hei.patrimoine.compiler.CasFileCompiler.DEPENDENCY_JAR_PATH;
 
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
@@ -42,10 +43,10 @@ public class GoogleApi {
     }
   }
 
-  private static final String APPLICATION_NAME = "patrimoine";
+  public static final String APPLICATION_NAME = "patrimoine";
 
   /** Global instance of the JSON factory. */
-  private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
+  public static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
 
   /** Directory to store authorization tokens for this application. */
   private static final String TOKENS_DIRECTORY_PATH =
@@ -61,6 +62,9 @@ public class GoogleApi {
 
   public static final String DOWNLOADS_DIRECTORY_PATH =
           System.getProperty("user.home") + "/Downloads/drive";
+
+  public static final String PATRIMOINE_JAR_URL =
+          "https://drive.google.com/file/d/1WJWcsNpfDNUlbD0EYQHiYgJlbSBNIX7g/view?usp=drive_link";
 
   static {
     resetIfExist(DOWNLOADS_DIRECTORY_PATH);
@@ -163,7 +167,7 @@ public class GoogleApi {
     }
   }
 
-  public void downloadFile(GoogleAuthenticationDetails authDetails, String fileId) {
+  public void downloadDriveFile(GoogleAuthenticationDetails authDetails, String fileId) {
     Drive driveService = new Drive.Builder(authDetails.httpTransport(), JSON_FACTORY, authDetails.credential())
             .setApplicationName(APPLICATION_NAME)
             .build();
@@ -192,6 +196,48 @@ public class GoogleApi {
 
       // Define final file name based on class name
       File finalFile = new File(DOWNLOADS_DIRECTORY_PATH, className + ".java");
+
+      try (FileOutputStream finalOutputStream = new FileOutputStream(finalFile);
+           FileInputStream tempInputStream = new FileInputStream(tempFile)) {
+
+        while ((bytesRead = tempInputStream.read(buffer)) != -1) {
+          finalOutputStream.write(buffer, 0, bytesRead);
+        }
+
+      } finally {
+        if (tempFile.exists()) {
+          tempFile.delete();
+        }
+      }
+
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  public void downloadJDependencyFile(GoogleAuthenticationDetails authDetails, String fileId) {
+    Drive driveService = new Drive.Builder(authDetails.httpTransport(), JSON_FACTORY, authDetails.credential())
+            .setApplicationName(APPLICATION_NAME)
+            .build();
+
+    // Create a temporary file to store downloaded content
+    File tempFile = new File(System.getProperty("java.io.tmpdir"), "temp_download.java");
+
+    try (InputStream inputStream = driveService.files().get(fileId).executeMediaAsInputStream();
+         FileOutputStream tempOutputStream = new FileOutputStream(tempFile)) {
+
+      // Download content to temporary file
+      byte[] buffer = new byte[1024];
+      int bytesRead;
+      while ((bytesRead = inputStream.read(buffer)) != -1) {
+        tempOutputStream.write(buffer, 0, bytesRead);
+      }
+
+      // Read the contents of the temporary file as a String
+      String fileContent = new String(Files.readAllBytes(tempFile.toPath()), StandardCharsets.UTF_8);
+
+      // Define final file name based on class name
+      File finalFile = new File(DEPENDENCY_JAR_PATH, "patrimoine-1.0-SNAPSHOT.jar");
 
       try (FileOutputStream finalOutputStream = new FileOutputStream(finalFile);
            FileInputStream tempInputStream = new FileInputStream(tempFile)) {

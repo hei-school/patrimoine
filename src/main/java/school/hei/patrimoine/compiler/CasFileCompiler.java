@@ -15,8 +15,8 @@ public class CasFileCompiler implements Function<String, Class<?>> {
 
     private static final String COMPILE_DIR_NAME =
             System.getProperty("user.home") + "/.patrimoine/compile";
-    private static final String DEPENDENCY_JAR =
-            System.getProperty("user.home") + "/Downloads/jar/patrimoine-1.0-SNAPSHOT.jar";
+    public static final String DEPENDENCY_JAR_PATH =
+            System.getProperty("user.home") + "/Downloads/drive";
 
     static {
         new File(COMPILE_DIR_NAME).mkdirs();
@@ -46,7 +46,8 @@ public class CasFileCompiler implements Function<String, Class<?>> {
 
     private void compile(Path ioDirPath, Path sourcePath) {
         var compiler = getSystemJavaCompiler();
-        String classPath = String.join(File.pathSeparator, DEPENDENCY_JAR, COMPILE_DIR_NAME);
+        var PATRIMOINE_JAR_PATH = Path.of(DEPENDENCY_JAR_PATH).resolve("patrimoine-1.0-SNAPSHOT.jar");
+        String classPath = String.join(File.pathSeparator, PATRIMOINE_JAR_PATH.toString(), COMPILE_DIR_NAME);
 
         int result = compiler.run(
                 null,

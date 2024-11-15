@@ -9,7 +9,8 @@ import static javax.swing.SwingConstants.LEFT;
 import static javax.swing.SwingUtilities.invokeLater;
 import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
 import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
-import static school.hei.patrimoine.google.GoogleApi.DOWNLOADS_DIRECTORY_PATH;
+import static school.hei.patrimoine.compiler.CasFileCompiler.DEPENDENCY_JAR_PATH;
+import static school.hei.patrimoine.google.GoogleApi.*;
 
 import java.awt.*;
 import java.awt.event.ActionListener;
@@ -20,6 +21,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Supplier;
 import javax.swing.*;
+
 import lombok.extern.slf4j.Slf4j;
 import school.hei.patrimoine.cas.CasSet;
 import school.hei.patrimoine.cas.CasSetAnalyzer;
@@ -205,12 +207,18 @@ public class GoogleLinkVerifierScreen {
             List<NamedSnippet> codePatrimoinesVisualisables = new ArrayList<>();
             List<Patrimoine> patrimoinesVisualisables = new ArrayList<>();
 
+            resetIfExist(DEPENDENCY_JAR_PATH);
+            var patrimoineJarId = driveLinkIdParser.apply(PATRIMOINE_JAR_URL);
+            System.out.println(patrimoineJarId);
+
+            googleApi.downloadJDependencyFile(authDetails, patrimoineJarId);
+
             for (var id : ids.docsLinkList()) {
               codePatrimoinesVisualisables.add(extractSnippet(id));
             }
 
             for(var namedId : ids.driveLinkList()) {
-              googleApi.downloadFile(authDetails, namedId.id());
+              googleApi.downloadDriveFile(authDetails, namedId.id());
             }
 
             File driveDirectory = new File(DOWNLOADS_DIRECTORY_PATH);
@@ -370,4 +378,5 @@ public class GoogleLinkVerifierScreen {
   private void openResultFrame(List<Patrimoine> patrimoinesVisualisables) {
     invokeLater(() -> new MainIHM(patrimoinesVisualisables));
   }
+
 }
