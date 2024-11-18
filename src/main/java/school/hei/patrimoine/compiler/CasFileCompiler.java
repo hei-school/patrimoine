@@ -36,13 +36,14 @@ public class CasFileCompiler implements Function<String, Class<?>> {
     boolean INITIALIZE_CLASS = true;
 
     return Class.forName(
-        className, INITIALIZE_CLASS, URLClassLoader.newInstance(new URL[] {ioDirPath.toUri().toURL()}));
+        className,
+        INITIALIZE_CLASS,
+        URLClassLoader.newInstance(new URL[] {ioDirPath.toUri().toURL()}));
   }
 
   private void compile(Path ioDirPath, Path sourcePath) {
     var compiler = getSystemJavaCompiler();
-    String classPath =
-        String.join(File.pathSeparator, PATRIMOINE_JAR_PATH, COMPILE_DIR_NAME);
+    String classPath = String.join(File.pathSeparator, PATRIMOINE_JAR_PATH, COMPILE_DIR_NAME);
 
     int result =
         compiler.run(

@@ -1,16 +1,15 @@
 package school.hei.patrimoine.cas.example;
 
+import static java.time.Month.*;
+import static school.hei.patrimoine.modele.Argent.ariary;
+import static school.hei.patrimoine.modele.Devise.MGA;
+
+import java.time.LocalDate;
+import java.util.Set;
 import school.hei.patrimoine.cas.Cas;
 import school.hei.patrimoine.modele.Devise;
 import school.hei.patrimoine.modele.Personne;
 import school.hei.patrimoine.modele.possession.*;
-
-import java.time.LocalDate;
-import java.util.Set;
-
-import static java.time.Month.*;
-import static school.hei.patrimoine.modele.Argent.ariary;
-import static school.hei.patrimoine.modele.Devise.MGA;
 
 public class EtudiantPireCas extends Cas {
 

@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Supplier;
 import javax.swing.*;
-
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import school.hei.patrimoine.cas.CasSet;
@@ -275,8 +274,9 @@ public class GoogleLinkVerifierScreen {
     for (JTextField field : inputFields) {
       var rawText = field.getText();
 
-      if (rawText.startsWith("""
-              https://drive.google.com/""")) {
+      if (rawText.startsWith(
+          """
+          https://drive.google.com/""")) {
         var parsedId = driveLinkIdParser.apply(rawText.trim());
         String urlName = linksData.driveLinkList().get(inputFields.indexOf(field)).name();
         NamedID namedURL = new NamedID(urlName, parsedId);

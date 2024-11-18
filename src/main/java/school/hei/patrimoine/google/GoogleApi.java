@@ -25,7 +25,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Objects;
-
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import school.hei.patrimoine.compiler.ClassNameExtractor;
@@ -49,29 +48,28 @@ public class GoogleApi {
   private static final String USER_HOME = System.getProperty("user.home");
 
   /** Directory to store authorization tokens for this application. */
-  private static final String TOKENS_DIRECTORY_PATH =
-      USER_HOME + "/.patrimoine/google/tokens";
+  private static final String TOKENS_DIRECTORY_PATH = USER_HOME + "/.patrimoine/google/tokens";
 
   static {
     new File(TOKENS_DIRECTORY_PATH).mkdirs();
   }
 
   private static final List<String> SCOPES = List.of(DOCUMENTS_READONLY, DRIVE_READONLY);
-  private static final String CREDENTIALS_FILE_PATH =
-      USER_HOME + "/.patrimoine/google/client.json";
+  private static final String CREDENTIALS_FILE_PATH = USER_HOME + "/.patrimoine/google/client.json";
 
   public static final String DOWNLOADS_DIRECTORY_PATH =
-          Path.of(System.getProperty("java.io.tmpdir"), "Downloads", "drive").toString();
+      Path.of(System.getProperty("java.io.tmpdir"), "Downloads", "drive").toString();
 
   public static final String PATRIMOINE_JAR_URL =
       "https://drive.google.com/file/d/1WJWcsNpfDNUlbD0EYQHiYgJlbSBNIX7g/view?usp=drive_link";
 
   public static final String COMPILE_DIR_NAME =
-          Path.of(System.getProperty("java.io.tmpdir"), ".patrimoine", "compile").toString();
+      Path.of(System.getProperty("java.io.tmpdir"), ".patrimoine", "compile").toString();
 
   private static final String PATRIMOINE_JAR_NAME = "patrimoine-1.0-SNAPSHOT.jar";
 
-  public static final String PATRIMOINE_JAR_PATH = String.valueOf(Path.of(DOWNLOADS_DIRECTORY_PATH).resolve(PATRIMOINE_JAR_NAME));
+  public static final String PATRIMOINE_JAR_PATH =
+      String.valueOf(Path.of(DOWNLOADS_DIRECTORY_PATH).resolve(PATRIMOINE_JAR_NAME));
 
   static {
     resetIfExist(DOWNLOADS_DIRECTORY_PATH);
@@ -88,7 +86,7 @@ public class GoogleApi {
       throws IOException {
     // Load client secrets.
     InputStream in = new FileInputStream(CREDENTIALS_FILE_PATH);
-      GoogleClientSecrets clientSecrets =
+    GoogleClientSecrets clientSecrets =
         GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
 
     // Build flow and trigger user authorization request.
@@ -189,8 +187,7 @@ public class GoogleApi {
       }
 
       // Read the contents of the temporary file as a String
-      String fileContent =
-              Files.readString(tempFile.toPath());
+      String fileContent = Files.readString(tempFile.toPath());
 
       // Extract class name
       String className = new ClassNameExtractor().apply(fileContent);
