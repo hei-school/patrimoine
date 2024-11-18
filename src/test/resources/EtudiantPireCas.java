@@ -1,5 +1,3 @@
-import static java.time.Month.*;
-
 import java.time.LocalDate;
 
 public class EtudiantPireCas {

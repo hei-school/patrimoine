@@ -15,7 +15,7 @@ class PatrimoineFileCompilerTest {
 
   @SneakyThrows
   @Test
-  void convert_a_string_to_patrimoine() {
+  void convert_file_to_patrimoine() {
 
     ClassLoader classLoader = PatrimoineFileCompilerTest.class.getClassLoader();
     InputStream resourceStream = classLoader.getResourceAsStream("PatrimoineRicheSupplier.java");

@@ -15,10 +15,10 @@ class CasFileCompilerTest {
 
   @SneakyThrows
   @Test
-  void convert_a_string_to_patrimoine() {
+  void compile_file_to_cas() {
 
     ClassLoader classLoader = CasFileCompilerTest.class.getClassLoader();
-    InputStream resourceStream = classLoader.getResourceAsStream("files/EtudiantPireCas.java");
+    InputStream resourceStream = classLoader.getResourceAsStream("EtudiantPireCas.java");
 
     if (resourceStream == null) {
       throw new IllegalStateException(
