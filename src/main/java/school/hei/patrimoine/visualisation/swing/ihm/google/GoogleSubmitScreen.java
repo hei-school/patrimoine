@@ -7,6 +7,7 @@ import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import javax.swing.*;
@@ -34,12 +35,20 @@ public class GoogleSubmitScreen {
     inputPanel = new JPanel();
     inputPanel.setLayout(new GridBagLayout());
 
-    docsField = new JTextArea(5, 70);
-    driveField = new JTextArea(5, 70);
+    docsField = createDocsField();
+    driveField = createDriveField();
     addButtons();
     addInitialInput();
 
     configureInputFrame();
+  }
+
+  private JTextArea createDocsField() {
+    return new JTextArea(5, 70);
+  }
+
+  private JTextArea createDriveField() {
+    return new JTextArea(5, 70);
   }
 
   private void configureInputFrame() {
@@ -143,7 +152,7 @@ public class GoogleSubmitScreen {
         new SwingWorker<>() {
           @Override
           protected GoogleLinkList<NamedString> doInBackground() {
-            return extractInputData();
+            return extractGoogleLinks();
           }
 
           @Override
@@ -162,41 +171,35 @@ public class GoogleSubmitScreen {
     loadingDialog.setVisible(true);
   }
 
-  private GoogleLinkList<NamedString> extractInputData() {
-    List<NamedString> docslinkDataList = new ArrayList<>();
-    List<NamedString> drivelinkDataList = new ArrayList<>();
+  private List<NamedString> extractInputData(List<String> lines) {
+    List<NamedString> linkDataList = new ArrayList<>();
 
+    for (String line : lines) {
+      String[] parts = line.split(":", 2);
+
+      if (parts.length == 2) {
+        String linkName = parts[0].trim();
+        String linkValue = parts[1].trim();
+
+        NamedString linkData = new NamedString(linkName, linkValue);
+        linkDataList.add(linkData);
+      }
+    }
+
+    return linkDataList;
+  }
+
+  private GoogleLinkList<NamedString> extractGoogleLinks() {
     String docsRawText = docsField.getText();
-    String[] docsLines = docsRawText.split("\n");
-
     String driveRawText = driveField.getText();
-    String[] driveLines = driveRawText.split("\n");
 
-    for (String line : docsLines) {
-      String[] parts = line.split(":", 2);
+    List<String> docsLines = Arrays.asList(docsRawText.split("\n"));
+    List<String> driveLines = Arrays.asList(driveRawText.split("\n"));
 
-      if (parts.length == 2) {
-        String linkName = parts[0].trim();
-        String linkValue = parts[1].trim();
+    List<NamedString> docsLink = extractInputData(docsLines);
+    List<NamedString> driveLink = extractInputData(driveLines);
 
-        NamedString linkData = new NamedString(linkName, linkValue);
-        docslinkDataList.add(linkData);
-      }
-    }
-
-    for (String line : driveLines) {
-      String[] parts = line.split(":", 2);
-
-      if (parts.length == 2) {
-        String linkName = parts[0].trim();
-        String linkValue = parts[1].trim();
-
-        NamedString linkData = new NamedString(linkName, linkValue);
-        drivelinkDataList.add(linkData);
-      }
-    }
-
-    return new GoogleLinkList<>(docslinkDataList, drivelinkDataList);
+    return new GoogleLinkList<>(docsLink, driveLink);
   }
 
   private void openResultFrame(

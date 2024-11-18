@@ -9,18 +9,18 @@ import static javax.swing.SwingConstants.LEFT;
 import static javax.swing.SwingUtilities.invokeLater;
 import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
 import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
-import static school.hei.patrimoine.compiler.CasFileCompiler.DEPENDENCY_JAR_PATH;
 import static school.hei.patrimoine.google.GoogleApi.*;
 
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.io.*;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Supplier;
 import javax.swing.*;
+
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import school.hei.patrimoine.cas.CasSet;
 import school.hei.patrimoine.cas.CasSetAnalyzer;
@@ -201,16 +201,12 @@ public class GoogleLinkVerifierScreen {
     SwingWorker<List<Patrimoine>, Void> worker =
         new SwingWorker<>() {
           @Override
-          protected List<Patrimoine> doInBackground()
-              throws InvocationTargetException,
-                  NoSuchMethodException,
-                  InstantiationException,
-                  IllegalAccessException {
+          protected List<Patrimoine> doInBackground() {
             var ids = extractInputIds();
             List<NamedSnippet> codePatrimoinesVisualisables = new ArrayList<>();
             List<Patrimoine> patrimoinesVisualisables = new ArrayList<>();
 
-            resetIfExist(DEPENDENCY_JAR_PATH);
+            resetIfExist(DOWNLOADS_DIRECTORY_PATH);
             var patrimoineJarId = driveLinkIdParser.apply(PATRIMOINE_JAR_URL);
             System.out.println(patrimoineJarId);
 
@@ -279,7 +275,8 @@ public class GoogleLinkVerifierScreen {
     for (JTextField field : inputFields) {
       var rawText = field.getText();
 
-      if (rawText.contains("drive")) {
+      if (rawText.startsWith("""
+              https://drive.google.com/""")) {
         var parsedId = driveLinkIdParser.apply(rawText.trim());
         String urlName = linksData.driveLinkList().get(inputFields.indexOf(field)).name();
         NamedID namedURL = new NamedID(urlName, parsedId);
@@ -368,11 +365,8 @@ public class GoogleLinkVerifierScreen {
     casFileCompiler.apply(filePath);
   }
 
-  private void compileCasSet(String filePath)
-      throws NoSuchMethodException,
-          InvocationTargetException,
-          InstantiationException,
-          IllegalAccessException {
+  @SneakyThrows
+  private void compileCasSet(String filePath) {
     CasFileCompiler casFileCompiler = new CasFileCompiler();
     CasSetAnalyzer casSetAnalyzer = new CasSetAnalyzer();
     var casSet = casFileCompiler.apply(filePath);

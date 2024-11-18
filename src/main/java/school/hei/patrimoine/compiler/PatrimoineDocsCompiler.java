@@ -1,6 +1,7 @@
 package school.hei.patrimoine.compiler;
 
 import static javax.tools.ToolProvider.getSystemJavaCompiler;
+import static school.hei.patrimoine.google.GoogleApi.COMPILE_DIR_NAME;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -14,9 +15,6 @@ import lombok.SneakyThrows;
 import school.hei.patrimoine.modele.Patrimoine;
 
 public class PatrimoineDocsCompiler implements BiFunction<String, String, Patrimoine> {
-
-  private static final String COMPILE_DIR_NAME =
-      System.getProperty("user.home") + "/.patrimoine/compile";
 
   static {
     new File(COMPILE_DIR_NAME).mkdirs();
@@ -37,11 +35,12 @@ public class PatrimoineDocsCompiler implements BiFunction<String, String, Patrim
     return patrimoineSupplier.get();
   }
 
-  private Class<?> loadClass(String className, Path ioDirPath)
-      throws MalformedURLException, ClassNotFoundException {
+  @SneakyThrows
+  private Class<?> loadClass(String className, Path ioDirPath) {
     var classLoader = URLClassLoader.newInstance(new URL[] {ioDirPath.toUri().toURL()});
+    boolean INITIALIZE_CLASS = true;
 
-    return Class.forName(className, true, classLoader);
+    return Class.forName(className, INITIALIZE_CLASS, classLoader);
   }
 
   private void compile(Path ioDirPath, Path sourcePath) {

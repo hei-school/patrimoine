@@ -2,7 +2,6 @@ package school.hei.patrimoine.google;
 
 import static com.google.api.services.docs.v1.DocsScopes.DOCUMENTS_READONLY;
 import static com.google.api.services.drive.DriveScopes.DRIVE_READONLY;
-import static school.hei.patrimoine.compiler.CasFileCompiler.DEPENDENCY_JAR_PATH;
 
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
@@ -21,11 +20,12 @@ import com.google.api.services.docs.v1.model.StructuralElement;
 import com.google.api.services.docs.v1.model.TextRun;
 import com.google.api.services.drive.Drive;
 import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Objects;
+
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import school.hei.patrimoine.compiler.ClassNameExtractor;
@@ -46,9 +46,11 @@ public class GoogleApi {
   /** Global instance of the JSON factory. */
   private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
 
+  private static final String USER_HOME = System.getProperty("user.home");
+
   /** Directory to store authorization tokens for this application. */
   private static final String TOKENS_DIRECTORY_PATH =
-      System.getProperty("user.home") + "/.patrimoine/google/tokens";
+      USER_HOME + "/.patrimoine/google/tokens";
 
   static {
     new File(TOKENS_DIRECTORY_PATH).mkdirs();
@@ -56,13 +58,20 @@ public class GoogleApi {
 
   private static final List<String> SCOPES = List.of(DOCUMENTS_READONLY, DRIVE_READONLY);
   private static final String CREDENTIALS_FILE_PATH =
-      System.getProperty("user.home") + "/.patrimoine/google/client.json";
+      USER_HOME + "/.patrimoine/google/client.json";
 
   public static final String DOWNLOADS_DIRECTORY_PATH =
-      System.getProperty("user.home") + "/Downloads/drive";
+          Path.of(System.getProperty("java.io.tmpdir"), "Downloads", "drive").toString();
 
   public static final String PATRIMOINE_JAR_URL =
       "https://drive.google.com/file/d/1WJWcsNpfDNUlbD0EYQHiYgJlbSBNIX7g/view?usp=drive_link";
+
+  public static final String COMPILE_DIR_NAME =
+          Path.of(System.getProperty("java.io.tmpdir"), ".patrimoine", "compile").toString();
+
+  private static final String PATRIMOINE_JAR_NAME = "patrimoine-1.0-SNAPSHOT.jar";
+
+  public static final String PATRIMOINE_JAR_PATH = String.valueOf(Path.of(DOWNLOADS_DIRECTORY_PATH).resolve(PATRIMOINE_JAR_NAME));
 
   static {
     resetIfExist(DOWNLOADS_DIRECTORY_PATH);
@@ -79,10 +88,7 @@ public class GoogleApi {
       throws IOException {
     // Load client secrets.
     InputStream in = new FileInputStream(CREDENTIALS_FILE_PATH);
-    if (in == null) {
-      throw new FileNotFoundException("Resource not found: " + CREDENTIALS_FILE_PATH);
-    }
-    GoogleClientSecrets clientSecrets =
+      GoogleClientSecrets clientSecrets =
         GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
 
     // Build flow and trigger user authorization request.
@@ -106,7 +112,7 @@ public class GoogleApi {
 
       // Delete the old stored token
       if (tokenDirectory.exists() && tokenDirectory.isDirectory()) {
-        for (File file : tokenDirectory.listFiles()) {
+        for (File file : Objects.requireNonNull(tokenDirectory.listFiles())) {
           if (file.isFile()) {
             file.delete();
           }
@@ -184,7 +190,7 @@ public class GoogleApi {
 
       // Read the contents of the temporary file as a String
       String fileContent =
-          new String(Files.readAllBytes(tempFile.toPath()), StandardCharsets.UTF_8);
+              Files.readString(tempFile.toPath());
 
       // Extract class name
       String className = new ClassNameExtractor().apply(fileContent);
@@ -232,12 +238,8 @@ public class GoogleApi {
         tempOutputStream.write(buffer, 0, bytesRead);
       }
 
-      // Read the contents of the temporary file as a String
-      String fileContent =
-          new String(Files.readAllBytes(tempFile.toPath()), StandardCharsets.UTF_8);
-
       // Define final file name based on class name
-      File finalFile = new File(DEPENDENCY_JAR_PATH, "patrimoine-1.0-SNAPSHOT.jar");
+      File finalFile = new File(DOWNLOADS_DIRECTORY_PATH, PATRIMOINE_JAR_NAME);
 
       try (FileOutputStream finalOutputStream = new FileOutputStream(finalFile);
           FileInputStream tempInputStream = new FileInputStream(tempFile)) {
