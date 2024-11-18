@@ -2,25 +2,20 @@ package school.hei.patrimoine.compiler;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.time.LocalDate;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
-import school.hei.patrimoine.cas.example.EtudiantPireCas;
 
 class CasFileCompilerTest {
 
+  @SneakyThrows
   @Test
-  void convert_a_string_to_patrimoine()
-      throws IOException,
-          NoSuchMethodException,
-          InvocationTargetException,
-          InstantiationException,
-          IllegalAccessException {
+  void convert_a_string_to_patrimoine() {
 
     ClassLoader classLoader = CasFileCompilerTest.class.getClassLoader();
     InputStream resourceStream = classLoader.getResourceAsStream("files/EtudiantPireCas.java");
@@ -35,13 +30,14 @@ class CasFileCompilerTest {
     Files.createFile(tempFile);
     Files.copy(resourceStream, tempFile, StandardCopyOption.REPLACE_EXISTING);
 
-    ClassNameExtractor classNameExtractor = new ClassNameExtractor();
     CasFileCompiler casFileCompiler = new CasFileCompiler();
     var etudiantPireCasClass = casFileCompiler.apply(tempFile.toAbsolutePath().toString());
-    var etudiantCas = (EtudiantPireCas) etudiantPireCasClass.getDeclaredConstructor().newInstance();
-    System.out.println(etudiantCas.patrimoine());
+    var etudiantCas = etudiantPireCasClass.getDeclaredConstructor().newInstance();
 
-    assertEquals("EtudiantCas", classNameExtractor.apply(String.valueOf(etudiantCas)));
+    assertEquals("Ilo", etudiantCas.getClass().getDeclaredField("nom").get(etudiantCas));
+    assertEquals(
+        LocalDate.of(2000, 1, 1), etudiantCas.getClass().getDeclaredField("date").get(etudiantCas));
+    assertEquals(3000, etudiantCas.getClass().getDeclaredField("devise").get(etudiantCas));
 
     Files.delete(tempFile);
   }

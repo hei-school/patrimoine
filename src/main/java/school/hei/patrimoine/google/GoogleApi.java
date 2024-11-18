@@ -57,14 +57,12 @@ public class GoogleApi {
   private static final List<String> SCOPES = List.of(DOCUMENTS_READONLY, DRIVE_READONLY);
   private static final String CREDENTIALS_FILE_PATH = USER_HOME + "/.patrimoine/google/client.json";
 
-  public static final String DOWNLOADS_DIRECTORY_PATH =
-      Path.of(System.getProperty("java.io.tmpdir"), "Downloads", "drive").toString();
+  public static final String DOWNLOADS_DIRECTORY_PATH = USER_HOME + "/Downloads/drive";
 
   public static final String PATRIMOINE_JAR_URL =
-      "https://drive.google.com/file/d/1WJWcsNpfDNUlbD0EYQHiYgJlbSBNIX7g/view?usp=drive_link";
+      "https://drive.google.com/file/d/1Gm6MpMfWwQbdrk6nqFm3qyDd0GTURK2r/view?usp=drive_link";
 
-  public static final String COMPILE_DIR_NAME =
-      Path.of(System.getProperty("java.io.tmpdir"), ".patrimoine", "compile").toString();
+  public static final String COMPILE_DIR_NAME = USER_HOME + "/.patrimoine/compile";
 
   private static final String PATRIMOINE_JAR_NAME = "patrimoine-1.0-SNAPSHOT.jar";
 
