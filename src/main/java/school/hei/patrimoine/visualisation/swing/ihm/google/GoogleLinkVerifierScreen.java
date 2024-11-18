@@ -14,7 +14,7 @@ import static school.hei.patrimoine.google.GoogleApi.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.io.*;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Supplier;
@@ -49,6 +49,8 @@ public class GoogleLinkVerifierScreen {
   private final GoogleApi googleApi;
   private final GoogleAuthenticationDetails authDetails;
   private final GoogleLinkList<NamedString> linksData;
+  private int inputYPosition;
+  private final File driveDirectory;
 
   public GoogleLinkVerifierScreen(
       GoogleApi googleApi,
@@ -60,6 +62,8 @@ public class GoogleLinkVerifierScreen {
     inputFrame = newInputFrame();
     inputPanel = new JPanel(new GridBagLayout());
     inputFields = new ArrayList<>();
+    inputYPosition = 2;
+    this.driveDirectory = new File(DOWNLOADS_DIRECTORY_PATH);
 
     addButtons();
     addInputFieldsFromData();
@@ -124,44 +128,64 @@ public class GoogleLinkVerifierScreen {
   }
 
   private void addInputFieldsFromData() {
+    addNewGoogleDocsTextFields(linksData.docsLinkList());
+    addNewGoogleDriveTextFields(linksData.driveLinkList());
+  }
+
+  private void addNewGoogleDocsTextFields(List<NamedString> docsLinks) {
+    docsLinks.forEach(this::addDocsLinkTextField);
+  }
+
+  private void addNewGoogleDriveTextFields(List<NamedString> driveLinks) {
+    driveLinks.forEach(this::addDriveLinkTextField);
+  }
+
+  private GridBagConstraints createGridBagConstraints() {
     GridBagConstraints gbc = new GridBagConstraints();
     gbc.gridx = 0;
     gbc.fill = HORIZONTAL;
     gbc.insets = new Insets(10, 50, 10, 50);
+    return gbc;
+  }
 
-    int yPosition = 2;
+  private void addDocsLinkTextField(NamedString linkData) {
+    GridBagConstraints gbc = createGridBagConstraints();
 
-    for (NamedString linkData : linksData.docsLinkList()) {
-      var nameLabel = new JLabel(linkData.name());
-      nameLabel.setFont(new Font("Arial", BOLD, 18));
-      nameLabel.setHorizontalAlignment(LEFT);
+    JLabel nameLabel = new JLabel(linkData.name());
+    nameLabel.setFont(new Font("Arial", BOLD, 18));
+    nameLabel.setHorizontalAlignment(LEFT);
 
-      gbc.gridy = yPosition++;
-      inputPanel.add(nameLabel, gbc);
+    gbc.gridy = nextYPosition();
+    inputPanel.add(nameLabel, gbc);
 
-      JTextField newField = newGoogleDocsLinkTextField(linkData.value());
-      inputFields.add(newField);
+    JTextField newField = newGoogleDocsLinkTextField(linkData.value());
+    inputFields.add(newField);
 
-      JScrollPane scrollPane = new JScrollPane(newField);
-      gbc.gridy = yPosition++;
-      inputPanel.add(scrollPane, gbc);
-    }
+    JScrollPane scrollPane = new JScrollPane(newField);
+    gbc.gridy = nextYPosition();
+    inputPanel.add(scrollPane, gbc);
+  }
 
-    for (NamedString linkData : linksData.driveLinkList()) {
-      var nameLabel = new JLabel(linkData.name());
-      nameLabel.setFont(new Font("Arial", BOLD, 18));
-      nameLabel.setHorizontalAlignment(LEFT);
+  private void addDriveLinkTextField(NamedString linkData) {
+    GridBagConstraints gbc = createGridBagConstraints();
 
-      gbc.gridy = yPosition++;
-      inputPanel.add(nameLabel, gbc);
+    JLabel nameLabel = new JLabel(linkData.name());
+    nameLabel.setFont(new Font("Arial", BOLD, 18));
+    nameLabel.setHorizontalAlignment(LEFT);
 
-      JTextField newField = newGoogleDriveLinkTextField(linkData.value());
-      inputFields.add(newField);
+    gbc.gridy = nextYPosition();
+    inputPanel.add(nameLabel, gbc);
 
-      JScrollPane scrollPane = new JScrollPane(newField);
-      gbc.gridy = yPosition++;
-      inputPanel.add(scrollPane, gbc);
-    }
+    JTextField newField = newGoogleDriveLinkTextField(linkData.value());
+    inputFields.add(newField);
+
+    JScrollPane scrollPane = new JScrollPane(newField);
+    gbc.gridy = nextYPosition();
+    inputPanel.add(scrollPane, gbc);
+  }
+
+  private int nextYPosition() {
+    return inputYPosition++;
   }
 
   private JTextField newGoogleDocsLinkTextField(String initialValue) {
@@ -209,7 +233,7 @@ public class GoogleLinkVerifierScreen {
             var patrimoineJarId = driveLinkIdParser.apply(PATRIMOINE_JAR_URL);
             System.out.println(patrimoineJarId);
 
-            googleApi.downloadJDependencyFile(authDetails, patrimoineJarId);
+            googleApi.downloadJarDependencyFile(authDetails, patrimoineJarId);
 
             for (var id : ids.docsLinkList()) {
               codePatrimoinesVisualisables.add(extractSnippet(id));
@@ -219,9 +243,11 @@ public class GoogleLinkVerifierScreen {
               googleApi.downloadDriveFile(authDetails, namedId.id());
             }
 
-            File driveDirectory = new File(DOWNLOADS_DIRECTORY_PATH);
-            File[] driveFiles = driveDirectory.listFiles((dir, name) -> name.endsWith(".java"));
-            File casSetFile = new File("");
+            List<File> driveFiles =
+                Optional.ofNullable(driveDirectory.listFiles((dir, name) -> name.endsWith(".java")))
+                    .map(Arrays::asList)
+                    .orElseGet(Collections::emptyList);
+            File casSetFile = null;
 
             for (NamedSnippet codePatrimoine : codePatrimoinesVisualisables) {
               patrimoinesVisualisables.add(compilePatrimoine(codePatrimoine));

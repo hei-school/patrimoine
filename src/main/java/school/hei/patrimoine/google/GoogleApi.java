@@ -25,6 +25,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import school.hei.patrimoine.compiler.ClassNameExtractor;
@@ -51,7 +52,10 @@ public class GoogleApi {
   private static final String TOKENS_DIRECTORY_PATH = USER_HOME + "/.patrimoine/google/tokens";
 
   static {
-    new File(TOKENS_DIRECTORY_PATH).mkdirs();
+    File tokensDirectory = new File(TOKENS_DIRECTORY_PATH);
+    if (!tokensDirectory.exists()) {
+      tokensDirectory.mkdirs();
+    }
   }
 
   private static final List<String> SCOPES = List.of(DOCUMENTS_READONLY, DRIVE_READONLY);
@@ -172,7 +176,8 @@ public class GoogleApi {
             .build();
 
     // Create a temporary file to store downloaded content
-    File tempFile = new File(System.getProperty("java.io.tmpdir"), "temp_download.java");
+    File tempFile =
+        new File(System.getProperty("java.io.tmpdir"), "prefix_" + UUID.randomUUID() + ".java");
 
     try (InputStream inputStream = driveService.files().get(fileId).executeMediaAsInputStream();
         FileOutputStream tempOutputStream = new FileOutputStream(tempFile)) {
@@ -189,39 +194,26 @@ public class GoogleApi {
 
       // Extract class name
       String className = new ClassNameExtractor().apply(fileContent);
-      if (className == null || className.isEmpty()) {
-        throw new RuntimeException("The class name could not be extracted");
-      }
 
       // Define final file name based on class name
       File finalFile = new File(DOWNLOADS_DIRECTORY_PATH, className + ".java");
 
-      try (FileOutputStream finalOutputStream = new FileOutputStream(finalFile);
-          FileInputStream tempInputStream = new FileInputStream(tempFile)) {
-
-        while ((bytesRead = tempInputStream.read(buffer)) != -1) {
-          finalOutputStream.write(buffer, 0, bytesRead);
-        }
-
-      } finally {
-        if (tempFile.exists()) {
-          tempFile.delete();
-        }
-      }
+      copyFileContent(tempFile, finalFile);
 
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
   }
 
-  public void downloadJDependencyFile(GoogleAuthenticationDetails authDetails, String fileId) {
+  public void downloadJarDependencyFile(GoogleAuthenticationDetails authDetails, String fileId) {
     Drive driveService =
         new Drive.Builder(authDetails.httpTransport(), JSON_FACTORY, authDetails.credential())
             .setApplicationName(APPLICATION_NAME)
             .build();
 
     // Create a temporary file to store downloaded content
-    File tempFile = new File(System.getProperty("java.io.tmpdir"), "temp_download.java");
+    File tempFile =
+        new File(System.getProperty("java.io.tmpdir"), "prefix_" + UUID.randomUUID() + ".java");
 
     try (InputStream inputStream = driveService.files().get(fileId).executeMediaAsInputStream();
         FileOutputStream tempOutputStream = new FileOutputStream(tempFile)) {
@@ -236,21 +228,30 @@ public class GoogleApi {
       // Define final file name based on class name
       File finalFile = new File(DOWNLOADS_DIRECTORY_PATH, PATRIMOINE_JAR_NAME);
 
-      try (FileOutputStream finalOutputStream = new FileOutputStream(finalFile);
-          FileInputStream tempInputStream = new FileInputStream(tempFile)) {
-
-        while ((bytesRead = tempInputStream.read(buffer)) != -1) {
-          finalOutputStream.write(buffer, 0, bytesRead);
-        }
-
-      } finally {
-        if (tempFile.exists()) {
-          tempFile.delete();
-        }
-      }
+      copyFileContent(tempFile, finalFile);
 
     } catch (IOException e) {
       throw new RuntimeException(e);
+    }
+  }
+
+  private void copyFileContent(File sourceFile, File targetFile) {
+    byte[] buffer = new byte[1024];
+    int bytesRead;
+
+    try (FileOutputStream targetOutputStream = new FileOutputStream(targetFile);
+        FileInputStream sourceInputStream = new FileInputStream(sourceFile)) {
+
+      while ((bytesRead = sourceInputStream.read(buffer)) != -1) {
+        targetOutputStream.write(buffer, 0, bytesRead);
+      }
+
+    } catch (IOException e) {
+      throw new RuntimeException("Failed to copy file content", e);
+    } finally {
+      if (sourceFile.exists()) {
+        sourceFile.delete();
+      }
     }
   }
 }

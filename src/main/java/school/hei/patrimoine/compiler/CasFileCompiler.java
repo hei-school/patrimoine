@@ -1,7 +1,8 @@
 package school.hei.patrimoine.compiler;
 
 import static javax.tools.ToolProvider.getSystemJavaCompiler;
-import static school.hei.patrimoine.google.GoogleApi.*;
+import static school.hei.patrimoine.google.GoogleApi.COMPILE_DIR_NAME;
+import static school.hei.patrimoine.google.GoogleApi.PATRIMOINE_JAR_PATH;
 
 import java.io.File;
 import java.net.URL;
@@ -13,7 +14,10 @@ import lombok.SneakyThrows;
 public class CasFileCompiler implements Function<String, Class<?>> {
 
   static {
-    new File(COMPILE_DIR_NAME).mkdirs();
+    File tokensDirectory = new File(COMPILE_DIR_NAME);
+    if (!tokensDirectory.exists()) {
+      tokensDirectory.mkdirs();
+    }
   }
 
   private static String getClassNameFromPath(String filePath) {

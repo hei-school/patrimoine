@@ -16,7 +16,10 @@ import school.hei.patrimoine.modele.Patrimoine;
 public class PatrimoineDocsCompiler implements BiFunction<String, String, Patrimoine> {
 
   static {
-    new File(COMPILE_DIR_NAME).mkdirs();
+    File tokensDirectory = new File(COMPILE_DIR_NAME);
+    if (!tokensDirectory.exists()) {
+      tokensDirectory.mkdirs();
+    }
   }
 
   @SneakyThrows
