@@ -1,15 +1,14 @@
 package school.hei.patrimoine.compiler;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
-import school.hei.patrimoine.cas.example.PatrimoineRicheSupplier;
-import school.hei.patrimoine.modele.Patrimoine;
 
-class PatrimoineCompilerTest {
+class ClassNameExtractorTest {
 
   @Test
-  void convert_a_string_to_patrimoine() {
+  void extract_class_name_from_string_ok() {
 
     String code =
         """
@@ -94,12 +93,19 @@ public class PatrimoineRicheSupplier implements Supplier<Patrimoine> {
 
 """;
 
-    PatrimoineRicheSupplier patrimoineRicheSupplier = new PatrimoineRicheSupplier();
-    Patrimoine patrimoineRiche = patrimoineRicheSupplier.get();
+    ClassNameExtractor classNameExtractor = new ClassNameExtractor();
 
-    PatrimoineCompiler patrimoineCompiler = new PatrimoineCompiler();
-    Patrimoine patrimoine = patrimoineCompiler.apply("PatrimoineRicheSupplier", code);
+    assertEquals("PatrimoineRicheSupplier", classNameExtractor.apply(code));
+  }
 
-    assertEquals(patrimoineRiche.getValeurComptable(), patrimoine.getValeurComptable());
+  @Test
+  void extract_class_name_from_string_ko() {
+    ClassNameExtractor classNameExtractor = new ClassNameExtractor();
+    String invalidCode = "int x = 42";
+
+    Exception exception =
+        assertThrows(IllegalArgumentException.class, () -> classNameExtractor.apply(invalidCode));
+
+    assertEquals("No class name found in the provided code.", exception.getMessage());
   }
 }

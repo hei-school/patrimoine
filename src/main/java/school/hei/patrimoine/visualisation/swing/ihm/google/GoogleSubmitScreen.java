@@ -7,37 +7,48 @@ import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import javax.swing.*;
 import lombok.extern.slf4j.Slf4j;
 import school.hei.patrimoine.google.GoogleApi;
 import school.hei.patrimoine.google.GoogleApi.GoogleAuthenticationDetails;
-import school.hei.patrimoine.visualisation.swing.ihm.google.modele.LinkedPatrimoine;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.GoogleLinkList;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.NamedString;
 
 @Slf4j
-public class GoogleDocsSubmitScreen {
+public class GoogleSubmitScreen {
   private final JFrame inputFrame;
   private final JPanel inputPanel;
-  private final JTextArea inputField;
+  private final JTextArea docsField;
+  private final JTextArea driveField;
   private final GoogleDocsLinkIdInputVerifier linkIdInputVerifier =
       new GoogleDocsLinkIdInputVerifier();
   private final GoogleApi googleApi;
   private final GoogleAuthenticationDetails authDetails;
 
-  public GoogleDocsSubmitScreen(GoogleApi googleApi, GoogleAuthenticationDetails authDetails) {
+  public GoogleSubmitScreen(GoogleApi googleApi, GoogleAuthenticationDetails authDetails) {
     this.googleApi = googleApi;
     this.authDetails = authDetails;
     inputFrame = newInputFrame();
     inputPanel = new JPanel();
     inputPanel.setLayout(new GridBagLayout());
 
-    inputField = new JTextArea(5, 70);
+    docsField = createDocsField();
+    driveField = createDriveField();
     addButtons();
     addInitialInput();
 
     configureInputFrame();
+  }
+
+  private JTextArea createDocsField() {
+    return new JTextArea(5, 70);
+  }
+
+  private JTextArea createDriveField() {
+    return new JTextArea(5, 70);
   }
 
   private void configureInputFrame() {
@@ -58,7 +69,7 @@ public class GoogleDocsSubmitScreen {
   private void addButtons() {
     JButton submitButton = newSubmitButton();
 
-    JLabel buttonTitle = new JLabel("Enter Your Google Docs Links:");
+    JLabel buttonTitle = new JLabel("Enter Google Links:");
     buttonTitle.setFont(new Font("Arial", BOLD, 24));
     buttonTitle.setHorizontalAlignment(SwingConstants.CENTER);
 
@@ -87,24 +98,46 @@ public class GoogleDocsSubmitScreen {
   }
 
   private void addInitialInput() {
-    JLabel instructionLabel = new JLabel("The key word for shared possessions is: 'possessions'");
-    instructionLabel.setFont(new Font("Arial", CENTER_BASELINE, 14));
+    // Google docs field label
+    JLabel docsLabel = new JLabel("Google Docs Links");
+    docsLabel.setFont(new Font("Arial", CENTER_BASELINE, 14));
 
     var gbc = new GridBagConstraints();
     gbc.gridx = 0;
+    gbc.gridy = 2;
     gbc.fill = GridBagConstraints.HORIZONTAL;
     gbc.insets = new Insets(10, 50, 5, 50);
+    inputPanel.add(docsLabel, gbc);
 
-    inputPanel.add(instructionLabel, gbc);
+    // Google docs input field
+    docsField.setLineWrap(true);
+    docsField.setWrapStyleWord(true);
+    docsField.setInputVerifier(linkIdInputVerifier);
+    docsField.setFont(new Font("Arial", PLAIN, 16));
 
-    inputField.setLineWrap(true);
-    inputField.setWrapStyleWord(true);
-    inputField.setInputVerifier(linkIdInputVerifier);
-    inputField.setFont(new Font("Arial", PLAIN, 16));
-
+    gbc.gridy = 3;
     gbc.insets = new Insets(5, 50, 10, 50);
-    JScrollPane scrollPane = new JScrollPane(inputField);
+    JScrollPane scrollPane = new JScrollPane(docsField);
     inputPanel.add(scrollPane, gbc);
+
+    // Google drive field label
+    JLabel driveLabel = new JLabel("Google Drive Links");
+    driveLabel.setFont(new Font("Arial", CENTER_BASELINE, 14));
+
+    gbc.gridy = 4;
+    gbc.insets = new Insets(10, 50, 5, 50);
+    inputPanel.add(driveLabel, gbc);
+
+    // Google docs input field
+    driveField.setLineWrap(true);
+    driveField.setWrapStyleWord(true);
+    driveField.setInputVerifier(linkIdInputVerifier);
+    driveField.setFont(new Font("Arial", PLAIN, 16));
+
+    gbc.gridy = 5;
+    gbc.insets = new Insets(5, 50, 10, 50);
+    JScrollPane driveScrollPane = new JScrollPane(driveField);
+    inputPanel.add(driveScrollPane, gbc);
   }
 
   private void loadDataInBackground() {
@@ -115,18 +148,18 @@ public class GoogleDocsSubmitScreen {
     loadingDialog.setSize(300, 100);
     loadingDialog.setLocationRelativeTo(inputFrame);
 
-    SwingWorker<LinkedPatrimoine<NamedString>, Void> worker =
+    SwingWorker<GoogleLinkList<NamedString>, Void> worker =
         new SwingWorker<>() {
           @Override
-          protected LinkedPatrimoine<NamedString> doInBackground() {
-            return extractInputData();
+          protected GoogleLinkList<NamedString> doInBackground() {
+            return extractGoogleLinks();
           }
 
           @Override
           protected void done() {
             loadingDialog.dispose();
             try {
-              final LinkedPatrimoine<NamedString> inputData = get();
+              final GoogleLinkList<NamedString> inputData = get();
               openResultFrame(inputData, googleApi, authDetails);
             } catch (InterruptedException | ExecutionException e) {
               throw new RuntimeException(e);
@@ -138,13 +171,8 @@ public class GoogleDocsSubmitScreen {
     loadingDialog.setVisible(true);
   }
 
-  private LinkedPatrimoine<NamedString> extractInputData() {
+  private List<NamedString> extractInputData(List<String> lines) {
     List<NamedString> linkDataList = new ArrayList<>();
-    String possessionLink = "";
-
-    String rawText = inputField.getText();
-    String[] lines = rawText.split("\n");
-    var keyWord = "possessions";
 
     for (String line : lines) {
       String[] parts = line.split(":", 2);
@@ -153,23 +181,32 @@ public class GoogleDocsSubmitScreen {
         String linkName = parts[0].trim();
         String linkValue = parts[1].trim();
 
-        if (keyWord.equals(linkName)) {
-          possessionLink = linkValue;
-        } else {
-          NamedString linkData = new NamedString(linkName, linkValue);
-          linkDataList.add(linkData);
-        }
+        NamedString linkData = new NamedString(linkName, linkValue);
+        linkDataList.add(linkData);
       }
     }
 
-    return new LinkedPatrimoine<>(possessionLink, linkDataList);
+    return linkDataList;
+  }
+
+  private GoogleLinkList<NamedString> extractGoogleLinks() {
+    String docsRawText = docsField.getText();
+    String driveRawText = driveField.getText();
+
+    List<String> docsLines = Arrays.asList(docsRawText.split("\n"));
+    List<String> driveLines = Arrays.asList(driveRawText.split("\n"));
+
+    List<NamedString> docsLink = extractInputData(docsLines);
+    List<NamedString> driveLink = extractInputData(driveLines);
+
+    return new GoogleLinkList<>(docsLink, driveLink);
   }
 
   private void openResultFrame(
-      LinkedPatrimoine<NamedString> docsLink,
+      GoogleLinkList<NamedString> googleLinkList,
       GoogleApi googleApi,
       GoogleAuthenticationDetails authReqRes) {
-    invokeLater(() -> new GoogleDocsLinkVerifierScreen(googleApi, authReqRes, docsLink));
+    invokeLater(() -> new GoogleLinkVerifierScreen(googleApi, authReqRes, googleLinkList));
     inputFrame.dispose();
   }
 }
