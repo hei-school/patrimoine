@@ -235,7 +235,7 @@ public class GoogleApi {
     }
   }
 
-  private void copyFileContent(File sourceFile, File targetFile) {
+  public void copyFileContent(File sourceFile, File targetFile) {
     byte[] buffer = new byte[1024];
     int bytesRead;
 
