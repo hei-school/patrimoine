@@ -38,6 +38,7 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.modele.NamedString;
 @Slf4j
 public class GoogleLinkVerifierScreen {
   private final JFrame inputFrame;
+  private final JFrame previousScreenFrame;
   private final JPanel inputPanel;
   private final List<JTextField> inputFields;
   private final GoogleDocsLinkIdInputVerifier docslinkIdInputVerifier =
@@ -55,11 +56,12 @@ public class GoogleLinkVerifierScreen {
   public GoogleLinkVerifierScreen(
       GoogleApi googleApi,
       GoogleAuthenticationDetails authDetails,
-      GoogleLinkList<NamedString> linksData) {
+      GoogleLinkList<NamedString> linksData, JFrame jFrame) {
     this.googleApi = googleApi;
     this.authDetails = authDetails;
     this.linksData = linksData;
     inputFrame = newInputFrame();
+    previousScreenFrame = jFrame;
     inputPanel = new JPanel(new GridBagLayout());
     inputFields = new ArrayList<>();
     inputYPosition = 2;
@@ -78,7 +80,7 @@ public class GoogleLinkVerifierScreen {
   }
 
   private JFrame newInputFrame() {
-    var inputFrame = new JFrame("Google Docs Verifier");
+    var inputFrame = new JFrame("Liens Google");
     inputFrame.setSize(1200, 1000);
     inputFrame.setResizable(true);
     inputFrame.setVisible(true);
@@ -86,10 +88,10 @@ public class GoogleLinkVerifierScreen {
   }
 
   private void addButtons() {
-    var submitButton = newSubmitButton();
+      var submitButton = newSubmitButton();
     var returnButton = newReturnButton();
 
-    var buttonTitle = new JLabel("Submit Your Google Docs Links:");
+    var buttonTitle = new JLabel("Soumettre vos liens Google");
     buttonTitle.setFont(new Font("Arial", BOLD, 24));
     buttonTitle.setHorizontalAlignment(SwingConstants.CENTER);
 
@@ -110,7 +112,7 @@ public class GoogleLinkVerifierScreen {
   }
 
   private JButton newSubmitButton() {
-    var submitButton = new JButton("Submit");
+    var submitButton = new JButton("Envoyer");
     submitButton.setPreferredSize(new Dimension(200, 50));
     submitButton.setFont(new Font("Arial", BOLD, 18));
     submitButton.setFocusPainted(false);
@@ -119,7 +121,7 @@ public class GoogleLinkVerifierScreen {
   }
 
   private JButton newReturnButton() {
-    var returnButton = new JButton("Return");
+    var returnButton = new JButton("Retour");
     returnButton.setPreferredSize(new Dimension(200, 50));
     returnButton.setFont(new Font("Arial", BOLD, 18));
     returnButton.setFocusPainted(false);
@@ -208,7 +210,7 @@ public class GoogleLinkVerifierScreen {
 
   private ActionListener returnToPreviousScreen() {
     return e -> {
-      invokeLater(() -> new GoogleSubmitScreen(googleApi, authDetails));
+      previousScreenFrame.setVisible(true);
       inputFrame.setVisible(false);
     };
   }
