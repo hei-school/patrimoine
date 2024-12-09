@@ -59,7 +59,7 @@ public class GoogleSubmitScreen {
   }
 
   private JFrame newInputFrame() {
-    var inputFrame = new JFrame("Google Docs Submission");
+    var inputFrame = new JFrame("Soumission des liens Google");
     inputFrame.setSize(1200, 1000);
     inputFrame.setResizable(true);
     inputFrame.setVisible(true);
@@ -69,7 +69,7 @@ public class GoogleSubmitScreen {
   private void addButtons() {
     JButton submitButton = newSubmitButton();
 
-    JLabel buttonTitle = new JLabel("Enter Google Links:");
+    JLabel buttonTitle = new JLabel("Saisir les liens Google :");
     buttonTitle.setFont(new Font("Arial", BOLD, 24));
     buttonTitle.setHorizontalAlignment(SwingConstants.CENTER);
 
@@ -89,7 +89,7 @@ public class GoogleSubmitScreen {
   }
 
   private JButton newSubmitButton() {
-    var submitButton = new JButton("Verify");
+    var submitButton = new JButton("Vérifier");
     submitButton.setPreferredSize(new Dimension(200, 50));
     submitButton.setFont(new Font("Arial", BOLD, 18));
     submitButton.setFocusPainted(false);
@@ -206,7 +206,7 @@ public class GoogleSubmitScreen {
       GoogleLinkList<NamedString> googleLinkList,
       GoogleApi googleApi,
       GoogleAuthenticationDetails authReqRes) {
-    invokeLater(() -> new GoogleLinkVerifierScreen(googleApi, authReqRes, googleLinkList));
-    inputFrame.dispose();
+    invokeLater(() -> new GoogleLinkVerifierScreen(googleApi, authReqRes, googleLinkList, inputFrame));
+    inputFrame.setVisible(false);
   }
 }
