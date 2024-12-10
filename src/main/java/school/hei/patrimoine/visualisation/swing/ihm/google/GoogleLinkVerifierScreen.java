@@ -56,7 +56,8 @@ public class GoogleLinkVerifierScreen {
   public GoogleLinkVerifierScreen(
       GoogleApi googleApi,
       GoogleAuthenticationDetails authDetails,
-      GoogleLinkList<NamedString> linksData, JFrame jFrame) {
+      GoogleLinkList<NamedString> linksData,
+      JFrame jFrame) {
     this.googleApi = googleApi;
     this.authDetails = authDetails;
     this.linksData = linksData;
@@ -88,7 +89,7 @@ public class GoogleLinkVerifierScreen {
   }
 
   private void addButtons() {
-      var submitButton = newSubmitButton();
+    var submitButton = newSubmitButton();
     var returnButton = newReturnButton();
 
     var buttonTitle = new JLabel("Soumettre vos liens Google");
@@ -216,8 +217,8 @@ public class GoogleLinkVerifierScreen {
   }
 
   private void loadDataInBackground() {
-    var loadingDialog = new JDialog(inputFrame, "Processing", true);
-    var loadingLabel = new JLabel("Processing, please wait...");
+    var loadingDialog = new JDialog(inputFrame, "Traitement", true);
+    var loadingLabel = new JLabel("Traitement en cours ...");
     loadingLabel.setHorizontalAlignment(SwingConstants.CENTER);
     loadingDialog.getContentPane().add(loadingLabel, CENTER);
     loadingDialog.setSize(300, 100);
