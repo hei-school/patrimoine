@@ -24,12 +24,12 @@ public class GoogleAuthScreen extends JFrame {
    * your previously saved tokens/ folder.
    */
   public GoogleAuthScreen() {
-    RoundedButton signInButton = new RoundedButton("Sign in with Google", loadGoogleLogo());
+    RoundedButton signInButton = new RoundedButton("Se connecter avec Google", loadGoogleLogo());
     signInButton.setBackground(new Color(100, 175, 255));
     signInButton.setForeground(Color.WHITE);
     signInButton.setFocusPainted(false);
     signInButton.setFont(new Font("Arial", Font.BOLD, 16));
-    signInButton.setPreferredSize(new Dimension(250, 50));
+    signInButton.setPreferredSize(new Dimension(300, 50));
     signInButton.setBorder(new RoundedBorder(50));
 
     signInButton.addActionListener(onSignin());
@@ -38,7 +38,7 @@ public class GoogleAuthScreen extends JFrame {
     buttonPanel.setLayout(new GridBagLayout());
     buttonPanel.add(signInButton);
 
-    setTitle("Google Authentication");
+    setTitle("Authentification Google");
     setLayout(new BorderLayout());
     add(buttonPanel, BorderLayout.CENTER);
     getContentPane().setBackground(Color.WHITE);

@@ -4,6 +4,8 @@ import static java.awt.BorderLayout.CENTER;
 import static java.awt.Font.*;
 import static javax.swing.SwingUtilities.invokeLater;
 import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
+import static school.hei.patrimoine.google.GoogleDocsLinkIdParser.GOOGLE_DOCS_ID_PATTERN;
+import static school.hei.patrimoine.google.GoogleDriveLinkIdParser.GOOGLE_DRIVE_ID_PATTERN;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -21,8 +23,7 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.modele.NamedString;
 public class GoogleSubmitScreen {
   private final JFrame inputFrame;
   private final JPanel inputPanel;
-  private final JTextArea docsField;
-  private final JTextArea driveField;
+  private final JTextArea inputField;
   private final GoogleDocsLinkIdInputVerifier linkIdInputVerifier =
       new GoogleDocsLinkIdInputVerifier();
   private final GoogleApi googleApi;
@@ -35,19 +36,15 @@ public class GoogleSubmitScreen {
     inputPanel = new JPanel();
     inputPanel.setLayout(new GridBagLayout());
 
-    docsField = createDocsField();
-    driveField = createDriveField();
+    inputField = createInputField();
+
     addButtons();
     addInitialInput();
 
     configureInputFrame();
   }
 
-  private JTextArea createDocsField() {
-    return new JTextArea(5, 70);
-  }
-
-  private JTextArea createDriveField() {
+  private JTextArea createInputField() {
     return new JTextArea(5, 70);
   }
 
@@ -59,7 +56,7 @@ public class GoogleSubmitScreen {
   }
 
   private JFrame newInputFrame() {
-    var inputFrame = new JFrame("Google Docs Submission");
+    var inputFrame = new JFrame("Soumission des liens Google");
     inputFrame.setSize(1200, 1000);
     inputFrame.setResizable(true);
     inputFrame.setVisible(true);
@@ -69,7 +66,7 @@ public class GoogleSubmitScreen {
   private void addButtons() {
     JButton submitButton = newSubmitButton();
 
-    JLabel buttonTitle = new JLabel("Enter Google Links:");
+    JLabel buttonTitle = new JLabel("Saisir les liens Google :");
     buttonTitle.setFont(new Font("Arial", BOLD, 24));
     buttonTitle.setHorizontalAlignment(SwingConstants.CENTER);
 
@@ -89,7 +86,7 @@ public class GoogleSubmitScreen {
   }
 
   private JButton newSubmitButton() {
-    var submitButton = new JButton("Verify");
+    var submitButton = new JButton("Vérifier");
     submitButton.setPreferredSize(new Dimension(200, 50));
     submitButton.setFont(new Font("Arial", BOLD, 18));
     submitButton.setFocusPainted(false);
@@ -98,51 +95,29 @@ public class GoogleSubmitScreen {
   }
 
   private void addInitialInput() {
-    // Google docs field label
-    JLabel docsLabel = new JLabel("Google Docs Links");
-    docsLabel.setFont(new Font("Arial", CENTER_BASELINE, 14));
+    JLabel inputLabel = new JLabel("Liens Google");
+    inputLabel.setFont(new Font("Arial", CENTER_BASELINE, 14));
 
     var gbc = new GridBagConstraints();
     gbc.gridx = 0;
-    gbc.gridy = 2;
     gbc.fill = GridBagConstraints.HORIZONTAL;
     gbc.insets = new Insets(10, 50, 5, 50);
-    inputPanel.add(docsLabel, gbc);
 
-    // Google docs input field
-    docsField.setLineWrap(true);
-    docsField.setWrapStyleWord(true);
-    docsField.setInputVerifier(linkIdInputVerifier);
-    docsField.setFont(new Font("Arial", PLAIN, 16));
+    inputPanel.add(inputLabel, gbc);
 
-    gbc.gridy = 3;
+    inputField.setLineWrap(true);
+    inputField.setWrapStyleWord(true);
+    inputField.setInputVerifier(linkIdInputVerifier);
+    inputField.setFont(new Font("Arial", PLAIN, 16));
+
     gbc.insets = new Insets(5, 50, 10, 50);
-    JScrollPane scrollPane = new JScrollPane(docsField);
+    JScrollPane scrollPane = new JScrollPane(inputField);
     inputPanel.add(scrollPane, gbc);
-
-    // Google drive field label
-    JLabel driveLabel = new JLabel("Google Drive Links");
-    driveLabel.setFont(new Font("Arial", CENTER_BASELINE, 14));
-
-    gbc.gridy = 4;
-    gbc.insets = new Insets(10, 50, 5, 50);
-    inputPanel.add(driveLabel, gbc);
-
-    // Google docs input field
-    driveField.setLineWrap(true);
-    driveField.setWrapStyleWord(true);
-    driveField.setInputVerifier(linkIdInputVerifier);
-    driveField.setFont(new Font("Arial", PLAIN, 16));
-
-    gbc.gridy = 5;
-    gbc.insets = new Insets(5, 50, 10, 50);
-    JScrollPane driveScrollPane = new JScrollPane(driveField);
-    inputPanel.add(driveScrollPane, gbc);
   }
 
   private void loadDataInBackground() {
-    JDialog loadingDialog = new JDialog(inputFrame, "Processing", true);
-    JLabel loadingLabel = new JLabel("Processing, please wait...");
+    var loadingDialog = new JDialog(inputFrame, "Traitement", true);
+    var loadingLabel = new JLabel("Traitement en cours ...");
     loadingLabel.setHorizontalAlignment(SwingConstants.CENTER);
     loadingDialog.getContentPane().add(loadingLabel, CENTER);
     loadingDialog.setSize(300, 100);
@@ -190,11 +165,20 @@ public class GoogleSubmitScreen {
   }
 
   private GoogleLinkList<NamedString> extractGoogleLinks() {
-    String docsRawText = docsField.getText();
-    String driveRawText = driveField.getText();
+    String rawText = inputField.getText();
+    ArrayList<String> docsLines = new ArrayList<>();
+    ArrayList<String> driveLines = new ArrayList<>();
 
-    List<String> docsLines = Arrays.asList(docsRawText.split("\n"));
-    List<String> driveLines = Arrays.asList(driveRawText.split("\n"));
+    List<String> lines = Arrays.asList(rawText.split("\n"));
+
+    lines.forEach(
+        line -> {
+          if (GOOGLE_DOCS_ID_PATTERN.matcher(line).find()) {
+            docsLines.add(line);
+          } else if (GOOGLE_DRIVE_ID_PATTERN.matcher(line).find()) {
+            driveLines.add(line);
+          }
+        });
 
     List<NamedString> docsLink = extractInputData(docsLines);
     List<NamedString> driveLink = extractInputData(driveLines);
@@ -206,7 +190,8 @@ public class GoogleSubmitScreen {
       GoogleLinkList<NamedString> googleLinkList,
       GoogleApi googleApi,
       GoogleAuthenticationDetails authReqRes) {
-    invokeLater(() -> new GoogleLinkVerifierScreen(googleApi, authReqRes, googleLinkList));
-    inputFrame.dispose();
+    invokeLater(
+        () -> new GoogleLinkVerifierScreen(googleApi, authReqRes, googleLinkList, inputFrame));
+    inputFrame.setVisible(false);
   }
 }
