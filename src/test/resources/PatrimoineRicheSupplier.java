@@ -1,4 +1,4 @@
-package school.hei.patrimoine.cas.drive;
+package patrimoine.drive;
 
 import static java.time.Month.*;
 import static java.util.Calendar.JUNE;

@@ -1,4 +1,4 @@
-package school.hei.patrimoine.cas.drive;
+package cas.drive;
 
 import java.time.LocalDate;
 
