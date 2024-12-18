@@ -2,6 +2,7 @@ package school.hei.patrimoine.compiler;
 
 import static javax.tools.ToolProvider.getSystemJavaCompiler;
 import static school.hei.patrimoine.google.GoogleApi.COMPILE_DIR_NAME;
+import static school.hei.patrimoine.google.GoogleApi.PACKAGE_DIR_NAME;
 import static school.hei.patrimoine.google.GoogleApi.PATRIMOINE_JAR_PATH;
 
 import java.io.File;
@@ -21,7 +22,11 @@ public class CasFileCompiler implements Function<String, Class<?>> {
   }
 
   private static String getClassNameFromPath(String filePath) {
-    return Path.of(filePath).getFileName().toString().replace(".java", "");
+    var path = Path.of(filePath);
+    String fileName = path.getFileName().toString();
+    String className = fileName.substring(0, fileName.lastIndexOf('.'));
+
+    return PACKAGE_DIR_NAME + "." + className;
   }
 
   @Override

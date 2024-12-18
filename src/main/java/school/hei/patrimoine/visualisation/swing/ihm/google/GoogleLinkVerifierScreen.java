@@ -234,7 +234,6 @@ public class GoogleLinkVerifierScreen {
 
             resetIfExist(DOWNLOADS_DIRECTORY_PATH);
             var patrimoineJarId = driveLinkIdParser.apply(PATRIMOINE_JAR_URL);
-            System.out.println(patrimoineJarId);
 
             googleApi.downloadJarDependencyFile(authDetails, patrimoineJarId);
 

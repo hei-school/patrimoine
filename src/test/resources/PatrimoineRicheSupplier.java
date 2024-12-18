@@ -1,3 +1,5 @@
+package school.hei.patrimoine.cas.drive;
+
 import static java.time.Month.*;
 import static java.util.Calendar.JUNE;
 import static school.hei.patrimoine.modele.Argent.euro;

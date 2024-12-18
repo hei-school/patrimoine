@@ -1,3 +1,5 @@
+package school.hei.patrimoine.cas.drive;
+
 import java.time.LocalDate;
 
 public class EtudiantPireCas {

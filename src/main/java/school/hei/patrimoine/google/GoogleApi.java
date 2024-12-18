@@ -68,6 +68,8 @@ public class GoogleApi {
 
   public static final String COMPILE_DIR_NAME = USER_HOME + "/.patrimoine/compile";
 
+  public static final String PACKAGE_DIR_NAME = "school.hei.patrimoine.cas.drive";
+
   private static final String PATRIMOINE_JAR_NAME = "patrimoine-1.0-SNAPSHOT.jar";
 
   public static final String PATRIMOINE_JAR_PATH =
