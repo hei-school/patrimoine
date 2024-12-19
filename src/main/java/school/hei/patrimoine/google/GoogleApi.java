@@ -77,6 +77,10 @@ public class GoogleApi {
     resetIfExist(DOWNLOADS_DIRECTORY_PATH);
   }
 
+  static {
+    resetIfExist(COMPILE_DIR_NAME);
+  }
+
   /**
    * Creates an authorized Credential object.
    *
