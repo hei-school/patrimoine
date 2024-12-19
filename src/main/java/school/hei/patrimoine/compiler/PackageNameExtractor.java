@@ -12,15 +12,17 @@ public class PackageNameExtractor implements Function<String, String> {
   @Override
   public String apply(String filePath) {
     File file = new File(filePath);
+    final String packagePrefix = "package ";
+
     try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
       String line;
       while ((line = reader.readLine()) != null) {
         line = line.trim();
-        if (line.startsWith("package ")) {
-          return line.substring(8, line.indexOf(";")).trim();
+        if (line.startsWith(packagePrefix)) {
+          return line.substring(packagePrefix.length(), line.indexOf(";")).trim();
         }
       }
     }
-    return "";
+    throw new IllegalArgumentException("No package name found in the provided file: " + filePath);
   }
 }

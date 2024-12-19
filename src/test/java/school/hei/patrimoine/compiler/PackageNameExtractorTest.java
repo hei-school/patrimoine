@@ -17,11 +17,6 @@ class PackageNameExtractorTest {
     URL resourceUrl = classLoader.getResource("PatrimoineRicheSupplier.java");
     Path resourcePath = Paths.get(resourceUrl.toURI());
 
-    if (resourceUrl == null) {
-      throw new IllegalStateException(
-          "Le fichier 'PatrimoineRicheSupplier.java' est introuvable dans les ressources.");
-    }
-
     PackageNameExtractor packageNameExtractor = new PackageNameExtractor();
     var packageName = packageNameExtractor.apply(String.valueOf(resourcePath));
 
