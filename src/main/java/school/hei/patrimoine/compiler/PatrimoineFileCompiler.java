@@ -14,6 +14,8 @@ import school.hei.patrimoine.modele.Patrimoine;
 
 public class PatrimoineFileCompiler implements Function<String, Patrimoine> {
 
+  private static final PackageNameExtractor packageNameExtractor = new PackageNameExtractor();
+
   static {
     File tokensDirectory = new File(COMPILE_DIR_NAME);
     if (!tokensDirectory.exists()) {
@@ -47,7 +49,9 @@ public class PatrimoineFileCompiler implements Function<String, Patrimoine> {
   private static String getClassNameFromPath(String filePath) {
     var path = Path.of(filePath);
     String fileName = path.getFileName().toString();
-    return fileName.substring(0, fileName.lastIndexOf('.'));
+    String className = fileName.substring(0, fileName.lastIndexOf('.'));
+    String packageName = packageNameExtractor.apply(filePath);
+    return packageName + "." + className;
   }
 
   private void compile(Path ioDirPath, Path sourcePath) {

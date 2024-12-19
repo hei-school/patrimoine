@@ -13,6 +13,8 @@ import lombok.SneakyThrows;
 
 public class CasFileCompiler implements Function<String, Class<?>> {
 
+  private static final PackageNameExtractor packageNameExtractor = new PackageNameExtractor();
+
   static {
     File tokensDirectory = new File(COMPILE_DIR_NAME);
     if (!tokensDirectory.exists()) {
@@ -21,7 +23,11 @@ public class CasFileCompiler implements Function<String, Class<?>> {
   }
 
   private static String getClassNameFromPath(String filePath) {
-    return Path.of(filePath).getFileName().toString().replace(".java", "");
+    var path = Path.of(filePath);
+    String fileName = path.getFileName().toString();
+    String className = fileName.substring(0, fileName.lastIndexOf('.'));
+    String packageName = packageNameExtractor.apply(filePath);
+    return packageName + "." + className;
   }
 
   @Override
