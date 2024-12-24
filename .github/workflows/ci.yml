@@ -31,9 +31,16 @@ jobs:
       - name: Test
         run: mvn clean verify
 
-      - name: Cleanup .env file
+      - name: Clean up .env file
         if: always()
-        run: rm -f .env
+        run: |
+          if [[ "$RUNNER_OS" == "Windows" ]]; then
+            cmd /c del .env
+          else
+            rm -f .env
+          fi
+        shell: bash
+
 
   format:
     runs-on: ubuntu-latest
