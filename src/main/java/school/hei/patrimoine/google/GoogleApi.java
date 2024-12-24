@@ -26,6 +26,8 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+
+import io.github.cdimascio.dotenv.Dotenv;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import school.hei.patrimoine.compiler.ClassNameExtractor;
@@ -63,12 +65,11 @@ public class GoogleApi {
 
   public static final String DOWNLOADS_DIRECTORY_PATH = USER_HOME + "/Downloads/drive";
 
-  public static final String PATRIMOINE_JAR_URL =
-      "https://drive.google.com/file/d/16sFnwlP_x7_00bc0ojfRH5e80KBQAMNb/view?usp=drive_link";
+  public static final String PATRIMOINE_JAR_URL = Dotenv.load().get("PATRIMOINE_JAR_DEPENDENCY");
 
   public static final String COMPILE_DIR_NAME = USER_HOME + "/.patrimoine/compile";
 
-  private static final String PATRIMOINE_JAR_NAME = "patrimoine-1.0-SNAPSHOT.jar";
+  private static final String PATRIMOINE_JAR_NAME = Dotenv.load().get("PATRIMOINE_JAR_NAME");
 
   public static final String PATRIMOINE_JAR_PATH =
       String.valueOf(Path.of(DOWNLOADS_DIRECTORY_PATH).resolve(PATRIMOINE_JAR_NAME));
