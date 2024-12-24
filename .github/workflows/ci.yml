@@ -23,8 +23,17 @@ jobs:
           java-distribution: 'temurin'
           maven-version: '3.9.6'
 
+      - name: Setup mock .env file
+        run: |
+          echo "PATRIMOINE_JAR_DEPENDENCY=value" > .env
+          echo "PATRIMOINE_JAR_NAME=value" >> .env
+
       - name: Test
         run: mvn clean verify
+
+      - name: Cleanup .env file
+        if: always()
+        run: rm -f .env
 
   format:
     runs-on: ubuntu-latest

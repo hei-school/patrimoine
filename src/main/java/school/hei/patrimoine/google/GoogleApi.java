@@ -19,6 +19,7 @@ import com.google.api.services.docs.v1.model.ParagraphElement;
 import com.google.api.services.docs.v1.model.StructuralElement;
 import com.google.api.services.docs.v1.model.TextRun;
 import com.google.api.services.drive.Drive;
+import io.github.cdimascio.dotenv.Dotenv;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -26,8 +27,6 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
-
-import io.github.cdimascio.dotenv.Dotenv;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import school.hei.patrimoine.compiler.ClassNameExtractor;
