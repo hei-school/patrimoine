@@ -64,7 +64,8 @@ public class GoogleApi {
 
   public static final String DOWNLOADS_DIRECTORY_PATH = USER_HOME + "/Downloads/drive";
 
-  public static final String PATRIMOINE_JAR_DEPENDENCY_DRIVE_URL = Dotenv.load().get("PATRIMOINE_JAR_DEPENDENCY");
+  public static final String PATRIMOINE_JAR_DEPENDENCY_DRIVE_URL =
+      Dotenv.load().get("PATRIMOINE_JAR_DEPENDENCY");
 
   public static final String COMPILE_DIR_NAME = USER_HOME + "/.patrimoine/compile";
 
