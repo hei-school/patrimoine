@@ -64,7 +64,7 @@ public class GoogleApi {
   public static final String DOWNLOADS_DIRECTORY_PATH = USER_HOME + "/Downloads/drive";
 
   public static final String PATRIMOINE_JAR_URL =
-      "https://drive.google.com/file/d/1Gm6MpMfWwQbdrk6nqFm3qyDd0GTURK2r/view?usp=drive_link";
+      "https://drive.google.com/file/d/16sFnwlP_x7_00bc0ojfRH5e80KBQAMNb/view?usp=drive_link";
 
   public static final String COMPILE_DIR_NAME = USER_HOME + "/.patrimoine/compile";
 
