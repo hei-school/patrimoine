@@ -233,9 +233,6 @@ public class GoogleLinkVerifierScreen {
             List<Patrimoine> patrimoinesVisualisables = new ArrayList<>();
 
             resetIfExist(DOWNLOADS_DIRECTORY_PATH);
-            var patrimoineJarId = driveLinkIdParser.apply(PATRIMOINE_JAR_DEPENDENCY_DRIVE_URL);
-
-            googleApi.downloadJarDependencyFile(authDetails, patrimoineJarId);
 
             for (var id : ids.docsLinkList()) {
               codePatrimoinesVisualisables.add(extractSnippet(id));
