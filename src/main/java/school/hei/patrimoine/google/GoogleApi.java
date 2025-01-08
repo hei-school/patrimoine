@@ -66,6 +66,7 @@ public class GoogleApi {
 
   public static final String COMPILE_DIR_NAME = USER_HOME + "/.patrimoine/compile";
 
+  /** Generate patrimoine jar locally or on github and set path in environment variables */
   public static final String PATRIMOINE_JAR_DEPENDENCY_PATH =
       Dotenv.load().get("PATRIMOINE_JAR_DEPENDENCY_PATH");
 

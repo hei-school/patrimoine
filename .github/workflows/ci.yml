@@ -25,8 +25,7 @@ jobs:
 
       - name: Setup mock .env file
         run: |
-          echo "PATRIMOINE_JAR_DEPENDENCY=value" > .env
-          echo "PATRIMOINE_JAR_NAME=value" >> .env
+          echo "PATRIMOINE_JAR_DEPENDENCY_PATH=value" > .env
 
       - name: Test
         run: mvn clean verify
