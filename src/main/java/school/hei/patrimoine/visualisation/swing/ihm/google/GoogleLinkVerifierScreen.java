@@ -233,9 +233,6 @@ public class GoogleLinkVerifierScreen {
             List<Patrimoine> patrimoinesVisualisables = new ArrayList<>();
 
             resetIfExist(DOWNLOADS_DIRECTORY_PATH);
-            var patrimoineJarId = driveLinkIdParser.apply(PATRIMOINE_JAR_URL);
-
-            googleApi.downloadJarDependencyFile(authDetails, patrimoineJarId);
 
             for (var id : ids.docsLinkList()) {
               codePatrimoinesVisualisables.add(extractSnippet(id));
@@ -407,8 +404,10 @@ public class GoogleLinkVerifierScreen {
     try {
       invokeLater(() -> new MainIHM(patrimoinesVisualisables));
     } catch (Exception e) {
-      log.warn("Probably a non-patrimoine object compiled, " +
-               "not a problem if it's something like ToutObjectifSupplier", e);
+      log.warn(
+          "Probably a non-patrimoine object compiled, "
+              + "not a problem if it's something like ToutObjectifSupplier",
+          e);
     }
   }
 }

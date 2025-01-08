@@ -19,6 +19,7 @@ import com.google.api.services.docs.v1.model.ParagraphElement;
 import com.google.api.services.docs.v1.model.StructuralElement;
 import com.google.api.services.docs.v1.model.TextRun;
 import com.google.api.services.drive.Drive;
+import io.github.cdimascio.dotenv.Dotenv;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -63,15 +64,11 @@ public class GoogleApi {
 
   public static final String DOWNLOADS_DIRECTORY_PATH = USER_HOME + "/Downloads/drive";
 
-  public static final String PATRIMOINE_JAR_URL =
-      "https://drive.google.com/file/d/16sFnwlP_x7_00bc0ojfRH5e80KBQAMNb/view?usp=drive_link";
-
   public static final String COMPILE_DIR_NAME = USER_HOME + "/.patrimoine/compile";
 
-  private static final String PATRIMOINE_JAR_NAME = "patrimoine-1.0-SNAPSHOT.jar";
-
-  public static final String PATRIMOINE_JAR_PATH =
-      String.valueOf(Path.of(DOWNLOADS_DIRECTORY_PATH).resolve(PATRIMOINE_JAR_NAME));
+  /** Generate patrimoine jar locally or on github and set path in environment variables */
+  public static final String PATRIMOINE_JAR_DEPENDENCY_PATH =
+      Dotenv.load().get("PATRIMOINE_JAR_DEPENDENCY_PATH");
 
   static {
     resetIfExist(DOWNLOADS_DIRECTORY_PATH);
@@ -201,36 +198,6 @@ public class GoogleApi {
 
       // Define final file name based on class name
       File finalFile = new File(DOWNLOADS_DIRECTORY_PATH, className + ".java");
-
-      copyFileContent(tempFile, finalFile);
-
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
-  }
-
-  public void downloadJarDependencyFile(GoogleAuthenticationDetails authDetails, String fileId) {
-    Drive driveService =
-        new Drive.Builder(authDetails.httpTransport(), JSON_FACTORY, authDetails.credential())
-            .setApplicationName(APPLICATION_NAME)
-            .build();
-
-    // Create a temporary file to store downloaded content
-    File tempFile =
-        new File(System.getProperty("java.io.tmpdir"), "prefix_" + UUID.randomUUID() + ".java");
-
-    try (InputStream inputStream = driveService.files().get(fileId).executeMediaAsInputStream();
-        FileOutputStream tempOutputStream = new FileOutputStream(tempFile)) {
-
-      // Download content to temporary file
-      byte[] buffer = new byte[1024];
-      int bytesRead;
-      while ((bytesRead = inputStream.read(buffer)) != -1) {
-        tempOutputStream.write(buffer, 0, bytesRead);
-      }
-
-      // Define final file name based on class name
-      File finalFile = new File(DOWNLOADS_DIRECTORY_PATH, PATRIMOINE_JAR_NAME);
 
       copyFileContent(tempFile, finalFile);
 

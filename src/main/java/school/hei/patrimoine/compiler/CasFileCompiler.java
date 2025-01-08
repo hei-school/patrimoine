@@ -2,8 +2,7 @@ package school.hei.patrimoine.compiler;
 
 import static java.io.File.pathSeparator;
 import static javax.tools.ToolProvider.getSystemJavaCompiler;
-import static school.hei.patrimoine.google.GoogleApi.COMPILE_DIR_NAME;
-import static school.hei.patrimoine.google.GoogleApi.PATRIMOINE_JAR_PATH;
+import static school.hei.patrimoine.google.GoogleApi.*;
 
 import java.io.File;
 import java.net.URL;
@@ -54,7 +53,7 @@ public class CasFileCompiler implements Function<String, Class<?>> {
 
   private void compile(Path ioDirPath, Path sourcePath) {
     var compiler = getSystemJavaCompiler();
-    String classPath = String.join(pathSeparator, PATRIMOINE_JAR_PATH, COMPILE_DIR_NAME);
+    String classPath = String.join(pathSeparator, PATRIMOINE_JAR_DEPENDENCY_PATH, COMPILE_DIR_NAME);
 
     int result =
         compiler.run(

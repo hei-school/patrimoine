@@ -23,8 +23,23 @@ jobs:
           java-distribution: 'temurin'
           maven-version: '3.9.6'
 
+      - name: Setup mock .env file
+        run: |
+          echo "PATRIMOINE_JAR_DEPENDENCY_PATH=value" > .env
+
       - name: Test
         run: mvn clean verify
+
+      - name: Clean up .env file
+        if: always()
+        run: |
+          if [[ "$RUNNER_OS" == "Windows" ]]; then
+            cmd /c del .env
+          else
+            rm -f .env
+          fi
+        shell: bash
+
 
   format:
     runs-on: ubuntu-latest
