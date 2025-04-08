@@ -15,6 +15,7 @@ public class CasSetAnalyzer implements Consumer<CasSet> {
 
   public static void main(String[] args) {
     new CasSetAnalyzer().accept(new CasSetSupplier().get());
+    new CasSetAnalyzer().accept(new BakoCasSetSupplier().get());
   }
 
   @Override
@@ -29,20 +30,20 @@ public class CasSetAnalyzer implements Consumer<CasSet> {
     var objectifsNonAtteints = patrimoineTout.verifier();
     if (!objectifsNonAtteints.isEmpty()) {
       throw new RuntimeException(
-          "Objectifs non atteints : "
-              + objectifsNonAtteints.stream()
-                  .map(ObjectifNonAtteint::prettyPrint)
-                  .collect(Collectors.joining("\n")));
+              "Objectifs non atteints : "
+                      + objectifsNonAtteints.stream()
+                      .map(ObjectifNonAtteint::prettyPrint)
+                      .collect(Collectors.joining("\n")));
     }
   }
 
   private static void visualise(Set<Cas> casSet, ToutCas patrimoineTout) {
     invokeLater(
-        () ->
-            new MainIHM(
-                Stream.concat(casSet.stream(), Set.of(patrimoineTout).stream())
-                    .map(Cas::patrimoine)
-                    .sorted(comparing(Patrimoine::nom))
-                    .toList()));
+            () ->
+                    new MainIHM(
+                            Stream.concat(casSet.stream(), Set.of(patrimoineTout).stream())
+                                    .map(Cas::patrimoine)
+                                    .sorted(comparing(Patrimoine::nom))
+                                    .toList()));
   }
 }
