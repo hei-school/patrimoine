@@ -12,6 +12,7 @@ import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.ToString;
 import school.hei.patrimoine.modele.objectif.Objectivable;
 import school.hei.patrimoine.modele.possession.CompteCorrection;
 import school.hei.patrimoine.modele.possession.Possession;
@@ -19,6 +20,7 @@ import school.hei.patrimoine.modele.possession.Possession;
 @AllArgsConstructor(access = PRIVATE)
 @EqualsAndHashCode(callSuper = false)
 @Getter
+@ToString
 public final class Patrimoine extends Objectivable
     implements Serializable /*note(no-serializable)*/ {
 
