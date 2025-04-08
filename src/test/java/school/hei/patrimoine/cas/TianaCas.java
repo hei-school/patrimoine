@@ -44,7 +44,6 @@ public class TianaCas extends Cas {
 
     @Override
     protected void init() {
-        // Flux initial pour le terrain et autres possessions
         new FluxArgent("Initial", compteBancaire, startDate, ariary(60_000_000));
     }
 
@@ -52,17 +51,14 @@ public class TianaCas extends Cas {
     public Set<Possession> possessions() {
         var terrain = new Materiel("Terrain bâti", startDate, startDate.plusYears(1), ariary(100_000_000), 10);
 
-        // Flux des dépenses
+
         var depensesMensuelles = new FluxArgent("Dépenses familiales", compteBancaire, startDate, endDate, 12, ariary(-4_000_000));
 
-        // Flux du projet entrepreneurial
         var depensesProjet = new FluxArgent("Dépenses projet", compteBancaire, LocalDate.of(2025, 6, 1), LocalDate.of(2025, 12, 31), 6, ariary(-5_000_000));
 
-        // Encaissements du projet (10% en mai et 90% en janvier)
         new FluxArgent("Encaissement projet", projetCompte, LocalDate.of(2025, 5, 1), ariary(7_000_000));
         new FluxArgent("Encaissement projet", projetCompte, LocalDate.of(2026, 1, 31), ariary(63_000_000));
 
-        // Prêt bancaire et remboursement
         new FluxArgent("Prêt bancaire", pretCompte, LocalDate.of(2025, 7, 27), ariary(20_000_000));
         new FluxArgent("Remboursement prêt", compteBancaire, LocalDate.of(2025, 8, 27), ariary(-2_000_000));
 
