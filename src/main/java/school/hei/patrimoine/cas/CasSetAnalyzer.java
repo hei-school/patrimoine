@@ -14,8 +14,9 @@ import school.hei.patrimoine.visualisation.swing.ihm.MainIHM;
 public class CasSetAnalyzer implements Consumer<CasSet> {
 
   public static void main(String[] args) {
-    new CasSetAnalyzer().accept(new CasSetSupplier().get());
     new CasSetAnalyzer().accept(new BakoCasSetSupplier().get());
+    new CasSetAnalyzer().accept(new TianaCasSetSupplier().get());
+    new CasSetAnalyzer().accept(new TianaCasSetSupplier().get());
   }
 
   @Override
