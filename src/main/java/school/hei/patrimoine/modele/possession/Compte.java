@@ -63,7 +63,7 @@ public sealed class Compte extends Possession permits Dette, Creance {
         .reduce(new Argent(0, valeurComptable.devise()), (a1, a2) -> a1.add(a2, tFutur));
   }
 
-  void addFinancés(FluxArgent fluxArgent) {
+  public void addFinancés(FluxArgent fluxArgent) {
     fluxArgents.add(fluxArgent);
   }
 }
