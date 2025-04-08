@@ -8,16 +8,17 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
 import static school.hei.patrimoine.modele.Argent.ariary;
-import school.hei.patrimoine.cas.pro3.EtudiantCas;
+import school.hei.patrimoine.cas.examen2.bako.BakoCas;
 
 public class CasSetSupplier implements Supplier<CasSet> {
-  @Override
-  public CasSet get() {
-            EtudiantCas etudiantCas = new EtudiantCas(
-                  LocalDate.of(2025, Month.MARCH,25),
-                  LocalDate.of(2026, Month.DECEMBER,31),
-                  Map.of(new Personne("Etudiant"),1.));
+    @Override
+    public CasSet get() {
 
-            return  new CasSet(Set.of(etudiantCas),ariary(2_500_000));
-  }
+        BakoCas bakoCas = new BakoCas(
+                LocalDate.of(2025, Month.APRIL, 8),
+                LocalDate.of(2025, Month.DECEMBER, 31),
+                Map.of(new Personne("Bako"), 1.0));
+
+        return new CasSet(Set.of(bakoCas), ariary(13_711_657));
+    }
 }
