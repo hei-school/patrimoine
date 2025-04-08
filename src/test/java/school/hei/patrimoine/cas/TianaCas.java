@@ -1,11 +1,10 @@
-package school.hei.patrimoine.cas.example;
+package school.hei.patrimoine.cas;
 
 import static school.hei.patrimoine.modele.Argent.ariary;
 import static school.hei.patrimoine.modele.Devise.MGA;
 import java.time.LocalDate;
 import java.util.Set;
 
-import school.hei.patrimoine.cas.Cas;
 import school.hei.patrimoine.modele.Devise;
 import school.hei.patrimoine.modele.Personne;
 import school.hei.patrimoine.modele.possession.Compte;
@@ -29,7 +28,7 @@ public class TianaCas extends Cas {
         this.endDate = LocalDate.of(2026, 3, 31);
         this.personne = new Personne("Tiana");
         this.compteBancaire = new Compte("Compte bancaire", LocalDate.now(), ariary(60_000_000));
-        this.projetCompte = new Compte("Projet entrepreneurial", LocalDate.now(), ariary(0)); // A encaisser
+        this.projetCompte = new Compte("Projet entrepreneurial", LocalDate.now(), ariary(0));
         this.pretCompte = new Compte("Prêt bancaire", LocalDate.now(), ariary(0));
     }
 
@@ -60,12 +59,12 @@ public class TianaCas extends Cas {
         var depensesProjet = new FluxArgent("Dépenses projet", compteBancaire, LocalDate.of(2025, 6, 1), LocalDate.of(2025, 12, 31), 6, ariary(-5_000_000));
 
         // Encaissements du projet (10% en mai et 90% en janvier)
-        new FluxArgent("Encaissement projet", projetCompte, LocalDate.of(2025, 5, 1), ariary(7_000_000)); // 10%
-        new FluxArgent("Encaissement projet", projetCompte, LocalDate.of(2026, 1, 31), ariary(63_000_000)); // 90%
+        new FluxArgent("Encaissement projet", projetCompte, LocalDate.of(2025, 5, 1), ariary(7_000_000));
+        new FluxArgent("Encaissement projet", projetCompte, LocalDate.of(2026, 1, 31), ariary(63_000_000));
 
         // Prêt bancaire et remboursement
-        new FluxArgent("Prêt bancaire", pretCompte, LocalDate.of(2025, 7, 27), ariary(20_000_000)); // Prêt de 20M
-        new FluxArgent("Remboursement prêt", compteBancaire, LocalDate.of(2025, 8, 27), ariary(-2_000_000)); // Mensualité du prêt (12 mois)
+        new FluxArgent("Prêt bancaire", pretCompte, LocalDate.of(2025, 7, 27), ariary(20_000_000));
+        new FluxArgent("Remboursement prêt", compteBancaire, LocalDate.of(2025, 8, 27), ariary(-2_000_000));
 
         return Set.of(compteBancaire, terrain, depensesMensuelles, depensesProjet, projetCompte, pretCompte);
     }
