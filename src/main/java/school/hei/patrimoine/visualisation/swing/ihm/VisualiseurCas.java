@@ -4,6 +4,7 @@ import static java.awt.EventQueue.invokeLater;
 
 import java.util.List;
 import school.hei.patrimoine.cas.example.EtudiantPireCas;
+import school.hei.patrimoine.cas.example.PatrimoineBakoAu8Avril2025;
 import school.hei.patrimoine.cas.example.PatrimoineCresusSupplier;
 import school.hei.patrimoine.cas.example.PatrimoineRicheSupplier;
 
@@ -16,6 +17,7 @@ public class VisualiseurCas {
                 List.of(
                     new EtudiantPireCas().patrimoine(),
                     new PatrimoineRicheSupplier().get(),
-                    new PatrimoineCresusSupplier().get())));
+                    new PatrimoineCresusSupplier().get(),
+                    new PatrimoineBakoAu8Avril2025().get())));
   }
 }
