@@ -17,11 +17,11 @@ import school.hei.patrimoine.modele.possession.Compte;
 import school.hei.patrimoine.modele.possession.FluxArgent;
 import school.hei.patrimoine.modele.possession.Materiel;
 import school.hei.patrimoine.modele.possession.Possession;
-import school.hei.patrimoine.patrilang.antlr.PatriLangBaseVisitor;
+import school.hei.patrimoine.patrilang.antlr.PatriLangParserBaseVisitor;
 import school.hei.patrimoine.patrilang.antlr.PatriLangParser;
 import school.hei.patrimoine.patrilang.model.MaterielAppreciationType;
 
-public class PatriLangTranspileVisitor extends PatriLangBaseVisitor<Object> {
+public class PatriLangTranspileVisitor extends PatriLangParserBaseVisitor<Object> {
   private Set<Compte> comptes = new HashSet<>();
 
     @Override
