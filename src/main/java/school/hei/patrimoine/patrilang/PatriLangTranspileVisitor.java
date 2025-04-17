@@ -20,35 +20,49 @@ import school.hei.patrimoine.patrilang.visitors.CompteVisitor;
 import school.hei.patrimoine.patrilang.visitors.CreanceVisitor;
 
 public class PatriLangTranspileVisitor extends PatriLangParserBaseVisitor<Object> {
-  private Set<Compte> comptes = new HashSet<>();
+  private final CompteVisitor compteVisitor;
+  private final CreanceVisitor creanceVisitor;
+  private final Set<Compte> comptes;
+
+  public PatriLangTranspileVisitor() {
+    this.comptes = new HashSet<>();
+    this.compteVisitor = new CompteVisitor();
+    this.creanceVisitor = new CreanceVisitor();
+  }
 
   @Override
   public Patrimoine visitDocument(PatriLangParser.DocumentContext ctx) {
     LocalDate t = BaseVisitor.visitDate(ctx.sectionGeneral().lignePatrimoineDate().date());
-    String nom = parseNodeValue(ctx.sectionGeneral().lignePatrimoineNom().TEXT());
     Devise devise = visitDevise(ctx.sectionGeneral().lignePatrimoineDevise().DEVISE());
+    String nom = parseNodeValue(ctx.sectionGeneral().lignePatrimoineNom().TEXT());
     Personne personne = new Personne(nom);
     Set<Possession> possessions = visitPossessions(ctx);
 
-    return Patrimoine.of(String.format("Patrimoine De %s", nom), devise, t, personne, possessions);
+    return Patrimoine.of(String.format("Patrimoine de %s", nom), devise, t, personne, possessions);
   }
 
   @Override
   public Set<Compte> visitSectionTresorerie(PatriLangParser.SectionTresorerieContext ctx) {
-    this.comptes = ctx.compte().stream().map(CompteVisitor::visitCompte).collect(toSet());
+    this.comptes.addAll(ctx.compte().stream().map(compteVisitor::visit).collect(toSet()));
     return this.comptes;
   }
 
   @Override
   public Set<Creance> visitSectionCreance(PatriLangParser.SectionCreanceContext ctx) {
-    return ctx.creance().stream().map(CreanceVisitor::visitCreance).collect(toSet());
+    return ctx.creance().stream().map(creanceVisitor::visit).collect(toSet());
   }
 
   Set<Possession> visitPossessions(PatriLangParser.DocumentContext ctx) {
     Set<Possession> possessions = new HashSet<>();
 
-    possessions.addAll(visitSectionTresorerie(ctx.sectionTresorerie()));
-    possessions.addAll(visitSectionCreance(ctx.sectionCreance()));
+    if(ctx.sectionTresorerie() != null){
+      possessions.addAll(visitSectionTresorerie(ctx.sectionTresorerie()));
+    }
+
+    if(ctx.sectionCreance() != null){
+      possessions.addAll(visitSectionCreance(ctx.sectionCreance()));
+    }
+
     return possessions;
   }
 

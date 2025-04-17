@@ -8,8 +8,8 @@ options { tokenVocab=PatriLangLexer; }
 
 document
   : sectionGeneral
-    sectionTresorerie
-    sectionCreance
+    sectionTresorerie?
+    sectionCreance?
     EOF
   ;
 
