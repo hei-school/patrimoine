@@ -1,53 +1,61 @@
 package school.hei.patrimoine.patrilang;
 
-import school.hei.patrimoine.patrilang.antlr.PatriLangParser;
-import school.hei.patrimoine.patrilang.antlr.PatriLangParserBaseVisitor;
+import static java.util.stream.Collectors.toSet;
+import static school.hei.patrimoine.patrilang.visitors.BaseVisitor.parseNodeValue;
+import static school.hei.patrimoine.patrilang.visitors.BaseVisitor.visitDevise;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
+import school.hei.patrimoine.modele.Devise;
+import school.hei.patrimoine.modele.Patrimoine;
+import school.hei.patrimoine.modele.Personne;
+import school.hei.patrimoine.modele.possession.Compte;
+import school.hei.patrimoine.modele.possession.Creance;
+import school.hei.patrimoine.modele.possession.Possession;
+import school.hei.patrimoine.patrilang.antlr.PatriLangParser;
+import school.hei.patrimoine.patrilang.antlr.PatriLangParserBaseVisitor;
+import school.hei.patrimoine.patrilang.visitors.BaseVisitor;
+import school.hei.patrimoine.patrilang.visitors.CompteVisitor;
+import school.hei.patrimoine.patrilang.visitors.CreanceVisitor;
 
-import static java.lang.Integer.parseInt;
+public class PatriLangTranspileVisitor extends PatriLangParserBaseVisitor<Object> {
+  private Set<Compte> comptes = new HashSet<>();
 
-public class PatriLangTranspileVisitor extends PatriLangParserBaseVisitor<Map<String, String>> {
-    private Map<String, String> map = new HashMap<>();
-    @Override
-    public Map<String, String> visitDocument(PatriLangParser.DocumentContext ctx) {
-        return this.visitSectionGeneral(ctx.sectionGeneral());
-    }
+  @Override
+  public Patrimoine visitDocument(PatriLangParser.DocumentContext ctx) {
+    LocalDate t = BaseVisitor.visitDate(ctx.sectionGeneral().lignePatrimoineDate().date());
+    String nom = parseNodeValue(ctx.sectionGeneral().lignePatrimoineNom().TEXT());
+    Devise devise = visitDevise(ctx.sectionGeneral().lignePatrimoineDevise().DEVISE());
+    Personne personne = new Personne(nom);
+    Set<Possession> possessions = visitPossessions(ctx);
 
-    @Override
-    public Map<String, String> visitDate(PatriLangParser.DateContext ctx) {
-        LocalDate localDate = LocalDate.of(
-            parseInt(ctx.NOMBRE(2).getText()),
-            parseInt(ctx.NOMBRE(1).getText()),
-            parseInt(ctx.NOMBRE(0).getText())
-        );
+    return Patrimoine.of(String.format("Patrimoine De %s", nom), devise, t, personne, possessions);
+  }
 
-        String date = localDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        this.map.put("Date", date);
-        return this.map;
-    }
+  @Override
+  public Set<Compte> visitSectionTresorerie(PatriLangParser.SectionTresorerieContext ctx) {
+    this.comptes = ctx.compte().stream().map(CompteVisitor::visitCompte).collect(toSet());
+    return this.comptes;
+  }
 
-    @Override
-    public Map<String, String> visitLignePatrimoineDevise(PatriLangParser.LignePatrimoineDeviseContext ctx) {
-        this.map.put("Devise", ctx.DEVISE().getText());
-        return this.map;
-    }
+  @Override
+  public Set<Creance> visitSectionCreance(PatriLangParser.SectionCreanceContext ctx) {
+    return ctx.creance().stream().map(CreanceVisitor::visitCreance).collect(toSet());
+  }
 
-    @Override
-    public Map<String, String> visitLignePatrimoineNom(PatriLangParser.LignePatrimoineNomContext ctx) {
-        this.map.put("Nom", ctx.TEXT().getText());
-        return this.map;
-    }
+  Set<Possession> visitPossessions(PatriLangParser.DocumentContext ctx) {
+    Set<Possession> possessions = new HashSet<>();
 
+    possessions.addAll(visitSectionTresorerie(ctx.sectionTresorerie()));
+    possessions.addAll(visitSectionCreance(ctx.sectionCreance()));
+    return possessions;
+  }
 
-    @Override
-    public Map<String, String> visitSectionGeneral(PatriLangParser.SectionGeneralContext ctx) {
-        this.visitLignePatrimoineDate(ctx.lignePatrimoineDate());
-        this.visitLignePatrimoineNom(ctx.lignePatrimoineNom());
-        this.visitLignePatrimoineDevise(ctx.lignePatrimoineDevise());
-        return this.map;
-    }
+  public Compte findCompteByNom(String nom) {
+    return this.comptes.stream()
+        .filter(compte -> compte.nom().equals(nom))
+        .findFirst()
+        .orElseThrow();
+  }
 }

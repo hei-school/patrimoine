@@ -7,10 +7,13 @@ package school.hei.patrimoine.patrilang.antlr;
 options { tokenVocab=PatriLangLexer; }
 
 document
-  : sectionGeneral EOF
+  : sectionGeneral
+    sectionTresorerie
+    sectionCreance
+    EOF
   ;
 
-/* Général */
+/* Séction */
 sectionGeneral
   : ENTETE_GENERAL
     lignePatrimoineDate
@@ -30,7 +33,32 @@ lignePatrimoineDevise
     : PUCE MOT_DEVISE_EN DEVISE
     ;
 
-// Commun
+/* Trésorerie */
+sectionTresorerie
+    : ENTETE_TRESORERIE compte*
+    ;
+
+compte
+    : PUCE TEXT MOT_CONTIENT argent date
+    ;
+
+/* Créances */
+sectionCreance
+    : ENTETE_CREANCE creance*;
+
+creance
+    : PUCE TEXT COMMA MOT_VALANT argent date
+    ;
+
+/* Commun */
+argent
+    : nombre DEVISE
+    ;
+
 date
-    : MOT_LE NOMBRE MOT_DU NOMBRE TIRER NOMBRE
+    : MOT_LE ENTIER MOT_DU ENTIER TIRER ENTIER
+    ;
+nombre
+    : DECIMAL
+    | ENTIER
     ;

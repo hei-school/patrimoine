@@ -6,39 +6,39 @@ package school.hei.patrimoine.patrilang.antlr;
 
 fragment DIGIT: [0-9];
 
-// Général
-ENTETE_GENERAL: '# Général';
-MOT_SPECIFIER: 'Spécifié';
-MOT_DEVISE_EN: 'Devise en';
-MOT_PATRIMOINE_DE: 'Patrimoine de' -> pushMode(TEXT_MODE);
+/* Général */
+ENTETE_GENERAL     : '# Général';
+MOT_SPECIFIER      : 'Spécifié';
+MOT_DEVISE_EN      : 'Devise en';
+MOT_PATRIMOINE_DE  : 'Patrimoine de';
 
-// Date
-MOT_LE
-     : 'Le'
-     | 'le'
-     ;
-MOT_DU
-     : 'du'
-     ;
-TIRER
-     : '-'
-     ;
+/* Trésorerie */
+ENTETE_TRESORERIE  : '# Trésoreries';
+MOT_CONTIENT       : 'contient';
 
-// Commun
-DEVISE
-    : 'Ar'
-    | '€'
-    ;
-PUCE
-    : '*'
-    | '-'
-    ;
-NOMBRE: DIGIT+ ('.' DIGIT+)?;
+/* Créance  */
+ENTETE_CREANCE     : '# Créances';
 
-// Skipped
-WS: [ \t]+ -> skip;
-NEWLINE: [\r\n]+ -> skip;
+/* Date */
+MOT_LE             : 'Le'
+                   | 'le'
+                   ;
+MOT_DU             : 'du';
+TIRER              : '-';
 
-mode    TEXT_MODE;
-        TEXT: ~[\r\n,.]+;
-        TEXT_NEW_LINE: [\n\r,.] -> popMode;
+/* Commun */
+MOT_VALANT         : 'valant';
+DEVISE             : 'Ar'
+                   | '€'
+                   ;
+PUCE               : '*'
+                   | '-'
+                   ;
+COMMA              : ',';
+DECIMAL            : DIGIT+ '.' DIGIT+;
+ENTIER             : DIGIT+;
+TEXT               : [\p{L}_]+;
+
+/* Skipped */
+WS                 : [ \t]+                              -> skip;
+NEWLINE            : [\r\n]+                             -> skip;
