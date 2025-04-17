@@ -16,13 +16,8 @@ public class VisualiseurCas {
     var transpiler = new PatriLangTranspiler();
     var charStream = fromFileName("/home/ricka/Ricka/Projects/patrimoine/src/main/java/school/hei/patrimoine/patrilang/examples/Zety.patri");
 
-    invokeLater(
-        () ->
-            new MainIHM(
-                List.of(
-                    transpiler.apply(charStream),
-                    new EtudiantPireCas().patrimoine(),
-                    new PatrimoineRicheSupplier().get(),
-                    new PatrimoineCresusSupplier().get())));
+    var response = transpiler.apply(charStream);
+
+    response.forEach((key, value) -> System.out.println(key + ": " + value));
   }
 }
