@@ -22,6 +22,42 @@ ENTETE_CREANCES    : '# Créances';
 /* Dettes */
 ENTETE_DETTES      : '# Dettes';
 
+/* Opérations */
+ENTETE_OPERATIONS  : '# Opérations';
+MOT_JE             : 'Je'
+                   | 'J\''
+                   | 'J\'ai'
+                   ;
+MOT_POSSEDE        : 'possède'
+                   ;
+MOT_ACHETER        : 'acheter'
+                   | 'achète'
+                   ;
+MOT_SORTIR         : 'sortir'
+                   | 'sort'
+                   ;
+MOT_ENTRER         : 'entrer'
+                   | 'entre'
+                   ;
+MOT_TRANSFERER     : 'transférer'
+                   | 'transfère'
+                   ;
+MOT_DEPUIS         : 'depuis'
+                   ;
+MOT_VERS           : 'vers'
+                   ;
+ID_DEBUT           : '`'                                -> pushMode(ID_MODE)
+                   ;
+MATERIEL_APPRECIATION
+                   : 's\'appréciant'
+                   | 'dépréciant'
+                   ;
+MOT_ANNUELLEMENT_DE
+                   : 'annuellement de'
+                   ;
+
+PERCENT            : '%'
+                   ;
 /* Date */
 MOT_LE             : 'Le'
                    | 'le'
@@ -45,3 +81,9 @@ TEXT               : [\p{L}_]+;
 /* Skipped */
 WS                 : [ \t]+                              -> skip;
 NEWLINE            : [\r\n]+                             -> skip;
+
+mode ID_MODE;
+ID                 : ~[\r\n`]
+                   ;
+ID_FIN             : '`'                                 -> popMode
+                   ;

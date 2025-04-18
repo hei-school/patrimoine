@@ -11,8 +11,7 @@
 * Myriade Fr, valant 1500Ar le 10 du 04-2025
  
 # Dettes
-* FanoDettes, valant 1500Ar le 10 du 04-2025 
- 
+
 # Opérations
 
 ## Sous-section1 libre, purement organisationnelle
