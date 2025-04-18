@@ -31,11 +31,11 @@ public class BaseVisitor {
         parseInt(parseNodeValue(ctx.ENTIER(0))));
   }
 
-  public static String parseNodeValue(TerminalNode node) {
-    return node.getText();
-  }
-
   public static Double visitNombre(PatriLangParser.NombreContext ctx) {
     return parseDouble(ctx.getText());
+  }
+
+  public static String parseNodeValue(TerminalNode node) {
+    return node.getText();
   }
 }

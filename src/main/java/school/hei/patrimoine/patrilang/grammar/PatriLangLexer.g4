@@ -13,11 +13,14 @@ MOT_DEVISE_EN      : 'Devise en';
 MOT_PATRIMOINE_DE  : 'Patrimoine de';
 
 /* Trésorerie */
-ENTETE_TRESORERIE  : '# Trésoreries';
+ENTETE_TRESORERIES : '# Trésoreries';
 MOT_CONTIENT       : 'contient';
 
 /* Créance  */
-ENTETE_CREANCE     : '# Créances';
+ENTETE_CREANCES    : '# Créances';
+
+/* Dettes */
+ENTETE_DETTES      : '# Dettes';
 
 /* Date */
 MOT_LE             : 'Le'

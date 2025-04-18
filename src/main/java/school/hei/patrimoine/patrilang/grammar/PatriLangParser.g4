@@ -8,8 +8,9 @@ options { tokenVocab=PatriLangLexer; }
 
 document
   : sectionGeneral
-    sectionTresorerie?
-    sectionCreance?
+    sectionTresoreries?
+    sectionCreances?
+    sectionDettes?
     EOF
   ;
 
@@ -34,19 +35,22 @@ lignePatrimoineDevise
     ;
 
 /* Trésorerie */
-sectionTresorerie
-    : ENTETE_TRESORERIE compte*
-    ;
-
-compte
-    : PUCE TEXT MOT_CONTIENT argent date
+sectionTresoreries
+    : ENTETE_TRESORERIES compte*
     ;
 
 /* Créances */
-sectionCreance
-    : ENTETE_CREANCE creance*;
+sectionCreances
+    : ENTETE_CREANCES compte*
+    ;
 
-creance
+/* Dettes */
+sectionDettes
+    : ENTETE_DETTES compte*
+    ;
+
+/* Possessions */
+compte
     : PUCE TEXT COMMA MOT_VALANT argent date
     ;
 

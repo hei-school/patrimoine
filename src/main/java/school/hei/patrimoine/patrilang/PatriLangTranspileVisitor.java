@@ -1,6 +1,10 @@
 package school.hei.patrimoine.patrilang;
 
 import static java.util.stream.Collectors.toSet;
+import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.DocumentContext;
+import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.SectionCreancesContext;
+import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.SectionDettesContext;
+import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.SectionTresoreriesContext;
 import static school.hei.patrimoine.patrilang.visitors.BaseVisitor.parseNodeValue;
 import static school.hei.patrimoine.patrilang.visitors.BaseVisitor.visitDevise;
 
@@ -12,26 +16,29 @@ import school.hei.patrimoine.modele.Patrimoine;
 import school.hei.patrimoine.modele.Personne;
 import school.hei.patrimoine.modele.possession.Compte;
 import school.hei.patrimoine.modele.possession.Creance;
+import school.hei.patrimoine.modele.possession.Dette;
 import school.hei.patrimoine.modele.possession.Possession;
-import school.hei.patrimoine.patrilang.antlr.PatriLangParser;
 import school.hei.patrimoine.patrilang.antlr.PatriLangParserBaseVisitor;
 import school.hei.patrimoine.patrilang.visitors.BaseVisitor;
 import school.hei.patrimoine.patrilang.visitors.CompteVisitor;
 import school.hei.patrimoine.patrilang.visitors.CreanceVisitor;
+import school.hei.patrimoine.patrilang.visitors.DetteVisitor;
 
 public class PatriLangTranspileVisitor extends PatriLangParserBaseVisitor<Object> {
   private final CompteVisitor compteVisitor;
   private final CreanceVisitor creanceVisitor;
+  private final DetteVisitor detteVisitor;
   private final Set<Compte> comptes;
 
   public PatriLangTranspileVisitor() {
     this.comptes = new HashSet<>();
     this.compteVisitor = new CompteVisitor();
     this.creanceVisitor = new CreanceVisitor();
+    this.detteVisitor = new DetteVisitor();
   }
 
   @Override
-  public Patrimoine visitDocument(PatriLangParser.DocumentContext ctx) {
+  public Patrimoine visitDocument(DocumentContext ctx) {
     LocalDate t = BaseVisitor.visitDate(ctx.sectionGeneral().lignePatrimoineDate().date());
     Devise devise = visitDevise(ctx.sectionGeneral().lignePatrimoineDevise().DEVISE());
     String nom = parseNodeValue(ctx.sectionGeneral().lignePatrimoineNom().TEXT());
@@ -42,25 +49,34 @@ public class PatriLangTranspileVisitor extends PatriLangParserBaseVisitor<Object
   }
 
   @Override
-  public Set<Compte> visitSectionTresorerie(PatriLangParser.SectionTresorerieContext ctx) {
+  public Set<Compte> visitSectionTresoreries(SectionTresoreriesContext ctx) {
     this.comptes.addAll(ctx.compte().stream().map(compteVisitor::visit).collect(toSet()));
     return this.comptes;
   }
 
   @Override
-  public Set<Creance> visitSectionCreance(PatriLangParser.SectionCreanceContext ctx) {
-    return ctx.creance().stream().map(creanceVisitor::visit).collect(toSet());
+  public Set<Creance> visitSectionCreances(SectionCreancesContext ctx) {
+    return ctx.compte().stream().map(creanceVisitor::visit).collect(toSet());
   }
 
-  Set<Possession> visitPossessions(PatriLangParser.DocumentContext ctx) {
+  @Override
+  public Set<Dette> visitSectionDettes(SectionDettesContext ctx) {
+    return ctx.compte().stream().map(detteVisitor::visit).collect(toSet());
+  }
+
+  Set<Possession> visitPossessions(DocumentContext ctx) {
     Set<Possession> possessions = new HashSet<>();
 
-    if(ctx.sectionTresorerie() != null){
-      possessions.addAll(visitSectionTresorerie(ctx.sectionTresorerie()));
+    if (ctx.sectionTresoreries() != null) {
+      possessions.addAll(visitSectionTresoreries(ctx.sectionTresoreries()));
     }
 
-    if(ctx.sectionCreance() != null){
-      possessions.addAll(visitSectionCreance(ctx.sectionCreance()));
+    if (ctx.sectionCreances() != null) {
+      possessions.addAll(visitSectionCreances(ctx.sectionCreances()));
+    }
+
+    if (ctx.sectionDettes() != null) {
+      possessions.addAll(visitSectionDettes(ctx.sectionDettes()));
     }
 
     return possessions;

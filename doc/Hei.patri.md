@@ -4,14 +4,15 @@
 * Devise en Ar
 
 # Trésoreries
-* BMOI contient 15000Ar le 10 du 04-2025
-* BNI contient 15000Ar le 10 du 04-2025
+* BMOI, valant 15000Ar le 10 du 04-2025
+* BNI, valant 15000Ar le 10 du 04-2025
 
 # Créances
-* Créance myriade Fr, valant 1500 Ar
+* Myriade Fr, valant 1500Ar le 10 du 04-2025
  
 # Dettes
-
+* FanoDettes, valant 1500Ar le 10 du 04-2025 
+ 
 # Opérations
 
 ## Sous-section1 libre, purement organisationnelle
