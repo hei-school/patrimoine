@@ -9,6 +9,7 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.Devise;
 import school.hei.patrimoine.patrilang.antlr.PatriLangParser;
+import school.hei.patrimoine.patrilang.model.MaterielAppreciationType;
 
 public class BaseVisitor {
   public static Argent visitArgent(PatriLangParser.ArgentContext ctx) {
@@ -33,6 +34,10 @@ public class BaseVisitor {
 
   public static Double visitNombre(PatriLangParser.NombreContext ctx) {
     return parseDouble(ctx.getText());
+  }
+
+  public static double visitMaterielAppreciationFacteur(TerminalNode ctx){
+    return MaterielAppreciationType.fromString(parseNodeValue(ctx)).getFacteur();
   }
 
   public static String parseNodeValue(TerminalNode node) {

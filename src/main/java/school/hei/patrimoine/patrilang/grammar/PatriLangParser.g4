@@ -56,31 +56,31 @@ sectionOperations
     ;
 
 operation
-    : possedeMateriel
-    | acheterMateriel
+    : fluxArgentTransferer
     | fluxArgentEntrer
     | fluxArgentSortir
-    | fluxArgentTransferer
+    | possedeMateriel
+    | acheterMateriel
     ;
 
 /* Possessions */
 compte
     : PUCE TEXT COMMA MOT_VALANT argent date
     ;
-possedeMateriel
-    : ID date COMMA MOT_JE? MOT_POSSEDE TEXT MOT_VALANT argent COMMA MATERIEL_APPRECIATION MOT_ANNUELLEMENT_DE ENTIER PERCENT
-    ;
-acheterMateriel
-    : ID date COMMA MOT_JE? MOT_ACHETER TEXT MOT_VALANT argent MOT_DEPUIS TEXT COMMA MATERIEL_APPRECIATION MOT_ANNUELLEMENT_DE ENTIER PERCENT
+fluxArgentTransferer
+    : PUCE ID date COMMA MOT_JE? MOT_TRANSFERER argent MOT_DEPUIS TEXT MOT_VERS TEXT
     ;
 fluxArgentEntrer
-    : ID date COMMA MOT_JE? MOT_ENTRER argent MOT_VERS TEXT
+    : PUCE ID date COMMA MOT_JE? MOT_ENTRER argent MOT_VERS TEXT
     ;
 fluxArgentSortir
-    : ID date COMMA MOT_JE? MOT_SORTIR argent MOT_DEPUIS TEXT
+    : PUCE ID date COMMA MOT_JE? MOT_SORTIR argent MOT_DEPUIS TEXT
     ;
-fluxArgentTransferer
-    : ID date COMMA MOT_JE? MOT_TRANSFERER argent MOT_DEPUIS TEXT MOT_VERS TEXT
+acheterMateriel
+    : PUCE ID date COMMA MOT_JE? MOT_ACHETER TEXT MOT_VALANT argent COMMA MATERIEL_APPRECIATION MOT_ANNUELLEMENT_DE ENTIER PERCENT MOT_DEPUIS TEXT
+    ;
+possedeMateriel
+    : PUCE ID date COMMA MOT_JE? MOT_POSSEDER TEXT MOT_VALANT argent COMMA MATERIEL_APPRECIATION MOT_ANNUELLEMENT_DE ENTIER PERCENT
     ;
 
 /* Commun */

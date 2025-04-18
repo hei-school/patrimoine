@@ -28,13 +28,14 @@ MOT_JE             : 'Je'
                    | 'J\''
                    | 'J\'ai'
                    ;
-MOT_POSSEDE        : 'possède'
+MOT_POSSEDER       : 'possède'
+                   | 'posseder'
                    ;
 MOT_ACHETER        : 'acheter'
                    | 'achète'
                    ;
 MOT_SORTIR         : 'sortir'
-                   | 'sort'
+                   | 'sors'
                    ;
 MOT_ENTRER         : 'entrer'
                    | 'entre'

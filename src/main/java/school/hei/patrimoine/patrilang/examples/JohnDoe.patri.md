@@ -18,5 +18,7 @@
 # Opérations
 * `id1` Le 10 du 04-2025, je possède ordinateur, valant 200000Ar, se dépréciant annuellement de 10%
 * `id2` Le 10 du 04-2025, je possède terrain, valant 150000Ar, s'appréciant annuellement de 5%
-* `id3` Le 12 du 07-2025, sortir 15000Ar depuis BMOI
-* `id4` Le 15 du 07-2025, entrer 100000Ar vers BNI
+* `id3` Le 10 du 04-2025, je acheter villa, valant 150000Ar, s'appréciant annuellement de 5%, depuis BNI
+* `id4` Le 12 du 07-2025, je sors 15000Ar depuis BMOI
+* `id6` Le 15 du 07-2025, entrer 100000Ar vers BNI
+* `id8` Le 15 du 07-2025, transférer 100000Ar depuis BMOI vers BNI

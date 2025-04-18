@@ -5,6 +5,7 @@ import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.DocumentCont
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.SectionCreancesContext;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.SectionDettesContext;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.SectionTresoreriesContext;
+import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.OperationContext;
 import static school.hei.patrimoine.patrilang.visitors.BaseVisitor.parseNodeValue;
 import static school.hei.patrimoine.patrilang.visitors.BaseVisitor.visitDevise;
 
@@ -18,16 +19,18 @@ import school.hei.patrimoine.modele.possession.Compte;
 import school.hei.patrimoine.modele.possession.Creance;
 import school.hei.patrimoine.modele.possession.Dette;
 import school.hei.patrimoine.modele.possession.Possession;
+import school.hei.patrimoine.patrilang.antlr.PatriLangParser;
 import school.hei.patrimoine.patrilang.antlr.PatriLangParserBaseVisitor;
-import school.hei.patrimoine.patrilang.visitors.BaseVisitor;
-import school.hei.patrimoine.patrilang.visitors.CompteVisitor;
-import school.hei.patrimoine.patrilang.visitors.CreanceVisitor;
-import school.hei.patrimoine.patrilang.visitors.DetteVisitor;
+import school.hei.patrimoine.patrilang.visitors.*;
 
 public class PatriLangTranspileVisitor extends PatriLangParserBaseVisitor<Object> {
   private final CompteVisitor compteVisitor;
   private final CreanceVisitor creanceVisitor;
   private final DetteVisitor detteVisitor;
+  private final MaterielVisitor materielVisitor;
+  private final AchatMaterielVisitor achatMaterielVisitor;
+  private final FluxArgentVisitor fluxArgentVisitor;
+  private final TransferArgentVisitor transferArgentVisitor;
   private final Set<Compte> comptes;
 
   public PatriLangTranspileVisitor() {
@@ -35,6 +38,10 @@ public class PatriLangTranspileVisitor extends PatriLangParserBaseVisitor<Object
     this.compteVisitor = new CompteVisitor();
     this.creanceVisitor = new CreanceVisitor();
     this.detteVisitor = new DetteVisitor();
+    this.materielVisitor = new MaterielVisitor();
+    this.achatMaterielVisitor = new AchatMaterielVisitor(this::findCompteByNom);
+    this.fluxArgentVisitor = new FluxArgentVisitor(this::findCompteByNom);
+    this.transferArgentVisitor = new TransferArgentVisitor(this::findCompteByNom);
   }
 
   @Override
@@ -64,6 +71,36 @@ public class PatriLangTranspileVisitor extends PatriLangParserBaseVisitor<Object
     return ctx.compte().stream().map(detteVisitor::visit).collect(toSet());
   }
 
+  @Override
+  public Set<Possession> visitSectionOperations(PatriLangParser.SectionOperationsContext ctx) {
+    return ctx.operation().stream().map(this::visitOperation).collect(toSet());
+  }
+
+  @Override
+  public Possession visitOperation(OperationContext ctx) {
+    if(ctx.fluxArgentTransferer() != null) {
+      return this.transferArgentVisitor.visit(ctx.fluxArgentTransferer());
+    }
+
+    if(ctx.fluxArgentEntrer() != null) {
+      return this.fluxArgentVisitor.visit(ctx.fluxArgentEntrer());
+    }
+
+    if(ctx.fluxArgentSortir() != null) {
+      return this.fluxArgentVisitor.visit(ctx.fluxArgentSortir());
+    }
+
+    if(ctx.acheterMateriel() != null) {
+      return this.achatMaterielVisitor.visit(ctx.acheterMateriel());
+    }
+
+    if(ctx.possedeMateriel() != null) {
+      return this.materielVisitor.visit(ctx.possedeMateriel());
+    }
+
+    return null;
+  }
+
   Set<Possession> visitPossessions(DocumentContext ctx) {
     Set<Possession> possessions = new HashSet<>();
 
@@ -77,6 +114,10 @@ public class PatriLangTranspileVisitor extends PatriLangParserBaseVisitor<Object
 
     if (ctx.sectionDettes() != null) {
       possessions.addAll(visitSectionDettes(ctx.sectionDettes()));
+    }
+
+    if (ctx.sectionOperations() != null) {
+      possessions.addAll(visitSectionOperations(ctx.sectionOperations()));
     }
 
     return possessions;
