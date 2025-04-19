@@ -17,7 +17,7 @@ document
 
 /* Général */
 sectionGeneral
-  : ENTETE_GENERAL
+  : HASHES ENTETE_GENERAL
     lignePatrimoineDate
     lignePatrimoineNom
     lignePatrimoineDevise
@@ -37,22 +37,26 @@ lignePatrimoineDevise
 
 /* Trésorerie */
 sectionTresoreries
-    : ENTETE_TRESORERIES compte*
+    : HASHES ENTETE_TRESORERIES compte*
     ;
 
 /* Créances */
 sectionCreances
-    : ENTETE_CREANCES compte*
+    : HASHES ENTETE_CREANCES compte*
     ;
 
 /* Dettes */
 sectionDettes
-    : ENTETE_DETTES compte*
+    : HASHES ENTETE_DETTES compte*
     ;
 
 /* Opérations */
 sectionOperations
-    : ENTETE_OPERATIONS operation*
+    : HASHES ENTETE_OPERATIONS operations*
+    ;
+
+operations
+    : sousTitre? operation+
     ;
 
 operation
@@ -84,6 +88,10 @@ possedeMateriel
     ;
 
 /* Commun */
+sousTitre
+    : HASHES HASHES TEXT COMMA date COMMA MOT_DEVISE_EN DEVISE
+    ;
+
 argent
     : nombre DEVISE
     ;

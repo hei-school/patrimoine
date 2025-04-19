@@ -11,8 +11,8 @@ import school.hei.patrimoine.modele.possession.TransfertArgent;
 import school.hei.patrimoine.patrilang.modele.PossessionGetter;
 
 @RequiredArgsConstructor
-public class TransferArgentVisitor
-    implements PossessionVisitor<TransfertArgent, FluxArgentTransfererContext> {
+public class TransferArgentVisitorSimple
+    implements SimplePossessionVisitor<TransfertArgent, FluxArgentTransfererContext> {
   private final PossessionGetter<Compte> compteGetter;
 
   @Override

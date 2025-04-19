@@ -8,13 +8,11 @@ import static school.hei.patrimoine.modele.Argent.ariary;
 import static school.hei.patrimoine.modele.Devise.MGA;
 
 import java.time.LocalDate;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
 import org.junit.jupiter.api.Test;
 import school.hei.patrimoine.modele.Patrimoine;
 import school.hei.patrimoine.modele.Personne;
@@ -49,7 +47,8 @@ public class PatriLangTranspilerIT {
     assertEquals(expected.getNom(), actual.getNom());
     assertEquals(expected.getDevise(), actual.getDevise());
     assertEquals(expected.getValeurComptable(), actual.getValeurComptable());
-    assertEquals(sortPossessions(expected.getPossessions()), sortPossessions(actual.getPossessions()));
+    assertEquals(
+        sortPossessions(expected.getPossessions()), sortPossessions(actual.getPossessions()));
   }
 
   @Test
@@ -63,7 +62,8 @@ public class PatriLangTranspilerIT {
     assertEquals(expected.getNom(), actual.getNom());
     assertEquals(expected.getDevise(), actual.getDevise());
     assertEquals(expected.getValeurComptable(), actual.getValeurComptable());
-    assertEquals(sortPossessions(expected.getPossessions()), sortPossessions(actual.getPossessions()));
+    assertEquals(
+        sortPossessions(expected.getPossessions()), sortPossessions(actual.getPossessions()));
   }
 
   @Test
@@ -77,7 +77,8 @@ public class PatriLangTranspilerIT {
     assertEquals(expected.getNom(), actual.getNom());
     assertEquals(expected.getDevise(), actual.getDevise());
     assertEquals(expected.getValeurComptable(), actual.getValeurComptable());
-    assertEquals(sortPossessions(expected.getPossessions()), sortPossessions(actual.getPossessions()));
+    assertEquals(
+        sortPossessions(expected.getPossessions()), sortPossessions(actual.getPossessions()));
   }
 
   @Test
@@ -91,10 +92,11 @@ public class PatriLangTranspilerIT {
     assertEquals(expected.getNom(), actual.getNom());
     assertEquals(expected.getDevise(), actual.getDevise());
     assertEquals(expected.getValeurComptable(), actual.getValeurComptable());
-    assertEquals(sortPossessions(expected.getPossessions()), sortPossessions(actual.getPossessions()));
+    assertEquals(
+        sortPossessions(expected.getPossessions()), sortPossessions(actual.getPossessions()));
   }
 
-  List<Possession> sortPossessions(Set<Possession> possessions){
+  List<Possession> sortPossessions(Set<Possession> possessions) {
     return possessions.stream().sorted(comparing(Possession::nom)).collect(Collectors.toList());
   }
 
@@ -132,7 +134,7 @@ public class PatriLangTranspilerIT {
     possessions.addAll(opérations((nom) -> findCompteByNom(nom, comptes)));
 
     return Patrimoine.of(
-      "Patrimoine de Zety", MGA, AU_18_AVRIL_2025, new Personne("Zety"), possessions);
+        "Patrimoine de Zety", MGA, AU_18_AVRIL_2025, new Personne("Zety"), possessions);
   }
 
   Set<Compte> trésoriers() {
@@ -155,12 +157,19 @@ public class PatriLangTranspilerIT {
 
   Set<Possession> opérations(Function<String, Compte> compteGetter) {
     return Set.of(
-        new Materiel("ordinateur",AU_18_AVRIL_2025, AU_18_AVRIL_2025, ariary(200_000), -0.1),
+        new Materiel("ordinateur", AU_18_AVRIL_2025, AU_18_AVRIL_2025, ariary(200_000), -0.1),
         new Materiel("terrain", AU_18_AVRIL_2025, AU_18_AVRIL_2025, ariary(150_000), 0.05),
-        new AchatMaterielAuComptant("villa", AU_18_AVRIL_2025, ariary(150_000), 0.05, compteGetter.apply("BNI")),
-        new FluxArgent("PourAiderMonAmi", compteGetter.apply("BMOI"), AU_18_AVRIL_2025, ariary(-8_000)),
+        new AchatMaterielAuComptant(
+            "villa", AU_18_AVRIL_2025, ariary(150_000), 0.05, compteGetter.apply("BNI")),
+        new FluxArgent(
+            "PourAiderMonAmi", compteGetter.apply("BMOI"), AU_18_AVRIL_2025, ariary(-8_000)),
         new FluxArgent("Prime", compteGetter.apply("BNI"), AU_18_AVRIL_2025, ariary(100_000)),
-        new TransfertArgent("TransfertÉpargne", compteGetter.apply("BMOI"),compteGetter.apply("BNI"), AU_18_AVRIL_2025, ariary(100_000)));
+        new TransfertArgent(
+            "TransfertÉpargne",
+            compteGetter.apply("BMOI"),
+            compteGetter.apply("BNI"),
+            AU_18_AVRIL_2025,
+            ariary(100_000)));
   }
 
   private static final String SECTION_GENERAL =
@@ -193,12 +202,12 @@ public class PatriLangTranspilerIT {
       """;
   private static final String SECTION_OPERATION =
       """
-          # Opérations
-          * `PossèdeOrdinateur` Le 18 du 04-2025, je possède ordinateur, valant 200000Ar, se dépréciant annuellement de 10%
-          * `PossèdeTerrain` Le 18 du 04-2025, je possède terrain, valant 150000Ar, s'appréciant annuellement de 5%
-          * `AchatDeVilla` Le 18 du 04-2025, je acheter villa, valant 150000Ar, s'appréciant annuellement de 5%, depuis BNI
-          * `PourAiderMonAmi` Le 18 du 04-2025, je sors 8000Ar depuis BMOI
-          * `Prime` Le 18 du 04-2025, je entrer 100000Ar vers BNI
-          * `TransfertÉpargne` Le 18 du 04-2025, je transférer 100000Ar depuis BMOI vers BNI
-      """;
+    # Opérations
+    * `PossèdeOrdinateur` Le 18 du 04-2025, je possède ordinateur, valant 200000Ar, se dépréciant annuellement de 10%
+    * `PossèdeTerrain` Le 18 du 04-2025, je possède terrain, valant 150000Ar, s'appréciant annuellement de 5%
+    * `AchatDeVilla` Le 18 du 04-2025, je acheter villa, valant 150000Ar, s'appréciant annuellement de 5%, depuis BNI
+    * `PourAiderMonAmi` Le 18 du 04-2025, je sors 8000Ar depuis BMOI
+    * `Prime` Le 18 du 04-2025, je entrer 100000Ar vers BNI
+    * `TransfertÉpargne` Le 18 du 04-2025, je transférer 100000Ar depuis BMOI vers BNI
+""";
 }

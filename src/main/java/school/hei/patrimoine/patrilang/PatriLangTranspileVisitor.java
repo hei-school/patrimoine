@@ -3,8 +3,10 @@ package school.hei.patrimoine.patrilang;
 import static java.util.stream.Collectors.toSet;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.DocumentContext;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.OperationContext;
+import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.OperationsContext;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.SectionCreancesContext;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.SectionDettesContext;
+import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.SectionOperationsContext;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.SectionTresoreriesContext;
 import static school.hei.patrimoine.patrilang.visitors.BaseVisitor.parseNodeValue;
 import static school.hei.patrimoine.patrilang.visitors.BaseVisitor.visitDevise;
@@ -19,19 +21,19 @@ import school.hei.patrimoine.modele.possession.Compte;
 import school.hei.patrimoine.modele.possession.Creance;
 import school.hei.patrimoine.modele.possession.Dette;
 import school.hei.patrimoine.modele.possession.Possession;
-import school.hei.patrimoine.patrilang.antlr.PatriLangParser;
 import school.hei.patrimoine.patrilang.antlr.PatriLangParserBaseVisitor;
 import school.hei.patrimoine.patrilang.modele.PossessionGetter;
 import school.hei.patrimoine.patrilang.visitors.*;
 
 public class PatriLangTranspileVisitor extends PatriLangParserBaseVisitor<Object> {
-  private final CompteVisitor compteVisitor;
-  private final CreanceVisitor creanceVisitor;
-  private final DetteVisitor detteVisitor;
-  private final MaterielVisitor materielVisitor;
-  private final AchatMaterielVisitor achatMaterielVisitor;
+  private final CompteVisitorSimple compteVisitor;
+  private final CreanceVisitorSimple creanceVisitor;
+  private final DetteVisitorSimple detteVisitor;
+  private final MaterielVisitorSimple materielVisitor;
+  private final AchatMaterielVisitorSimple achatMaterielVisitor;
   private final FluxArgentVisitor fluxArgentVisitor;
-  private final TransferArgentVisitor transferArgentVisitor;
+  private final TransferArgentVisitorSimple transferArgentVisitor;
+  private final GroupPossessionVisitor groupPossessionVisitor;
 
   private final Set<Compte> comptes;
 
@@ -40,13 +42,14 @@ public class PatriLangTranspileVisitor extends PatriLangParserBaseVisitor<Object
 
     PossessionGetter<Compte> compteGetter = new PossessionGetter<>(this.comptes);
 
-    this.detteVisitor = new DetteVisitor();
-    this.compteVisitor = new CompteVisitor();
-    this.creanceVisitor = new CreanceVisitor();
-    this.materielVisitor = new MaterielVisitor();
-    this.achatMaterielVisitor = new AchatMaterielVisitor(compteGetter);
+    this.detteVisitor = new DetteVisitorSimple();
+    this.compteVisitor = new CompteVisitorSimple();
+    this.creanceVisitor = new CreanceVisitorSimple();
+    this.materielVisitor = new MaterielVisitorSimple();
+    this.groupPossessionVisitor = new GroupPossessionVisitor();
+    this.achatMaterielVisitor = new AchatMaterielVisitorSimple(compteGetter);
     this.fluxArgentVisitor = new FluxArgentVisitor(compteGetter);
-    this.transferArgentVisitor = new TransferArgentVisitor(compteGetter);
+    this.transferArgentVisitor = new TransferArgentVisitorSimple(compteGetter);
   }
 
   @Override
@@ -77,8 +80,25 @@ public class PatriLangTranspileVisitor extends PatriLangParserBaseVisitor<Object
   }
 
   @Override
-  public Set<Possession> visitSectionOperations(PatriLangParser.SectionOperationsContext ctx) {
-    return ctx.operation().stream().map(this::visitOperation).collect(toSet());
+  public Set<Possession> visitSectionOperations(SectionOperationsContext ctx) {
+    Set<Possession> possessions = new HashSet<>();
+
+    for (OperationsContext operationsContext : ctx.operations()) {
+      possessions.addAll(visitOperations(operationsContext));
+    }
+    return possessions;
+  }
+
+  @Override
+  public Set<Possession> visitOperations(OperationsContext ctx) {
+    Set<Possession> possessions =
+        ctx.operation().stream().map(this::visitOperation).collect(toSet());
+
+    if (ctx.sousTitre() == null) {
+      return possessions;
+    }
+
+    return Set.of(this.groupPossessionVisitor.visit(ctx.sousTitre(), possessions));
   }
 
   @Override

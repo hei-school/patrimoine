@@ -12,8 +12,8 @@ import school.hei.patrimoine.modele.possession.Compte;
 import school.hei.patrimoine.patrilang.modele.PossessionGetter;
 
 @RequiredArgsConstructor
-public class AchatMaterielVisitor
-    implements PossessionVisitor<AchatMaterielAuComptant, AcheterMaterielContext> {
+public class AchatMaterielVisitorSimple
+    implements SimplePossessionVisitor<AchatMaterielAuComptant, AcheterMaterielContext> {
   private final PossessionGetter<Compte> compteGetter;
 
   @Override

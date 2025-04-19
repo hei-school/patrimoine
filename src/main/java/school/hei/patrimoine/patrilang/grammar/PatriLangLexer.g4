@@ -7,23 +7,22 @@ package school.hei.patrimoine.patrilang.antlr;
 fragment DIGIT: [0-9];
 
 /* Général */
-ENTETE_GENERAL     : '# Général';
+ENTETE_GENERAL     : 'Général';
 MOT_SPECIFIER      : 'Spécifié';
-MOT_DEVISE_EN      : 'Devise en';
 MOT_PATRIMOINE_DE  : 'Patrimoine de';
 
 /* Trésorerie */
-ENTETE_TRESORERIES : '# Trésoreries';
+ENTETE_TRESORERIES : 'Trésoreries';
 MOT_CONTIENT       : 'contient';
 
 /* Créance  */
-ENTETE_CREANCES    : '# Créances';
+ENTETE_CREANCES    : 'Créances';
 
 /* Dettes */
-ENTETE_DETTES      : '# Dettes';
+ENTETE_DETTES      : 'Dettes';
 
 /* Opérations */
-ENTETE_OPERATIONS  : '# Opérations';
+ENTETE_OPERATIONS  : 'Opérations';
 MOT_JE             : 'Je'
                    | 'J\''
                    | 'je'
@@ -68,6 +67,9 @@ MOT_DU             : 'du';
 TIRER              : '-';
 
 /* Commun */
+MOT_DEVISE_EN      : 'Devise en'
+                   | 'devise en'
+                   ;
 MOT_VALANT         : 'valant';
 DEVISE             : 'Ar'
                    | '€'
@@ -75,6 +77,7 @@ DEVISE             : 'Ar'
 PUCE               : '*'
                    | '-'
                    ;
+HASHES             : '#';
 COMMA              : ',';
 DECIMAL            : DIGIT+ '.' DIGIT+;
 ENTIER             : DIGIT+;
