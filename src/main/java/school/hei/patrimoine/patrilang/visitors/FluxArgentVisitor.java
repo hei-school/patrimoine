@@ -5,15 +5,15 @@ import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.FluxArgentSo
 import static school.hei.patrimoine.patrilang.visitors.BaseVisitor.*;
 
 import java.time.LocalDate;
-import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.possession.Compte;
 import school.hei.patrimoine.modele.possession.FluxArgent;
+import school.hei.patrimoine.patrilang.modele.PossessionGetter;
 
 @RequiredArgsConstructor
 public class FluxArgentVisitor {
-  private final Function<String, Compte> compteGetter;
+  private final PossessionGetter<Compte> compteGetter;
 
   public FluxArgent visit(FluxArgentEntrerContext ctx) {
     String id = parseNodeValue(ctx.TEXT(0));

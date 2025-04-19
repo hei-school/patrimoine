@@ -21,6 +21,7 @@ import school.hei.patrimoine.modele.possession.Dette;
 import school.hei.patrimoine.modele.possession.Possession;
 import school.hei.patrimoine.patrilang.antlr.PatriLangParser;
 import school.hei.patrimoine.patrilang.antlr.PatriLangParserBaseVisitor;
+import school.hei.patrimoine.patrilang.modele.PossessionGetter;
 import school.hei.patrimoine.patrilang.visitors.*;
 
 public class PatriLangTranspileVisitor extends PatriLangParserBaseVisitor<Object> {
@@ -31,17 +32,21 @@ public class PatriLangTranspileVisitor extends PatriLangParserBaseVisitor<Object
   private final AchatMaterielVisitor achatMaterielVisitor;
   private final FluxArgentVisitor fluxArgentVisitor;
   private final TransferArgentVisitor transferArgentVisitor;
+
   private final Set<Compte> comptes;
 
   public PatriLangTranspileVisitor() {
     this.comptes = new HashSet<>();
+
+    PossessionGetter<Compte> compteGetter = new PossessionGetter<>(this.comptes);
+
+    this.detteVisitor = new DetteVisitor();
     this.compteVisitor = new CompteVisitor();
     this.creanceVisitor = new CreanceVisitor();
-    this.detteVisitor = new DetteVisitor();
     this.materielVisitor = new MaterielVisitor();
-    this.achatMaterielVisitor = new AchatMaterielVisitor(this::findCompteByNom);
-    this.fluxArgentVisitor = new FluxArgentVisitor(this::findCompteByNom);
-    this.transferArgentVisitor = new TransferArgentVisitor(this::findCompteByNom);
+    this.achatMaterielVisitor = new AchatMaterielVisitor(compteGetter);
+    this.fluxArgentVisitor = new FluxArgentVisitor(compteGetter);
+    this.transferArgentVisitor = new TransferArgentVisitor(compteGetter);
   }
 
   @Override
@@ -121,12 +126,5 @@ public class PatriLangTranspileVisitor extends PatriLangParserBaseVisitor<Object
     }
 
     return possessions;
-  }
-
-  public Compte findCompteByNom(String nom) {
-    return this.comptes.stream()
-        .filter(compte -> compte.nom().equals(nom))
-        .findFirst()
-        .orElseThrow();
   }
 }

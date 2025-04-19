@@ -5,16 +5,16 @@ import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.AcheterMater
 import static school.hei.patrimoine.patrilang.visitors.BaseVisitor.*;
 
 import java.time.LocalDate;
-import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.possession.AchatMaterielAuComptant;
 import school.hei.patrimoine.modele.possession.Compte;
+import school.hei.patrimoine.patrilang.modele.PossessionGetter;
 
 @RequiredArgsConstructor
 public class AchatMaterielVisitor
     implements PossessionVisitor<AchatMaterielAuComptant, AcheterMaterielContext> {
-  private final Function<String, Compte> compteGetter;
+  private final PossessionGetter<Compte> compteGetter;
 
   @Override
   public AchatMaterielAuComptant visit(AcheterMaterielContext ctx) {
