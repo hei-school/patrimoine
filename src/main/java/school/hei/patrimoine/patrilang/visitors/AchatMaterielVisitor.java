@@ -18,7 +18,7 @@ public class AchatMaterielVisitor
 
   @Override
   public AchatMaterielAuComptant visit(AcheterMaterielContext ctx) {
-    String nom = parseNodeValue(ctx.TEXT(0));
+    String nom = parseNodeValue(ctx.TEXT(1));
     LocalDate t = visitDate(ctx.date());
     Argent valeurComptable = visitArgent(ctx.argent());
     double tauxDAppreciation = parseInt(parseNodeValue(ctx.ENTIER()));
