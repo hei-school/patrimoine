@@ -2,10 +2,10 @@ package school.hei.patrimoine.patrilang;
 
 import static java.util.stream.Collectors.toSet;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.DocumentContext;
+import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.OperationContext;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.SectionCreancesContext;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.SectionDettesContext;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.SectionTresoreriesContext;
-import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.OperationContext;
 import static school.hei.patrimoine.patrilang.visitors.BaseVisitor.parseNodeValue;
 import static school.hei.patrimoine.patrilang.visitors.BaseVisitor.visitDevise;
 
@@ -78,27 +78,27 @@ public class PatriLangTranspileVisitor extends PatriLangParserBaseVisitor<Object
 
   @Override
   public Possession visitOperation(OperationContext ctx) {
-    if(ctx.fluxArgentTransferer() != null) {
+    if (ctx.fluxArgentTransferer() != null) {
       return this.transferArgentVisitor.visit(ctx.fluxArgentTransferer());
     }
 
-    if(ctx.fluxArgentEntrer() != null) {
+    if (ctx.fluxArgentEntrer() != null) {
       return this.fluxArgentVisitor.visit(ctx.fluxArgentEntrer());
     }
 
-    if(ctx.fluxArgentSortir() != null) {
+    if (ctx.fluxArgentSortir() != null) {
       return this.fluxArgentVisitor.visit(ctx.fluxArgentSortir());
     }
 
-    if(ctx.acheterMateriel() != null) {
+    if (ctx.acheterMateriel() != null) {
       return this.achatMaterielVisitor.visit(ctx.acheterMateriel());
     }
 
-    if(ctx.possedeMateriel() != null) {
+    if (ctx.possedeMateriel() != null) {
       return this.materielVisitor.visit(ctx.possedeMateriel());
     }
 
-    return null;
+    throw new IllegalArgumentException("Unknown operation");
   }
 
   Set<Possession> visitPossessions(DocumentContext ctx) {

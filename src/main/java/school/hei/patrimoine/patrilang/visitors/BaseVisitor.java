@@ -36,7 +36,7 @@ public class BaseVisitor {
     return parseDouble(ctx.getText());
   }
 
-  public static double visitMaterielAppreciationFacteur(TerminalNode ctx){
+  public static double visitMaterielAppreciationFacteur(TerminalNode ctx) {
     return MaterielAppreciationType.fromString(parseNodeValue(ctx)).getFacteur();
   }
 

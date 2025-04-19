@@ -26,7 +26,8 @@ ENTETE_DETTES      : '# Dettes';
 ENTETE_OPERATIONS  : '# Opérations';
 MOT_JE             : 'Je'
                    | 'J\''
-                   | 'J\'ai'
+                   | 'je'
+                   | 'j\''
                    ;
 MOT_POSSEDER       : 'possède'
                    | 'posseder'
@@ -47,11 +48,11 @@ MOT_DEPUIS         : 'depuis'
                    ;
 MOT_VERS           : 'vers'
                    ;
-ID_DEBUT           : '`'                                -> pushMode(ID_MODE)
+BACKTICK           : '`'
                    ;
 MATERIEL_APPRECIATION
                    : 's\'appréciant'
-                   | 'dépréciant'
+                   | 'se dépréciant'
                    ;
 MOT_ANNUELLEMENT_DE
                    : 'annuellement de'
@@ -82,9 +83,3 @@ TEXT               : [\p{L}_]+;
 /* Skipped */
 WS                 : [ \t]+                              -> skip;
 NEWLINE            : [\r\n]+                             -> skip;
-
-mode ID_MODE;
-ID                 : ~[\r\n`]
-                   ;
-ID_FIN             : '`'                                 -> popMode
-                   ;

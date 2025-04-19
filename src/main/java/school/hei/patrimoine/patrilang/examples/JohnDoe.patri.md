@@ -16,9 +16,9 @@
 * DetteAutres, valant 500Ar le 10 du 04-2025
 
 # Opérations
-* `id1` Le 10 du 04-2025, je possède ordinateur, valant 200000Ar, se dépréciant annuellement de 10%
-* `id2` Le 10 du 04-2025, je possède terrain, valant 150000Ar, s'appréciant annuellement de 5%
-* `id3` Le 10 du 04-2025, je acheter villa, valant 150000Ar, s'appréciant annuellement de 5%, depuis BNI
-* `id4` Le 12 du 07-2025, je sors 15000Ar depuis BMOI
-* `id6` Le 15 du 07-2025, entrer 100000Ar vers BNI
-* `id8` Le 15 du 07-2025, transférer 100000Ar depuis BMOI vers BNI
+* `idA` Le 10 du 04-2025, je possède ordinateur, valant 200000Ar, se dépréciant annuellement de 10%
+* `idB` Le 10 du 04-2025, je possède terrain, valant 150000Ar, s'appréciant annuellement de 5%
+* `idC` Le 10 du 04-2025, je acheter villa, valant 150000Ar, s'appréciant annuellement de 5%, depuis BNI
+* `idD` Le 12 du 07-2025, je sors 15000Ar depuis BMOI
+* `idE` Le 15 du 07-2025, je entrer 100000Ar vers BNI
+* `idF` Le 15 du 07-2025, je transférer 100000Ar depuis BMOI vers BNI
