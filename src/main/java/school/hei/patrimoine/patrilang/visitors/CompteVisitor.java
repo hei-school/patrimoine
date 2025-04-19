@@ -7,7 +7,7 @@ import java.time.LocalDate;
 import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.possession.Compte;
 
-public class CompteVisitorSimple implements SimplePossessionVisitor<Compte, CompteContext> {
+public class CompteVisitor implements SimplePossessionVisitor<Compte, CompteContext> {
   @Override
   public Compte visit(CompteContext ctx) {
     String nom = parseNodeValue(ctx.TEXT());

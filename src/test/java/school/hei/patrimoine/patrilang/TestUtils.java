@@ -160,26 +160,26 @@ class TestUtils {
 
   static final String SECTION_OPERATION =
       """
-          # Opérations
-          * `PossèdeOrdinateur` Le 18 du 04-2025, je possède ordinateur, valant 200000Ar, se dépréciant annuellement de 10%
-          * `PossèdeTerrain` Le 18 du 04-2025, je possède terrain, valant 150000Ar, s'appréciant annuellement de 5%
-          * `AchatDeVilla` Le 18 du 04-2025, je acheter villa, valant 150000Ar, s'appréciant annuellement de 5%, depuis BNI
-          * `PourAiderMonAmi` Le 18 du 04-2025, je sors 8000Ar depuis BMOI
-          * `Prime` Le 18 du 04-2025, je entrer 100000Ar vers BNI
-          * `TransfertÉpargne` Le 18 du 04-2025, je transférer 100000Ar depuis BMOI vers BNI
-      """;
+    # Opérations
+    * `PossèdeOrdinateur` Le 18 du 04-2025, je possède ordinateur, valant 200000Ar, se dépréciant annuellement de 10%
+    * `PossèdeTerrain` Le 18 du 04-2025, je possède terrain, valant 150000Ar, s'appréciant annuellement de 5%
+    * `AchatDeVilla` Le 18 du 04-2025, je acheter villa, valant 150000Ar, s'appréciant annuellement de 5%, depuis BNI
+    * `PourAiderMonAmi` Le 18 du 04-2025, je sors 8000Ar depuis BMOI
+    * `Prime` Le 18 du 04-2025, je entrer 100000Ar vers BNI
+    * `TransfertÉpargne` Le 18 du 04-2025, je transférer 100000Ar depuis BMOI vers BNI
+""";
 
   static final String SECTION_OPERATION_WITH_GROUP_POSSESSION =
       """
-          # Opérations
-          ## HEI, le 18 du 04-2025, devise en Ar
-          * `idA` Le 18 du 04-2025, je possède ordinateur, valant 200000Ar, se dépréciant annuellement de 10%
-          * `idB` Le 18 du 04-2025, je possède terrain, valant 150000Ar, s'appréciant annuellement de 5%
-          * `idC` Le 18 du 04-2025, je acheter villa, valant 150000Ar, s'appréciant annuellement de 5%, depuis BNI
+    # Opérations
+    ## HEI, le 18 du 04-2025, devise en Ar
+    * `idA` Le 18 du 04-2025, je possède ordinateur, valant 200000Ar, se dépréciant annuellement de 10%
+    * `idB` Le 18 du 04-2025, je possède terrain, valant 150000Ar, s'appréciant annuellement de 5%
+    * `idC` Le 18 du 04-2025, je acheter villa, valant 150000Ar, s'appréciant annuellement de 5%, depuis BNI
 
-          ## Autre, le 18 du 04-2025, devise en Ar
-          * `idD` Le 18 du 04-2025, je sors 15000.55Ar depuis BMOI
-          * `idE` Le 18 du 04-2025, je entrer 100000Ar vers BNI
-          * `idF` Le 18 du 04-2025, je transférer 100000Ar depuis BMOI vers BNI
-      """;
+    ## Autre, le 18 du 04-2025, devise en Ar
+    * `idD` Le 18 du 04-2025, je sors 15000.55Ar depuis BMOI
+    * `idE` Le 18 du 04-2025, je entrer 100000Ar vers BNI
+    * `idF` Le 18 du 04-2025, je transférer 100000Ar depuis BMOI vers BNI
+""";
 }

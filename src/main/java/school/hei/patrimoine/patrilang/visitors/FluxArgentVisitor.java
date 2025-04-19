@@ -13,9 +13,7 @@ import school.hei.patrimoine.patrilang.modele.PossessionGetter;
 
 @RequiredArgsConstructor
 public class FluxArgentVisitor {
-  private final PossessionGetter<Compte> compteGetter;
-
-  public FluxArgent visit(FluxArgentEntrerContext ctx) {
+  public FluxArgent visit(FluxArgentEntrerContext ctx, PossessionGetter<Compte> compteGetter) {
     String id = parseNodeValue(ctx.TEXT(0));
     Compte compte = compteGetter.apply(parseNodeValue(ctx.TEXT(1)));
     LocalDate t = visitDate(ctx.date());
@@ -24,7 +22,7 @@ public class FluxArgentVisitor {
     return new FluxArgent(id, compte, t, valeurComptable);
   }
 
-  public FluxArgent visit(FluxArgentSortirContext ctx) {
+  public FluxArgent visit(FluxArgentSortirContext ctx, PossessionGetter<Compte> compteGetter) {
     String id = parseNodeValue(ctx.TEXT(0));
     Compte compte = compteGetter.apply(parseNodeValue(ctx.TEXT(1)));
     LocalDate t = visitDate(ctx.date());

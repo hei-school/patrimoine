@@ -8,8 +8,7 @@ import java.time.LocalDate;
 import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.possession.Materiel;
 
-public class MaterielVisitorSimple
-    implements SimplePossessionVisitor<Materiel, PossedeMaterielContext> {
+public class MaterielVisitor implements SimplePossessionVisitor<Materiel, PossedeMaterielContext> {
   @Override
   public Materiel visit(PossedeMaterielContext ctx) {
     String nom = parseNodeValue(ctx.TEXT(1));

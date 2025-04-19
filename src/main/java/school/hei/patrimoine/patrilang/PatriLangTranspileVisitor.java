@@ -14,6 +14,7 @@ import static school.hei.patrimoine.patrilang.visitors.BaseVisitor.visitDevise;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
+import lombok.RequiredArgsConstructor;
 import school.hei.patrimoine.modele.Devise;
 import school.hei.patrimoine.modele.Patrimoine;
 import school.hei.patrimoine.modele.Personne;
@@ -22,35 +23,20 @@ import school.hei.patrimoine.modele.possession.Creance;
 import school.hei.patrimoine.modele.possession.Dette;
 import school.hei.patrimoine.modele.possession.Possession;
 import school.hei.patrimoine.patrilang.antlr.PatriLangParserBaseVisitor;
-import school.hei.patrimoine.patrilang.modele.PossessionGetter;
+import school.hei.patrimoine.patrilang.modele.PossessionAccumulator;
 import school.hei.patrimoine.patrilang.visitors.*;
 
+@RequiredArgsConstructor
 public class PatriLangTranspileVisitor extends PatriLangParserBaseVisitor<Object> {
-  private final CompteVisitorSimple compteVisitor;
-  private final CreanceVisitorSimple creanceVisitor;
-  private final DetteVisitorSimple detteVisitor;
-  private final MaterielVisitorSimple materielVisitor;
-  private final AchatMaterielVisitorSimple achatMaterielVisitor;
+  private final PossessionAccumulator<Compte> compteAccumulator = new PossessionAccumulator<>();
+  private final CompteVisitor compteVisitor;
+  private final CreanceVisitor creanceVisitor;
+  private final DetteVisitor detteVisitor;
+  private final MaterielVisitor materielVisitor;
+  private final AchatMaterielVisitor achatMaterielVisitor;
   private final FluxArgentVisitor fluxArgentVisitor;
-  private final TransferArgentVisitorSimple transferArgentVisitor;
+  private final TransferArgentVisitor transferArgentVisitor;
   private final GroupPossessionVisitor groupPossessionVisitor;
-
-  private final Set<Compte> comptes;
-
-  public PatriLangTranspileVisitor() {
-    this.comptes = new HashSet<>();
-
-    PossessionGetter<Compte> compteGetter = new PossessionGetter<>(this.comptes);
-
-    this.detteVisitor = new DetteVisitorSimple();
-    this.compteVisitor = new CompteVisitorSimple();
-    this.creanceVisitor = new CreanceVisitorSimple();
-    this.materielVisitor = new MaterielVisitorSimple();
-    this.groupPossessionVisitor = new GroupPossessionVisitor();
-    this.achatMaterielVisitor = new AchatMaterielVisitorSimple(compteGetter);
-    this.fluxArgentVisitor = new FluxArgentVisitor(compteGetter);
-    this.transferArgentVisitor = new TransferArgentVisitorSimple(compteGetter);
-  }
 
   @Override
   public Patrimoine visitDocument(DocumentContext ctx) {
@@ -65,8 +51,8 @@ public class PatriLangTranspileVisitor extends PatriLangParserBaseVisitor<Object
 
   @Override
   public Set<Compte> visitSectionTresoreries(SectionTresoreriesContext ctx) {
-    this.comptes.addAll(ctx.compte().stream().map(compteVisitor::visit).collect(toSet()));
-    return this.comptes;
+    return this.compteAccumulator.add(
+        ctx.compte().stream().map(compteVisitor::visit).collect(toSet()));
   }
 
   @Override
@@ -104,19 +90,23 @@ public class PatriLangTranspileVisitor extends PatriLangParserBaseVisitor<Object
   @Override
   public Possession visitOperation(OperationContext ctx) {
     if (ctx.fluxArgentTransferer() != null) {
-      return this.transferArgentVisitor.visit(ctx.fluxArgentTransferer());
+      return this.transferArgentVisitor.visit(
+          ctx.fluxArgentTransferer(), this.compteAccumulator.getPossessionGetter());
     }
 
     if (ctx.fluxArgentEntrer() != null) {
-      return this.fluxArgentVisitor.visit(ctx.fluxArgentEntrer());
+      return this.fluxArgentVisitor.visit(
+          ctx.fluxArgentEntrer(), this.compteAccumulator.getPossessionGetter());
     }
 
     if (ctx.fluxArgentSortir() != null) {
-      return this.fluxArgentVisitor.visit(ctx.fluxArgentSortir());
+      return this.fluxArgentVisitor.visit(
+          ctx.fluxArgentSortir(), this.compteAccumulator.getPossessionGetter());
     }
 
     if (ctx.acheterMateriel() != null) {
-      return this.achatMaterielVisitor.visit(ctx.acheterMateriel());
+      return this.achatMaterielVisitor.visit(
+          ctx.acheterMateriel(), this.compteAccumulator.getPossessionGetter());
     }
 
     if (ctx.possedeMateriel() != null) {
