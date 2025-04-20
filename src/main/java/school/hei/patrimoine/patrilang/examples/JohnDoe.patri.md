@@ -1,6 +1,6 @@
 # Général
 * Spécifié le 10 du 04-2025
-* Patrimoine de John
+* Patrimoine de John45
 * Devise en Ar
 
 # Trésoreries
@@ -16,12 +16,15 @@
 * DetteAutres, valant 500Ar le 10 du 04-2025
 
 # Opérations
-## HEI, le 10 du 04-2025, devise en Ar
-* `idA` Le 10 du 04-2025, je possède ordinateur, valant 200000Ar, se dépréciant annuellement de 10%
-* `idB` Le 10 du 04-2025, je possède terrain, valant 150000Ar, s'appréciant annuellement de 5%
-* `idC` Le 10 du 04-2025, je acheter villa, valant 150000Ar, s'appréciant annuellement de 5%, depuis BNI
+## HEI, le 18 du 04-2025, devise en Ar
+* `id1` Le 18 du 04-2025, je possède ordinateur, valant 200000Ar, se dépréciant annuellement de 10%
+* `id2` Le 18 du 04-2025, je possède terrain, valant 150000Ar, s'appréciant annuellement de 5%
+* `id3` Le 18 du 04-2025, je acheter villa, valant 150000Ar, s'appréciant annuellement de 5%, depuis BNI
 
-## Autre, le 10 du 04-2025, devise en Ar
-* `idD` Le 12 du 07-2025, je sors 15000.55Ar depuis BMOI
-* `idE` Le 15 du 07-2025, je entrer 100000Ar vers BNI
-* `idF` Le 15 du 07-2025, je transférer 100000Ar depuis BMOI vers BNI
+## Autre, le 18 du 04-2025, devise en Ar
+* `idD` Le 18 du 04-2025, je sors 15000.55Ar depuis BMOI
+* `idE` Le 18 du 04-2025, je entrer 100000Ar vers BNI
+* `idF` Le 18 du 04-2025, je transférer 100000Ar depuis BMOI vers BNI
+* `avecDateFin4` Le 18 du 04-2025, je sors 8000Ar depuis BMOI, jusqu'à date indéterminer tout les 2 du mois
+* `avecDateFin5` Le 18 du 04-2025, je entrer 100000Ar vers BNI, jusqu'à le 25 du 12-2025 tout les 25 du mois
+* `avecDateFin6` Le 18 du 04-2025, je transférer 100000Ar depuis BMOI vers BNI, jusqu'à le 31 du 12-2025 tout les 01 du mois

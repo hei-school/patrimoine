@@ -56,7 +56,6 @@ MATERIEL_APPRECIATION
 MOT_ANNUELLEMENT_DE
                    : 'annuellement de'
                    ;
-
 PERCENT            : '%'
                    ;
 /* Date */
@@ -67,6 +66,23 @@ MOT_DU             : 'du';
 TIRER              : '-';
 
 /* Commun */
+MOT_DATE_INDETERMINER
+                   : 'date indéterminé'
+                   | 'date indéterminer'
+                   | 'Date indéterminé'
+                   | 'Date indéterminer'
+                   ;
+MOT_JUSQUA         : 'Jusqu\'à'
+                   | 'jusqu\'à'
+                   | 'jusqu\'a'
+                   | 'Jusqu\'a'
+                   ;
+MOT_TOUT_LES       : 'Tout les'
+                   | 'tout les'
+                   ;
+MOT_MOIS           : 'mois'
+                   | 'Mois'
+                   ;
 MOT_DEVISE_EN      : 'Devise en'
                    | 'devise en'
                    ;
@@ -81,7 +97,7 @@ HASHES             : '#';
 COMMA              : ',';
 DECIMAL            : DIGIT+ '.' DIGIT+;
 ENTIER             : DIGIT+;
-TEXT               : [\p{L}_]+;
+TEXT               : ([\p{L}_]) ([\p{L}\p{N}_])* ;
 
 /* Skipped */
 WS                 : [ \t]+                              -> skip;
