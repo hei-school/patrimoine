@@ -23,32 +23,14 @@ ENTETE_DETTES      : 'Dettes';
 
 /* Opérations */
 ENTETE_OPERATIONS  : 'Opérations';
-MOT_JE             : 'Je'
-                   | 'J\''
-                   | 'je'
-                   | 'j\''
-                   ;
-MOT_POSSEDER       : 'possède'
-                   | 'posseder'
-                   ;
-MOT_ACHETER        : 'acheter'
-                   | 'achète'
-                   ;
-MOT_SORTIR         : 'sortir'
-                   | 'sors'
-                   ;
-MOT_ENTRER         : 'entrer'
-                   | 'entre'
-                   ;
-MOT_TRANSFERER     : 'transférer'
-                   | 'transfère'
-                   ;
-MOT_DEPUIS         : 'depuis'
-                   ;
-MOT_VERS           : 'vers'
-                   ;
-BACKTICK           : '`'
-                   ;
+MOT_POSSEDER       : 'posséder';
+MOT_ACHETER        : 'acheter';
+MOT_SORTIR         : 'sortir';
+MOT_ENTRER         : 'entrer';
+MOT_TRANSFERER     : 'transférer';
+MOT_DEPUIS         : 'depuis';
+MOT_VERS           : 'vers';
+BACKTICK           : '`';
 MATERIEL_APPRECIATION
                    : 's\'appréciant'
                    | 'se dépréciant'
@@ -56,8 +38,7 @@ MATERIEL_APPRECIATION
 MOT_ANNUELLEMENT_DE
                    : 'annuellement de'
                    ;
-PERCENT            : '%'
-                   ;
+PERCENT            : '%';
 /* Date */
 MOT_LE             : 'Le'
                    | 'le'
@@ -67,9 +48,9 @@ TIRER              : '-';
 
 /* Commun */
 MOT_DATE_INDETERMINER
-                   : 'date indéterminé'
+                   : 'date indéterminée'
                    | 'date indéterminer'
-                   | 'Date indéterminé'
+                   | 'Date indéterminée'
                    | 'Date indéterminer'
                    ;
 MOT_JUSQUA         : 'Jusqu\'à'
@@ -77,8 +58,8 @@ MOT_JUSQUA         : 'Jusqu\'à'
                    | 'jusqu\'a'
                    | 'Jusqu\'a'
                    ;
-MOT_TOUT_LES       : 'Tout les'
-                   | 'tout les'
+MOT_TOUT_LES       : 'Tous les'
+                   | 'tous les'
                    ;
 MOT_MOIS           : 'mois'
                    | 'Mois'

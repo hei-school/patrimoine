@@ -106,7 +106,6 @@ class PatriLangTranspilerIT {
     var actualSortedPossession = sortPossessions(actual.getPossessions());
 
     for (int i = 0; i < expectedSortedPossession.size(); i++) {
-      System.out.println(expectedSortedPossession.get(i) + " -> " + actualSortedPossession.get(i));
       assertEquals(expectedSortedPossession.get(i), actualSortedPossession.get(i));
       assertEquals(
           expectedSortedPossession.get(i).valeurComptable(),

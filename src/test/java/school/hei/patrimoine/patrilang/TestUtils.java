@@ -203,31 +203,31 @@ class TestUtils {
   static final String SECTION_OPERATION =
       """
     # Opérations
-    * `PossèdeOrdinateur` Le 18 du 04-2025, je possède ordinateur, valant 200000Ar, se dépréciant annuellement de 10%
-    * `PossèdeTerrain` Le 18 du 04-2025, je possède terrain, valant 150000Ar, s'appréciant annuellement de 5%
-    * `AchatDeVilla` Le 18 du 04-2025, je acheter villa, valant 150000Ar, s'appréciant annuellement de 5%, depuis BNI
-    * `PourAiderMonAmi` Le 18 du 04-2025, je sors 8000Ar depuis BMOI
-    * `Prime` Le 18 du 04-2025, je entrer 100000Ar vers BNI
-    * `TransfertÉpargne` Le 18 du 04-2025, je transférer 100000Ar depuis BMOI vers BNI
-    * `avecDateFin1` Le 18 du 04-2025, je sors 8000Ar depuis BMOI, jusqu'à date indéterminer tout les 2 du mois
-    * `avecDateFin2` Le 18 du 04-2025, je entrer 100000Ar vers BNI, jusqu'à le 25 du 12-2025 tout les 25 du mois
-    * `avecDateFin3` Le 18 du 04-2025, je transférer 100000Ar depuis BMOI vers BNI, jusqu'à le 31 du 12-2025 tout les 01 du mois
+    * `PossèdeOrdinateur` Le 18 du 04-2025, posséder ordinateur, valant 200000Ar, se dépréciant annuellement de 10%
+    * `PossèdeTerrain` Le 18 du 04-2025, posséder terrain, valant 150000Ar, s'appréciant annuellement de 5%
+    * `AchatDeVilla` Le 18 du 04-2025, acheter villa, valant 150000Ar, s'appréciant annuellement de 5%, depuis BNI
+    * `PourAiderMonAmi` Le 18 du 04-2025, sortir 8000Ar depuis BMOI
+    * `Prime` Le 18 du 04-2025, entrer 100000Ar vers BNI
+    * `TransfertÉpargne` Le 18 du 04-2025, transférer 100000Ar depuis BMOI vers BNI
+    * `avecDateFin1` Le 18 du 04-2025, sortir 8000Ar depuis BMOI, jusqu'à date indéterminée tous les 2 du mois
+    * `avecDateFin2` Le 18 du 04-2025, entrer 100000Ar vers BNI, jusqu'à le 25 du 12-2025 tous les 25 du mois
+    * `avecDateFin3` Le 18 du 04-2025, transférer 100000Ar depuis BMOI vers BNI, jusqu'à le 31 du 12-2025 tous les 01 du mois
 """;
 
   static final String SECTION_OPERATION_WITH_GROUP_POSSESSION =
       """
     # Opérations
     ## HEI, le 18 du 04-2025, devise en Ar
-    * `id1` Le 18 du 04-2025, je possède ordinateur, valant 200000Ar, se dépréciant annuellement de 10%
-    * `id2` Le 18 du 04-2025, je possède terrain, valant 150000Ar, s'appréciant annuellement de 5%
-    * `id3` Le 18 du 04-2025, je acheter villa, valant 150000Ar, s'appréciant annuellement de 5%, depuis BNI
+    * `id1` Le 18 du 04-2025, posséder ordinateur, valant 200000Ar, se dépréciant annuellement de 10%
+    * `id2` Le 18 du 04-2025, posséder terrain, valant 150000Ar, s'appréciant annuellement de 5%
+    * `id3` Le 18 du 04-2025, acheter villa, valant 150000Ar, s'appréciant annuellement de 5%, depuis BNI
 
     ## AUTRE, le 18 du 04-2025, devise en Ar
-    * `idD` Le 18 du 04-2025, je sors 15000Ar depuis BMOI
-    * `idE` Le 18 du 04-2025, je entrer 100000Ar vers BNI
-    * `idF` Le 18 du 04-2025, je transférer 100000Ar depuis BMOI vers BNI
-    * `avecDateFin4` Le 18 du 04-2025, je sors 800Ar depuis BMOI, jusqu'à date indéterminer tout les 2 du mois
-    * `avecDateFin5` Le 18 du 04-2025, je entrer 100000Ar vers BNI, jusqu'à le 25 du 12-2025 tout les 25 du mois
-    * `avecDateFin6` Le 18 du 04-2025, je transférer 100000Ar depuis BMOI vers BNI, jusqu'à le 31 du 12-2025 tout les 01 du mois
+    * `idD` Le 18 du 04-2025, sortir 15000Ar depuis BMOI
+    * `idE` Le 18 du 04-2025, entrer 100000Ar vers BNI
+    * `idF` Le 18 du 04-2025, transférer 100000Ar depuis BMOI vers BNI
+    * `avecDateFin4` Le 18 du 04-2025, sortir 800Ar depuis BMOI, jusqu'à date indéterminée tous les 2 du mois
+    * `avecDateFin5` Le 18 du 04-2025, entrer 100000Ar vers BNI, jusqu'à le 25 du 12-2025 tous les 25 du mois
+    * `avecDateFin6` Le 18 du 04-2025, transférer 100000Ar depuis BMOI vers BNI, jusqu'à le 31 du 12-2025 tous les 01 du mois
 """;
 }
