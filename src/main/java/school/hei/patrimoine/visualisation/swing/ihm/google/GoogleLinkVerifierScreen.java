@@ -407,8 +407,10 @@ public class GoogleLinkVerifierScreen {
     try {
       invokeLater(() -> new MainIHM(patrimoinesVisualisables));
     } catch (Exception e) {
-      log.warn("Probably a non-patrimoine object compiled, " +
-               "not a problem if it's something like ToutObjectifSupplier", e);
+      log.warn(
+          "Probably a non-patrimoine object compiled, "
+              + "not a problem if it's something like ToutObjectifSupplier",
+          e);
     }
   }
 }
