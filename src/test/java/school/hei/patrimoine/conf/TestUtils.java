@@ -5,7 +5,7 @@ import static school.hei.patrimoine.modele.Argent.ariary;
 import java.util.Set;
 import school.hei.patrimoine.cas.Cas;
 import school.hei.patrimoine.cas.CasSet;
-import school.hei.patrimoine.cas.EtudiantCas;
+import school.hei.patrimoine.cas.pro3Exam.EtudiantCas;
 import school.hei.patrimoine.modele.Personne;
 
 public class TestUtils {
