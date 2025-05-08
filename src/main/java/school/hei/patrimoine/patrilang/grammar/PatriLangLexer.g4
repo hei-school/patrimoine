@@ -4,16 +4,41 @@ lexer grammar PatriLangLexer;
 package school.hei.patrimoine.patrilang.antlr;
 }
 
-fragment DIGIT: [0-9];
+fragment DIGIT
+    :   [0-9]
+    ;
 
-/* Général */
-ENTETE_GENERAL     : 'Général';
-MOT_PATRIMOINE_DE  : 'Patrimoine de';
-MOT_CAS_DE         : 'Cas de'
-                   ;
+/* -------------------- Base --------------------  */
+ENTETE_GENERAL
+    :   'Général'
+    ;
+MOT_SPECIFIER
+    :   'Spécifié'
+    ;
+
+/* Patrimoine */
+MOT_PATRIMOINE_DE
+    :   'Patrimoine de'
+    ;
+
+/* Cas */
+MOT_CAS_DE
+    :   'Cas de'
+    |   'cas de'
+    ;
+MOT_FIN_SIMULATION
+    :   'Fin de simulation'
+    |   'fin de simulation'
+    ;
+
+/* --------------------  Possessions --------------------  */
 /* Trésorerie */
-ENTETE_TRESORERIES : 'Trésoreries';
-MOT_CONTIENT       : 'contient';
+ENTETE_TRESORERIES
+    :   'Trésoreries'
+    ;
+MOT_CONTIENT
+    :   'contient'
+    ;
 
 /* Créance  */
 ENTETE_CREANCES    : 'Créances';
@@ -30,7 +55,6 @@ MOT_ENTRER         : 'entrer';
 MOT_TRANSFERER     : 'transférer';
 MOT_DEPUIS         : 'depuis';
 MOT_VERS           : 'vers';
-BACKTICK           : '`';
 MATERIEL_APPRECIATION
                    : 's\'appréciant'
                    | 'se dépréciant'
@@ -39,6 +63,8 @@ MOT_ANNUELLEMENT_DE
                    : 'annuellement de'
                    ;
 PERCENT            : '%';
+
+/* -------------------- Commun --------------------  */
 /* Date */
 MOT_LE             : 'Le'
                    | 'le'
@@ -46,12 +72,8 @@ MOT_LE             : 'Le'
 MOT_DU             : 'du';
 TIRER              : '-';
 
-/* Commun */
-MOT_SPECIFIER      : 'Spécifié';
-MOT_FIN_SIMULATION
-                   : 'Fin de simulation'
-                   | 'fin de simulation'
-                   ;
+/* Autres */
+BACKTICK           : '`';
 MOT_DATE_INDETERMINER
                    : 'date indéterminée'
                    | 'date indéterminer'
