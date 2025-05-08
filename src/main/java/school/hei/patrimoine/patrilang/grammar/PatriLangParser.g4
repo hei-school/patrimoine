@@ -6,48 +6,59 @@ package school.hei.patrimoine.patrilang.antlr;
 
 options { tokenVocab=PatriLangLexer; }
 
-document
-  : sectionGeneral
-    sectionTresoreries?
-    sectionCreances?
-    sectionDettes?
-    sectionOperations?
-    EOF
-  ;
+/* Patri */
+patrimoine
+    :   sectionGeneral
+        sectionTresoreries?
+        sectionCreances?
+        sectionDettes?
+        sectionOperations?
+        EOF
+    ;
+/* Cas */
+cas
+    :   sectionCasGeneral
+        EOF
+    ;
+sectionCasGeneral
+    :   ligneDateSpecification
+        ligneDateFinSimulation
+        ligneDevise
+        ligneCasNom
+    ;
+ligneCasNom
+    :   PUCE MOT_CAS_DE TEXT
+    ;
 
 /* Général */
 sectionGeneral
-  : HASHES ENTETE_GENERAL
-    lignePatrimoineDate
-    lignePatrimoineNom
-    lignePatrimoineDevise
-  ;
+    :   HASHES ENTETE_GENERAL
+        lignePatrimoineDate
+        lignePatrimoineNom
+        ligneDevise
+    ;
 
 lignePatrimoineDate
-    : PUCE MOT_SPECIFIER date
+    :   PUCE MOT_SPECIFIER date
     ;
 
 lignePatrimoineNom
-    : PUCE MOT_PATRIMOINE_DE TEXT
-    ;
-
-lignePatrimoineDevise
-    : PUCE MOT_DEVISE_EN DEVISE
+    :   PUCE MOT_PATRIMOINE_DE TEXT
     ;
 
 /* Trésorerie */
 sectionTresoreries
-    : HASHES ENTETE_TRESORERIES compte*
+    :   HASHES ENTETE_TRESORERIES compte*
     ;
 
 /* Créances */
 sectionCreances
-    : HASHES ENTETE_CREANCES compte*
+    :   HASHES ENTETE_CREANCES compte*
     ;
 
 /* Dettes */
 sectionDettes
-    : HASHES ENTETE_DETTES compte*
+    :   HASHES ENTETE_DETTES compte*
     ;
 
 /* Opérations */
@@ -88,6 +99,18 @@ possedeMateriel
     ;
 
 /* Commun */
+ligneDateSpecification
+    : PUCE MOT_SPECIFIER date
+    ;
+
+ligneDateFinSimulation
+    : PUCE MOT_FIN_SIMULATION date
+    ;
+
+ligneDevise
+    : PUCE MOT_DEVISE_EN DEVISE
+    ;
+
 sousTitre
     : HASHES HASHES TEXT COMMA date COMMA MOT_DEVISE_EN DEVISE
     ;

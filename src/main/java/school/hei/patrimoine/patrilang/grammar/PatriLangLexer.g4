@@ -8,9 +8,9 @@ fragment DIGIT: [0-9];
 
 /* Général */
 ENTETE_GENERAL     : 'Général';
-MOT_SPECIFIER      : 'Spécifié';
 MOT_PATRIMOINE_DE  : 'Patrimoine de';
-
+MOT_CAS_DE         : 'Cas de'
+                   ;
 /* Trésorerie */
 ENTETE_TRESORERIES : 'Trésoreries';
 MOT_CONTIENT       : 'contient';
@@ -47,6 +47,11 @@ MOT_DU             : 'du';
 TIRER              : '-';
 
 /* Commun */
+MOT_SPECIFIER      : 'Spécifié';
+MOT_FIN_SIMULATION
+                   : 'Fin de simulation'
+                   | 'fin de simulation'
+                   ;
 MOT_DATE_INDETERMINER
                    : 'date indéterminée'
                    | 'date indéterminer'
