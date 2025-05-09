@@ -19,6 +19,7 @@ patrimoine
         sectionTresoreries?
         sectionCreances?
         sectionDettes?
+        sectionOperations?
         EOF
     ;
 
@@ -30,11 +31,11 @@ sectionPatrimoineGeneral
     ;
 
 lignePatrimoineDate
-    :   PUCE MOT_SPECIFIER date
+    :   PUCE MOT_SPECIFIER variable
     ;
 
 lignePatrimoineNom
-    :   PUCE MOT_PATRIMOINE_DE TEXT
+    :   PUCE MOT_PATRIMOINE_DE variable
     ;
 
 /* Cas */
@@ -55,7 +56,7 @@ sectionCasGeneral
     ;
 
 ligneCasNom
-    :   PUCE MOT_CAS_DE TEXT
+    :   PUCE MOT_CAS_DE variable
     ;
 
 /* -------------------- Possessions --------------------  */
@@ -93,43 +94,72 @@ operation
 
 /* Simple Possessions */
 compte
-    :   PUCE TEXT COMMA MOT_VALANT argent date
+    :   PUCE variable COMMA MOT_VALANT variable variable
     ;
+
 fluxArgentTransferer
-    :   PUCE BACKTICK TEXT BACKTICK date COMMA MOT_TRANSFERER argent MOT_DEPUIS TEXT MOT_VERS TEXT dateFin?
+    :   PUCE BACKTICK variable BACKTICK variable COMMA MOT_TRANSFERER variable MOT_DEPUIS variable MOT_VERS variable dateFin?
     ;
+
 fluxArgentEntrer
-    :   PUCE BACKTICK TEXT BACKTICK date COMMA MOT_ENTRER argent MOT_VERS TEXT dateFin?
+    :   PUCE BACKTICK variable BACKTICK variable COMMA MOT_ENTRER variable MOT_VERS variable dateFin?
     ;
+
 fluxArgentSortir
-    :   PUCE BACKTICK TEXT BACKTICK date COMMA MOT_SORTIR argent MOT_DEPUIS TEXT dateFin?
+    :   PUCE BACKTICK variable BACKTICK variable COMMA MOT_SORTIR variable MOT_DEPUIS variable dateFin?
     ;
+
 acheterMateriel
-    :   PUCE BACKTICK TEXT BACKTICK date COMMA MOT_ACHETER TEXT COMMA MOT_VALANT argent COMMA MATERIEL_APPRECIATION MOT_ANNUELLEMENT_DE ENTIER PERCENT COMMA MOT_DEPUIS TEXT
+    :   PUCE BACKTICK variable BACKTICK variable COMMA MOT_ACHETER variable COMMA MOT_VALANT variable COMMA MATERIEL_APPRECIATION MOT_ANNUELLEMENT_DE variable PERCENT COMMA MOT_DEPUIS variable
     ;
+
 possedeMateriel
-    :   PUCE BACKTICK TEXT BACKTICK date COMMA MOT_POSSEDER TEXT COMMA MOT_VALANT argent COMMA MATERIEL_APPRECIATION MOT_ANNUELLEMENT_DE ENTIER PERCENT
+    :   PUCE BACKTICK variable BACKTICK variable COMMA MOT_POSSEDER variable COMMA MOT_VALANT variable COMMA MATERIEL_APPRECIATION MOT_ANNUELLEMENT_DE variable PERCENT
     ;
 
 /* -------------------- Commun --------------------  */
 ligneDateSpecification
-    :   PUCE MOT_SPECIFIER date
+    :   PUCE MOT_SPECIFIER variable
     ;
 
 ligneDateFinSimulation
-    :   PUCE MOT_FIN_SIMULATION date
+    :   PUCE MOT_FIN_SIMULATION variable
     ;
 
 ligneDevise
-    :   PUCE MOT_DEVISE_EN DEVISE
+    :   PUCE MOT_DEVISE_EN variable
     ;
 
 sousTitre
-    :   HASHES HASHES TEXT COMMA date COMMA MOT_DEVISE_EN DEVISE
+    :   HASHES HASHES variable COMMA variable COMMA MOT_DEVISE_EN variable
+    ;
+
+dateFin
+    :   COMMA MOT_JUSQUA variable MOT_TOUT_LES ENTIER MOT_DU MOT_MOIS
+    ;
+
+/*  Valeur englobé par variable  */
+variable
+    :   devise
+    |   argent
+    |   dateFinValue
+    |   date
+    |   nombre
+    |   text
+    |   BACKTICK VARIABLE BACKTICK
     ;
 
 argent
-    :   nombre DEVISE
+    :   nombre devise
+    ;
+
+devise
+    :   DEVISE
+    ;
+
+dateFinValue
+    :   MOT_DATE_INDETERMINER
+    |   date
     ;
 
 nombre
@@ -137,14 +167,10 @@ nombre
     |   ENTIER
     ;
 
-dateFin
-    :   COMMA MOT_JUSQUA dateFinValue MOT_TOUT_LES ENTIER MOT_DU MOT_MOIS
-    ;
-
-dateFinValue
-    :   MOT_DATE_INDETERMINER
-    |   date;
-
 date
     :   MOT_LE ENTIER MOT_DU ENTIER TIRER ENTIER
+    ;
+
+text
+    :   TEXT
     ;

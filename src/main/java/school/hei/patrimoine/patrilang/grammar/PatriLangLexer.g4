@@ -8,7 +8,7 @@ fragment DIGIT
     :   [0-9]
     ;
 
-fragment NAME
+fragment STRING
     :   ([\p{L}_]) ([\p{L}\p{N}_])*
     ;
 
@@ -153,7 +153,7 @@ BACKTICK
 
 /* Valeurs */
 VARIABLE
-    :   '`' [a-zA-Z] ':' NAME '`'
+    :   [a-zA-Z]+ ':' STRING
     ;
 DECIMAL
     :   DIGIT+ '.' DIGIT+
@@ -162,7 +162,7 @@ ENTIER
     :   DIGIT+
     ;
 TEXT
-    :   NAME
+    :   STRING
     ;
 
 /* Ignorés */

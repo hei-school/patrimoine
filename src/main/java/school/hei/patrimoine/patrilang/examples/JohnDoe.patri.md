@@ -1,10 +1,10 @@
 # Général
 * Spécifié le 10 du 04-2025
-* Patrimoine de JohnDoe 
+* Patrimoine de `Personne:JohnDoe` 
 * Devise en Ar
 
 # Trésoreries
-* BNI, valant 500000Ar le 10 du 04-2025
+* BNI, valant 500000Ar `Date:finSimulation`
 * Mvola, valant 120000Ar le 10 du 04-2025
  
 # Créances
