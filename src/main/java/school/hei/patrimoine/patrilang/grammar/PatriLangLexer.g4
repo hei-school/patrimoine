@@ -8,6 +8,10 @@ fragment DIGIT
     :   [0-9]
     ;
 
+fragment NAME
+    :   ([\p{L}_]) ([\p{L}\p{N}_])*
+    ;
+
 /* -------------------- Base --------------------  */
 ENTETE_GENERAL
     :   'Général'
@@ -41,72 +45,130 @@ MOT_CONTIENT
     ;
 
 /* Créance  */
-ENTETE_CREANCES    : 'Créances';
+ENTETE_CREANCES
+    :   'Créances'
+    ;
 
 /* Dettes */
-ENTETE_DETTES      : 'Dettes';
+ENTETE_DETTES
+    :   'Dettes'
+    ;
 
 /* Opérations */
-ENTETE_OPERATIONS  : 'Opérations';
-MOT_POSSEDER       : 'posséder';
-MOT_ACHETER        : 'acheter';
-MOT_SORTIR         : 'sortir';
-MOT_ENTRER         : 'entrer';
-MOT_TRANSFERER     : 'transférer';
-MOT_DEPUIS         : 'depuis';
-MOT_VERS           : 'vers';
+ENTETE_OPERATIONS
+    :   'Opérations'
+    ;
+MOT_POSSEDER
+    :   'posséder'
+    ;
+MOT_ACHETER
+    :   'acheter'
+    ;
+MOT_SORTIR
+    :   'sortir'
+    ;
+MOT_ENTRER
+    :   'entrer'
+    ;
+MOT_TRANSFERER
+    :   'transférer'
+    ;
+MOT_DEPUIS
+    :   'depuis'
+    ;
+MOT_VERS
+    :   'vers'
+    ;
 MATERIEL_APPRECIATION
-                   : 's\'appréciant'
-                   | 'se dépréciant'
-                   ;
+    :   's\'appréciant'
+    |   'se dépréciant'
+    ;
 MOT_ANNUELLEMENT_DE
-                   : 'annuellement de'
-                   ;
-PERCENT            : '%';
+    :   'annuellement de'
+    ;
+PERCENT
+    :   '%'
+    ;
 
 /* -------------------- Commun --------------------  */
 /* Date */
-MOT_LE             : 'Le'
-                   | 'le'
-                   ;
-MOT_DU             : 'du';
-TIRER              : '-';
+MOT_LE
+    :   'Le'
+    |   'le'
+    ;
+MOT_DU
+    :   'du'
+    ;
+TIRER
+    :   '-'
+    ;
 
-/* Autres */
-BACKTICK           : '`';
+/* Mots */
 MOT_DATE_INDETERMINER
-                   : 'date indéterminée'
-                   | 'date indéterminer'
-                   | 'Date indéterminée'
-                   | 'Date indéterminer'
-                   ;
-MOT_JUSQUA         : 'Jusqu\'à'
-                   | 'jusqu\'à'
-                   | 'jusqu\'a'
-                   | 'Jusqu\'a'
-                   ;
-MOT_TOUT_LES       : 'Tous les'
-                   | 'tous les'
-                   ;
-MOT_MOIS           : 'mois'
-                   | 'Mois'
-                   ;
-MOT_DEVISE_EN      : 'Devise en'
-                   | 'devise en'
-                   ;
-MOT_VALANT         : 'valant';
-DEVISE             : 'Ar'
-                   | '€'
-                   ;
-PUCE               : '*'
-                   | '-'
-                   ;
-HASHES             : '#';
-COMMA              : ',';
-DECIMAL            : DIGIT+ '.' DIGIT+;
-ENTIER             : DIGIT+;
-TEXT               : ([\p{L}_]) ([\p{L}\p{N}_])* ;
+    :   'date indéterminée'
+    |   'date indéterminer'
+    |   'Date indéterminée'
+    |   'Date indéterminer'
+    ;
+MOT_JUSQUA
+    :   'Jusqu\'à'
+    |   'jusqu\'à'
+    |   'jusqu\'a'
+    |   'Jusqu\'a'
+    ;
+MOT_TOUT_LES
+    :   'Tous les'
+    |   'tous les'
+    ;
+MOT_MOIS
+    :   'mois'
+    |   'Mois'
+    ;
+MOT_DEVISE_EN
+    :   'Devise en'
+    |   'devise en'
+    ;
+MOT_VALANT
+    :   'valant'
+    ;
 
-/* Skipped */
-WS                 : [ \t]+                              -> skip;
-NEWLINE            : [\r\n]+                             -> skip;
+/* Opérateurs */
+DEVISE
+    :   'Ar'
+    |   '€'
+    ;
+PUCE
+    :   '*'
+    |   '-'
+    ;
+HASHES
+    :   '#'
+    ;
+COMMA
+    :   ','
+    ;
+BACKTICK
+    :   '`'
+    ;
+
+/* Valeurs */
+VARIABLE
+    :   '`' [a-zA-Z] ':' NAME '`'
+    ;
+DECIMAL
+    :   DIGIT+ '.' DIGIT+
+    ;
+ENTIER
+    :   DIGIT+
+    ;
+TEXT
+    :   NAME
+    ;
+
+/* Ignorés */
+WS
+    : [ \t]+    -> skip
+    ;
+NEWLINE
+    : [\r\n]+   -> skip
+    ;
