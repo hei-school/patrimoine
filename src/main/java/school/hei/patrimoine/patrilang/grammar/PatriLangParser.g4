@@ -9,8 +9,8 @@ options { tokenVocab=PatriLangLexer; }
 /* -------------------- Base --------------------  */
 
 document
-    :   patrimoine
-    |   cas
+    :   cas
+    |   patrimoine
     ;
 
 /* Patri */
@@ -40,7 +40,8 @@ lignePatrimoineNom
 
 /* Cas */
 cas
-    :   sectionCasGeneral
+    :   HASHES ENTETE_GENERAL
+        sectionCasGeneral
         sectionTresoreries?
         sectionCreances?
         sectionDettes?
@@ -51,8 +52,8 @@ cas
 sectionCasGeneral
     :   ligneDateSpecification
         ligneDateFinSimulation
-        ligneDevise
         ligneCasNom
+        ligneDevise
     ;
 
 ligneCasNom
