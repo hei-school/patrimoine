@@ -19,7 +19,7 @@
 ## ProjectMaison, le 18 du 04-2025, devise en Ar
 * `invOrdinateur1` Le 18 du 04-2025, posséder ordinateurBureau, valant 350000Ar, se dépréciant annuellement de 20%
 * `invTerrainNord` Le 18 du 04-2025, posséder terrainNord, valant 700000Ar, s'appréciant annuellement de 8%
-* `achatVillaAmb` Le 18 du 04-2025, acheter villaAmbatobe, valant 1250000Ar, s'appréciant annuellement de 5%, depuis BNI
+* `achatVillaAmb` `Date::commun`, acheter villaAmbatobe, valant 1250000Ar, s'appréciant annuellement de 5%, depuis BNI
 
 ## DépensesMensuelles, le 18 du 04-2025, devise en Ar
 * `sortieLoyer` Le 18 du 04-2025, sortir 250000Ar depuis Mvola

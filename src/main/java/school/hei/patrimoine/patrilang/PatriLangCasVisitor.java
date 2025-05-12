@@ -1,4 +1,3 @@
 package school.hei.patrimoine.patrilang;
 
-public class PatriLangCasVisitor {
-}
+public class PatriLangCasVisitor {}

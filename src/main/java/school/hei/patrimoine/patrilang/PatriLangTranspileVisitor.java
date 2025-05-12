@@ -1,15 +1,8 @@
 package school.hei.patrimoine.patrilang;
 
+import static java.util.Objects.isNull;
 import static java.util.stream.Collectors.toSet;
-import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.DocumentContext;
-import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.OperationContext;
-import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.OperationsContext;
-import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.SectionCreancesContext;
-import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.SectionDettesContext;
-import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.SectionOperationsContext;
-import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.SectionTresoreriesContext;
-import static school.hei.patrimoine.patrilang.visitors.BaseVisitor.parseNodeValue;
-import static school.hei.patrimoine.patrilang.visitors.BaseVisitor.visitDevise;
+import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.*;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -39,10 +32,31 @@ public class PatriLangTranspileVisitor extends PatriLangParserBaseVisitor<Object
   private final GroupPossessionVisitor groupPossessionVisitor;
 
   @Override
-  public Patrimoine visitDocument(DocumentContext ctx) {
-    LocalDate t = BaseVisitor.visitDate(ctx.sectionGeneral().lignePatrimoineDate().date());
-    Devise devise = visitDevise(ctx.sectionGeneral().lignePatrimoineDevise().DEVISE());
-    String nom = parseNodeValue(ctx.sectionGeneral().lignePatrimoineNom().TEXT());
+  public Object visitDocument(DocumentContext ctx) {
+    if (!isNull(ctx.patrimoine())) {
+      return this.visitPatrimoine(ctx.patrimoine());
+    }
+
+    return this.visitCas(ctx.cas());
+  }
+
+  @Override
+  public Patrimoine visitPatrimoine(PatrimoineContext ctx) {
+    LocalDate t =
+        VariableVisitor.visitVariable(
+            ctx.sectionPatrimoineGeneral().lignePatrimoineDate().variable(),
+            DateContext.class,
+            BaseVisitor::visitDate);
+    Devise devise =
+        VariableVisitor.visitVariable(
+            ctx.sectionPatrimoineGeneral().ligneDevise().variable(),
+            DeviseContext.class,
+            BaseVisitor::visitDevise);
+    String nom =
+        VariableVisitor.visitVariable(
+            ctx.sectionPatrimoineGeneral().lignePatrimoineNom().variable(),
+            TextContext.class,
+            BaseVisitor::visitText);
     Personne personne = new Personne(nom);
     Set<Possession> possessions = visitPossessions(ctx);
 
@@ -116,7 +130,7 @@ public class PatriLangTranspileVisitor extends PatriLangParserBaseVisitor<Object
     throw new IllegalArgumentException("Unknown operation");
   }
 
-  Set<Possession> visitPossessions(DocumentContext ctx) {
+  Set<Possession> visitPossessions(PatrimoineContext ctx) {
     Set<Possession> possessions = new HashSet<>();
 
     if (ctx.sectionTresoreries() != null) {

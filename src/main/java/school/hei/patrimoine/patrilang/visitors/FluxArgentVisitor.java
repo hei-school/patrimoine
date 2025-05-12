@@ -1,8 +1,8 @@
 package school.hei.patrimoine.patrilang.visitors;
 
-import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.FluxArgentEntrerContext;
-import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.FluxArgentSortirContext;
+import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.*;
 import static school.hei.patrimoine.patrilang.visitors.BaseVisitor.*;
+import static school.hei.patrimoine.patrilang.visitors.VariableVisitor.visitVariable;
 
 import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
@@ -15,10 +15,13 @@ import school.hei.patrimoine.patrilang.modele.PossessionGetter;
 @RequiredArgsConstructor
 public class FluxArgentVisitor {
   public FluxArgent visit(FluxArgentEntrerContext ctx, PossessionGetter<Compte> compteGetter) {
-    String id = parseNodeValue(ctx.TEXT(0));
-    Compte compte = compteGetter.apply(parseNodeValue(ctx.TEXT(1)));
-    LocalDate t = visitDate(ctx.date());
-    Argent valeurComptable = visitArgent(ctx.argent());
+    String id = visitVariable(ctx.variable(0), TextContext.class, BaseVisitor::visitText);
+    LocalDate t = visitVariable(ctx.variable(1), DateContext.class, BaseVisitor::visitDate);
+    Argent valeurComptable =
+        visitVariable(ctx.variable(2), ArgentContext.class, BaseVisitor::visitArgent);
+    Compte compte =
+        compteGetter.apply(
+            visitVariable(ctx.variable(3), TextContext.class, BaseVisitor::visitText));
     DateFin dateFin = ctx.dateFin() == null ? null : visitDateFin(ctx.dateFin());
 
     if (dateFin != null) {
@@ -30,10 +33,13 @@ public class FluxArgentVisitor {
   }
 
   public FluxArgent visit(FluxArgentSortirContext ctx, PossessionGetter<Compte> compteGetter) {
-    String id = parseNodeValue(ctx.TEXT(0));
-    Compte compte = compteGetter.apply(parseNodeValue(ctx.TEXT(1)));
-    LocalDate t = visitDate(ctx.date());
-    Argent valeurComptable = visitArgent(ctx.argent());
+    String id = visitVariable(ctx.variable(0), TextContext.class, BaseVisitor::visitText);
+    LocalDate t = visitVariable(ctx.variable(1), DateContext.class, BaseVisitor::visitDate);
+    Argent valeurComptable =
+        visitVariable(ctx.variable(2), ArgentContext.class, BaseVisitor::visitArgent);
+    Compte compte =
+        compteGetter.apply(
+            visitVariable(ctx.variable(3), TextContext.class, BaseVisitor::visitText));
     DateFin dateFin = ctx.dateFin() == null ? null : visitDateFin(ctx.dateFin());
 
     if (dateFin != null) {
