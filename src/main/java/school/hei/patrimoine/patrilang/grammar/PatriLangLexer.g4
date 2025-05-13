@@ -13,19 +13,16 @@ fragment STRING
     ;
 
 /* -------------------- Base --------------------  */
+/* Cas */
 ENTETE_GENERAL
     :   'Général'
     ;
+
 MOT_SPECIFIER
     :   'Spécifié'
+    |   'Spécifier'
     ;
 
-/* Patrimoine */
-MOT_PATRIMOINE_DE
-    :   'Patrimoine de'
-    ;
-
-/* Cas */
 MOT_CAS_DE
     :   'Cas de'
     |   'cas de'
@@ -33,6 +30,27 @@ MOT_CAS_DE
 MOT_FIN_SIMULATION
     :   'Fin de simulation'
     |   'fin de simulation'
+    ;
+ENTETE_POSSESSEURS
+    :   'Possesseurs'
+    ;
+
+/* ToutCas */
+MOT_OBJECTIF_FINAL
+    :   'Objectif final'
+    |   'Objectif Final'
+    ;
+
+ENTETE_CAS
+    :   'Cas'
+    ;
+
+ENTETE_DATES
+    :   'Dates'
+    ;
+
+ENTETE_PERSONNES
+    :   'Personnes'
     ;
 
 /* --------------------  Possessions --------------------  */
@@ -139,7 +157,6 @@ DEVISE
     ;
 PUCE
     :   '*'
-    |   '-'
     ;
 HASHES
     :   '#'
@@ -151,9 +168,13 @@ BACKTICK
     :   '`'
     ;
 
+COLON
+    :   ':'
+    ;
+
 /* Valeurs */
 VARIABLE
-    :   [a-zA-Z]+ ':' STRING
+    :   [a-zA-Z]+ COLON STRING
     ;
 DECIMAL
     :   DIGIT+ '.' DIGIT+

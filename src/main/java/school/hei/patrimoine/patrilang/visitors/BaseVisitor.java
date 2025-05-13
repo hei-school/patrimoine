@@ -31,6 +31,10 @@ public class BaseVisitor {
   }
 
   public static LocalDate visitDate(DateContext ctx) {
+    if (!isNull(ctx.MOT_DATE_INDETERMINER())) {
+      return LocalDate.MAX;
+    }
+
     return LocalDate.of(
         parseInt(parseNodeValue(ctx.ENTIER(2))),
         parseInt(parseNodeValue(ctx.ENTIER(1))),
@@ -45,14 +49,9 @@ public class BaseVisitor {
     return MaterielAppreciationType.fromString(parseNodeValue(ctx)).getFacteur();
   }
 
-  public static LocalDate visitDateFinValue(DateFinValueContext ctx) {
-    return isNull(ctx.date()) ? LocalDate.MAX : visitDate(ctx.date());
-  }
-
   public static DateFin visitDateFin(DateFinContext ctx) {
     int dateDOpération = parseInt(parseNodeValue(ctx.ENTIER()));
-    var dateFinValue =
-        visitVariable(ctx.variable(), DateFinValueContext.class, BaseVisitor::visitDateFinValue);
+    var dateFinValue = visitVariable(ctx.variable(), DateContext.class, BaseVisitor::visitDate);
 
     return new DateFin(dateDOpération, dateFinValue);
   }

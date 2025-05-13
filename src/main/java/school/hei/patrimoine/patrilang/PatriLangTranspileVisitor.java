@@ -4,13 +4,11 @@ import static java.util.Objects.isNull;
 import static java.util.stream.Collectors.toSet;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.*;
 
-import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
-import school.hei.patrimoine.modele.Devise;
-import school.hei.patrimoine.modele.Patrimoine;
-import school.hei.patrimoine.modele.Personne;
+import school.hei.patrimoine.cas.CasSet;
+import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.possession.Compte;
 import school.hei.patrimoine.modele.possession.Creance;
 import school.hei.patrimoine.modele.possession.Dette;
@@ -33,34 +31,22 @@ public class PatriLangTranspileVisitor extends PatriLangParserBaseVisitor<Object
 
   @Override
   public Object visitDocument(DocumentContext ctx) {
-    if (!isNull(ctx.patrimoine())) {
-      return this.visitPatrimoine(ctx.patrimoine());
+    if (!isNull(ctx.toutCas())) {
+      return this.visitToutCas(ctx.toutCas());
     }
 
     return this.visitCas(ctx.cas());
   }
 
   @Override
-  public Patrimoine visitPatrimoine(PatrimoineContext ctx) {
-    LocalDate t =
+  public CasSet visitToutCas(ToutCasContext ctx) {
+    Argent objectifFinal =
         VariableVisitor.visitVariable(
-            ctx.sectionPatrimoineGeneral().lignePatrimoineDate().variable(),
-            DateContext.class,
-            BaseVisitor::visitDate);
-    Devise devise =
-        VariableVisitor.visitVariable(
-            ctx.sectionPatrimoineGeneral().ligneDevise().variable(),
-            DeviseContext.class,
-            BaseVisitor::visitDevise);
-    String nom =
-        VariableVisitor.visitVariable(
-            ctx.sectionPatrimoineGeneral().lignePatrimoineNom().variable(),
-            TextContext.class,
-            BaseVisitor::visitText);
-    Personne personne = new Personne(nom);
-    Set<Possession> possessions = visitPossessions(ctx);
+            ctx.sectionToutCasGeneral().ligneObjectifFinal().variable(),
+            ArgentContext.class,
+            BaseVisitor::visitArgent);
 
-    return Patrimoine.of(String.format("Patrimoine de %s", nom), devise, t, personne, possessions);
+    return new CasSet(Set.of(), objectifFinal);
   }
 
   @Override
@@ -130,7 +116,7 @@ public class PatriLangTranspileVisitor extends PatriLangParserBaseVisitor<Object
     throw new IllegalArgumentException("Unknown operation");
   }
 
-  Set<Possession> visitPossessions(PatrimoineContext ctx) {
+  Set<Possession> visitPossessions(CasContext ctx) {
     Set<Possession> possessions = new HashSet<>();
 
     if (ctx.sectionTresoreries() != null) {

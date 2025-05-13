@@ -15,7 +15,7 @@ public class VisualiseurCas {
     var transpiler = new PatriLangTranspiler();
     var charStream =
         fromFileName(
-            "/home/ricka/Ricka/Projects/patrimoine/src/main/java/school/hei/patrimoine/patrilang/examples/JohnDoe.patri.md");
+            "/home/ricka/Ricka/Projects/patrimoine/src/main/java/school/hei/patrimoine/patrilang/examples/tout.patri.md");
 
     invokeLater(
         () ->

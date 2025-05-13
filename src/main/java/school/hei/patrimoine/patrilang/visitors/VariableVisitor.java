@@ -25,12 +25,7 @@ public class VariableVisitor {
 
   private static ParserRuleContext getVariableCtx(VariableContext ctx) {
     return Stream.of(
-            ctx.argent(),
-            ctx.devise(),
-            ctx.dateFinValue(),
-            ctx.nombre(),
-            ctx.text(),
-            ctx.variableValue())
+            ctx.argent(), ctx.devise(), ctx.date(), ctx.nombre(), ctx.text(), ctx.variableValue())
         .filter(Objects::nonNull)
         .findFirst()
         .orElse(null);

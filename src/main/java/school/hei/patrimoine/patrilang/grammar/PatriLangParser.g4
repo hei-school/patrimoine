@@ -7,57 +7,68 @@ package school.hei.patrimoine.patrilang.antlr;
 options { tokenVocab=PatriLangLexer; }
 
 /* -------------------- Base --------------------  */
-
 document
     :   cas
-    |   patrimoine
+    |   toutCas
     ;
 
-/* Patri */
-patrimoine
-    :   sectionPatrimoineGeneral
-        sectionTresoreries?
-        sectionCreances?
-        sectionDettes?
-        sectionOperations?
-        EOF
+/* ToutCas */
+toutCas
+    :   sectionToutCasGeneral sectionCas? sectionPersonnes? sectionDates? sectionTresoreries? sectionCreances? sectionDettes? EOF
     ;
 
-sectionPatrimoineGeneral
-    :   HASHES ENTETE_GENERAL
-        lignePatrimoineDate
-        lignePatrimoineNom
-        ligneDevise
+ligneObjectifFinal
+    :   PUCE MOT_OBJECTIF_FINAL variable
+    //  PUCE MOT_OBJECTIF_FINAL variable[0]=date
     ;
 
-lignePatrimoineDate
-    :   PUCE MOT_SPECIFIER variable
+sectionToutCasGeneral
+    :   HASHES ENTETE_GENERAL ligneObjectifFinal
     ;
 
-lignePatrimoineNom
-    :   PUCE MOT_PATRIMOINE_DE variable
+sectionCas
+    :   HASHES ENTETE_CAS ligneNom*
+    ;
+
+sectionPersonnes
+    :   HASHES ENTETE_PERSONNES ligneNom*
+    ;
+
+sectionDates
+    :   HASHES ENTETE_DATES ligneNomValeur*
     ;
 
 /* Cas */
 cas
-    :   HASHES ENTETE_GENERAL
-        sectionCasGeneral
-        sectionTresoreries?
-        sectionCreances?
-        sectionDettes?
-        sectionOperations?
-        EOF
+    :   sectionCasGeneral sectionPossesseurs sectionTresoreries? sectionCreances? sectionDettes? sectionOperations? EOF
     ;
 
 sectionCasGeneral
-    :   ligneDateSpecification
-        ligneDateFinSimulation
-        ligneCasNom
-        ligneDevise
+    :   HASHES ENTETE_GENERAL ligneDateSpecification ligneDateFinSimulation ligneCasNom ligneDevise
     ;
 
 ligneCasNom
     :   PUCE MOT_CAS_DE variable
+    ;
+
+sectionPossesseurs
+    :   HASHES ENTETE_POSSESSEURS lignePossesseur+
+    ;
+
+lignePossesseur
+    :   PUCE variable variable PERCENT
+    ;
+
+ligneDateSpecification
+    :   PUCE MOT_SPECIFIER variable
+    ;
+
+ligneDateFinSimulation
+    :   PUCE MOT_FIN_SIMULATION variable
+    ;
+
+ligneDevise
+    :   PUCE MOT_DEVISE_EN variable
     ;
 
 /* -------------------- Possessions --------------------  */
@@ -125,18 +136,6 @@ possedeMateriel
     ;
 
 /* -------------------- Commun --------------------  */
-ligneDateSpecification
-    :   PUCE MOT_SPECIFIER variable
-    ;
-
-ligneDateFinSimulation
-    :   PUCE MOT_FIN_SIMULATION variable
-    ;
-
-ligneDevise
-    :   PUCE MOT_DEVISE_EN variable
-    ;
-
 sousTitre
     :   HASHES HASHES variable COMMA variable COMMA MOT_DEVISE_EN variable
     //  HASHES HASHES variable[0]=nom COMMA variable[1]=date COMMA MOT_DEVISE_EN variable[2]=devise
@@ -144,7 +143,15 @@ sousTitre
 
 dateFin
     :   COMMA MOT_JUSQUA variable MOT_TOUT_LES ENTIER MOT_DU MOT_MOIS
-    //  COMMA MOT_JUSQUA variable[0]=dateFinValue MOT_TOUT_LES ENTIER MOT_DU MOT_MOIS
+    //  COMMA MOT_JUSQUA variable[0]=date MOT_TOUT_LES ENTIER MOT_DU MOT_MOIS
+    ;
+
+ligneNomValeur
+    :   PUCE variable COLON variable
+    ;
+
+ligneNom
+    :   PUCE variable
     ;
 
 /*  Valeur englobé par variable  */
@@ -152,7 +159,6 @@ variable
     :   devise
     |   argent
     |   date
-    |   dateFinValue
     |   nombre
     |   text
     |   variableValue
@@ -170,11 +176,6 @@ devise
     :   DEVISE
     ;
 
-dateFinValue
-    :   MOT_DATE_INDETERMINER
-    |   date
-    ;
-
 nombre
     :   DECIMAL
     |   ENTIER
@@ -182,6 +183,7 @@ nombre
 
 date
     :   MOT_LE ENTIER MOT_DU ENTIER TIRER ENTIER
+    |   MOT_DATE_INDETERMINER
     ;
 
 text
