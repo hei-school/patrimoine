@@ -2,13 +2,36 @@ package school.hei.patrimoine.patrilang.visitors;
 
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.*;
 
+import java.time.LocalDate;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Stream;
 import org.antlr.v4.runtime.ParserRuleContext;
+import school.hei.patrimoine.modele.Argent;
+import school.hei.patrimoine.modele.Devise;
 
 public class VariableVisitor {
-  public static <T extends ParserRuleContext, R> R visitVariable(
+  public static Argent visitVariableAsArgent(VariableContext ctx) {
+    return visit(ctx, ArgentContext.class, BaseVisitor::visitArgent);
+  }
+
+  public static LocalDate visitVariableAsDate(VariableContext ctx) {
+    return visit(ctx, DateContext.class, BaseVisitor::visitDate);
+  }
+
+  public static String visitVariableAsText(VariableContext ctx) {
+    return visit(ctx, TextContext.class, BaseVisitor::visitText);
+  }
+
+  public static Devise visitVariableAsDevise(VariableContext ctx) {
+    return visit(ctx, DeviseContext.class, BaseVisitor::visitDevise);
+  }
+
+  public static double visitVariableAsNombre(VariableContext ctx) {
+    return visit(ctx, NombreContext.class, BaseVisitor::visitNombre);
+  }
+
+  public static <T extends ParserRuleContext, R> R visit(
       VariableContext ctx, Class<T> expectedCtx, Function<T, R> getter) {
     var ctxValue = getVariableCtx(ctx);
 

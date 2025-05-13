@@ -3,6 +3,7 @@ package school.hei.patrimoine.patrilang;
 import static java.util.Objects.isNull;
 import static java.util.stream.Collectors.toSet;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.*;
+import static school.hei.patrimoine.patrilang.visitors.VariableVisitor.visitVariableAsArgent;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -41,11 +42,7 @@ public class PatriLangTranspileVisitor extends PatriLangParserBaseVisitor<Object
   @Override
   public CasSet visitToutCas(ToutCasContext ctx) {
     Argent objectifFinal =
-        VariableVisitor.visitVariable(
-            ctx.sectionToutCasGeneral().ligneObjectifFinal().variable(),
-            ArgentContext.class,
-            BaseVisitor::visitArgent);
-
+        visitVariableAsArgent(ctx.sectionToutCasGeneral().ligneObjectifFinal().variable());
     return new CasSet(Set.of(), objectifFinal);
   }
 

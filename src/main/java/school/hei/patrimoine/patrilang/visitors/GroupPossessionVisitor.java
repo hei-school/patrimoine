@@ -1,10 +1,7 @@
 package school.hei.patrimoine.patrilang.visitors;
 
-import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.DateContext;
-import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.DeviseContext;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.SousTitreContext;
-import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.TextContext;
-import static school.hei.patrimoine.patrilang.visitors.VariableVisitor.visitVariable;
+import static school.hei.patrimoine.patrilang.visitors.VariableVisitor.*;
 
 import java.time.LocalDate;
 import java.util.Set;
@@ -14,9 +11,9 @@ import school.hei.patrimoine.modele.possession.Possession;
 
 public class GroupPossessionVisitor {
   public GroupePossession visit(SousTitreContext ctx, Set<Possession> possessions) {
-    String nom = visitVariable(ctx.variable(0), TextContext.class, BaseVisitor::visitText);
-    LocalDate t = visitVariable(ctx.variable(1), DateContext.class, BaseVisitor::visitDate);
-    Devise devise = visitVariable(ctx.variable(2), DeviseContext.class, BaseVisitor::visitDevise);
+    String nom = visitVariableAsText(ctx.variable(0));
+    LocalDate t = visitVariableAsDate(ctx.variable(1));
+    Devise devise = visitVariableAsDevise(ctx.variable(2));
 
     return new GroupePossession(nom, devise, t, possessions);
   }

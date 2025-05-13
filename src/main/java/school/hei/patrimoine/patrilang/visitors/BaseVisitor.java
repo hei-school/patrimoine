@@ -5,7 +5,7 @@ import static java.lang.Integer.parseInt;
 import static java.util.Objects.isNull;
 import static school.hei.patrimoine.modele.Devise.*;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.*;
-import static school.hei.patrimoine.patrilang.visitors.VariableVisitor.visitVariable;
+import static school.hei.patrimoine.patrilang.visitors.VariableVisitor.visitVariableAsDate;
 
 import java.time.LocalDate;
 import org.antlr.v4.runtime.tree.TerminalNode;
@@ -51,7 +51,7 @@ public class BaseVisitor {
 
   public static DateFin visitDateFin(DateFinContext ctx) {
     int dateDOpération = parseInt(parseNodeValue(ctx.ENTIER()));
-    var dateFinValue = visitVariable(ctx.variable(), DateContext.class, BaseVisitor::visitDate);
+    var dateFinValue = visitVariableAsDate(ctx.variable());
 
     return new DateFin(dateDOpération, dateFinValue);
   }
