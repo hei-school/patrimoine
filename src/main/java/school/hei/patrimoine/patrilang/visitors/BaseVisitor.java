@@ -5,16 +5,29 @@ import static java.lang.Integer.parseInt;
 import static java.util.Objects.isNull;
 import static school.hei.patrimoine.modele.Devise.*;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.*;
-import static school.hei.patrimoine.patrilang.visitors.VariableVisitor.visitVariableAsDate;
 
 import java.time.LocalDate;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.Devise;
+import school.hei.patrimoine.modele.Personne;
 import school.hei.patrimoine.patrilang.modele.DateFin;
 import school.hei.patrimoine.patrilang.modele.MaterielAppreciationType;
 
 public class BaseVisitor {
+
+  public static Personne visitPersonne(TextContext ctx) {
+    return new Personne(parseNodeValue(ctx.TEXT()));
+  }
+
+  public static DateFin visitDateFin(
+      DateFinContext ctx, VariableVisitor<DateContext, LocalDate> variableDateVisitor) {
+    int dateDOpération = parseInt(parseNodeValue(ctx.ENTIER()));
+    var dateFinValue = variableDateVisitor.apply(ctx.variable());
+
+    return new DateFin(dateDOpération, dateFinValue);
+  }
+
   public static Argent visitArgent(ArgentContext ctx) {
     return new Argent(visitNombre(ctx.nombre()), visitDevise(ctx.devise()));
   }
@@ -47,13 +60,6 @@ public class BaseVisitor {
 
   public static double visitMaterielAppreciationFacteur(TerminalNode ctx) {
     return MaterielAppreciationType.fromString(parseNodeValue(ctx)).getFacteur();
-  }
-
-  public static DateFin visitDateFin(DateFinContext ctx) {
-    int dateDOpération = parseInt(parseNodeValue(ctx.ENTIER()));
-    var dateFinValue = visitVariableAsDate(ctx.variable());
-
-    return new DateFin(dateDOpération, dateFinValue);
   }
 
   public static String visitText(TextContext ctx) {

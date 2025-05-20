@@ -1,7 +1,6 @@
 package school.hei.patrimoine.patrilang;
 
 import static java.util.Objects.isNull;
-import static java.util.stream.Collectors.toSet;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.*;
 import static school.hei.patrimoine.patrilang.visitors.VariableVisitor.visitVariableAsArgent;
 
@@ -10,17 +9,12 @@ import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import school.hei.patrimoine.cas.CasSet;
 import school.hei.patrimoine.modele.Argent;
-import school.hei.patrimoine.modele.possession.Compte;
-import school.hei.patrimoine.modele.possession.Creance;
-import school.hei.patrimoine.modele.possession.Dette;
 import school.hei.patrimoine.modele.possession.Possession;
 import school.hei.patrimoine.patrilang.antlr.PatriLangParserBaseVisitor;
-import school.hei.patrimoine.patrilang.modele.PossessionAccumulator;
 import school.hei.patrimoine.patrilang.visitors.*;
 
 @RequiredArgsConstructor
 public class PatriLangTranspileVisitor extends PatriLangParserBaseVisitor<Object> {
-  private final PossessionAccumulator<Compte> compteAccumulator = new PossessionAccumulator<>();
   private final CompteVisitor compteVisitor;
   private final CreanceVisitor creanceVisitor;
   private final DetteVisitor detteVisitor;
@@ -44,73 +38,6 @@ public class PatriLangTranspileVisitor extends PatriLangParserBaseVisitor<Object
     Argent objectifFinal =
         visitVariableAsArgent(ctx.sectionToutCasGeneral().ligneObjectifFinal().variable());
     return new CasSet(Set.of(), objectifFinal);
-  }
-
-  @Override
-  public Set<Compte> visitSectionTresoreries(SectionTresoreriesContext ctx) {
-    return this.compteAccumulator.add(
-        ctx.compte().stream().map(compteVisitor::visit).collect(toSet()));
-  }
-
-  @Override
-  public Set<Creance> visitSectionCreances(SectionCreancesContext ctx) {
-    return ctx.compte().stream().map(creanceVisitor::visit).collect(toSet());
-  }
-
-  @Override
-  public Set<Dette> visitSectionDettes(SectionDettesContext ctx) {
-    return ctx.compte().stream().map(detteVisitor::visit).collect(toSet());
-  }
-
-  @Override
-  public Set<Possession> visitSectionOperations(SectionOperationsContext ctx) {
-    Set<Possession> possessions = new HashSet<>();
-
-    for (OperationsContext operationsContext : ctx.operations()) {
-      possessions.addAll(visitOperations(operationsContext));
-    }
-    return possessions;
-  }
-
-  @Override
-  public Set<Possession> visitOperations(OperationsContext ctx) {
-    Set<Possession> possessions =
-        ctx.operation().stream().map(this::visitOperation).collect(toSet());
-
-    if (ctx.sousTitre() == null) {
-      return possessions;
-    }
-
-    return Set.of(this.groupPossessionVisitor.visit(ctx.sousTitre(), possessions));
-  }
-
-  @Override
-  public Possession visitOperation(OperationContext ctx) {
-    if (ctx.fluxArgentTransferer() != null) {
-      return this.transferArgentVisitor.visit(
-          ctx.fluxArgentTransferer(), this.compteAccumulator.getPossessionGetter());
-    }
-
-    if (ctx.fluxArgentEntrer() != null) {
-      return this.fluxArgentVisitor.visit(
-          ctx.fluxArgentEntrer(), this.compteAccumulator.getPossessionGetter());
-    }
-
-    if (ctx.fluxArgentSortir() != null) {
-      return this.fluxArgentVisitor.visit(
-          ctx.fluxArgentSortir(), this.compteAccumulator.getPossessionGetter());
-    }
-
-    if (ctx.acheterMateriel() != null) {
-      return this.achatMaterielVisitor.visit(
-          ctx.acheterMateriel(), this.compteAccumulator.getPossessionGetter());
-    }
-
-    if (ctx.possedeMateriel() != null) {
-      return this.materielVisitor.visit(ctx.possedeMateriel());
-    }
-
-    throw new IllegalArgumentException("Unknown operation");
   }
 
   Set<Possession> visitPossessions(CasContext ctx) {

@@ -10,16 +10,19 @@ import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.possession.Compte;
 import school.hei.patrimoine.modele.possession.FluxArgent;
 import school.hei.patrimoine.patrilang.modele.DateFin;
-import school.hei.patrimoine.patrilang.modele.PossessionGetter;
 
 @RequiredArgsConstructor
 public class FluxArgentVisitor {
-  public FluxArgent visit(FluxArgentEntrerContext ctx, PossessionGetter<Compte> compteGetter) {
+  private final VariableVisitor<DateContext, LocalDate> variableDateVisitor;
+  private final VariableVisitor<CompteContext, Compte> variableCompteVisitor;
+
+  public FluxArgent apply(FluxArgentEntrerContext ctx) {
     String id = visitVariableAsText(ctx.variable(0));
-    LocalDate t = visitVariableAsDate(ctx.variable(1));
+    LocalDate t = this.variableDateVisitor.apply(ctx.variable(1));
     Argent valeurComptable = visitVariableAsArgent(ctx.variable(2));
-    Compte compte = compteGetter.apply(visitVariableAsText(ctx.variable(3)));
-    DateFin dateFin = ctx.dateFin() == null ? null : visitDateFin(ctx.dateFin());
+    Compte compte = this.variableCompteVisitor.apply(ctx.variable(3));
+    DateFin dateFin =
+        ctx.dateFin() == null ? null : visitDateFin(ctx.dateFin(), this.variableDateVisitor);
 
     if (dateFin != null) {
       return new FluxArgent(
@@ -29,12 +32,13 @@ public class FluxArgentVisitor {
     return new FluxArgent(id, compte, t, valeurComptable);
   }
 
-  public FluxArgent visit(FluxArgentSortirContext ctx, PossessionGetter<Compte> compteGetter) {
+  public FluxArgent apply(FluxArgentSortirContext ctx) {
     String id = visitVariableAsText(ctx.variable(0));
-    LocalDate t = visitVariableAsDate(ctx.variable(1));
+    LocalDate t = this.variableDateVisitor.apply(ctx.variable(1));
     Argent valeurComptable = visitVariableAsArgent(ctx.variable(2));
-    Compte compte = compteGetter.apply(visitVariableAsText(ctx.variable(3)));
-    DateFin dateFin = ctx.dateFin() == null ? null : visitDateFin(ctx.dateFin());
+    Compte compte = this.variableCompteVisitor.apply(ctx.variable(3));
+    DateFin dateFin =
+        ctx.dateFin() == null ? null : visitDateFin(ctx.dateFin(), this.variableDateVisitor);
 
     if (dateFin != null) {
       return new FluxArgent(
