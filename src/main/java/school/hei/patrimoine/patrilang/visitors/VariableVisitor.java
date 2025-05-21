@@ -3,10 +3,12 @@ package school.hei.patrimoine.patrilang.visitors;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.*;
 
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Stream;
 import lombok.Getter;
 import org.antlr.v4.runtime.ParserRuleContext;
+import school.hei.patrimoine.Pair;
 import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.Devise;
 import school.hei.patrimoine.patrilang.modele.VariableContainer;
@@ -29,6 +31,10 @@ public class VariableVisitor<ContextType extends ParserRuleContext, VariableType
   @Override
   public VariableType apply(VariableContext ctx) {
     return visit(ctx, contextType, this.container, this.visitor);
+  }
+
+  public void addAll(Set<Pair<String, VariableType>> instances) {
+    this.container.addAll(instances);
   }
 
   public static Argent visitVariableAsArgent(VariableContext ctx) {

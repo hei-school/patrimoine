@@ -1,52 +1,77 @@
 package school.hei.patrimoine.patrilang;
 
+import static java.util.Objects.isNull;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.*;
-import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.ToutCasContext;
+import static school.hei.patrimoine.patrilang.visitors.VariableVisitor.visitVariableAsArgent;
 
-import java.time.LocalDate;
 import java.util.function.Function;
-import school.hei.patrimoine.cas.CasSetSupplier;
-import school.hei.patrimoine.modele.Personne;
-import school.hei.patrimoine.modele.possession.Compte;
-import school.hei.patrimoine.modele.possession.Creance;
-import school.hei.patrimoine.modele.possession.Dette;
+import school.hei.patrimoine.cas.CasSet;
 import school.hei.patrimoine.patrilang.visitors.*;
 
-public class PatriLangToutCasVisitor implements Function<ToutCasContext, CasSetSupplier> {
+public class PatriLangToutCasVisitor implements Function<ToutCasContext, CasSet> {
   private final SectionVisitor sectionVisitor;
-  private final VariableVisitor<DateContext, LocalDate> variableDateVisitor;
-  private final VariableVisitor<TextContext, Personne> variablePersonneVisitor;
-  private final VariableVisitor<CompteContext, Compte> variableCompteVisitor;
-  private final VariableVisitor<CompteContext, Dette> variableDetteVisitor;
-  private final VariableVisitor<CompteContext, Creance> variableCreanceVisitor;
 
-  public PatriLangToutCasVisitor() {
-    this.variableDateVisitor = new VariableVisitor<>(DateContext.class, BaseVisitor::visitDate);
-    this.variablePersonneVisitor =
-        new VariableVisitor<>(TextContext.class, BaseVisitor::visitPersonne);
-
-    var baseCompteVisitor = new CompteVisitor(this.variableDateVisitor);
-    var baseCreanceVisitor = new CreanceVisitor(this.variableDateVisitor);
-    var baseDetteVisitor = new DetteVisitor(this.variableDateVisitor);
-    this.variableCompteVisitor = new VariableVisitor<>(CompteContext.class, baseCompteVisitor);
-    this.variableCreanceVisitor = new VariableVisitor<>(CompteContext.class, baseCreanceVisitor);
-    this.variableDetteVisitor = new VariableVisitor<>(CompteContext.class, baseDetteVisitor);
-
-    this.sectionVisitor =
-        new SectionVisitor(
-            new MaterielVisitor(this.variableDateVisitor),
-            new AchatMaterielVisitor(this.variableDateVisitor, this.variableCompteVisitor),
-            new FluxArgentVisitor(this.variableDateVisitor, this.variableCompteVisitor),
-            new TransferArgentVisitor(this.variableDateVisitor, this.variableCompteVisitor),
-            new GroupPossessionVisitor(this.variableDateVisitor),
-            this.variableDateVisitor,
-            this.variablePersonneVisitor,
-            this.variableCompteVisitor,
-            this.variableDetteVisitor,
-            this.variableCreanceVisitor);
+  public PatriLangToutCasVisitor(SectionVisitor sectionVisitor) {
+    this.sectionVisitor = sectionVisitor;
   }
 
-  public CasSetSupplier apply(ToutCasContext ctx) {
-    return new CasSetSupplier();
+  @Override
+  public CasSet apply(ToutCasContext ctx) {
+    var objectifFinal =
+        visitVariableAsArgent(ctx.sectionToutCasGeneral().ligneObjectifFinal().variable());
+
+    this.loadDatesInContainer(ctx.sectionDates());
+    this.loadPersonnesInContainer(ctx.sectionPersonnes());
+    this.loadTresoreriesInContainer(ctx.sectionTresoreries());
+    this.loadDettesInContainer(ctx.sectionDettes());
+    this.loadCreancesInContainer(ctx.sectionCreances());
+
+    var casSet = this.sectionVisitor.visitSectionCas(ctx.sectionCas());
+    return new CasSet(casSet, objectifFinal);
+  }
+
+  public void loadDatesInContainer(SectionDatesContext ctx) {
+    if (isNull(ctx)) {
+      return;
+    }
+
+    var dates = this.sectionVisitor.visitSectionDates(ctx);
+    this.sectionVisitor.variableDateVisitor().addAll(dates);
+  }
+
+  public void loadPersonnesInContainer(SectionPersonnesContext ctx) {
+    if (isNull(ctx)) {
+      return;
+    }
+
+    var personnes = this.sectionVisitor.visitSectionPersonnes(ctx);
+    this.sectionVisitor.variablePersonneVisitor().addAll(personnes);
+  }
+
+  public void loadTresoreriesInContainer(SectionTresoreriesContext ctx) {
+    if (isNull(ctx)) {
+      return;
+    }
+
+    var tresoreries = this.sectionVisitor.visitSectionTresoreries(ctx);
+    this.sectionVisitor.variableCompteVisitor().addAll(tresoreries);
+  }
+
+  public void loadDettesInContainer(SectionDettesContext ctx) {
+    if (isNull(ctx)) {
+      return;
+    }
+
+    var dettes = this.sectionVisitor.visitSectionDettes(ctx);
+    this.sectionVisitor.variableDetteVisitor().addAll(dettes);
+  }
+
+  public void loadCreancesInContainer(SectionCreancesContext ctx) {
+    if (isNull(ctx)) {
+      return;
+    }
+
+    var creances = this.sectionVisitor.visitSectionCreances(ctx);
+    this.sectionVisitor.variableCreanceVisitor().addAll(creances);
   }
 }
