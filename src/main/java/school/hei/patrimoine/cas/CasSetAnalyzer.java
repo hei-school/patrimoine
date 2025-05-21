@@ -2,7 +2,9 @@ package school.hei.patrimoine.cas;
 
 import static java.awt.EventQueue.invokeLater;
 import static java.util.Comparator.comparing;
+import static school.hei.patrimoine.patrilang.PatriLangTranspiler.transpileToutCas;
 
+import java.io.IOException;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -13,8 +15,10 @@ import school.hei.patrimoine.visualisation.swing.ihm.MainIHM;
 
 public class CasSetAnalyzer implements Consumer<CasSet> {
 
-  public static void main(String[] args) {
-    new CasSetAnalyzer().accept(new CasSetSupplier().get());
+  public static void main(String[] args) throws IOException {
+    var toutCasPath =
+        "/home/ricka/Ricka/Projects/patrimoine/src/main/java/school/hei/patrimoine/patrilang/examples/tout.patri.md";
+    new CasSetAnalyzer().accept(transpileToutCas(toutCasPath));
   }
 
   @Override

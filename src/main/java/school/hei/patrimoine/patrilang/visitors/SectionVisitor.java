@@ -2,9 +2,11 @@ package school.hei.patrimoine.patrilang.visitors;
 
 import static java.util.Objects.isNull;
 import static java.util.stream.Collectors.toSet;
+import static school.hei.patrimoine.patrilang.PatriLangTranspiler.transpileCas;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.*;
 import static school.hei.patrimoine.patrilang.visitors.VariableVisitor.*;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.*;
 import school.hei.patrimoine.Pair;
@@ -14,8 +16,10 @@ import school.hei.patrimoine.modele.possession.Compte;
 import school.hei.patrimoine.modele.possession.Creance;
 import school.hei.patrimoine.modele.possession.Dette;
 import school.hei.patrimoine.modele.possession.Possession;
+import school.hei.patrimoine.patrilang.visitors.possession.*;
 
 public record SectionVisitor(
+    String casSetFolderPath,
     MaterielVisitor materielVisitor,
     AchatMaterielVisitor achatMaterielVisitor,
     FluxArgentVisitor fluxArgentVisitor,
@@ -26,8 +30,15 @@ public record SectionVisitor(
     VariableVisitor<CompteContext, Compte> variableCompteVisitor,
     VariableVisitor<CompteContext, Dette> variableDetteVisitor,
     VariableVisitor<CompteContext, Creance> variableCreanceVisitor) {
-  public Set<Cas> visitSectionCas(SectionCasContext ctx) {
+
+  public Set<Cas> visitSectionCas(SectionCasContext ctx) throws IOException {
     Set<Cas> casSet = new HashSet<>();
+
+    for (var ligneNomCtx : ctx.ligneNom()) {
+      var casNom = visitVariableAsText(ligneNomCtx.variable());
+      casSet.add(transpileCas(casNom, this));
+    }
+
     return casSet;
   }
 
@@ -123,7 +134,7 @@ public record SectionVisitor(
     throw new IllegalArgumentException("Unknown operation");
   }
 
-  public static SectionVisitor create() {
+  public static SectionVisitor create(String casSetFolderPath) {
     var dateVisitor = new VariableVisitor<>(DateContext.class, BaseVisitor::visitDate);
     var personVisitor = new VariableVisitor<>(TextContext.class, BaseVisitor::visitPersonne);
 
@@ -136,6 +147,7 @@ public record SectionVisitor(
     var variableDetteVisitor = new VariableVisitor<>(CompteContext.class, detteVisitor);
 
     return new SectionVisitor(
+        casSetFolderPath,
         new MaterielVisitor(dateVisitor),
         new AchatMaterielVisitor(dateVisitor, variableCompteVisitor),
         new FluxArgentVisitor(dateVisitor, variableCompteVisitor),

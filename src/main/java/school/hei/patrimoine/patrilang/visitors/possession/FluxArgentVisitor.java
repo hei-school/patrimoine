@@ -1,4 +1,4 @@
-package school.hei.patrimoine.patrilang.visitors;
+package school.hei.patrimoine.patrilang.visitors.possession;
 
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.*;
 import static school.hei.patrimoine.patrilang.visitors.BaseVisitor.*;
@@ -10,6 +10,7 @@ import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.possession.Compte;
 import school.hei.patrimoine.modele.possession.FluxArgent;
 import school.hei.patrimoine.patrilang.modele.DateFin;
+import school.hei.patrimoine.patrilang.visitors.VariableVisitor;
 
 @RequiredArgsConstructor
 public class FluxArgentVisitor {

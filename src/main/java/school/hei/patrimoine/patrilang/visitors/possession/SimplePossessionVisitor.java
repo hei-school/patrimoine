@@ -1,4 +1,4 @@
-package school.hei.patrimoine.patrilang.visitors;
+package school.hei.patrimoine.patrilang.visitors.possession;
 
 import java.util.function.Function;
 import org.antlr.v4.runtime.ParserRuleContext;

@@ -1,5 +1,5 @@
 # Général
-* Spécifier le `Dates:ajd`
+* Spécifier `Dates:ajd`
 * Fin de simulation `Dates:finSimulation`
 * Cas de A2
 * Devise en Ar

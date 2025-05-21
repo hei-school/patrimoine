@@ -1,4 +1,4 @@
-package school.hei.patrimoine.patrilang.visitors;
+package school.hei.patrimoine.patrilang.visitors.possession;
 
 import static java.util.Objects.isNull;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.CompteContext;
@@ -13,6 +13,7 @@ import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.possession.Compte;
 import school.hei.patrimoine.modele.possession.TransfertArgent;
 import school.hei.patrimoine.patrilang.modele.DateFin;
+import school.hei.patrimoine.patrilang.visitors.VariableVisitor;
 
 @RequiredArgsConstructor
 public class TransferArgentVisitor

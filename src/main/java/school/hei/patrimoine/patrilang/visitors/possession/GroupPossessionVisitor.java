@@ -1,4 +1,4 @@
-package school.hei.patrimoine.patrilang.visitors;
+package school.hei.patrimoine.patrilang.visitors.possession;
 
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.DateContext;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.SousTitreContext;
@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import school.hei.patrimoine.modele.Devise;
 import school.hei.patrimoine.modele.possession.GroupePossession;
 import school.hei.patrimoine.modele.possession.Possession;
+import school.hei.patrimoine.patrilang.visitors.VariableVisitor;
 
 @RequiredArgsConstructor
 public class GroupPossessionVisitor

@@ -1,10 +1,8 @@
 # Général
-* Objectif final 330000€
+* Objectif final 0€
 
 # Cas
 * VenteOrdinateur
-* PharmacieIvandry
-* ZetyAtelier
 
 # Personnes
 * Zety
@@ -13,7 +11,7 @@
  
 # Dates
 * ajd: le 10 du 10-2025
-* finDuSimulation: le 10 du 10-2025
+* finSimulation: le 10 du 12-2025
 
 # Trésoreries
 * zetyPharmacie, valant 20000Ar le 10 du 04-2025

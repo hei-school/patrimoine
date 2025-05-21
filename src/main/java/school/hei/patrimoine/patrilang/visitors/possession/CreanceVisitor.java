@@ -1,4 +1,4 @@
-package school.hei.patrimoine.patrilang.visitors;
+package school.hei.patrimoine.patrilang.visitors.possession;
 
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.CompteContext;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.DateContext;
@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.possession.Creance;
+import school.hei.patrimoine.patrilang.visitors.VariableVisitor;
 
 @RequiredArgsConstructor
 public class CreanceVisitor implements SimplePossessionVisitor<CompteContext, Creance> {
