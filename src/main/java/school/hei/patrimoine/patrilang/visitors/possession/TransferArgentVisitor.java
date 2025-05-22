@@ -17,7 +17,7 @@ import school.hei.patrimoine.patrilang.visitors.VariableVisitor;
 
 @RequiredArgsConstructor
 public class TransferArgentVisitor
-    implements SimplePossessionVisitor<FluxArgentTransfererContext, TransfertArgent> {
+    implements SimpleVisitor<FluxArgentTransfererContext, TransfertArgent> {
   private final VariableVisitor<DateContext, LocalDate> dateVisitor;
   private final VariableVisitor<CompteContext, Compte> compteVisitor;
 

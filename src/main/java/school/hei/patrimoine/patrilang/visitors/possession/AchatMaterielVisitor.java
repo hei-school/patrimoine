@@ -13,7 +13,7 @@ import school.hei.patrimoine.patrilang.visitors.VariableVisitor;
 
 @RequiredArgsConstructor
 public class AchatMaterielVisitor
-    implements SimplePossessionVisitor<AcheterMaterielContext, AchatMaterielAuComptant> {
+    implements SimpleVisitor<AcheterMaterielContext, AchatMaterielAuComptant> {
   private final VariableVisitor<DateContext, LocalDate> variableDateVisitor;
   private final VariableVisitor<CompteContext, Compte> variableCompteVisitor;
 

@@ -11,7 +11,7 @@ import school.hei.patrimoine.modele.possession.Dette;
 import school.hei.patrimoine.patrilang.visitors.VariableVisitor;
 
 @RequiredArgsConstructor
-public class DetteVisitor implements SimplePossessionVisitor<CompteContext, Dette> {
+public class DetteVisitor implements SimpleVisitor<CompteContext, Dette> {
   private final VariableVisitor<DateContext, LocalDate> variableDateVisitor;
 
   @Override

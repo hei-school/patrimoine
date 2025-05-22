@@ -14,7 +14,7 @@ document
 
 /* ToutCas */
 toutCas
-    :   sectionToutCasGeneral sectionCas? sectionPersonnes? sectionDates? sectionTresoreries? sectionCreances? sectionDettes? EOF
+    :   sectionToutCasGeneral sectionCas? sectionDates? sectionPersonnes? sectionTresoreries? sectionCreances? sectionDettes? EOF
     ;
 
 ligneObjectifFinal
@@ -40,7 +40,7 @@ sectionDates
 
 /* Cas */
 cas
-    :   sectionCasGeneral sectionPossesseurs sectionTresoreries? sectionCreances? sectionDettes? sectionOperations? EOF
+    :   sectionCasGeneral sectionPossesseurs sectionTresoreries? sectionCreances? sectionDettes? sectionInitialisation? sectionOperations? sectionSuivi? EOF
     ;
 
 sectionCasGeneral
@@ -71,22 +71,43 @@ ligneDevise
     :   PUCE MOT_DEVISE_EN variable
     ;
 
+sectionInitialisation
+    :   HASHES ENTETE_INITIALISATION operations*
+    ;
+
+sectionSuivi
+    :   HASHES ENTETE_SUIVI operations*
+    ;
+
+objectif
+    :   PUCE BACKTICK variable BACKTICK variable COMMA MOT_OBJECTIF_DE variable MOT_POUR variable
+    //  PUCE BACKTICK variable[0]=id BACKTICK variable[1]=date COMMA MOT_OBJECTIF_DE variable[2]=valeurComptable MOT_POUR variable[3]=compte
+    ;
+
+correction
+    :   PUCE BACKTICK variable BACKTICK variable COMMA MOT_CORRIGER variable MOT_CORRECTION_QUALIFICATEUR MOT_DANS variable
+    //  PUCE BACKTICK variable[0]=id BACKTICK variable[1]=date COMMA MOT_CORRIGER variable[2]=valeurComptable MOT_CORRECTION_QUALIFICATEUR MOT_DANS variable[3]=compte
+    ;
 /* -------------------- Possessions --------------------  */
 /* Trésorerie */
 sectionTresoreries
-    :   HASHES ENTETE_TRESORERIES compte*
+    :   HASHES ENTETE_TRESORERIES compteElement*
     ;
 
 /* Créances */
 sectionCreances
-    :   HASHES ENTETE_CREANCES compte*
+    :   HASHES ENTETE_CREANCES compteElement*
     ;
 
 /* Dettes */
 sectionDettes
-    :   HASHES ENTETE_DETTES compte*
+    :   HASHES ENTETE_DETTES compteElement*
     ;
 
+compteElement
+    :   compte
+    |   PUCE variable
+    ;
 /* Opérations */
 sectionOperations
     : HASHES ENTETE_OPERATIONS operations*
@@ -102,6 +123,8 @@ operation
     |   fluxArgentSortir
     |   possedeMateriel
     |   acheterMateriel
+    |   correction
+    |   objectif
     ;
 
 /* Simple Possessions */

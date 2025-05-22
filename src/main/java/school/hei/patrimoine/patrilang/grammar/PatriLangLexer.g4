@@ -35,6 +35,27 @@ ENTETE_POSSESSEURS
     :   'Possesseurs'
     ;
 
+ENTETE_INITIALISATION
+    :   'Initialisation'
+    ;
+
+ENTETE_SUIVI
+    :   'Suivi'
+    ;
+
+MOT_CORRIGER
+    :   'Corriger'
+    |   'corriger'
+    ;
+
+MOT_CORRECTION_QUALIFICATEUR
+    :   'positivement'
+    |   'negativement'
+    ;
+
+MOT_DANS
+    :   'dans'
+    ;
 /* ToutCas */
 MOT_OBJECTIF_FINAL
     :   'Objectif final'
@@ -51,6 +72,15 @@ ENTETE_DATES
 
 ENTETE_PERSONNES
     :   'Personnes'
+    ;
+
+MOT_POUR
+    :   'pour'
+    ;
+
+MOT_OBJECTIF_DE
+    :   'objectif de'
+    |   'Objectif de'
     ;
 
 /* --------------------  Possessions --------------------  */

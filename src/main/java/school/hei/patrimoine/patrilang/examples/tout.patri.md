@@ -1,18 +1,18 @@
 # Général
-* Objectif final 2316683.5616438356Ar
+* Objectif final 2921183.5616438356Ar
 
 # Cas
 * VenteOrdinateur
+
+# Dates
+* ajd: le 10 du 01-2025
+* finSimulation: le 10 du 01-2026
 
 # Personnes
 * Zety
 * Lita
 * Rakoto
  
-# Dates
-* ajd: le 10 du 01-2025
-* finSimulation: le 10 du 01-2026
-
 # Trésoreries
 * zetyPersonnel, valant 20000Ar le 10 du 04-2025
 * zetyVente, valant 20000Ar le 10 du 04-2025

@@ -12,7 +12,7 @@ import school.hei.patrimoine.modele.possession.Materiel;
 import school.hei.patrimoine.patrilang.visitors.VariableVisitor;
 
 @RequiredArgsConstructor
-public class MaterielVisitor implements SimplePossessionVisitor<PossedeMaterielContext, Materiel> {
+public class MaterielVisitor implements SimpleVisitor<PossedeMaterielContext, Materiel> {
   private final VariableVisitor<DateContext, LocalDate> variableDateVisitor;
 
   @Override

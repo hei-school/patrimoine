@@ -11,7 +11,7 @@ import school.hei.patrimoine.modele.possession.Creance;
 import school.hei.patrimoine.patrilang.visitors.VariableVisitor;
 
 @RequiredArgsConstructor
-public class CreanceVisitor implements SimplePossessionVisitor<CompteContext, Creance> {
+public class CreanceVisitor implements SimpleVisitor<CompteContext, Creance> {
   private final VariableVisitor<DateContext, LocalDate> variableDateVisitor;
 
   @Override

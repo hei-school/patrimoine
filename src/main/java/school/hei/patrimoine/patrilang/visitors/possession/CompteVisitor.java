@@ -11,7 +11,7 @@ import school.hei.patrimoine.patrilang.antlr.PatriLangParser;
 import school.hei.patrimoine.patrilang.visitors.VariableVisitor;
 
 @RequiredArgsConstructor
-public class CompteVisitor implements SimplePossessionVisitor<CompteContext, Compte> {
+public class CompteVisitor implements SimpleVisitor<CompteContext, Compte> {
   private final VariableVisitor<PatriLangParser.DateContext, LocalDate> variableDateVisitor;
 
   @Override

@@ -8,6 +8,10 @@
 * `Personnes:Zety` 10%
 * `Personnes:Lita` 90%
 
+# Trésoreries
+* `Trésoreries:litaVente`
+* `Trésoreries:zetyPersonnel`
+
 # Opérations
 ## ProjectMaison, `Dates:ajd`, devise en Ar
 * `invOrdinateur1` `Dates:ajd`, posséder ordinateurBureau, valant 350000Ar, se dépréciant annuellement de 20%
