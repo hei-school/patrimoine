@@ -21,7 +21,6 @@ public class MaterielVisitor implements SimplePossessionVisitor<PossedeMaterielC
     String nom = visitVariableAsText(ctx.variable(2));
     Argent valeurComptable = visitVariableAsArgent(ctx.variable(3));
     double tauxDAppreciation = visitVariableAsNombre(ctx.variable(4));
-
     double facteurTauxDAppreciation = visitMaterielAppreciationFacteur(ctx.MATERIEL_APPRECIATION());
 
     return new Materiel(

@@ -2,7 +2,7 @@ package school.hei.patrimoine.patrilang.visitors;
 
 import static java.lang.Double.parseDouble;
 import static java.lang.Integer.parseInt;
-import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static school.hei.patrimoine.modele.Devise.*;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.*;
 
@@ -44,7 +44,7 @@ public class BaseVisitor {
   }
 
   public static LocalDate visitDate(DateContext ctx) {
-    if (!isNull(ctx.MOT_DATE_INDETERMINER())) {
+    if (nonNull(ctx.MOT_DATE_INDETERMINER())) {
       return LocalDate.MAX;
     }
 

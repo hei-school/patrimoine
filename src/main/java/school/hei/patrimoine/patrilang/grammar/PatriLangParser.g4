@@ -112,17 +112,17 @@ compte
 
 fluxArgentTransferer
     :   PUCE BACKTICK variable BACKTICK variable COMMA MOT_TRANSFERER variable MOT_DEPUIS variable MOT_VERS variable dateFin?
-    //  PUCE BACKTICK variable[0]=id BACKTICK variable[1]=date COMMA MOT_TRANSFERER variable[2]=valeurComtable MOT_DEPUIS variable[3]=debiteur MOT_VERS variable[4]=crediteur dateFin?
+    //  PUCE BACKTICK variable[0]=id BACKTICK variable[1]=date COMMA MOT_TRANSFERER variable[2]=valeurComtable MOT_DEPUIS variable[3]=debiteur MOT_VERS variable[4]=crediteur value?
     ;
 
 fluxArgentEntrer
     :   PUCE BACKTICK variable BACKTICK variable COMMA MOT_ENTRER variable MOT_VERS variable dateFin?
-    //  PUCE BACKTICK variable[0]=id BACKTICK variable[1]=date COMMA MOT_ENTRER variable[2]=valeurComptable MOT_VERS variable[3]=compte dateFin?
+    //  PUCE BACKTICK variable[0]=id BACKTICK variable[1]=date COMMA MOT_ENTRER variable[2]=valeurComptable MOT_VERS variable[3]=compte value?
     ;
 
 fluxArgentSortir
     :   PUCE BACKTICK variable BACKTICK variable COMMA MOT_SORTIR variable MOT_DEPUIS variable dateFin?
-    //  PUCE BACKTICK variable[0]=id BACKTICK variable[1]=date COMMA MOT_SORTIR variable[2]=valeurComptable MOT_DEPUIS variable[3]=compte dateFin?
+    //  PUCE BACKTICK variable[0]=id BACKTICK variable[1]=date COMMA MOT_SORTIR variable[2]=valeurComptable MOT_DEPUIS variable[3]=compte value?
     ;
 
 acheterMateriel

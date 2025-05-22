@@ -1,14 +1,16 @@
 package school.hei.patrimoine.patrilang.visitors;
 
 import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
+import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
 import static school.hei.patrimoine.patrilang.PatriLangTranspiler.transpileCas;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.*;
 import static school.hei.patrimoine.patrilang.visitors.VariableVisitor.*;
 
-import java.io.IOException;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.Map;
+import java.util.Set;
 import school.hei.patrimoine.Pair;
 import school.hei.patrimoine.cas.Cas;
 import school.hei.patrimoine.modele.Personne;
@@ -31,40 +33,34 @@ public record SectionVisitor(
     VariableVisitor<CompteContext, Dette> variableDetteVisitor,
     VariableVisitor<CompteContext, Creance> variableCreanceVisitor) {
 
-  public Set<Cas> visitSectionCas(SectionCasContext ctx) throws IOException {
-    Set<Cas> casSet = new HashSet<>();
-
-    for (var ligneNomCtx : ctx.ligneNom()) {
-      var casNom = visitVariableAsText(ligneNomCtx.variable());
-      casSet.add(transpileCas(casNom, this));
-    }
-
-    return casSet;
+  public Set<Cas> visitSectionCas(SectionCasContext ctx) {
+    return ctx.ligneNom().stream()
+        .map(ligne -> visitVariableAsText(ligne.variable()))
+        .map(nom -> transpileCas(nom, this))
+        .collect(toSet());
   }
 
   public Set<Pair<String, LocalDate>> visitSectionDates(SectionDatesContext ctx) {
     return ctx.ligneNomValeur().stream()
         .map(
-            ligneNomValeurContext ->
+            ligne ->
                 new Pair<>(
-                    visitVariableAsText(ligneNomValeurContext.variable(0)),
-                    this.variableDateVisitor.apply(ligneNomValeurContext.variable(1))))
+                    visitVariableAsText(ligne.variable(0)),
+                    this.variableDateVisitor.apply(ligne.variable(1))))
         .collect(toSet());
   }
 
   public Map<Personne, Double> visitSectionPossesseurs(SectionPossesseursContext ctx) {
-    Map<Personne, Double> dates = new HashMap<>();
-    for (var ligneNomValeurContext : ctx.lignePossesseur()) {
-      dates.put(
-          this.variablePersonneVisitor.apply(ligneNomValeurContext.variable(0)),
-          visitVariableAsNombre(ligneNomValeurContext.variable(1)));
-    }
-    return dates;
+    return ctx.lignePossesseur().stream()
+        .collect(
+            toMap(
+                ligne -> variablePersonneVisitor.apply(ligne.variable(0)),
+                ligne -> visitVariableAsNombre(ligne.variable(1))));
   }
 
   public Set<Pair<String, Personne>> visitSectionPersonnes(SectionPersonnesContext ctx) {
     return ctx.ligneNom().stream()
-        .map(ligneNomContext -> this.variablePersonneVisitor.apply(ligneNomContext.variable()))
+        .map(ligne -> this.variablePersonneVisitor.apply(ligne.variable()))
         .map(personne -> new Pair<>(personne.nom(), personne))
         .collect(toSet());
   }
@@ -90,18 +86,12 @@ public record SectionVisitor(
         .collect(toSet());
   }
 
-  private Set<Possession> visitSectionOperations(SectionOperationsContext ctx) {
-    Set<Possession> possessions = new HashSet<>();
-
-    for (OperationsContext operationsContext : ctx.operations()) {
-      possessions.addAll(visitOperations(operationsContext));
-    }
-    return possessions;
+  public Set<Possession> visitSectionOperations(SectionOperationsContext ctx) {
+    return ctx.operations().stream().flatMap(op -> visitOperations(op).stream()).collect(toSet());
   }
 
   private Set<Possession> visitOperations(OperationsContext ctx) {
-    Set<Possession> possessions =
-        ctx.operation().stream().map(this::visitOperation).collect(toSet());
+    var possessions = ctx.operation().stream().map(this::visitOperation).collect(toSet());
 
     if (isNull(ctx.sousTitre())) {
       return possessions;
@@ -111,27 +101,27 @@ public record SectionVisitor(
   }
 
   private Possession visitOperation(OperationContext ctx) {
-    if (!isNull(ctx.fluxArgentTransferer())) {
+    if (nonNull(ctx.fluxArgentTransferer())) {
       return this.transferArgentVisitor.apply(ctx.fluxArgentTransferer());
     }
 
-    if (!isNull(ctx.fluxArgentEntrer())) {
+    if (nonNull(ctx.fluxArgentEntrer())) {
       return this.fluxArgentVisitor.apply(ctx.fluxArgentEntrer());
     }
 
-    if (!isNull(ctx.fluxArgentSortir())) {
+    if (nonNull(ctx.fluxArgentSortir())) {
       return this.fluxArgentVisitor.apply(ctx.fluxArgentSortir());
     }
 
-    if (!isNull(ctx.acheterMateriel())) {
+    if (nonNull(ctx.acheterMateriel())) {
       return this.achatMaterielVisitor.apply(ctx.acheterMateriel());
     }
 
-    if (!isNull(ctx.possedeMateriel())) {
+    if (nonNull(ctx.possedeMateriel())) {
       return this.materielVisitor.apply(ctx.possedeMateriel());
     }
 
-    throw new IllegalArgumentException("Unknown operation");
+    throw new IllegalArgumentException("Opération inconnue");
   }
 
   public static SectionVisitor create(String casSetFolderPath) {

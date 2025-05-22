@@ -3,6 +3,7 @@ package school.hei.patrimoine.patrilang.visitors;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.*;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -58,7 +59,7 @@ public class VariableVisitor<ContextType extends ParserRuleContext, VariableType
       Class<T> expectedCtx,
       VariableContainer<R> container,
       Function<T, R> visitor) {
-    var ctxValue = getVariableCtx(ctx);
+    var ctxValue = getVariableCtx(ctx).orElseThrow();
 
     if (ctxValue instanceof VariableValueContext) {
       return container.get(parseVariableValue((VariableValueContext) ctxValue));
@@ -75,19 +76,18 @@ public class VariableVisitor<ContextType extends ParserRuleContext, VariableType
     return visitor.apply(expectedCtx.cast(ctxValue));
   }
 
-  private static ParserRuleContext getVariableCtx(VariableContext ctx) {
+  private static Optional<ParserRuleContext> getVariableCtx(VariableContext ctx) {
     return Stream.of(
             ctx.argent(), ctx.devise(), ctx.date(), ctx.nombre(), ctx.text(), ctx.variableValue())
         .filter(Objects::nonNull)
-        .findFirst()
-        .orElse(null);
+        .findFirst();
   }
 
   private static String parseVariableValue(VariableValueContext ctx) {
     var variableValueAsText = ctx.VARIABLE().getText();
 
     if (!variableValueAsText.contains(COLON)) {
-      throw new IllegalArgumentException("Invalid variabled passed");
+      throw new IllegalArgumentException("Variable invalide passée");
     }
 
     return variableValueAsText.substring(variableValueAsText.indexOf(COLON) + 1);

@@ -5,18 +5,14 @@ import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.*;
 import static school.hei.patrimoine.patrilang.visitors.VariableVisitor.visitVariableAsArgent;
 
 import java.util.function.Function;
-import lombok.SneakyThrows;
+import lombok.RequiredArgsConstructor;
 import school.hei.patrimoine.cas.CasSet;
 
+@RequiredArgsConstructor
 public class PatriLangToutCasVisitor implements Function<ToutCasContext, CasSet> {
   private final SectionVisitor sectionVisitor;
 
-  public PatriLangToutCasVisitor(SectionVisitor sectionVisitor) {
-    this.sectionVisitor = sectionVisitor;
-  }
-
   @Override
-  @SneakyThrows
   public CasSet apply(ToutCasContext ctx) {
     var objectifFinal =
         visitVariableAsArgent(ctx.sectionToutCasGeneral().ligneObjectifFinal().variable());

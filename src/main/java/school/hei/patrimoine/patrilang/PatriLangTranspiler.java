@@ -2,10 +2,10 @@ package school.hei.patrimoine.patrilang;
 
 import static java.util.Objects.isNull;
 import static org.antlr.v4.runtime.CharStreams.fromFileName;
+import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.DocumentContext;
 
 import java.io.IOException;
 import java.nio.file.Paths;
-import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import school.hei.patrimoine.cas.Cas;
 import school.hei.patrimoine.cas.CasSet;
@@ -17,38 +17,40 @@ import school.hei.patrimoine.patrilang.visitors.SectionVisitor;
 public class PatriLangTranspiler {
   private static final String CAS_FILE_EXTENSION = ".cas.md";
 
-  public static Cas transpileCas(String casName, SectionVisitor sectionVisitor) throws IOException {
+  public static Cas transpileCas(String casName, SectionVisitor sectionVisitor) {
     var casPath =
         Paths.get(sectionVisitor.casSetFolderPath())
             .resolve(casName + CAS_FILE_EXTENSION)
             .toAbsolutePath();
-    var parser = createParser(fromFileName(casPath.toString()));
-    var tree = parser.document();
-    var visitor = PatriLangVisitor.create(sectionVisitor);
+    var tree = parseAsTree(casPath.toString());
 
     if (isNull(tree.cas())) {
       throw new IllegalArgumentException("Expected a Cas file but found a CasSet file.");
     }
 
-    return (Cas) visitor.visitDocument(tree);
+    return (Cas) PatriLangVisitor.create(sectionVisitor).visitDocument(tree);
   }
 
-  public static CasSet transpileToutCas(String casSetPath) throws IOException {
-    var parser = createParser(fromFileName(casSetPath));
-    var tree = parser.document();
-    var casSetFolderPath = Paths.get(casSetPath).getParent().toAbsolutePath();
-    var visitor = PatriLangVisitor.create(SectionVisitor.create(casSetFolderPath.toString()));
+  public static CasSet transpileToutCas(String casSetPath) {
+    var tree = parseAsTree(casSetPath);
 
     if (isNull(tree.toutCas())) {
       throw new IllegalArgumentException("Expected a CasSet file but found a Cas file.");
     }
 
-    return (CasSet) visitor.visitDocument(tree);
+    var casSetFolderPath = Paths.get(casSetPath).getParent().toAbsolutePath();
+    var sectionVisitor = SectionVisitor.create(casSetFolderPath.toString());
+    return (CasSet) PatriLangVisitor.create(sectionVisitor).visitDocument(tree);
   }
 
-  private static PatriLangParser createParser(CharStream charStream) {
-    var lexer = new PatriLangLexer(charStream);
-    var tokens = new CommonTokenStream(lexer);
-    return new PatriLangParser(tokens);
+  private static DocumentContext parseAsTree(String filePath) {
+    try {
+      var lexer = new PatriLangLexer(fromFileName(filePath));
+      var tokens = new CommonTokenStream(lexer);
+      var parser = new PatriLangParser(tokens);
+      return parser.document();
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
   }
 }

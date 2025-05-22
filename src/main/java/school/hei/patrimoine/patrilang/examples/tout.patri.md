@@ -1,5 +1,5 @@
 # Général
-* Objectif final 0€
+* Objectif final 2316683.5616438356Ar
 
 # Cas
 * VenteOrdinateur
@@ -10,12 +10,13 @@
 * Rakoto
  
 # Dates
-* ajd: le 10 du 10-2025
-* finSimulation: le 10 du 12-2025
+* ajd: le 10 du 01-2025
+* finSimulation: le 10 du 01-2026
 
 # Trésoreries
-* zetyPharmacie, valant 20000Ar le 10 du 04-2025
-* litaPharmacie, valant 20000Ar le 10 du 04-2025
+* zetyPersonnel, valant 20000Ar le 10 du 04-2025
+* zetyVente, valant 20000Ar le 10 du 04-2025
+* litaVente, valant 20000Ar le 10 du 04-2025
  
 # Créances
 * tianaCreance, valant 180000Ar le 10 du 04-2025

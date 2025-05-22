@@ -17,17 +17,19 @@ public class PatriLangCasVisitor implements Function<CasContext, Cas> {
 
   @Override
   public Cas apply(CasContext ctx) {
+    var sectionCasGeneral = ctx.sectionCasGeneral();
     var ajd =
         this.sectionVisitor
             .variableDateVisitor()
-            .apply(ctx.sectionCasGeneral().ligneDateSpecification().variable());
+            .apply(sectionCasGeneral.ligneDateSpecification().variable());
     var finSimulation =
         this.sectionVisitor
             .variableDateVisitor()
-            .apply(ctx.sectionCasGeneral().ligneDateFinSimulation().variable());
-    var nom = visitVariableAsText(ctx.sectionCasGeneral().ligneCasNom().variable());
-    var devise = visitVariableAsDevise(ctx.sectionCasGeneral().ligneDevise().variable());
+            .apply(sectionCasGeneral.ligneDateFinSimulation().variable());
+    var nom = visitVariableAsText(sectionCasGeneral.ligneCasNom().variable());
+    var devise = visitVariableAsDevise(sectionCasGeneral.ligneDevise().variable());
     var possesseurs = this.sectionVisitor.visitSectionPossesseurs(ctx.sectionPossesseurs());
+    var operations = this.sectionVisitor.visitSectionOperations(ctx.sectionOperations());
 
     return new Cas(ajd, finSimulation, possesseurs) {
       @Override
@@ -48,7 +50,7 @@ public class PatriLangCasVisitor implements Function<CasContext, Cas> {
 
       @Override
       public Set<Possession> possessions() {
-        return Set.of();
+        return operations;
       }
     };
   }

@@ -174,7 +174,7 @@ COLON
 
 /* Valeurs */
 VARIABLE
-    :   [a-zA-Z]+ COLON STRING
+    :   [\p{L}]+ COLON STRING
     ;
 DECIMAL
     :   DIGIT+ '.' DIGIT+
