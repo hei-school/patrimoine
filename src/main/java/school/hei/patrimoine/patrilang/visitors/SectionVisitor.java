@@ -67,7 +67,7 @@ public record SectionVisitor(
         .collect(
             toMap(
                 ligne -> variablePersonneVisitor.apply(ligne.nom),
-                ligne -> visitNombre(ligne.pourcentage)));
+                ligne -> visitNombre(ligne.pourcentage) / 100));
   }
 
   public void visitSectionPersonnes(SectionPersonnesContext ctx) {

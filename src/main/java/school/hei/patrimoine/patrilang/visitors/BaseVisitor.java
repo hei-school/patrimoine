@@ -50,9 +50,7 @@ public class BaseVisitor {
     }
 
     return LocalDate.of(
-        parseInt(parseNodeValue(ctx.ENTIER(2))),
-        parseInt(parseNodeValue(ctx.ENTIER(1))),
-        parseInt(parseNodeValue(ctx.ENTIER(0))));
+        parseInt(ctx.annee.getText()), parseInt(ctx.mois.getText()), parseInt(ctx.jour.getText()));
   }
 
   public static Double visitNombre(NombreContext ctx) {

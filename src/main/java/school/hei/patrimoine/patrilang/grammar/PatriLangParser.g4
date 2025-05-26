@@ -191,7 +191,7 @@ variableValue
     ;
 
 date
-    :   MOT_LE ENTIER MOT_DU ENTIER TIRER ENTIER
+    :   MOT_LE jour=ENTIER MOT_DU mois=ENTIER TIRER annee=ENTIER
     |   MOT_DATE_INDETERMINER
     ;
 

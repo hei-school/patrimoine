@@ -81,7 +81,7 @@ public class PatriLangCasVisitor implements Function<CasContext, Cas> {
     }
 
     if (nonNull(ctx.sectionOperations())) {
-      possessions.addAll(sectionVisitor.visitSectionOperations(ctx.sectionOperations()));
+      sectionVisitor.visitSectionOperations(ctx.sectionOperations());
     }
 
     return possessions;
