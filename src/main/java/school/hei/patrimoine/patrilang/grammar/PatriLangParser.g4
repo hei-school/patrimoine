@@ -18,8 +18,7 @@ toutCas
     ;
 
 ligneObjectifFinal
-    :   PUCE MOT_OBJECTIF_FINAL variable
-    //  PUCE MOT_OBJECTIF_FINAL variable[0]=date
+    :   PUCE MOT_OBJECTIF_FINAL valeurComptable=argent
     ;
 
 sectionToutCasGeneral
@@ -35,7 +34,11 @@ sectionPersonnes
     ;
 
 sectionDates
-    :   HASHES ENTETE_DATES ligneNomValeur*
+    :   HASHES ENTETE_DATES ligneDate*
+    ;
+
+ligneDate
+    :   PUCE nom=variable COLON dateValue=variable
     ;
 
 /* Cas */
@@ -48,7 +51,7 @@ sectionCasGeneral
     ;
 
 ligneCasNom
-    :   PUCE MOT_CAS_DE variable
+    :   PUCE MOT_CAS_DE nom=variable
     ;
 
 sectionPossesseurs
@@ -56,19 +59,19 @@ sectionPossesseurs
     ;
 
 lignePossesseur
-    :   PUCE variable variable PERCENT
+    :   PUCE nom=variable pourcentage=nombre PERCENT
     ;
 
 ligneDateSpecification
-    :   PUCE MOT_SPECIFIER variable
+    :   PUCE MOT_SPECIFIER dateValue=variable
     ;
 
 ligneDateFinSimulation
-    :   PUCE MOT_FIN_SIMULATION variable
+    :   PUCE MOT_FIN_SIMULATION dateValue=variable
     ;
 
 ligneDevise
-    :   PUCE MOT_DEVISE_EN variable
+    :   PUCE MOT_DEVISE_EN devise
     ;
 
 sectionInitialisation
@@ -80,13 +83,11 @@ sectionSuivi
     ;
 
 objectif
-    :   PUCE BACKTICK variable BACKTICK variable COMMA MOT_OBJECTIF_DE variable MOT_POUR variable
-    //  PUCE BACKTICK variable[0]=id BACKTICK variable[1]=date COMMA MOT_OBJECTIF_DE variable[2]=valeurComptable MOT_POUR variable[3]=compte
+    :   PUCE BACKTICK id=variable BACKTICK dateValue=variable COMMA MOT_OBJECTIF_DE valeurComptable=argent MOT_POUR compteNom=variable
     ;
 
 correction
-    :   PUCE BACKTICK variable BACKTICK variable COMMA MOT_CORRIGER variable MOT_CORRECTION_QUALIFICATEUR MOT_DANS variable
-    //  PUCE BACKTICK variable[0]=id BACKTICK variable[1]=date COMMA MOT_CORRIGER variable[2]=valeurComptable MOT_CORRECTION_QUALIFICATEUR MOT_DANS variable[3]=compte
+    :   PUCE BACKTICK id=variable BACKTICK dateValue=variable COMMA MOT_CORRIGER valeurComptable=argent MOT_CORRECTION_QUALIFICATEUR MOT_DANS compteNom=variable
     ;
 /* -------------------- Possessions --------------------  */
 /* Trésorerie */
@@ -129,66 +130,40 @@ operation
 
 /* Simple Possessions */
 compte
-    :   PUCE variable COMMA MOT_VALANT variable variable
-    //  PUCE variable[0]=nom COMMA MOT_VALANT variable[1]=valeurComptable variable[2]=date
+    :   PUCE nom=variable COMMA MOT_VALANT valeurComptable=argent dateValue=variable
     ;
 
 fluxArgentTransferer
-    :   PUCE BACKTICK variable BACKTICK variable COMMA MOT_TRANSFERER variable MOT_DEPUIS variable MOT_VERS variable dateFin?
-    //  PUCE BACKTICK variable[0]=id BACKTICK variable[1]=date COMMA MOT_TRANSFERER variable[2]=valeurComtable MOT_DEPUIS variable[3]=debiteur MOT_VERS variable[4]=crediteur value?
+    :   PUCE BACKTICK id=variable BACKTICK dateValue=variable COMMA MOT_TRANSFERER valeurComptable=argent MOT_DEPUIS compteDebiteurNom=variable MOT_VERS compteCrediteurNom=variable dateFin?
     ;
 
 fluxArgentEntrer
-    :   PUCE BACKTICK variable BACKTICK variable COMMA MOT_ENTRER variable MOT_VERS variable dateFin?
-    //  PUCE BACKTICK variable[0]=id BACKTICK variable[1]=date COMMA MOT_ENTRER variable[2]=valeurComptable MOT_VERS variable[3]=compte value?
+    :   PUCE BACKTICK id=variable BACKTICK dateValue=variable COMMA MOT_ENTRER valeurComptable=argent MOT_VERS compteCrediteurNom=variable dateFin?
     ;
 
 fluxArgentSortir
-    :   PUCE BACKTICK variable BACKTICK variable COMMA MOT_SORTIR variable MOT_DEPUIS variable dateFin?
-    //  PUCE BACKTICK variable[0]=id BACKTICK variable[1]=date COMMA MOT_SORTIR variable[2]=valeurComptable MOT_DEPUIS variable[3]=compte value?
+    :   PUCE BACKTICK id=variable BACKTICK dateValue=variable COMMA MOT_SORTIR valeurComptable=argent MOT_DEPUIS compteDebiteurNom=variable dateFin?
     ;
 
 acheterMateriel
-    :   PUCE BACKTICK variable BACKTICK variable COMMA MOT_ACHETER variable COMMA MOT_VALANT variable COMMA MATERIEL_APPRECIATION MOT_ANNUELLEMENT_DE variable PERCENT COMMA MOT_DEPUIS variable
-    //  PUCE BACKTICK variable[0]=id BACKTICK variable[1]=date COMMA MOT_ACHETER variable[2]=materielNom COMMA MOT_VALANT variable[3]=valeurComptable COMMA MATERIEL_APPRECIATION MOT_ANNUELLEMENT_DE variable[4]=valeurAppreciation PERCENT COMMA MOT_DEPUIS variable[5]=compte
+    :   PUCE BACKTICK id=variable BACKTICK dateValue=variable COMMA MOT_ACHETER materielNom=variable COMMA MOT_VALANT valeurComptable=argent COMMA MATERIEL_APPRECIATION MOT_ANNUELLEMENT_DE pourcentageAppreciation=nombre PERCENT COMMA MOT_DEPUIS compteDebiteurNom=variable
     ;
 
 possedeMateriel
-    :   PUCE BACKTICK variable BACKTICK variable COMMA MOT_POSSEDER variable COMMA MOT_VALANT variable COMMA MATERIEL_APPRECIATION MOT_ANNUELLEMENT_DE variable PERCENT
-    //  PUCE BACKTICK variable[0]=id BACKTICK variable[1]=date COMMA MOT_POSSEDER variable[2]=nom COMMA MOT_VALANT variable[3]=valeurComptable COMMA MATERIEL_APPRECIATION MOT_ANNUELLEMENT_DE variable[4]=tauxAppreciation PERCENT
+    :   PUCE BACKTICK id=variable BACKTICK dateValue=variable COMMA MOT_POSSEDER materielNom=variable COMMA MOT_VALANT valeurComptable=argent COMMA MATERIEL_APPRECIATION MOT_ANNUELLEMENT_DE pourcentageAppreciation=nombre PERCENT
     ;
 
 /* -------------------- Commun --------------------  */
 sousTitre
-    :   HASHES HASHES variable COMMA variable COMMA MOT_DEVISE_EN variable
-    //  HASHES HASHES variable[0]=nom COMMA variable[1]=date COMMA MOT_DEVISE_EN variable[2]=devise
+    :   HASHES HASHES nom=variable COMMA dateValue=variable COMMA MOT_DEVISE_EN devise
     ;
 
 dateFin
-    :   COMMA MOT_JUSQUA variable MOT_TOUT_LES ENTIER MOT_DU MOT_MOIS
-    //  COMMA MOT_JUSQUA variable[0]=date MOT_TOUT_LES ENTIER MOT_DU MOT_MOIS
-    ;
-
-ligneNomValeur
-    :   PUCE variable COLON variable
+    :   COMMA MOT_JUSQUA dateValue=variable MOT_TOUT_LES ENTIER MOT_DU MOT_MOIS
     ;
 
 ligneNom
-    :   PUCE variable
-    ;
-
-/*  Valeur englobé par variable  */
-variable
-    :   devise
-    |   argent
-    |   date
-    |   nombre
-    |   text
-    |   variableValue
-    ;
-
-variableValue
-    :   BACKTICK VARIABLE BACKTICK
+    :   PUCE nom=variable
     ;
 
 argent
@@ -202,6 +177,17 @@ devise
 nombre
     :   DECIMAL
     |   ENTIER
+    ;
+
+/*  Valeur englobé par variable  */
+variable
+    :   date
+    |   text
+    |   variableValue
+    ;
+
+variableValue
+    :   BACKTICK VARIABLE BACKTICK
     ;
 
 date

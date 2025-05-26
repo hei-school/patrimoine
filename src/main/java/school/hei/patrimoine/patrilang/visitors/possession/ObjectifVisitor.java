@@ -3,7 +3,7 @@ package school.hei.patrimoine.patrilang.visitors.possession;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.CompteContext;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.DateContext;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.ObjectifContext;
-import static school.hei.patrimoine.patrilang.visitors.VariableVisitor.visitVariableAsArgent;
+import static school.hei.patrimoine.patrilang.visitors.BaseVisitor.visitArgent;
 
 import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
@@ -19,9 +19,9 @@ public class ObjectifVisitor implements SimpleVisitor<ObjectifContext, Objectif>
 
   @Override
   public Objectif apply(ObjectifContext ctx) {
-    LocalDate t = this.variableDateVisitor.apply(ctx.variable(1));
-    Compte compte = this.variableCompteVisitor.apply(ctx.variable(2));
-    Argent valeurComptable = visitVariableAsArgent(ctx.variable(2));
+    Argent valeurComptable = visitArgent(ctx.valeurComptable);
+    LocalDate t = this.variableDateVisitor.apply(ctx.dateValue);
+    Compte compte = this.variableCompteVisitor.apply(ctx.compteNom);
 
     return new Objectif(compte, t, valeurComptable);
   }

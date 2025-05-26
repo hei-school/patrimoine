@@ -2,7 +2,7 @@ package school.hei.patrimoine.patrilang.visitors;
 
 import static java.util.Objects.isNull;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.*;
-import static school.hei.patrimoine.patrilang.visitors.VariableVisitor.visitVariableAsArgent;
+import static school.hei.patrimoine.patrilang.visitors.BaseVisitor.visitArgent;
 
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +15,7 @@ public class PatriLangToutCasVisitor implements Function<ToutCasContext, CasSet>
   @Override
   public CasSet apply(ToutCasContext ctx) {
     var objectifFinal =
-        visitVariableAsArgent(ctx.sectionToutCasGeneral().ligneObjectifFinal().variable());
+        visitArgent(ctx.sectionToutCasGeneral().ligneObjectifFinal().valeurComptable);
 
     this.loadDatesInContainer(ctx.sectionDates());
     this.loadPersonnesInContainer(ctx.sectionPersonnes());
@@ -31,34 +31,34 @@ public class PatriLangToutCasVisitor implements Function<ToutCasContext, CasSet>
     if (isNull(ctx)) return;
 
     var dates = this.sectionVisitor.visitSectionDates(ctx);
-    this.sectionVisitor.variableDateVisitor().addAll(dates);
+    this.sectionVisitor.variableDateVisitor().storeVariables(dates);
   }
 
   public void loadPersonnesInContainer(SectionPersonnesContext ctx) {
     if (isNull(ctx)) return;
 
     var personnes = this.sectionVisitor.visitSectionPersonnes(ctx);
-    this.sectionVisitor.variablePersonneVisitor().addAll(personnes);
+    this.sectionVisitor.variablePersonneVisitor().storeVariables(personnes);
   }
 
   public void loadTresoreriesInContainer(SectionTresoreriesContext ctx) {
     if (isNull(ctx)) return;
 
     var tresoreries = this.sectionVisitor.visitSectionTresoreries(ctx);
-    this.sectionVisitor.variableCompteVisitor().addAll(tresoreries);
+    this.sectionVisitor.variableCompteVisitor().storeVariables(tresoreries);
   }
 
   public void loadDettesInContainer(SectionDettesContext ctx) {
     if (isNull(ctx)) return;
 
     var dettes = this.sectionVisitor.visitSectionDettes(ctx);
-    this.sectionVisitor.variableDetteVisitor().addAll(dettes);
+    this.sectionVisitor.variableDetteVisitor().storeVariables(dettes);
   }
 
   public void loadCreancesInContainer(SectionCreancesContext ctx) {
     if (isNull(ctx)) return;
 
     var creances = this.sectionVisitor.visitSectionCreances(ctx);
-    this.sectionVisitor.variableCreanceVisitor().addAll(creances);
+    this.sectionVisitor.variableCreanceVisitor().storeVariables(creances);
   }
 }

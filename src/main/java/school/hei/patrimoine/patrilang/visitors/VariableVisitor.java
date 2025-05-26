@@ -7,20 +7,15 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Stream;
-import lombok.Getter;
 import org.antlr.v4.runtime.ParserRuleContext;
 import school.hei.patrimoine.Pair;
-import school.hei.patrimoine.modele.Argent;
-import school.hei.patrimoine.modele.Devise;
 import school.hei.patrimoine.patrilang.modele.VariableContainer;
 
-@Getter
-public class VariableVisitor<ContextType extends ParserRuleContext, VariableType>
-    implements Function<VariableContext, VariableType> {
-  private static final String COLON = ":";
+public class VariableVisitor<ContextType extends ParserRuleContext, VariableType> {
   private final Class<ContextType> contextType;
   private final Function<ContextType, VariableType> visitor;
   private final VariableContainer<VariableType> container;
+  private static final String COLON = ":";
 
   public VariableVisitor(
       Class<ContextType> contextType, Function<ContextType, VariableType> visitor) {
@@ -29,29 +24,20 @@ public class VariableVisitor<ContextType extends ParserRuleContext, VariableType
     this.container = new VariableContainer<>();
   }
 
-  @Override
   public VariableType apply(VariableContext ctx) {
     return visit(ctx, contextType, this.container, this.visitor);
   }
 
-  public void addAll(Set<Pair<String, VariableType>> instances) {
-    this.container.addAll(instances);
+  public VariableType apply(ContextType ctx) {
+    return this.visitor.apply(ctx);
   }
 
-  public static Argent visitVariableAsArgent(VariableContext ctx) {
-    return visit(ctx, ArgentContext.class, notSupportedContainer(), BaseVisitor::visitArgent);
+  public void storeVariables(Set<Pair<String, VariableType>> variables) {
+    this.container.addAll(variables);
   }
 
   public static String visitVariableAsText(VariableContext ctx) {
-    return visit(ctx, TextContext.class, notSupportedContainer(), BaseVisitor::visitText);
-  }
-
-  public static Devise visitVariableAsDevise(VariableContext ctx) {
-    return visit(ctx, DeviseContext.class, notSupportedContainer(), BaseVisitor::visitDevise);
-  }
-
-  public static double visitVariableAsNombre(VariableContext ctx) {
-    return visit(ctx, NombreContext.class, notSupportedContainer(), BaseVisitor::visitNombre);
+    return visit(ctx, TextContext.class, new VariableContainer<>(), BaseVisitor::visitText);
   }
 
   private static <T extends ParserRuleContext, R> R visit(
@@ -67,9 +53,9 @@ public class VariableVisitor<ContextType extends ParserRuleContext, VariableType
 
     if (!expectedCtx.isInstance(ctxValue)) {
       throw new IllegalArgumentException(
-          "Variable '"
+          "La variable '"
               + ctxValue.getText()
-              + "' does not match expected context: "
+              + "' ne correspond pas au contexte attendu : "
               + expectedCtx.getName());
     }
 
@@ -77,8 +63,7 @@ public class VariableVisitor<ContextType extends ParserRuleContext, VariableType
   }
 
   private static Optional<ParserRuleContext> getVariableCtx(VariableContext ctx) {
-    return Stream.of(
-            ctx.argent(), ctx.devise(), ctx.date(), ctx.nombre(), ctx.text(), ctx.variableValue())
+    return Stream.of(ctx.date(), ctx.text(), ctx.variableValue())
         .filter(Objects::nonNull)
         .findFirst();
   }
@@ -87,13 +72,10 @@ public class VariableVisitor<ContextType extends ParserRuleContext, VariableType
     var variableValueAsText = ctx.VARIABLE().getText();
 
     if (!variableValueAsText.contains(COLON)) {
-      throw new IllegalArgumentException("Variable invalide passée");
+      throw new IllegalArgumentException(
+          "Variable invalide : '" + variableValueAsText + "'. Format attendu : <type>:<nom>");
     }
 
     return variableValueAsText.substring(variableValueAsText.indexOf(COLON) + 1);
-  }
-
-  private static <T> VariableContainer<T> notSupportedContainer() {
-    return new VariableContainer<>();
   }
 }

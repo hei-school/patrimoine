@@ -23,9 +23,8 @@ class PatriLangTranspilerIT {
   @Test
   void patrimoine_without_possession_ok() {
     var expected = patrimoineWithoutPossessions();
-    var input = fromString(SECTION_GENERAL);
 
-    var actual = subject.apply(input);
+    var actual = subject.apply(SECTION_GENERAL);
 
     assertPatrimoineEquals(expected, actual);
   }

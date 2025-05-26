@@ -1,5 +1,6 @@
 package school.hei.patrimoine.patrilang.visitors.possession;
 
+import static java.util.Optional.ofNullable;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.CompteContext;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.DateContext;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.FluxArgentTransfererContext;
@@ -22,13 +23,13 @@ public class TransferArgentVisitor
   private final VariableVisitor<CompteContext, Compte> compteVisitor;
 
   public TransfertArgent apply(FluxArgentTransfererContext ctx) {
-    String id = visitVariableAsText(ctx.variable(0));
-    LocalDate t = this.dateVisitor.apply(ctx.variable(1));
-    Argent valeurComptable = visitVariableAsArgent(ctx.variable(2));
-    Compte débiteur = this.compteVisitor.apply(ctx.variable(3));
-    Compte créditeur = this.compteVisitor.apply(ctx.variable(4));
+    String id = visitVariableAsText(ctx.id);
+    Argent valeurComptable = visitArgent(ctx.valeurComptable);
     Optional<DateFin> dateFinOpt =
-        Optional.ofNullable(ctx.dateFin()).map(context -> visitDateFin(context, this.dateVisitor));
+        ofNullable(ctx.dateFin()).map(context -> visitDateFin(context, this.dateVisitor));
+    LocalDate t = this.dateVisitor.apply(ctx.dateValue);
+    Compte débiteur = this.compteVisitor.apply(ctx.compteDebiteurNom);
+    Compte créditeur = this.compteVisitor.apply(ctx.compteCrediteurNom);
 
     return dateFinOpt
         .map(

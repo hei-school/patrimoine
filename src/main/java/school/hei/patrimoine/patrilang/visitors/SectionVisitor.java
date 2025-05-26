@@ -6,6 +6,7 @@ import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
 import static school.hei.patrimoine.patrilang.PatriLangTranspiler.transpileCas;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.*;
+import static school.hei.patrimoine.patrilang.visitors.BaseVisitor.visitNombre;
 import static school.hei.patrimoine.patrilang.visitors.VariableVisitor.*;
 
 import java.time.LocalDate;
@@ -13,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Function;
 import school.hei.patrimoine.Pair;
 import school.hei.patrimoine.cas.Cas;
 import school.hei.patrimoine.modele.Personne;
@@ -37,18 +37,18 @@ public record SectionVisitor(
 
   public Set<Cas> visitSectionCas(SectionCasContext ctx) {
     return ctx.ligneNom().stream()
-        .map(ligne -> visitVariableAsText(ligne.variable()))
+        .map(ligne -> visitVariableAsText(ligne.nom))
         .map(nom -> transpileCas(nom, this))
         .collect(toSet());
   }
 
   public Set<Pair<String, LocalDate>> visitSectionDates(SectionDatesContext ctx) {
-    return ctx.ligneNomValeur().stream()
+    return ctx.ligneDate().stream()
         .map(
             ligne ->
                 new Pair<>(
-                    visitVariableAsText(ligne.variable(0)),
-                    this.variableDateVisitor.apply(ligne.variable(1))))
+                    visitVariableAsText(ligne.nom),
+                    this.variableDateVisitor.apply(ligne.dateValue)))
         .collect(toSet());
   }
 
@@ -64,30 +64,27 @@ public record SectionVisitor(
     return ctx.lignePossesseur().stream()
         .collect(
             toMap(
-                ligne -> variablePersonneVisitor.apply(ligne.variable(0)),
-                ligne -> visitVariableAsNombre(ligne.variable(1))));
+                ligne -> variablePersonneVisitor.apply(ligne.nom),
+                ligne -> visitNombre(ligne.pourcentage)));
   }
 
   public Set<Pair<String, Personne>> visitSectionPersonnes(SectionPersonnesContext ctx) {
     return ctx.ligneNom().stream()
-        .map(ligne -> this.variablePersonneVisitor.apply(ligne.variable()))
+        .map(ligne -> this.variablePersonneVisitor.apply(ligne.nom))
         .map(personne -> new Pair<>(personne.nom(), personne))
         .collect(toSet());
   }
 
   public Set<Pair<String, Compte>> visitSectionTresoreries(SectionTresoreriesContext ctx) {
-    return mapCompteElements(
-        ctx.compteElement(), variableCompteVisitor.getVisitor(), variableCompteVisitor);
+    return visitCompteElements(ctx.compteElement(), variableCompteVisitor);
   }
 
   public Set<Pair<String, Dette>> visitSectionDettes(SectionDettesContext ctx) {
-    return mapCompteElements(
-        ctx.compteElement(), variableDetteVisitor.getVisitor(), variableDetteVisitor);
+    return visitCompteElements(ctx.compteElement(), variableDetteVisitor);
   }
 
   public Set<Pair<String, Creance>> visitSectionCreances(SectionCreancesContext ctx) {
-    return mapCompteElements(
-        ctx.compteElement(), variableCreanceVisitor.getVisitor(), variableCreanceVisitor);
+    return visitCompteElements(ctx.compteElement(), variableCreanceVisitor);
   }
 
   public Set<Possession> visitSectionOperations(SectionOperationsContext ctx) {
@@ -142,45 +139,15 @@ public record SectionVisitor(
     throw new IllegalArgumentException("Opération inconnue");
   }
 
-  public static SectionVisitor create(String casSetFolderPath) {
-    var dateVisitor = new VariableVisitor<>(DateContext.class, BaseVisitor::visitDate);
-    var personVisitor = new VariableVisitor<>(TextContext.class, BaseVisitor::visitPersonne);
-
-    var compteVisitor = new CompteVisitor(dateVisitor);
-    var creanceVisitor = new CreanceVisitor(dateVisitor);
-    var detteVisitor = new DetteVisitor(dateVisitor);
-
-    var variableCompteVisitor = new VariableVisitor<>(CompteContext.class, compteVisitor);
-    var variableCreanceVisitor = new VariableVisitor<>(CompteContext.class, creanceVisitor);
-    var variableDetteVisitor = new VariableVisitor<>(CompteContext.class, detteVisitor);
-
-    return new SectionVisitor(
-        casSetFolderPath,
-        new ObjectifVisitor(dateVisitor, variableCompteVisitor),
-        new MaterielVisitor(dateVisitor),
-        new AchatMaterielVisitor(dateVisitor, variableCompteVisitor),
-        new FluxArgentVisitor(dateVisitor, variableCompteVisitor),
-        new TransferArgentVisitor(dateVisitor, variableCompteVisitor),
-        new CorrectionVisitor(dateVisitor, variableCompteVisitor),
-        new GroupPossessionVisitor(dateVisitor),
-        dateVisitor,
-        personVisitor,
-        variableCompteVisitor,
-        variableDetteVisitor,
-        variableCreanceVisitor);
-  }
-
-  private static <T extends Possession> Set<Pair<String, T>> mapCompteElements(
-      List<CompteElementContext> elements,
-      Function<CompteContext, T> compteVisitor,
-      Function<VariableContext, T> variableVisitor) {
+  private <T extends Compte> Set<Pair<String, T>> visitCompteElements(
+      List<CompteElementContext> elements, VariableVisitor<CompteContext, T> visitor) {
     return elements.stream()
         .map(
             element -> {
               if (nonNull(element.compte())) {
-                return compteVisitor.apply(element.compte());
+                return visitor.apply(element.compte());
               }
-              return variableVisitor.apply(element.variable());
+              return visitor.apply(element.variable());
             })
         .map(obj -> new Pair<>(obj.nom(), obj))
         .collect(toSet());

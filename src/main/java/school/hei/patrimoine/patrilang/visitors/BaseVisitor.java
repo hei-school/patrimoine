@@ -24,7 +24,7 @@ public class BaseVisitor {
   public static DateFin visitDateFin(
       DateFinContext ctx, VariableVisitor<DateContext, LocalDate> variableDateVisitor) {
     int dateDOpération = parseInt(parseNodeValue(ctx.ENTIER()));
-    var dateFinValue = variableDateVisitor.apply(ctx.variable());
+    var dateFinValue = variableDateVisitor.apply(ctx.dateValue);
 
     return new DateFin(dateDOpération, dateFinValue);
   }

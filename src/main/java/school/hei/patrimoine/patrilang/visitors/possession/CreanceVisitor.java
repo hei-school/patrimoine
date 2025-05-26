@@ -2,7 +2,8 @@ package school.hei.patrimoine.patrilang.visitors.possession;
 
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.CompteContext;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.DateContext;
-import static school.hei.patrimoine.patrilang.visitors.VariableVisitor.*;
+import static school.hei.patrimoine.patrilang.visitors.BaseVisitor.visitArgent;
+import static school.hei.patrimoine.patrilang.visitors.VariableVisitor.visitVariableAsText;
 
 import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
@@ -16,9 +17,9 @@ public class CreanceVisitor implements SimpleVisitor<CompteContext, Creance> {
 
   @Override
   public Creance apply(CompteContext ctx) {
-    String nom = visitVariableAsText(ctx.variable(0));
-    Argent valeurComptable = visitVariableAsArgent(ctx.variable(1));
-    LocalDate t = this.variableDateVisitor.apply(ctx.variable(2));
+    String nom = visitVariableAsText(ctx.nom);
+    Argent valeurComptable = visitArgent(ctx.valeurComptable);
+    LocalDate t = this.variableDateVisitor.apply(ctx.dateValue);
 
     return new Creance(nom, t, valeurComptable);
   }

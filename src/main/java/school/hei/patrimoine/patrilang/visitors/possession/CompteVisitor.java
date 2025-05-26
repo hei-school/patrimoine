@@ -1,7 +1,8 @@
 package school.hei.patrimoine.patrilang.visitors.possession;
 
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.CompteContext;
-import static school.hei.patrimoine.patrilang.visitors.VariableVisitor.*;
+import static school.hei.patrimoine.patrilang.visitors.BaseVisitor.visitArgent;
+import static school.hei.patrimoine.patrilang.visitors.VariableVisitor.visitVariableAsText;
 
 import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
@@ -16,9 +17,9 @@ public class CompteVisitor implements SimpleVisitor<CompteContext, Compte> {
 
   @Override
   public Compte apply(CompteContext ctx) {
-    String nom = visitVariableAsText(ctx.variable(0));
-    Argent valeurComptable = visitVariableAsArgent(ctx.variable(1));
-    LocalDate t = this.variableDateVisitor.apply(ctx.variable(2));
+    String nom = visitVariableAsText(ctx.nom);
+    Argent valeurComptable = visitArgent(ctx.valeurComptable);
+    LocalDate t = this.variableDateVisitor.apply(ctx.dateValue);
 
     return new Compte(nom, t, valeurComptable);
   }

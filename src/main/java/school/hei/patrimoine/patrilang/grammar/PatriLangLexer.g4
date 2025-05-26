@@ -165,8 +165,8 @@ MOT_JUSQUA
     |   'Jusqu\'a'
     ;
 MOT_TOUT_LES
-    :   'Tous les'
-    |   'tous les'
+    :   'Tout les'
+    |   'tout les'
     ;
 MOT_MOIS
     :   'mois'
@@ -184,6 +184,7 @@ MOT_VALANT
 DEVISE
     :   'Ar'
     |   '€'
+    |   '$'
     ;
 PUCE
     :   '*'

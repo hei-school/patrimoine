@@ -3,7 +3,7 @@ package school.hei.patrimoine.patrilang.visitors.possession;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.DateContext;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.PossedeMaterielContext;
 import static school.hei.patrimoine.patrilang.visitors.BaseVisitor.*;
-import static school.hei.patrimoine.patrilang.visitors.VariableVisitor.*;
+import static school.hei.patrimoine.patrilang.visitors.VariableVisitor.visitVariableAsText;
 
 import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
@@ -17,11 +17,11 @@ public class MaterielVisitor implements SimpleVisitor<PossedeMaterielContext, Ma
 
   @Override
   public Materiel apply(PossedeMaterielContext ctx) {
-    LocalDate t = this.variableDateVisitor.apply(ctx.variable(1));
-    String nom = visitVariableAsText(ctx.variable(2));
-    Argent valeurComptable = visitVariableAsArgent(ctx.variable(3));
-    double tauxDAppreciation = visitVariableAsNombre(ctx.variable(4));
+    String nom = visitVariableAsText(ctx.materielNom);
+    Argent valeurComptable = visitArgent(ctx.valeurComptable);
+    double tauxDAppreciation = visitNombre(ctx.pourcentageAppreciation);
     double facteurTauxDAppreciation = visitMaterielAppreciationFacteur(ctx.MATERIEL_APPRECIATION());
+    LocalDate t = this.variableDateVisitor.apply(ctx.dateValue);
 
     return new Materiel(
         nom, t, t, valeurComptable, tauxDAppreciation / 100 * facteurTauxDAppreciation);

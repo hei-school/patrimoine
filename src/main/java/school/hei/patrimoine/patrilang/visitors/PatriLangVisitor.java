@@ -19,10 +19,4 @@ public class PatriLangVisitor extends PatriLangParserBaseVisitor<Object> {
 
     return this.toutCasVisitor.apply(ctx.toutCas());
   }
-
-  public static PatriLangVisitor create(SectionVisitor sectionVisitor) {
-    var toutCasVisitor = new PatriLangToutCasVisitor(sectionVisitor);
-    var casVisitor = new PatriLangCasVisitor(sectionVisitor);
-    return new PatriLangVisitor(toutCasVisitor, casVisitor);
-  }
 }

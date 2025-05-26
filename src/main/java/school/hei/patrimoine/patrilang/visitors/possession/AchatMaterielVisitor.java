@@ -1,8 +1,8 @@
 package school.hei.patrimoine.patrilang.visitors.possession;
 
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.*;
-import static school.hei.patrimoine.patrilang.visitors.BaseVisitor.visitMaterielAppreciationFacteur;
-import static school.hei.patrimoine.patrilang.visitors.VariableVisitor.*;
+import static school.hei.patrimoine.patrilang.visitors.BaseVisitor.*;
+import static school.hei.patrimoine.patrilang.visitors.VariableVisitor.visitVariableAsText;
 
 import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
@@ -19,14 +19,18 @@ public class AchatMaterielVisitor
 
   @Override
   public AchatMaterielAuComptant apply(AcheterMaterielContext ctx) {
-    String nom = visitVariableAsText(ctx.variable(0));
-    LocalDate t = this.variableDateVisitor.apply(ctx.variable(1));
-    Argent valeurComptable = visitVariableAsArgent(ctx.variable(3));
-    double tauxDAppreciation = visitVariableAsNombre(ctx.variable(4));
+    String materielNom = visitVariableAsText(ctx.materielNom);
+    Argent valeurComptable = visitArgent(ctx.valeurComptable);
+    double tauxDAppreciation = visitNombre(ctx.pourcentageAppreciation);
     double facteurTauxDAppreciation = visitMaterielAppreciationFacteur(ctx.MATERIEL_APPRECIATION());
-    Compte financeur = this.variableCompteVisitor.apply(ctx.variable(5));
+    LocalDate t = this.variableDateVisitor.apply(ctx.dateValue);
+    Compte financeur = this.variableCompteVisitor.apply(ctx.compteDebiteurNom);
 
     return new AchatMaterielAuComptant(
-        nom, t, valeurComptable, tauxDAppreciation / 100 * facteurTauxDAppreciation, financeur);
+        materielNom,
+        t,
+        valeurComptable,
+        tauxDAppreciation / 100 * facteurTauxDAppreciation,
+        financeur);
   }
 }
