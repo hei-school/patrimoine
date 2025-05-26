@@ -87,7 +87,7 @@ objectif
     ;
 
 correction
-    :   PUCE BACKTICK id=variable BACKTICK dateValue=variable COMMA MOT_CORRIGER valeurComptable=argent MOT_CORRECTION_QUALIFICATEUR MOT_DANS compteNom=variable
+    :   PUCE BACKTICK id=variable BACKTICK dateValue=variable COMMA MOT_CORRIGER valeurComptable=argent MOT_DANS compteNom=variable
     ;
 /* -------------------- Possessions --------------------  */
 /* Trésorerie */
@@ -167,7 +167,7 @@ ligneNom
     ;
 
 argent
-    :   nombre devise
+    :   TIRER? nombre devise
     ;
 
 devise

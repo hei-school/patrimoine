@@ -4,7 +4,6 @@ import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.CompteContex
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.CorrectionContext;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.DateContext;
 import static school.hei.patrimoine.patrilang.visitors.BaseVisitor.visitArgent;
-import static school.hei.patrimoine.patrilang.visitors.BaseVisitor.visitCorrectionQualificateurFacteur;
 import static school.hei.patrimoine.patrilang.visitors.VariableVisitor.visitVariableAsText;
 
 import java.time.LocalDate;
@@ -24,10 +23,9 @@ public class CorrectionVisitor implements SimpleVisitor<CorrectionContext, Corre
   public Correction apply(CorrectionContext ctx) {
     String id = visitVariableAsText(ctx.id);
     Argent valeurComptable = visitArgent(ctx.valeurComptable);
-    double facteur = visitCorrectionQualificateurFacteur(ctx.MOT_CORRECTION_QUALIFICATEUR());
     LocalDate t = this.variableDateVisitor.apply(ctx.dateValue);
     Compte compte = this.variableCompteVisitor.apply(ctx.compteNom);
 
-    return new Correction(new FluxArgent(id, compte, t, valeurComptable.mult(facteur)));
+    return new Correction(new FluxArgent(id, compte, t, valeurComptable));
   }
 }

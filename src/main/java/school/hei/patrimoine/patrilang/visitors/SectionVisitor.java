@@ -42,14 +42,16 @@ public record SectionVisitor(
         .collect(toSet());
   }
 
-  public Set<Pair<String, LocalDate>> visitSectionDates(SectionDatesContext ctx) {
-    return ctx.ligneDate().stream()
-        .map(
-            ligne ->
-                new Pair<>(
-                    visitVariableAsText(ligne.nom),
-                    this.variableDateVisitor.apply(ligne.dateValue)))
-        .collect(toSet());
+  public void visitSectionDates(SectionDatesContext ctx) {
+    ctx.ligneDate()
+        .forEach(
+            ligne -> {
+              var newVariable =
+                  new Pair<>(
+                      visitVariableAsText(ligne.nom),
+                      this.variableDateVisitor.apply(ligne.dateValue));
+              this.variableDateVisitor.save(newVariable);
+            });
   }
 
   public void visitSectionInitialisation(SectionInitialisationContext ctx) {
@@ -68,22 +70,19 @@ public record SectionVisitor(
                 ligne -> visitNombre(ligne.pourcentage)));
   }
 
-  public Set<Pair<String, Personne>> visitSectionPersonnes(SectionPersonnesContext ctx) {
-    return ctx.ligneNom().stream()
-        .map(ligne -> this.variablePersonneVisitor.apply(ligne.nom))
-        .map(personne -> new Pair<>(personne.nom(), personne))
-        .collect(toSet());
+  public void visitSectionPersonnes(SectionPersonnesContext ctx) {
+    ctx.ligneNom().forEach(ligne -> this.variablePersonneVisitor.apply(ligne.nom));
   }
 
-  public Set<Pair<String, Compte>> visitSectionTresoreries(SectionTresoreriesContext ctx) {
+  public Set<Compte> visitSectionTresoreries(SectionTresoreriesContext ctx) {
     return visitCompteElements(ctx.compteElement(), variableCompteVisitor);
   }
 
-  public Set<Pair<String, Dette>> visitSectionDettes(SectionDettesContext ctx) {
+  public Set<Dette> visitSectionDettes(SectionDettesContext ctx) {
     return visitCompteElements(ctx.compteElement(), variableDetteVisitor);
   }
 
-  public Set<Pair<String, Creance>> visitSectionCreances(SectionCreancesContext ctx) {
+  public Set<Creance> visitSectionCreances(SectionCreancesContext ctx) {
     return visitCompteElements(ctx.compteElement(), variableCreanceVisitor);
   }
 
@@ -139,7 +138,7 @@ public record SectionVisitor(
     throw new IllegalArgumentException("Opération inconnue");
   }
 
-  private <T extends Compte> Set<Pair<String, T>> visitCompteElements(
+  private <T extends Compte> Set<T> visitCompteElements(
       List<CompteElementContext> elements, VariableVisitor<CompteContext, T> visitor) {
     return elements.stream()
         .map(
@@ -149,7 +148,6 @@ public record SectionVisitor(
               }
               return visitor.apply(element.variable());
             })
-        .map(obj -> new Pair<>(obj.nom(), obj))
         .collect(toSet());
   }
 }

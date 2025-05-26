@@ -11,7 +11,6 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.Devise;
 import school.hei.patrimoine.modele.Personne;
-import school.hei.patrimoine.patrilang.modele.CorrectionQualificateurType;
 import school.hei.patrimoine.patrilang.modele.DateFin;
 import school.hei.patrimoine.patrilang.modele.MaterielAppreciationType;
 
@@ -30,7 +29,8 @@ public class BaseVisitor {
   }
 
   public static Argent visitArgent(ArgentContext ctx) {
-    return new Argent(visitNombre(ctx.nombre()), visitDevise(ctx.devise()));
+    double facteur = nonNull(ctx.TIRER()) ? -1 : 1;
+    return new Argent(visitNombre(ctx.nombre()), visitDevise(ctx.devise())).mult(facteur);
   }
 
   public static Devise visitDevise(DeviseContext ctx) {
@@ -61,10 +61,6 @@ public class BaseVisitor {
 
   public static double visitMaterielAppreciationFacteur(TerminalNode ctx) {
     return MaterielAppreciationType.fromString(parseNodeValue(ctx)).getFacteur();
-  }
-
-  public static double visitCorrectionQualificateurFacteur(TerminalNode ctx) {
-    return CorrectionQualificateurType.fromString(parseNodeValue(ctx)).getFacteur();
   }
 
   public static String visitText(TextContext ctx) {

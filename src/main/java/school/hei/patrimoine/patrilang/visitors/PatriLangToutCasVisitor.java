@@ -1,6 +1,6 @@
 package school.hei.patrimoine.patrilang.visitors;
 
-import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.*;
 import static school.hei.patrimoine.patrilang.visitors.BaseVisitor.visitArgent;
 
@@ -17,48 +17,27 @@ public class PatriLangToutCasVisitor implements Function<ToutCasContext, CasSet>
     var objectifFinal =
         visitArgent(ctx.sectionToutCasGeneral().ligneObjectifFinal().valeurComptable);
 
-    this.loadDatesInContainer(ctx.sectionDates());
-    this.loadPersonnesInContainer(ctx.sectionPersonnes());
-    this.loadTresoreriesInContainer(ctx.sectionTresoreries());
-    this.loadDettesInContainer(ctx.sectionDettes());
-    this.loadCreancesInContainer(ctx.sectionCreances());
+    if (nonNull(ctx.sectionDates())) {
+      this.sectionVisitor.visitSectionDates(ctx.sectionDates());
+    }
+
+    if (nonNull(ctx.sectionPersonnes())) {
+      this.sectionVisitor.visitSectionPersonnes(ctx.sectionPersonnes());
+    }
+
+    if (nonNull(ctx.sectionTresoreries())) {
+      this.sectionVisitor.visitSectionTresoreries(ctx.sectionTresoreries());
+    }
+
+    if (nonNull(ctx.sectionCreances())) {
+      this.sectionVisitor.visitSectionCreances(ctx.sectionCreances());
+    }
+
+    if (nonNull(ctx.sectionDettes())) {
+      this.sectionVisitor.visitSectionDettes(ctx.sectionDettes());
+    }
 
     var casSet = this.sectionVisitor.visitSectionCas(ctx.sectionCas());
     return new CasSet(casSet, objectifFinal);
-  }
-
-  public void loadDatesInContainer(SectionDatesContext ctx) {
-    if (isNull(ctx)) return;
-
-    var dates = this.sectionVisitor.visitSectionDates(ctx);
-    this.sectionVisitor.variableDateVisitor().storeVariables(dates);
-  }
-
-  public void loadPersonnesInContainer(SectionPersonnesContext ctx) {
-    if (isNull(ctx)) return;
-
-    var personnes = this.sectionVisitor.visitSectionPersonnes(ctx);
-    this.sectionVisitor.variablePersonneVisitor().storeVariables(personnes);
-  }
-
-  public void loadTresoreriesInContainer(SectionTresoreriesContext ctx) {
-    if (isNull(ctx)) return;
-
-    var tresoreries = this.sectionVisitor.visitSectionTresoreries(ctx);
-    this.sectionVisitor.variableCompteVisitor().storeVariables(tresoreries);
-  }
-
-  public void loadDettesInContainer(SectionDettesContext ctx) {
-    if (isNull(ctx)) return;
-
-    var dettes = this.sectionVisitor.visitSectionDettes(ctx);
-    this.sectionVisitor.variableDetteVisitor().storeVariables(dettes);
-  }
-
-  public void loadCreancesInContainer(SectionCreancesContext ctx) {
-    if (isNull(ctx)) return;
-
-    var creances = this.sectionVisitor.visitSectionCreances(ctx);
-    this.sectionVisitor.variableCreanceVisitor().storeVariables(creances);
   }
 }

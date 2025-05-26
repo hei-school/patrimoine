@@ -4,7 +4,6 @@ import static java.awt.EventQueue.invokeLater;
 import static java.util.Comparator.comparing;
 import static school.hei.patrimoine.patrilang.PatriLangTranspiler.transpileToutCas;
 
-import java.io.IOException;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -15,9 +14,9 @@ import school.hei.patrimoine.visualisation.swing.ihm.MainIHM;
 
 public class CasSetAnalyzer implements Consumer<CasSet> {
 
-  public static void main(String[] args) throws IOException {
+  public static void main(String[] args) {
     var toutCasPath =
-        "/home/ricka/Ricka/Projects/patrimoine/src/main/java/school/hei/patrimoine/patrilang/examples/tout.patri.md";
+        "/home/ricka/Ricka/Projects/patrimoine/src/test/resources/famille_rakoto_cas/FamilleRakoto.patri.md";
     new CasSetAnalyzer().accept(transpileToutCas(toutCasPath));
   }
 

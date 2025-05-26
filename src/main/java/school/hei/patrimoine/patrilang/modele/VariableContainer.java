@@ -19,10 +19,6 @@ public class VariableContainer<T> {
     this.values.add(value);
   }
 
-  public void addAll(Set<Pair<String, T>> values) {
-    values.forEach(this::add);
-  }
-
   public T get(String name) {
     var optionalValue =
         this.values.stream().filter(value -> value.first().equals(name)).findFirst();

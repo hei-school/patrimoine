@@ -1,7 +1,6 @@
 package school.hei.patrimoine.patrilang.visitors;
 
 import static java.util.Objects.nonNull;
-import static java.util.stream.Collectors.toSet;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.CasContext;
 import static school.hei.patrimoine.patrilang.visitors.BaseVisitor.visitDevise;
 import static school.hei.patrimoine.patrilang.visitors.VariableVisitor.visitVariableAsText;
@@ -10,8 +9,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
-import org.antlr.v4.runtime.ParserRuleContext;
-import school.hei.patrimoine.Pair;
 import school.hei.patrimoine.cas.Cas;
 import school.hei.patrimoine.modele.Devise;
 import school.hei.patrimoine.modele.possession.Possession;
@@ -32,35 +29,38 @@ public class PatriLangCasVisitor implements Function<CasContext, Cas> {
             .variableDateVisitor()
             .apply(sectionCasGeneral.ligneDateFinSimulation().dateValue);
     var possesseurs = this.sectionVisitor.visitSectionPossesseurs(ctx.sectionPossesseurs());
+    var possessions = collectPossessions(ctx);
+    var devise = visitDevise(sectionCasGeneral.ligneDevise().devise());
+    var nom = visitVariableAsText(sectionCasGeneral.ligneCasNom().nom);
+
+    if (nonNull(ctx.sectionInitialisation())) {
+      sectionVisitor.visitSectionInitialisation(ctx.sectionInitialisation());
+    }
+
+    if (nonNull(ctx.sectionSuivi())) {
+      sectionVisitor.visitSectionSuivi(ctx.sectionSuivi());
+    }
 
     return new Cas(ajd, finSimulation, possesseurs) {
       @Override
       protected Devise devise() {
-        return visitDevise(sectionCasGeneral.ligneDevise().devise());
+        return devise;
       }
 
       @Override
       protected String nom() {
-        return visitVariableAsText(sectionCasGeneral.ligneCasNom().nom);
+        return nom;
       }
 
       @Override
-      protected void init() {
-        if (nonNull(ctx.sectionInitialisation())) {
-          sectionVisitor.visitSectionInitialisation(ctx.sectionInitialisation());
-        }
-      }
+      protected void init() {}
 
       @Override
-      protected void suivi() {
-        if (nonNull(ctx.sectionSuivi())) {
-          sectionVisitor.visitSectionSuivi(ctx.sectionSuivi());
-        }
-      }
+      protected void suivi() {}
 
       @Override
       public Set<Possession> possessions() {
-        return collectPossessions(ctx);
+        return possessions;
       }
     };
   }
@@ -68,26 +68,22 @@ public class PatriLangCasVisitor implements Function<CasContext, Cas> {
   private Set<Possession> collectPossessions(CasContext ctx) {
     Set<Possession> possessions = new HashSet<>();
 
-    addIfPresent(ctx.sectionTresoreries(), sectionVisitor::visitSectionTresoreries, possessions);
-    addIfPresent(ctx.sectionCreances(), sectionVisitor::visitSectionCreances, possessions);
-    addIfPresent(ctx.sectionDettes(), sectionVisitor::visitSectionDettes, possessions);
+    if (nonNull(ctx.sectionTresoreries())) {
+      possessions.addAll(sectionVisitor.visitSectionTresoreries(ctx.sectionTresoreries()));
+    }
+
+    if (nonNull(ctx.sectionCreances())) {
+      possessions.addAll(sectionVisitor.visitSectionCreances(ctx.sectionCreances()));
+    }
+
+    if (nonNull(ctx.sectionDettes())) {
+      possessions.addAll(sectionVisitor.visitSectionDettes(ctx.sectionDettes()));
+    }
 
     if (nonNull(ctx.sectionOperations())) {
       possessions.addAll(sectionVisitor.visitSectionOperations(ctx.sectionOperations()));
     }
 
     return possessions;
-  }
-
-  private <C extends ParserRuleContext, T extends Possession> void addIfPresent(
-      C context, Function<C, Set<Pair<String, T>>> visitFunction, Set<Possession> possessions) {
-    if (nonNull(context)) {
-      var pairs = visitFunction.apply(context);
-      possessions.addAll(mapPairs(pairs));
-    }
-  }
-
-  private static <T extends Possession> Set<T> mapPairs(Set<Pair<String, T>> pairSet) {
-    return pairSet.stream().map(Pair::second).collect(toSet());
   }
 }

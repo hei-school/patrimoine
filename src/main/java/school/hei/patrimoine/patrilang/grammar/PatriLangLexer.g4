@@ -48,11 +48,6 @@ MOT_CORRIGER
     |   'corriger'
     ;
 
-MOT_CORRECTION_QUALIFICATEUR
-    :   'positivement'
-    |   'negativement'
-    ;
-
 MOT_DANS
     :   'dans'
     ;
@@ -165,8 +160,8 @@ MOT_JUSQUA
     |   'Jusqu\'a'
     ;
 MOT_TOUT_LES
-    :   'Tout les'
-    |   'tout les'
+    :   'Tous les'
+    |   'tous les'
     ;
 MOT_MOIS
     :   'mois'
