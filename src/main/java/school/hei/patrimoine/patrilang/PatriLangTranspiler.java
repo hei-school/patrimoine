@@ -1,41 +1,57 @@
 package school.hei.patrimoine.patrilang;
 
-import java.util.function.Function;
-import org.antlr.v4.runtime.CharStream;
+import static java.util.Objects.isNull;
+import static org.antlr.v4.runtime.CharStreams.fromFileName;
+import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.DocumentContext;
+
+import java.io.IOException;
+import java.nio.file.Paths;
 import org.antlr.v4.runtime.CommonTokenStream;
-import school.hei.patrimoine.modele.Patrimoine;
+import school.hei.patrimoine.cas.Cas;
+import school.hei.patrimoine.cas.CasSet;
 import school.hei.patrimoine.patrilang.antlr.PatriLangLexer;
 import school.hei.patrimoine.patrilang.antlr.PatriLangParser;
-import school.hei.patrimoine.patrilang.visitors.*;
+import school.hei.patrimoine.patrilang.factory.PatriLangVisitorFactory;
+import school.hei.patrimoine.patrilang.factory.SectionVisitorFactory;
+import school.hei.patrimoine.patrilang.visitors.SectionVisitor;
 
-public class PatriLangTranspiler implements Function<CharStream, Patrimoine> {
-  private static final CompteVisitor compteVisitor = new CompteVisitor();
-  private static final CreanceVisitor creanceVisitor = new CreanceVisitor();
-  private static final DetteVisitor detteVisitor = new DetteVisitor();
-  private static final MaterielVisitor materielVisitor = new MaterielVisitor();
-  private static final AchatMaterielVisitor achatMaterielVisitor = new AchatMaterielVisitor();
-  private static final FluxArgentVisitor fluxArgentVisitor = new FluxArgentVisitor();
-  private static final TransferArgentVisitor transferArgentVisitor = new TransferArgentVisitor();
-  private static final GroupPossessionVisitor groupPossessionVisitor = new GroupPossessionVisitor();
+public class PatriLangTranspiler {
+  private static final String CAS_FILE_EXTENSION = ".cas.md";
 
-  @Override
-  public Patrimoine apply(CharStream charStream) {
-    var lexer = new PatriLangLexer(charStream);
-    var tokens = new CommonTokenStream(lexer);
-    var parser = new PatriLangParser(tokens);
-    var visitor =
-        new PatriLangTranspileVisitor(
-            compteVisitor,
-            creanceVisitor,
-            detteVisitor,
-            materielVisitor,
-            achatMaterielVisitor,
-            fluxArgentVisitor,
-            transferArgentVisitor,
-            groupPossessionVisitor);
+  public static Cas transpileCas(String casName, SectionVisitor sectionVisitor) {
+    var casPath =
+        Paths.get(sectionVisitor.casSetFolderPath())
+            .resolve(casName + CAS_FILE_EXTENSION)
+            .toAbsolutePath();
+    var tree = parseAsTree(casPath.toString());
 
-    var tree = parser.document();
+    if (isNull(tree.cas())) {
+      throw new IllegalArgumentException("Expected a Cas file but found a CasSet file.");
+    }
 
-    return (Patrimoine) visitor.visit(tree);
+    return (Cas) PatriLangVisitorFactory.create(sectionVisitor).visitDocument(tree);
+  }
+
+  public static CasSet transpileToutCas(String casSetPath) {
+    var tree = parseAsTree(casSetPath);
+
+    if (isNull(tree.toutCas())) {
+      throw new IllegalArgumentException("Expected a CasSet file but found a Cas file.");
+    }
+
+    var casSetFolderPath = Paths.get(casSetPath).getParent().toAbsolutePath();
+    var sectionVisitor = SectionVisitorFactory.create(casSetFolderPath.toString());
+    return (CasSet) PatriLangVisitorFactory.create(sectionVisitor).visitDocument(tree);
+  }
+
+  private static DocumentContext parseAsTree(String filePath) {
+    try {
+      var lexer = new PatriLangLexer(fromFileName(filePath));
+      var tokens = new CommonTokenStream(lexer);
+      var parser = new PatriLangParser(tokens);
+      return parser.document();
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
   }
 }

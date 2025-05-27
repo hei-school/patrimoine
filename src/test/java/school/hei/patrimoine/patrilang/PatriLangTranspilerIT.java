@@ -1,115 +1,102 @@
 package school.hei.patrimoine.patrilang;
 
-import static java.time.Month.DECEMBER;
-import static java.time.Month.SEPTEMBER;
-import static java.util.Comparator.comparing;
-import static org.antlr.v4.runtime.CharStreams.fromString;
-import static org.junit.jupiter.api.Assertions.*;
-import static school.hei.patrimoine.patrilang.TestUtils.*;
+import static java.time.Month.*;
+import static java.util.Objects.requireNonNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static school.hei.patrimoine.patrilang.PatriLangTranspiler.transpileToutCas;
 
+import java.net.URISyntaxException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
-import school.hei.patrimoine.modele.Patrimoine;
-import school.hei.patrimoine.modele.possession.*;
+import school.hei.patrimoine.cas.Cas;
+import school.hei.patrimoine.cas.CasSet;
+import school.hei.patrimoine.modele.possession.Possession;
+import school.hei.patrimoine.patrilang.famille_rakoto_cas.FamilleRakotoCasSet;
 
 class PatriLangTranspilerIT {
-  private static final LocalDate AU_20_SEPTEMBER_2026 = LocalDate.of(2026, SEPTEMBER, 20);
-  private static final LocalDate AU_31_DECEMBER_2025 = LocalDate.of(2025, DECEMBER, 31);
-  PatriLangTranspiler subject = new PatriLangTranspiler();
 
-  @Test
-  void patrimoine_without_possession_ok() {
-    var expected = patrimoineWithoutPossessions();
-    var input = fromString(SECTION_GENERAL);
+  private static final String RESOURCE_PATH = "/famille_rakoto_cas/FamilleRakoto.patri.md";
+  private static final Path RESOURCE_FILE_PATH;
+  private static final List<LocalDate> CHECK_DATES =
+      List.of(
+          LocalDate.of(2025, FEBRUARY, 7),
+          LocalDate.of(2025, MARCH, 17),
+          LocalDate.of(2025, APRIL, 27));
 
-    var actual = subject.apply(input);
-
-    assertPatrimoineEquals(expected, actual);
-  }
-
-  @Test
-  void patrimoine_with_trésorier_ok() {
-    var expected = patrimoineWithTrésoriers();
-    var input = fromString(SECTION_GENERAL + SECTION_TRÉSORIER);
-
-    var actual = subject.apply(input);
-
-    assertPatrimoineEquals(expected, actual);
-  }
-
-  @Test
-  void patrimoine_with_créance_ok() {
-    var expected = patrimoineWithCréances();
-    var input = fromString(SECTION_GENERAL + SECTION_CREANCE);
-
-    var actual = subject.apply(input);
-
-    assertPatrimoineEquals(expected, actual);
-  }
-
-  @Test
-  void patrimoine_with_dettes_ok() {
-    var expected = patrimoineWithDettes();
-    var input = fromString(SECTION_GENERAL + SECTION_DETTE);
-
-    var actual = subject.apply(input);
-
-    assertPatrimoineEquals(expected, actual);
-  }
-
-  @Test
-  void patrimoine_with_operations_ok() {
-    var expected = patrimoineWithTrésorierEtOpérations();
-    var input = fromString(SECTION_GENERAL + SECTION_TRÉSORIER + SECTION_OPERATION);
-
-    var actual = subject.apply(input);
-
-    assertPatrimoineEquals(expected, actual);
-  }
-
-  @Test
-  void patrimoine_with_group_operations_ok() {
-    var expected = patrimoineWithTrésorierEtGroupOpérations();
-    var input =
-        fromString(SECTION_GENERAL + SECTION_TRÉSORIER + SECTION_OPERATION_WITH_GROUP_POSSESSION);
-
-    var actual = subject.apply(input);
-
-    assertPatrimoineEquals(expected, actual);
-  }
-
-  List<Possession> sortPossessions(Set<Possession> possessions) {
-    return possessions.stream().sorted(comparing(Possession::nom)).collect(Collectors.toList());
-  }
-
-  void assertPatrimoineEquals(Patrimoine expected, Patrimoine actual) {
-    assertPatrimoineValueEquals(expected, actual);
-    assertPatrimoineValueEquals(
-        expected.projectionFuture(AU_20_SEPTEMBER_2026),
-        expected.projectionFuture(AU_20_SEPTEMBER_2026));
-    assertPatrimoineValueEquals(
-        expected.projectionFuture(AU_31_DECEMBER_2025),
-        expected.projectionFuture(AU_31_DECEMBER_2025));
-  }
-
-  void assertPatrimoineValueEquals(Patrimoine expected, Patrimoine actual) {
-    assertEquals(expected.getT(), actual.getT());
-    assertEquals(expected.getNom(), actual.getNom());
-    assertEquals(expected.getDevise(), actual.getDevise());
-    assertEquals(expected.getPossessions().size(), actual.getPossessions().size());
-    assertEquals(expected.getValeurComptable(), actual.getValeurComptable());
-
-    var expectedSortedPossession = sortPossessions(expected.getPossessions());
-    var actualSortedPossession = sortPossessions(actual.getPossessions());
-
-    for (int i = 0; i < expectedSortedPossession.size(); i++) {
-      assertEquals(expectedSortedPossession.get(i), actualSortedPossession.get(i));
-      assertEquals(
-          expectedSortedPossession.get(i).valeurComptable(),
-          actualSortedPossession.get(i).valeurComptable());
+  static {
+    try {
+      var uri = requireNonNull(PatriLangTranspilerIT.class.getResource(RESOURCE_PATH)).toURI();
+      RESOURCE_FILE_PATH = Paths.get(uri);
+    } catch (URISyntaxException e) {
+      throw new RuntimeException(e);
     }
+  }
+
+  @Test
+  void transpile_casSet_should_match_expected() {
+    var expected = new FamilleRakotoCasSet().get();
+    var actual = transpileToutCas(RESOURCE_FILE_PATH.toString());
+
+    assertEquals(expected.set().size(), actual.set().size(), "Cas set sizes do not match");
+    assertEquals(expected.objectifFinal(), actual.objectifFinal(), "Objectif final mismatch");
+
+    assertCasSetEquals(expected, actual);
+  }
+
+  private void assertCasSetEquals(CasSet expectedSet, CasSet actualSet) {
+    for (var expected : expectedSet.set()) {
+      var actual =
+          actualSet.set().stream()
+              .filter(c -> c.patrimoine().nom().equals(expected.patrimoine().nom()))
+              .findFirst()
+              .orElseThrow(
+                  () -> new RuntimeException("Missing case for: " + expected.patrimoine().nom()));
+      assertCasEquals(expected, actual);
+    }
+  }
+
+  private void assertCasEquals(Cas expected, Cas actual) {
+    assertEquals(expected.getAjd(), actual.getAjd(), "Ajd mismatch");
+    assertEquals(expected.getFinSimulation(), actual.getFinSimulation(), "Fin simulation mismatch");
+    assertEquals(
+        expected.patrimoine().getValeurComptable(),
+        actual.patrimoine().getValeurComptable(),
+        "Valeur comptable mismatch");
+
+    CHECK_DATES.forEach(
+        date ->
+            assertEquals(
+                expected.patrimoine().projectionFuture(date).getValeurComptable(),
+                actual.patrimoine().projectionFuture(date).getValeurComptable()));
+
+    assertPossessionsEquals(expected.possessions(), actual.possessions());
+  }
+
+  private void assertPossessionsEquals(Set<Possession> expectedSet, Set<Possession> actualSet) {
+    for (var expected : expectedSet) {
+      var actual =
+          actualSet.stream()
+              .filter(p -> p.nom().equals(expected.nom()))
+              .findFirst()
+              .orElseThrow(() -> new RuntimeException("Missing possession: " + expected.nom()));
+      assertPossessionEquals(expected, actual);
+    }
+  }
+
+  private void assertPossessionEquals(Possession expected, Possession actual) {
+    assertEquals(expected.nom(), actual.nom());
+    assertEquals(expected.devise(), actual.devise());
+    assertEquals(expected.typeAgregat(), actual.typeAgregat());
+    assertEquals(expected.valeurComptable(), actual.valeurComptable());
+
+    CHECK_DATES.forEach(
+        date ->
+            assertEquals(
+                expected.projectionFuture(date).valeurComptable(),
+                actual.projectionFuture(date).valeurComptable()));
   }
 }

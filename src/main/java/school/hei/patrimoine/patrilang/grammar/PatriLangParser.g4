@@ -6,109 +6,195 @@ package school.hei.patrimoine.patrilang.antlr;
 
 options { tokenVocab=PatriLangLexer; }
 
+/* -------------------- Base --------------------  */
 document
-  : sectionGeneral
-    sectionTresoreries?
-    sectionCreances?
-    sectionDettes?
-    sectionOperations?
-    EOF
-  ;
-
-/* Général */
-sectionGeneral
-  : HASHES ENTETE_GENERAL
-    lignePatrimoineDate
-    lignePatrimoineNom
-    lignePatrimoineDevise
-  ;
-
-lignePatrimoineDate
-    : PUCE MOT_SPECIFIER date
+    :   cas
+    |   toutCas
     ;
 
-lignePatrimoineNom
-    : PUCE MOT_PATRIMOINE_DE TEXT
+/* ToutCas */
+toutCas
+    :   sectionToutCasGeneral sectionCas? sectionDates? sectionPersonnes? sectionTresoreries? sectionCreances? sectionDettes? EOF
     ;
 
-lignePatrimoineDevise
-    : PUCE MOT_DEVISE_EN DEVISE
+ligneObjectifFinal
+    :   PUCE MOT_OBJECTIF_FINAL valeurComptable=argent
     ;
 
+sectionToutCasGeneral
+    :   HASHES ENTETE_GENERAL ligneObjectifFinal
+    ;
+
+sectionCas
+    :   HASHES ENTETE_CAS ligneNom*
+    ;
+
+sectionPersonnes
+    :   HASHES ENTETE_PERSONNES ligneNom*
+    ;
+
+sectionDates
+    :   HASHES ENTETE_DATES ligneDate*
+    ;
+
+ligneDate
+    :   PUCE nom=variable COLON dateValue=variable
+    ;
+
+/* Cas */
+cas
+    :   sectionCasGeneral sectionPossesseurs sectionTresoreries? sectionCreances? sectionDettes? sectionInitialisation? sectionOperations? sectionSuivi? EOF
+    ;
+
+sectionCasGeneral
+    :   HASHES ENTETE_GENERAL ligneDateSpecification ligneDateFinSimulation ligneCasNom ligneDevise
+    ;
+
+ligneCasNom
+    :   PUCE MOT_CAS_DE nom=variable
+    ;
+
+sectionPossesseurs
+    :   HASHES ENTETE_POSSESSEURS lignePossesseur+
+    ;
+
+lignePossesseur
+    :   PUCE nom=variable pourcentage=nombre PERCENT
+    ;
+
+ligneDateSpecification
+    :   PUCE MOT_SPECIFIER dateValue=variable
+    ;
+
+ligneDateFinSimulation
+    :   PUCE MOT_FIN_SIMULATION dateValue=variable
+    ;
+
+ligneDevise
+    :   PUCE MOT_DEVISE_EN devise
+    ;
+
+sectionInitialisation
+    :   HASHES ENTETE_INITIALISATION operations*
+    ;
+
+sectionSuivi
+    :   HASHES ENTETE_SUIVI operations*
+    ;
+
+objectif
+    :   PUCE BACKTICK id=variable BACKTICK dateValue=variable COMMA MOT_OBJECTIF_DE valeurComptable=argent MOT_POUR compteNom=variable
+    ;
+
+correction
+    :   PUCE BACKTICK id=variable BACKTICK dateValue=variable COMMA MOT_CORRIGER valeurComptable=argent MOT_DANS compteNom=variable
+    ;
+/* -------------------- Possessions --------------------  */
 /* Trésorerie */
 sectionTresoreries
-    : HASHES ENTETE_TRESORERIES compte*
+    :   HASHES ENTETE_TRESORERIES compteElement*
     ;
 
 /* Créances */
 sectionCreances
-    : HASHES ENTETE_CREANCES compte*
+    :   HASHES ENTETE_CREANCES compteElement*
     ;
 
 /* Dettes */
 sectionDettes
-    : HASHES ENTETE_DETTES compte*
+    :   HASHES ENTETE_DETTES compteElement*
     ;
 
+compteElement
+    :   compte
+    |   PUCE variable
+    ;
 /* Opérations */
 sectionOperations
     : HASHES ENTETE_OPERATIONS operations*
     ;
 
 operations
-    : sousTitre? operation+
+    :   sousTitre? operation+
     ;
 
 operation
-    : fluxArgentTransferer
-    | fluxArgentEntrer
-    | fluxArgentSortir
-    | possedeMateriel
-    | acheterMateriel
+    :   fluxArgentTransferer
+    |   fluxArgentEntrer
+    |   fluxArgentSortir
+    |   possedeMateriel
+    |   acheterMateriel
+    |   correction
+    |   objectif
     ;
 
-/* Possessions */
+/* Simple Possessions */
 compte
-    : PUCE TEXT COMMA MOT_VALANT argent date
+    :   PUCE nom=variable COMMA MOT_VALANT valeurComptable=argent dateValue=variable
     ;
+
 fluxArgentTransferer
-    : PUCE BACKTICK TEXT BACKTICK date COMMA MOT_TRANSFERER argent MOT_DEPUIS TEXT MOT_VERS TEXT dateFin?
+    :   PUCE BACKTICK id=variable BACKTICK dateValue=variable COMMA MOT_TRANSFERER valeurComptable=argent MOT_DEPUIS compteDebiteurNom=variable MOT_VERS compteCrediteurNom=variable dateFin?
     ;
+
 fluxArgentEntrer
-    : PUCE BACKTICK TEXT BACKTICK date COMMA MOT_ENTRER argent MOT_VERS TEXT dateFin?
+    :   PUCE BACKTICK id=variable BACKTICK dateValue=variable COMMA MOT_ENTRER valeurComptable=argent MOT_VERS compteCrediteurNom=variable dateFin?
     ;
+
 fluxArgentSortir
-    : PUCE BACKTICK TEXT BACKTICK date COMMA MOT_SORTIR argent MOT_DEPUIS TEXT dateFin?
+    :   PUCE BACKTICK id=variable BACKTICK dateValue=variable COMMA MOT_SORTIR valeurComptable=argent MOT_DEPUIS compteDebiteurNom=variable dateFin?
     ;
+
 acheterMateriel
-    : PUCE BACKTICK TEXT BACKTICK date COMMA MOT_ACHETER TEXT COMMA MOT_VALANT argent COMMA MATERIEL_APPRECIATION MOT_ANNUELLEMENT_DE ENTIER PERCENT COMMA MOT_DEPUIS TEXT
+    :   PUCE BACKTICK id=variable BACKTICK dateValue=variable COMMA MOT_ACHETER materielNom=variable COMMA MOT_VALANT valeurComptable=argent COMMA MATERIEL_APPRECIATION MOT_ANNUELLEMENT_DE pourcentageAppreciation=nombre PERCENT COMMA MOT_DEPUIS compteDebiteurNom=variable
     ;
+
 possedeMateriel
-    : PUCE BACKTICK TEXT BACKTICK date COMMA MOT_POSSEDER TEXT COMMA MOT_VALANT argent COMMA MATERIEL_APPRECIATION MOT_ANNUELLEMENT_DE ENTIER PERCENT
+    :   PUCE BACKTICK id=variable BACKTICK dateValue=variable COMMA MOT_POSSEDER materielNom=variable COMMA MOT_VALANT valeurComptable=argent COMMA MATERIEL_APPRECIATION MOT_ANNUELLEMENT_DE pourcentageAppreciation=nombre PERCENT
     ;
 
-/* Commun */
+/* -------------------- Commun --------------------  */
 sousTitre
-    : HASHES HASHES TEXT COMMA date COMMA MOT_DEVISE_EN DEVISE
-    ;
-
-argent
-    : nombre DEVISE
-    ;
-
-nombre
-    : DECIMAL
-    | ENTIER
+    :   HASHES HASHES nom=variable COMMA dateValue=variable COMMA MOT_DEVISE_EN devise
     ;
 
 dateFin
-    : COMMA MOT_JUSQUA dateFinValue MOT_TOUT_LES ENTIER MOT_DU MOT_MOIS
+    :   COMMA MOT_JUSQUA dateValue=variable MOT_TOUT_LES ENTIER MOT_DU MOT_MOIS
     ;
 
-dateFinValue
-    : MOT_DATE_INDETERMINER
-    | date;
+ligneNom
+    :   PUCE nom=variable
+    ;
+
+argent
+    :   TIRER? nombre devise
+    ;
+
+devise
+    :   DEVISE
+    ;
+
+nombre
+    :   DECIMAL
+    |   ENTIER
+    ;
+
+/*  Valeur englobé par variable  */
+variable
+    :   date
+    |   text
+    |   variableValue
+    ;
+
+variableValue
+    :   BACKTICK VARIABLE BACKTICK
+    ;
 
 date
-    : MOT_LE ENTIER MOT_DU ENTIER TIRER ENTIER
+    :   MOT_LE jour=ENTIER MOT_DU mois=ENTIER TIRER annee=ENTIER
+    |   MOT_DATE_INDETERMINER
+    ;
+
+text
+    :   TEXT
     ;
