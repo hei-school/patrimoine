@@ -1,0 +1,21 @@
+.home-view {
+    margin: 0;
+    padding: 0;
+}
+
+.separator {
+    display: block;
+    width: 85%;
+    margin: 0 auto;
+    height: 1px;
+    background-color: #7e8999;
+}
+
+.graphe-wrapper {
+    height: 720px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    background-color: #7e8999;
+    border-radius: 10px;
+}
