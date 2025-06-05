@@ -2,12 +2,17 @@ package school.hei.patrimoine.visualisation.web.views;
 
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.router.Route;
+import lombok.RequiredArgsConstructor;
 import school.hei.patrimoine.visualisation.web.layouts.MainLayout;
+import school.hei.patrimoine.visualisation.web.service.WebGrapheurService;
 
 @Route("")
 public class HomeView extends Div {
-    public HomeView() {
-        setClassName("home-view");
-        add(new MainLayout());
+    private final WebGrapheurService webGrapheurService;
+
+    public HomeView(WebGrapheurService webGrapheurService) {
+      this.webGrapheurService = webGrapheurService;
+      setClassName("home-view");
+        add(new MainLayout(webGrapheurService));
     }
 }

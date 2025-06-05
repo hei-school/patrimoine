@@ -40,3 +40,9 @@ import 'Frontend/generated/jar-resources/vaadin-dev-tools/vaadin-dev-tools.js';
 import './theme-my-theme.global.generated.js';
 import { applyTheme } from './theme.js';
 applyTheme(document);
+
+import { Outlet } from 'react-router';
+(window as any).Vaadin ??= {};
+(window as any).Vaadin.copilot ??= {};
+(window as any).Vaadin.copilot._ref ??= {};
+(window as any).Vaadin.copilot._ref.Outlet = Outlet;
