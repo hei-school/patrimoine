@@ -29,7 +29,7 @@ public class PatriLangTranspiler {
       throw new IllegalArgumentException("Expected a Cas file but found a CasSet file.");
     }
 
-    return (Cas) PatriLangVisitorFactory.create(sectionVisitor).visitDocument(tree);
+    return (Cas) PatriLangVisitorFactory.make(sectionVisitor).visitDocument(tree);
   }
 
   public static CasSet transpileToutCas(String casSetPath) {
@@ -40,8 +40,8 @@ public class PatriLangTranspiler {
     }
 
     var casSetFolderPath = Paths.get(casSetPath).getParent().toAbsolutePath();
-    var sectionVisitor = SectionVisitorFactory.create(casSetFolderPath.toString());
-    return (CasSet) PatriLangVisitorFactory.create(sectionVisitor).visitDocument(tree);
+    var sectionVisitor = SectionVisitorFactory.make(casSetFolderPath.toString());
+    return (CasSet) PatriLangVisitorFactory.make(sectionVisitor).visitDocument(tree);
   }
 
   private static DocumentContext parseAsTree(String filePath) {

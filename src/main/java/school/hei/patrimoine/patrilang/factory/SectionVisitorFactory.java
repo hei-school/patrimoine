@@ -9,7 +9,7 @@ import school.hei.patrimoine.patrilang.visitors.*;
 import school.hei.patrimoine.patrilang.visitors.possession.*;
 
 public class SectionVisitorFactory {
-  public static SectionVisitor create(String casSetFolderPath) {
+  public static SectionVisitor make(String casSetFolderPath) {
     var dateVisitor = new VariableVisitor<>(DateContext.class, BaseVisitor::visitDate);
     var personVisitor =
         new VariableVisitor<>(TextContext.class, BaseVisitor::visitPersonne, Personne::nom);
