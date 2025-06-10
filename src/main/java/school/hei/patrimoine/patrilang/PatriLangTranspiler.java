@@ -20,7 +20,7 @@ public class PatriLangTranspiler {
 
   public static Cas transpileCas(String casName, SectionVisitor sectionVisitor) {
     var casPath =
-        Paths.get(sectionVisitor.casSetFolderPath())
+        Paths.get(sectionVisitor.getCasSetFolderPath())
             .resolve(casName + CAS_FILE_EXTENSION)
             .toAbsolutePath();
     var tree = parseAsTree(casPath.toString());

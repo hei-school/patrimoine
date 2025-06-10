@@ -1,122 +1,88 @@
 package school.hei.patrimoine.patrilang.visitors;
 
-import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.*;
-import static school.hei.patrimoine.patrilang.visitors.VariableVisitor.VariableVisitorType.AUTO_SAVE;
-import static school.hei.patrimoine.patrilang.visitors.VariableVisitor.VariableVisitorType.MANUAL_SAVE;
+import static java.util.Objects.nonNull;
+import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.DateContext;
+import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.VariableContext;
+import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.VariableValueContext;
 
-import java.util.Objects;
-import java.util.Optional;
-import java.util.function.Function;
-import java.util.stream.Stream;
-import org.antlr.v4.runtime.ParserRuleContext;
-import school.hei.patrimoine.Pair;
+import java.time.LocalDate;
+import lombok.RequiredArgsConstructor;
+import school.hei.patrimoine.modele.Personne;
+import school.hei.patrimoine.modele.possession.Compte;
+import school.hei.patrimoine.modele.possession.Creance;
+import school.hei.patrimoine.modele.possession.Dette;
+import school.hei.patrimoine.patrilang.antlr.PatriLangParserBaseVisitor;
+import school.hei.patrimoine.patrilang.modele.Variable;
 import school.hei.patrimoine.patrilang.modele.VariableContainer;
+import school.hei.patrimoine.patrilang.modele.VariableType;
 
-public class VariableVisitor<ContextType extends ParserRuleContext, VariableType> {
-  private final Class<ContextType> contextType;
-  private final Function<ContextType, VariableType> visitor;
-  private final Function<VariableType, String> getName;
-  private final VariableContainer<VariableType> container;
-  private final VariableVisitorType visitorType;
+@SuppressWarnings("all")
+@RequiredArgsConstructor
+public class VariableVisitor extends PatriLangParserBaseVisitor<Object> {
   private static final String COLON = ":";
+  private final VariableContainer variableContainer;
 
-  public VariableVisitor(
-      Class<ContextType> contextType,
-      Function<ContextType, VariableType> visitor,
-      Function<VariableType, String> getName) {
-    this(contextType, visitor, getName, AUTO_SAVE);
+  public Compte asCompte(VariableContext ctx) {
+    return visitVariableAsExpectedType(Compte.class, ctx);
   }
 
-  public VariableVisitor(
-      Class<ContextType> contextType, Function<ContextType, VariableType> visitor) {
-    this(contextType, visitor, defaultGetName(), MANUAL_SAVE);
+  public Dette asDette(VariableContext ctx) {
+    return visitVariableAsExpectedType(Dette.class, ctx);
   }
 
-  public VariableVisitor(
-      Class<ContextType> contextType,
-      Function<ContextType, VariableType> visitor,
-      Function<VariableType, String> getName,
-      VariableVisitorType visitorType) {
-    this.contextType = contextType;
-    this.visitor = visitor;
-    this.getName = getName;
-    this.visitorType = visitorType;
-    this.container = new VariableContainer<>();
+  public Creance asCreance(VariableContext ctx) {
+    return visitVariableAsExpectedType(Creance.class, ctx);
   }
 
-  public VariableType apply(VariableContext ctx) {
-    return visit(ctx, this);
+  public Personne asPersonne(VariableContext ctx) {
+    return visitVariableAsExpectedType(Personne.class, ctx);
   }
 
-  public VariableType apply(ContextType ctx) {
-    var newVariable = this.visitor.apply(ctx);
+  public LocalDate asDate(VariableContext ctx) {
+    return visitVariableAsExpectedType(LocalDate.class, ctx);
+  }
 
-    if (AUTO_SAVE.equals(this.visitorType)) {
-      this.save(newVariable);
+  @Override
+  public Object visitVariable(VariableContext ctx) {
+    if (nonNull(ctx.variableValue())) {
+      return this.visitVariableValue(ctx.variableValue());
     }
 
-    return newVariable;
+    return this.visitDate(ctx.date());
   }
 
-  public void save(Pair<String, VariableType> value) {
-    this.container.add(value);
+  @Override
+  public Variable<?> visitVariableValue(VariableValueContext ctx) {
+    var variableValue = ctx.VARIABLE().getText();
+    return this.variableContainer.get(getName(variableValue), getType(variableValue));
   }
 
-  public void save(VariableType value) {
-    this.container.add(new Pair<>(getName.apply(value), value));
+  @Override
+  public LocalDate visitDate(DateContext ctx) {
+    return BaseVisitor.visitDate(ctx);
   }
 
-  public static String visitVariableAsText(VariableContext ctx) {
-    return visit(
-        ctx, new VariableVisitor<>(TextContext.class, BaseVisitor::visitText, defaultGetName()));
+  private static VariableType getType(String value) {
+    return VariableType.fromString(value.substring(0, value.indexOf(COLON)));
   }
 
-  private static <T extends ParserRuleContext, R> R visit(
-      VariableContext ctx, VariableVisitor<T, R> variableVisitor) {
-    var ctxValue = getVariableCtx(ctx).orElseThrow();
+  private static String getName(String value) {
+    return value.substring(value.indexOf(COLON) + 1);
+  }
 
-    if (ctxValue instanceof VariableValueContext) {
-      return variableVisitor.container.get(parseVariableValue((VariableValueContext) ctxValue));
+  private <T> T visitVariableAsExpectedType(Class<?> expectedType, VariableContext ctx) {
+    var variable = this.visitVariable(ctx);
+
+    if (!(Variable.class.isInstance(variable))) {
+      return (T) variable;
     }
 
-    if (!variableVisitor.contextType.isInstance(ctxValue)) {
+    var castedVariable = (Variable) variable;
+    if (!(expectedType.isInstance(castedVariable.value()))) {
       throw new IllegalArgumentException(
-          "La variable '"
-              + ctxValue.getText()
-              + "' ne correspond pas au contexte attendu : "
-              + variableVisitor.contextType.getName());
+          "La variable " + castedVariable.name() + " n'est pas du type " + expectedType);
     }
 
-    return variableVisitor.apply(variableVisitor.contextType.cast(ctxValue));
-  }
-
-  private static Optional<ParserRuleContext> getVariableCtx(VariableContext ctx) {
-    return Stream.of(ctx.date(), ctx.text(), ctx.variableValue())
-        .filter(Objects::nonNull)
-        .findFirst();
-  }
-
-  private static String parseVariableValue(VariableValueContext ctx) {
-    var variableValueAsText = ctx.VARIABLE().getText();
-
-    if (!variableValueAsText.contains(COLON)) {
-      throw new IllegalArgumentException(
-          "Variable invalide : '" + variableValueAsText + "'. Format attendu : <type>:<nom>");
-    }
-
-    return variableValueAsText.substring(variableValueAsText.indexOf(COLON) + 1);
-  }
-
-  private static <T> Function<T, String> defaultGetName() {
-    return Objects::toString;
-  }
-
-  /** Indicates how variables are persisted during visiting. */
-  public enum VariableVisitorType {
-    /** Automatically saves visited variables. */
-    AUTO_SAVE,
-
-    /** Requires manual saving of visited variables. */
-    MANUAL_SAVE
+    return (T) castedVariable.value();
   }
 }
