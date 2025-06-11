@@ -26,11 +26,11 @@ public class PatriLangToutCasVisitor implements Function<ToutCasContext, CasSet>
     }
 
     if (nonNull(ctx.sectionTresoreries())) {
-      this.sectionVisitor.visitSectionTresoreries(ctx.sectionTresoreries());
+      this.sectionVisitor.visitSectionTrésoreries(ctx.sectionTresoreries());
     }
 
     if (nonNull(ctx.sectionCreances())) {
-      this.sectionVisitor.visitSectionCreances(ctx.sectionCreances());
+      this.sectionVisitor.visitSectionCréances(ctx.sectionCreances());
     }
 
     if (nonNull(ctx.sectionDettes())) {
