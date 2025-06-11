@@ -6,38 +6,44 @@ import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
 import static school.hei.patrimoine.patrilang.PatriLangTranspiler.transpileCas;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.*;
-import static school.hei.patrimoine.patrilang.visitors.BaseVisitor.visitNombre;
-import static school.hei.patrimoine.patrilang.visitors.VariableVisitor.*;
+import static school.hei.patrimoine.patrilang.modele.VariableType.*;
+import static school.hei.patrimoine.patrilang.visitors.BaseVisitor.*;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import school.hei.patrimoine.Pair;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import school.hei.patrimoine.cas.Cas;
 import school.hei.patrimoine.modele.Personne;
 import school.hei.patrimoine.modele.possession.*;
+import school.hei.patrimoine.patrilang.modele.Variable;
+import school.hei.patrimoine.patrilang.modele.VariableContainer;
+import school.hei.patrimoine.patrilang.modele.VariableType;
 import school.hei.patrimoine.patrilang.visitors.possession.*;
 
-public record SectionVisitor(
-    String casSetFolderPath,
-    ObjectifVisitor objectifVisitor,
-    MaterielVisitor materielVisitor,
-    AchatMaterielVisitor achatMaterielVisitor,
-    FluxArgentVisitor fluxArgentVisitor,
-    TransferArgentVisitor transferArgentVisitor,
-    CorrectionVisitor correctionVisitor,
-    GroupPossessionVisitor groupPossessionVisitor,
-    VariableVisitor<DateContext, LocalDate> variableDateVisitor,
-    VariableVisitor<TextContext, Personne> variablePersonneVisitor,
-    VariableVisitor<CompteContext, Compte> variableCompteVisitor,
-    VariableVisitor<CompteContext, Dette> variableDetteVisitor,
-    VariableVisitor<CompteContext, Creance> variableCreanceVisitor) {
+@Builder
+@RequiredArgsConstructor
+public class SectionVisitor {
+  @Getter private final String casSetFolderPath;
+  @Getter private final VariableVisitor variableVisitor;
+  private final VariableContainer variableContainer;
+  private final ObjectifVisitor objectifVisitor;
+  private final CompteVisitor compteVisitor;
+  private final CreanceVisitor creanceVisitor;
+  private final DetteVisitor detteVisitor;
+  private final MaterielVisitor materielVisitor;
+  private final AchatMaterielVisitor achatMaterielVisitor;
+  private final FluxArgentVisitor fluxArgentVisitor;
+  private final TransferArgentVisitor transferArgentVisitor;
+  private final CorrectionVisitor correctionVisitor;
+  private final GroupPossessionVisitor groupPossessionVisitor;
 
   public Set<Cas> visitSectionCas(SectionCasContext ctx) {
     return ctx.ligneNom().stream()
-        .map(ligne -> visitVariableAsText(ligne.nom))
+        .map(ligne -> visitText(ligne.nom))
         .map(nom -> transpileCas(nom, this))
         .collect(toSet());
   }
@@ -47,10 +53,9 @@ public record SectionVisitor(
         .forEach(
             ligne -> {
               var newVariable =
-                  new Pair<>(
-                      visitVariableAsText(ligne.nom),
-                      this.variableDateVisitor.apply(ligne.dateValue));
-              this.variableDateVisitor.save(newVariable);
+                  new Variable<>(
+                      visitText(ligne.nom), DATE, this.variableVisitor.asDate(ligne.dateValue));
+              this.variableContainer.add(newVariable);
             });
   }
 
@@ -66,24 +71,32 @@ public record SectionVisitor(
     return ctx.lignePossesseur().stream()
         .collect(
             toMap(
-                ligne -> variablePersonneVisitor.apply(ligne.nom),
+                ligne -> variableVisitor.asPersonne(ligne.nom),
                 ligne -> visitNombre(ligne.pourcentage) / 100));
   }
 
   public void visitSectionPersonnes(SectionPersonnesContext ctx) {
-    ctx.ligneNom().forEach(ligne -> this.variablePersonneVisitor.apply(ligne.nom));
+    ctx.ligneNom()
+        .forEach(
+            ligne -> {
+              var personne = visitPersonne(ligne.nom);
+              this.variableContainer.add(new Variable<>(personne.nom(), PERSONNE, personne));
+            });
   }
 
-  public Set<Compte> visitSectionTresoreries(SectionTresoreriesContext ctx) {
-    return visitCompteElements(ctx.compteElement(), variableCompteVisitor);
+  public Set<Compte> visitSectionTrésoreries(SectionTresoreriesContext ctx) {
+    return visitCompteElements(
+        TRESORERIES, ctx.compteElement(), this.compteVisitor, this.variableVisitor::asCompte);
+  }
+
+  public Set<Creance> visitSectionCréances(SectionCreancesContext ctx) {
+    return visitCompteElements(
+        CREANCE, ctx.compteElement(), this.creanceVisitor, this.variableVisitor::asCreance);
   }
 
   public Set<Dette> visitSectionDettes(SectionDettesContext ctx) {
-    return visitCompteElements(ctx.compteElement(), variableDetteVisitor);
-  }
-
-  public Set<Creance> visitSectionCreances(SectionCreancesContext ctx) {
-    return visitCompteElements(ctx.compteElement(), variableCreanceVisitor);
+    return visitCompteElements(
+        DETTE, ctx.compteElement(), this.detteVisitor, this.variableVisitor::asDette);
   }
 
   public Set<Possession> visitSectionOperations(SectionOperationsContext ctx) {
@@ -127,7 +140,7 @@ public record SectionVisitor(
     }
 
     if (nonNull(ctx.correction())) {
-      return Optional.of(this.correctionVisitor().apply(ctx.correction()));
+      return Optional.of(this.correctionVisitor.apply(ctx.correction()));
     }
 
     if (nonNull(ctx.objectif())) {
@@ -138,15 +151,21 @@ public record SectionVisitor(
     throw new IllegalArgumentException("Opération inconnue");
   }
 
-  private <T extends Compte> Set<T> visitCompteElements(
-      List<CompteElementContext> elements, VariableVisitor<CompteContext, T> visitor) {
+  private <T extends Possession> Set<T> visitCompteElements(
+      VariableType type,
+      List<CompteElementContext> elements,
+      SimpleVisitor<CompteContext, T> visitor,
+      SimpleVisitor<VariableContext, T> variableGetter) {
     return elements.stream()
         .map(
             element -> {
-              if (nonNull(element.compte())) {
-                return visitor.apply(element.compte());
+              if (isNull(element.compte())) {
+                return variableGetter.apply(element.variable());
               }
-              return visitor.apply(element.variable());
+
+              var value = visitor.apply(element.compte());
+              this.variableContainer.add(new Variable<>(value.nom(), type, value));
+              return value;
             })
         .collect(toSet());
   }

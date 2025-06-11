@@ -3,7 +3,7 @@ package school.hei.patrimoine.patrilang.visitors;
 import static java.util.Objects.nonNull;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.CasContext;
 import static school.hei.patrimoine.patrilang.visitors.BaseVisitor.visitDevise;
-import static school.hei.patrimoine.patrilang.visitors.VariableVisitor.visitVariableAsText;
+import static school.hei.patrimoine.patrilang.visitors.BaseVisitor.visitText;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -15,23 +15,20 @@ import school.hei.patrimoine.modele.possession.Possession;
 
 @RequiredArgsConstructor
 public class PatriLangCasVisitor implements Function<CasContext, Cas> {
+  private final VariableVisitor variableVisitor;
   private final SectionVisitor sectionVisitor;
 
   @Override
   public Cas apply(CasContext ctx) {
     var sectionCasGeneral = ctx.sectionCasGeneral();
-    var ajd =
-        this.sectionVisitor
-            .variableDateVisitor()
-            .apply(sectionCasGeneral.ligneDateSpecification().dateValue);
+
+    var nom = visitText(sectionCasGeneral.ligneCasNom().nom);
+    var devise = visitDevise(sectionCasGeneral.ligneDevise().devise());
+    var ajd = this.variableVisitor.asDate(sectionCasGeneral.ligneDateSpecification().dateValue);
     var finSimulation =
-        this.sectionVisitor
-            .variableDateVisitor()
-            .apply(sectionCasGeneral.ligneDateFinSimulation().dateValue);
+        this.variableVisitor.asDate(sectionCasGeneral.ligneDateFinSimulation().dateValue);
     var possesseurs = this.sectionVisitor.visitSectionPossesseurs(ctx.sectionPossesseurs());
     var possessions = collectPossessions(ctx);
-    var devise = visitDevise(sectionCasGeneral.ligneDevise().devise());
-    var nom = visitVariableAsText(sectionCasGeneral.ligneCasNom().nom);
 
     if (nonNull(ctx.sectionInitialisation())) {
       sectionVisitor.visitSectionInitialisation(ctx.sectionInitialisation());
@@ -69,11 +66,11 @@ public class PatriLangCasVisitor implements Function<CasContext, Cas> {
     Set<Possession> possessions = new HashSet<>();
 
     if (nonNull(ctx.sectionTresoreries())) {
-      possessions.addAll(sectionVisitor.visitSectionTresoreries(ctx.sectionTresoreries()));
+      possessions.addAll(sectionVisitor.visitSectionTrésoreries(ctx.sectionTresoreries()));
     }
 
     if (nonNull(ctx.sectionCreances())) {
-      possessions.addAll(sectionVisitor.visitSectionCreances(ctx.sectionCreances()));
+      possessions.addAll(sectionVisitor.visitSectionCréances(ctx.sectionCreances()));
     }
 
     if (nonNull(ctx.sectionDettes())) {

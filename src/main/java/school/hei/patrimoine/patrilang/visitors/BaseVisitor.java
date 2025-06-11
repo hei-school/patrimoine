@@ -15,15 +15,13 @@ import school.hei.patrimoine.patrilang.modele.DateFin;
 import school.hei.patrimoine.patrilang.modele.MaterielAppreciationType;
 
 public class BaseVisitor {
-
   public static Personne visitPersonne(TextContext ctx) {
     return new Personne(parseNodeValue(ctx.TEXT()));
   }
 
-  public static DateFin visitDateFin(
-      DateFinContext ctx, VariableVisitor<DateContext, LocalDate> variableDateVisitor) {
+  public static DateFin visitDateFin(DateFinContext ctx, VariableVisitor variableVisitor) {
     int dateDOpération = parseInt(parseNodeValue(ctx.ENTIER()));
-    var dateFinValue = variableDateVisitor.apply(ctx.dateValue);
+    var dateFinValue = variableVisitor.asDate(ctx.dateValue);
 
     return new DateFin(dateDOpération, dateFinValue);
   }

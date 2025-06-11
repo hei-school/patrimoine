@@ -1,29 +1,37 @@
 package school.hei.patrimoine.patrilang.modele;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
-import school.hei.patrimoine.Pair;
 
-public class VariableContainer<T> {
-  private final Set<Pair<String, T>> values = new HashSet<>();
+public class VariableContainer {
+  private final Map<VariableType, Set<Variable<?>>> values = new HashMap<>();
 
-  public boolean exists(String name) {
-    return this.values.stream().anyMatch(value -> value.first().equals(name));
+  public boolean exists(Variable<?> variable) {
+    var container = this.values.getOrDefault(variable.type(), new HashSet<>());
+    return container.stream().anyMatch(instance -> instance.name().equals(variable.name()));
   }
 
-  public void add(Pair<String, T> value) {
-    if (exists(value.first())) {
-      throw new IllegalArgumentException("Variable " + value.first() + " already exists");
+  public void add(Variable<?> variable) {
+    if (exists(variable)) {
+      throw new IllegalArgumentException(
+          "La variable " + variable.name() + " a déjà été définie pour le type " + variable.type());
     }
 
-    this.values.add(value);
+    var container = this.values.getOrDefault(variable.type(), new HashSet<>());
+    container.add(variable);
+    this.values.put(variable.type(), container);
   }
 
-  public T get(String name) {
-    var optionalValue =
-        this.values.stream().filter(value -> value.first().equals(name)).findFirst();
-    return optionalValue
-        .orElseThrow(() -> new IllegalArgumentException("Variable " + name + " doesn't exist"))
-        .second();
+  public Variable<?> get(String name, VariableType type) {
+    var container = this.values.getOrDefault(type, new HashSet<>());
+    return container.stream()
+        .filter(variable -> variable.name().equals(name))
+        .findFirst()
+        .orElseThrow(
+            () ->
+                new IllegalArgumentException(
+                    "La variable " + name + " de type " + type + " n'existe pas"));
   }
 }
