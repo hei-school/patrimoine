@@ -16,6 +16,13 @@
     width: 100%;
     display: flex;
     align-items: center;
-    background-color: #7e8999;
+    background-color: #e7ebee;
     border-radius: 10px;
+    overflow: hidden;
+}
+
+.graphe {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }

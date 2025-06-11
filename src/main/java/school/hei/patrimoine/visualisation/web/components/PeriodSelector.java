@@ -8,14 +8,19 @@ public class PeriodSelector extends HorizontalLayout {
   public PeriodSelector(PatrimoinesState patrimoinesState) {
     var startDateSelector = new DatePicker("Debut projection");
     var endDateSelector = new DatePicker("Fin projection");
+
     startDateSelector.setWidthFull();
+    startDateSelector.setValue(patrimoinesState.getEvolutionPatrimoine().getDebut());
+
     endDateSelector.setWidthFull();
-    startDateSelector.addValueChangeListener(event -> {
-      endDateSelector.setMin(event.getValue());
-    });
+    endDateSelector.setValue(patrimoinesState.getEvolutionPatrimoine().getFin());
+
+    startDateSelector.addValueChangeListener(event -> endDateSelector.setMin(event.getValue()));
+
+    startDateSelector.addValueChangeListener(e -> patrimoinesState.setEvolutionStart(e.getValue()));
+    endDateSelector.addValueChangeListener(e -> patrimoinesState.setEvolutionEnd(e.getValue()));
+
     setWidthFull();
-    startDateSelector.addValueChangeListener(e -> {patrimoinesState.setEvolutionStart(e.getValue());});
-    endDateSelector.addValueChangeListener(e -> {patrimoinesState.setEvolutionEnd(e.getValue());});
     add(startDateSelector, endDateSelector);
   }
 }

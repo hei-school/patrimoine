@@ -10,24 +10,26 @@ import school.hei.patrimoine.visualisation.web.components.PatrimoineSelector;
 import school.hei.patrimoine.visualisation.web.components.PeriodSelector;
 import school.hei.patrimoine.visualisation.web.components.Separator;
 import school.hei.patrimoine.visualisation.web.service.WebGrapheurService;
+import school.hei.patrimoine.visualisation.web.states.GrapheConfState;
 import school.hei.patrimoine.visualisation.web.states.PatrimoinesState;
 
 import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
 
 public class PatrimoineEvolutionLayout extends HorizontalLayout{
   private final PatrimoinesState patrimoinesState;
+  private final GrapheConfState grapheConfState;
+
   public PatrimoineEvolutionLayout(WebGrapheurService grapheurService, List<Patrimoine> patrimoines) {
     this.patrimoinesState = new PatrimoinesState(patrimoines);
+    this.grapheConfState = new GrapheConfState();
     getStyle().setAlignItems(Style.AlignItems.CENTER);
     setWidthFull();
     var controlsLayout = new VerticalLayout();
     controlsLayout.add(new PatrimoineSelector(patrimoinesState));
-    controlsLayout.add(new GraphConfSelector());
+    controlsLayout.add(new GraphConfSelector(grapheConfState));
     controlsLayout.add(new PeriodSelector(patrimoinesState));
     controlsLayout.add(new Separator());
     controlsLayout.add(new FluxLayout());
-    add(controlsLayout, new GrapheContainer(grapheurService, patrimoinesState));
+    add(controlsLayout, new GrapheContainer(grapheurService, patrimoinesState, grapheConfState));
   }
 }
