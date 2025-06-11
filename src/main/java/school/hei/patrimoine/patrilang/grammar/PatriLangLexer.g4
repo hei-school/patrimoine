@@ -142,10 +142,6 @@ MOT_LE
 MOT_DU
     :   'du'
     ;
-TIRER
-    :   '-'
-    ;
-
 /* Mots */
 MOT_DATE_INDETERMINER
     :   'date indéterminée'
@@ -181,9 +177,6 @@ DEVISE
     |   '€'
     |   '$'
     ;
-PUCE
-    :   '*'
-    ;
 HASHES
     :   '#'
     ;
@@ -207,6 +200,18 @@ DECIMAL
     ;
 ENTIER
     :   DIGIT+
+    ;
+PLUS
+    :   '+'
+    ;
+MUL
+    :   '*'
+    ;
+DIV
+    :   '/'
+    ;
+MOINS
+    :   '-'
     ;
 TEXT
     :   STRING

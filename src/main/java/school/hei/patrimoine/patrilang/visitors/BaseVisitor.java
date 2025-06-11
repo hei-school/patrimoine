@@ -27,7 +27,7 @@ public class BaseVisitor {
   }
 
   public static Argent visitArgent(ArgentContext ctx) {
-    double facteur = nonNull(ctx.TIRER()) ? -1 : 1;
+    double facteur = nonNull(ctx.MOINS()) ? -1 : 1;
     return new Argent(visitNombre(ctx.nombre()), visitDevise(ctx.devise())).mult(facteur);
   }
 
