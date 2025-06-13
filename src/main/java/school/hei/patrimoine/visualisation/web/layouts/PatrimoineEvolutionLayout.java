@@ -29,7 +29,7 @@ public class PatrimoineEvolutionLayout extends HorizontalLayout {
     controlsLayout.add(new GraphConfSelector(grapheConfState));
     controlsLayout.add(new PeriodSelector(patrimoinesState));
     controlsLayout.add(new Separator());
-    controlsLayout.add(new FluxLayout());
+    controlsLayout.add(new FluxLayout(patrimoinesState));
     add(controlsLayout, new GrapheContainer(grapheurService, patrimoinesState, grapheConfState));
   }
 }

@@ -26,3 +26,27 @@
     justify-content: center;
     align-items: center;
 }
+
+.flux-tag {
+    background-color: #e4f0fe;
+    border-radius: 20px;
+    padding: 0 10px;
+    vertical-align: middle;
+    text-align: center;
+}
+
+.neg-flux-tag {
+    background-color: #fbe6e5;
+    border-radius: 20px;
+    padding: 0 10px;
+    vertical-align: middle;
+    text-align: center;
+}
+
+.more-flux-tag {
+    background-color: #e4f0fe;
+    border-radius: 20px;
+    padding: 0 5px;
+    vertical-align: middle;
+    text-align: center;
+}
