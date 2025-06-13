@@ -38,7 +38,7 @@ sectionDates
     ;
 
 ligneDate
-    :   MUL nom=text COLON dateValue=variable
+    :   MUL nom=text COLON dateValue=date
     ;
 
 /* Cas */
@@ -63,11 +63,11 @@ lignePossesseur
     ;
 
 ligneDateSpecification
-    :   MUL MOT_SPECIFIER dateValue=variable
+    :   MUL MOT_SPECIFIER dateValue=date
     ;
 
 ligneDateFinSimulation
-    :   MUL MOT_FIN_SIMULATION dateValue=variable
+    :   MUL MOT_FIN_SIMULATION dateValue=date
     ;
 
 ligneDevise
@@ -83,11 +83,11 @@ sectionSuivi
     ;
 
 objectif
-    :   MUL BACKTICK id=text BACKTICK dateValue=variable COMMA MOT_OBJECTIF_DE valeurComptable=argent MOT_POUR compteNom=variable
+    :   MUL BACKTICK id=text BACKTICK dateValue=date COMMA MOT_OBJECTIF_DE valeurComptable=argent MOT_POUR compteNom=variable
     ;
 
 correction
-    :   MUL BACKTICK id=text BACKTICK dateValue=variable COMMA MOT_CORRIGER valeurComptable=argent MOT_DANS compteNom=variable
+    :   MUL BACKTICK id=text BACKTICK dateValue=date COMMA MOT_CORRIGER valeurComptable=argent MOT_DANS compteNom=variable
     ;
 /* -------------------- Possessions --------------------  */
 /* Trésorerie */
@@ -130,36 +130,36 @@ operation
 
 /* Simple Possessions */
 compte
-    :   MUL nom=text COMMA MOT_VALANT valeurComptable=argent dateValue=variable
+    :   MUL nom=text COMMA MOT_VALANT valeurComptable=argent dateValue=date
     ;
 
 fluxArgentTransferer
-    :   MUL BACKTICK id=text BACKTICK dateValue=variable COMMA MOT_TRANSFERER valeurComptable=argent MOT_DEPUIS compteDebiteurNom=variable MOT_VERS compteCrediteurNom=variable dateFin?
+    :   MUL BACKTICK id=text BACKTICK dateValue=date COMMA MOT_TRANSFERER valeurComptable=argent MOT_DEPUIS compteDebiteurNom=variable MOT_VERS compteCrediteurNom=variable dateFin?
     ;
 
 fluxArgentEntrer
-    :   MUL BACKTICK id=text BACKTICK dateValue=variable COMMA MOT_ENTRER valeurComptable=argent MOT_VERS compteCrediteurNom=variable dateFin?
+    :   MUL BACKTICK id=text BACKTICK dateValue=date COMMA MOT_ENTRER valeurComptable=argent MOT_VERS compteCrediteurNom=variable dateFin?
     ;
 
 fluxArgentSortir
-    :   MUL BACKTICK id=text BACKTICK dateValue=variable COMMA MOT_SORTIR valeurComptable=argent MOT_DEPUIS compteDebiteurNom=variable dateFin?
+    :   MUL BACKTICK id=text BACKTICK dateValue=date COMMA MOT_SORTIR valeurComptable=argent MOT_DEPUIS compteDebiteurNom=variable dateFin?
     ;
 
 acheterMateriel
-    :   MUL BACKTICK id=text BACKTICK dateValue=variable COMMA MOT_ACHETER materielNom=text COMMA MOT_VALANT valeurComptable=argent COMMA MATERIEL_APPRECIATION MOT_ANNUELLEMENT_DE pourcentageAppreciation=nombre PERCENT COMMA MOT_DEPUIS compteDebiteurNom=variable
+    :   MUL BACKTICK id=text BACKTICK dateValue=date COMMA MOT_ACHETER materielNom=text COMMA MOT_VALANT valeurComptable=argent COMMA MATERIEL_APPRECIATION MOT_ANNUELLEMENT_DE pourcentageAppreciation=nombre PERCENT COMMA MOT_DEPUIS compteDebiteurNom=variable
     ;
 
 possedeMateriel
-    :   MUL BACKTICK id=text BACKTICK dateValue=variable COMMA MOT_POSSEDER materielNom=text COMMA MOT_VALANT valeurComptable=argent COMMA MATERIEL_APPRECIATION MOT_ANNUELLEMENT_DE pourcentageAppreciation=nombre PERCENT
+    :   MUL BACKTICK id=text BACKTICK dateValue=date COMMA MOT_POSSEDER materielNom=text COMMA MOT_VALANT valeurComptable=argent COMMA MATERIEL_APPRECIATION MOT_ANNUELLEMENT_DE pourcentageAppreciation=nombre PERCENT
     ;
 
 /* -------------------- Commun --------------------  */
 sousTitre
-    :   HASHES HASHES nom=text COMMA dateValue=variable COMMA MOT_DEVISE_EN devise
+    :   HASHES HASHES nom=text COMMA dateValue=date COMMA MOT_DEVISE_EN devise
     ;
 
 dateFin
-    :   COMMA MOT_JUSQUA dateValue=variable MOT_TOUT_LES ENTIER MOT_DU MOT_MOIS
+    :   COMMA MOT_JUSQUA dateValue=date MOT_TOUT_LES ENTIER MOT_DU MOT_MOIS
     ;
 
 ligneNom
@@ -179,19 +179,34 @@ nombre
     |   ENTIER
     ;
 
-/*  Valeur englobé par variable  */
-variable
-    :   date
-    |   variableValue
-    ;
-
-variableValue
-    :   BACKTICK VARIABLE BACKTICK
-    ;
-
 date
     :   MOT_LE jour=ENTIER MOT_DU mois=ENTIER MOINS annee=ENTIER
     |   MOT_DATE_INDETERMINER
+    |   dateExpr
+    ;
+
+dateExpr
+    :   variable ( (PLUS | MOINS) dateDelta )?
+    ;
+
+dateDelta
+    :   anneePart? moisPart? jourPart?
+    ;
+
+anneePart
+    :   ENTIER MOT_ANNEE MOT_ET?
+    ;
+
+moisPart
+    :   ENTIER MOT_MOIS MOT_ET?
+    ;
+
+jourPart
+    :   ENTIER (MOT_JOUR | MOT_JOURS)
+    ;
+
+variable
+    :   BACKTICK VARIABLE BACKTICK
     ;
 
 text

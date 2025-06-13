@@ -1,9 +1,6 @@
 package school.hei.patrimoine.patrilang.visitors;
 
-import static java.util.Objects.nonNull;
-import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.DateContext;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.VariableContext;
-import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.VariableValueContext;
 
 import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
@@ -11,14 +8,14 @@ import school.hei.patrimoine.modele.Personne;
 import school.hei.patrimoine.modele.possession.Compte;
 import school.hei.patrimoine.modele.possession.Creance;
 import school.hei.patrimoine.modele.possession.Dette;
-import school.hei.patrimoine.patrilang.antlr.PatriLangParserBaseVisitor;
 import school.hei.patrimoine.patrilang.modele.Variable;
 import school.hei.patrimoine.patrilang.modele.VariableContainer;
 import school.hei.patrimoine.patrilang.modele.VariableType;
+import school.hei.patrimoine.patrilang.visitors.possession.SimpleVisitor;
 
 @SuppressWarnings("all")
 @RequiredArgsConstructor
-public class VariableVisitor extends PatriLangParserBaseVisitor<Object> {
+public class VariableVisitor implements SimpleVisitor<VariableContext, Variable<?>> {
   private static final String COLON = ":";
   private final VariableContainer variableContainer;
 
@@ -43,23 +40,9 @@ public class VariableVisitor extends PatriLangParserBaseVisitor<Object> {
   }
 
   @Override
-  public Object visitVariable(VariableContext ctx) {
-    if (nonNull(ctx.variableValue())) {
-      return this.visitVariableValue(ctx.variableValue());
-    }
-
-    return this.visitDate(ctx.date());
-  }
-
-  @Override
-  public Variable<?> visitVariableValue(VariableValueContext ctx) {
+  public Variable<?> apply(VariableContext ctx) {
     var variableValue = ctx.VARIABLE().getText();
     return this.variableContainer.get(getName(variableValue), getType(variableValue));
-  }
-
-  @Override
-  public LocalDate visitDate(DateContext ctx) {
-    return BaseVisitor.visitDate(ctx);
   }
 
   private static VariableType getType(String value) {
@@ -71,18 +54,13 @@ public class VariableVisitor extends PatriLangParserBaseVisitor<Object> {
   }
 
   private <T> T visitVariableAsExpectedType(Class<?> expectedType, VariableContext ctx) {
-    var variable = this.visitVariable(ctx);
+    var variable = (Variable) this.apply(ctx);
 
-    if (!(Variable.class.isInstance(variable))) {
-      return (T) variable;
-    }
-
-    var castedVariable = (Variable) variable;
-    if (!(expectedType.isInstance(castedVariable.value()))) {
+    if (!(expectedType.isInstance(variable.value()))) {
       throw new IllegalArgumentException(
-          "La variable " + castedVariable.name() + " n'est pas du type " + expectedType);
+          "La variable " + variable.name() + " n'est pas du type " + expectedType);
     }
 
-    return (T) castedVariable.value();
+    return (T) variable.value();
   }
 }

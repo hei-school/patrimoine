@@ -1,6 +1,6 @@
 # Général
-* Spécifier `Dates:ajd`
-* Fin de simulation `Dates:finSimulation`
+* Spécifier `Dates:ajd` + 1mois
+* Fin de simulation `Dates:finSimulation`+ 1mois
 * Cas de ZetyPersonnel 
 * Devise en Ar
 

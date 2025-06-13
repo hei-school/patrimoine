@@ -8,17 +8,17 @@ import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.possession.Creance;
-import school.hei.patrimoine.patrilang.visitors.VariableVisitor;
+import school.hei.patrimoine.patrilang.visitors.DateVisitor;
 
 @RequiredArgsConstructor
 public class CreanceVisitor implements SimpleVisitor<CompteContext, Creance> {
-  private final VariableVisitor variableDateVisitor;
+  private final DateVisitor dateVisitor;
 
   @Override
   public Creance apply(CompteContext ctx) {
     String nom = visitText(ctx.nom);
     Argent valeurComptable = visitArgent(ctx.valeurComptable);
-    LocalDate t = this.variableDateVisitor.asDate(ctx.dateValue);
+    LocalDate t = this.dateVisitor.apply(ctx.dateValue);
 
     return new Creance(nom, t, valeurComptable);
   }

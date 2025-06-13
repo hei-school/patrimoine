@@ -8,21 +8,23 @@ public class SectionVisitorFactory {
   public static SectionVisitor make(String casSetFolderPath) {
     var variableContainer = new VariableContainer();
     var variableVisitor = new VariableVisitor(variableContainer);
+    var dateVisitor = new DateVisitor(variableVisitor);
 
     return SectionVisitor.builder()
         .casSetFolderPath(casSetFolderPath)
+        .dateVisitor(dateVisitor)
         .variableContainer(variableContainer)
         .variableVisitor(variableVisitor)
-        .objectifVisitor(new ObjectifVisitor(variableVisitor))
-        .compteVisitor(new CompteVisitor(variableVisitor))
-        .creanceVisitor(new CreanceVisitor(variableVisitor))
-        .detteVisitor(new DetteVisitor(variableVisitor))
-        .materielVisitor(new MaterielVisitor(variableVisitor))
-        .achatMaterielVisitor(new AchatMaterielVisitor(variableVisitor))
-        .fluxArgentVisitor(new FluxArgentVisitor(variableVisitor))
-        .transferArgentVisitor(new TransferArgentVisitor(variableVisitor))
-        .correctionVisitor(new CorrectionVisitor(variableVisitor))
-        .groupPossessionVisitor(new GroupPossessionVisitor(variableVisitor))
+        .objectifVisitor(new ObjectifVisitor(variableVisitor, dateVisitor))
+        .compteVisitor(new CompteVisitor(dateVisitor))
+        .creanceVisitor(new CreanceVisitor(dateVisitor))
+        .detteVisitor(new DetteVisitor(dateVisitor))
+        .materielVisitor(new MaterielVisitor(dateVisitor))
+        .achatMaterielVisitor(new AchatMaterielVisitor(variableVisitor, dateVisitor))
+        .fluxArgentVisitor(new FluxArgentVisitor(dateVisitor, variableVisitor))
+        .transferArgentVisitor(new TransferArgentVisitor(variableVisitor, dateVisitor))
+        .correctionVisitor(new CorrectionVisitor(variableVisitor, dateVisitor))
+        .groupPossessionVisitor(new GroupPossessionVisitor(dateVisitor))
         .build();
   }
 }

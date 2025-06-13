@@ -11,18 +11,18 @@ import lombok.RequiredArgsConstructor;
 import school.hei.patrimoine.modele.Devise;
 import school.hei.patrimoine.modele.possession.GroupePossession;
 import school.hei.patrimoine.modele.possession.Possession;
-import school.hei.patrimoine.patrilang.visitors.VariableVisitor;
+import school.hei.patrimoine.patrilang.visitors.DateVisitor;
 
 @RequiredArgsConstructor
 public class GroupPossessionVisitor
     implements BiFunction<SousTitreContext, Set<Possession>, GroupePossession> {
-  private final VariableVisitor variableVisitor;
+  private final DateVisitor dateVisitor;
 
   @Override
   public GroupePossession apply(SousTitreContext ctx, Set<Possession> possessions) {
     String nom = visitText(ctx.nom);
     Devise devise = visitDevise(ctx.devise());
-    LocalDate t = this.variableVisitor.asDate(ctx.dateValue);
+    LocalDate t = this.dateVisitor.apply(ctx.dateValue);
 
     return new GroupePossession(nom, devise, t, possessions);
   }

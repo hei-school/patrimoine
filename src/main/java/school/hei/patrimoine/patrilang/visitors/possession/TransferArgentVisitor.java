@@ -9,21 +9,23 @@ import lombok.RequiredArgsConstructor;
 import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.possession.Compte;
 import school.hei.patrimoine.modele.possession.TransfertArgent;
+import school.hei.patrimoine.patrilang.visitors.DateVisitor;
 import school.hei.patrimoine.patrilang.visitors.VariableVisitor;
 
 @RequiredArgsConstructor
 public class TransferArgentVisitor
     implements SimpleVisitor<FluxArgentTransfererContext, TransfertArgent> {
   private final VariableVisitor variableVisitor;
+  private final DateVisitor dateVisitor;
 
   public TransfertArgent apply(FluxArgentTransfererContext ctx) {
     String id = visitText(ctx.id);
     Argent valeurComptable = visitArgent(ctx.valeurComptable);
-    LocalDate t = this.variableVisitor.asDate(ctx.dateValue);
+    LocalDate t = this.dateVisitor.apply(ctx.dateValue);
     Compte débiteur = this.variableVisitor.asCompte(ctx.compteDebiteurNom);
     Compte créditeur = this.variableVisitor.asCompte(ctx.compteCrediteurNom);
     var dateFinOpt =
-        ofNullable(ctx.dateFin()).map(context -> visitDateFin(context, this.variableVisitor));
+        ofNullable(ctx.dateFin()).map(context -> visitDateFin(context, this.dateVisitor));
 
     return dateFinOpt
         .map(
