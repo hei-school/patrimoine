@@ -81,15 +81,16 @@ public class LocationMaisonCas extends Cas {
         ajd,
         Set.of(
             new FluxArgent(
-                "receptionLoyer", loyerMaison, ajd, LocalDate.MAX, 29, ariary(1_000_000))));
+                "receptionLoyer" + ajd, loyerMaison, ajd, LocalDate.MAX, 29, ariary(1_000_000))));
 
     new GroupePossession(
         "ChargesLoyer",
         MGA,
         ajd,
         Set.of(
-            new FluxArgent("paiementCommune", loyerMaison, ajd, LocalDate.MAX, 1, ariary(-200_000)),
-            new FluxArgent("JIRAMA", loyerMaison, ajd, LocalDate.MAX, 1, ariary(-100_000))));
+            new FluxArgent(
+                "paiementCommune" + ajd, loyerMaison, ajd, LocalDate.MAX, 1, ariary(-200_000)),
+            new FluxArgent("JIRAMA" + ajd, loyerMaison, ajd, LocalDate.MAX, 1, ariary(-100_000))));
 
     return Set.of(newCompte, loyerMaison);
   }

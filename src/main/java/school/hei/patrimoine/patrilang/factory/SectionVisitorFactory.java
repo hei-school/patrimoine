@@ -6,8 +6,10 @@ import school.hei.patrimoine.patrilang.visitors.possession.*;
 
 public class SectionVisitorFactory {
   public static SectionVisitor make(String casSetFolderPath) {
+
     var variableContainer = new VariableContainer();
     var variableVisitor = new VariableVisitor(variableContainer);
+    var idVisitor = new IdVisitor(variableVisitor);
     var expressionVisitor = new ExpressionVisitor();
     var dateVisitor = new DateVisitor(variableVisitor);
     var argentVisitor = new ArgentVisitor(expressionVisitor);
@@ -25,10 +27,12 @@ public class SectionVisitorFactory {
         .detteVisitor(new DetteVisitor(dateVisitor, argentVisitor))
         .materielVisitor(new MaterielVisitor(dateVisitor, argentVisitor))
         .achatMaterielVisitor(new AchatMaterielVisitor(variableVisitor, dateVisitor, argentVisitor))
-        .fluxArgentVisitor(new FluxArgentVisitor(dateVisitor, variableVisitor, argentVisitor))
+        .fluxArgentVisitor(
+            new FluxArgentVisitor(dateVisitor, variableVisitor, argentVisitor, idVisitor))
         .transferArgentVisitor(
-            new TransferArgentVisitor(variableVisitor, dateVisitor, argentVisitor))
-        .correctionVisitor(new CorrectionVisitor(variableVisitor, dateVisitor, argentVisitor))
+            new TransferArgentVisitor(variableVisitor, dateVisitor, argentVisitor, idVisitor))
+        .correctionVisitor(
+            new CorrectionVisitor(variableVisitor, dateVisitor, argentVisitor, idVisitor))
         .groupPossessionVisitor(new GroupPossessionVisitor(dateVisitor))
         .build();
   }

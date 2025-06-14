@@ -83,11 +83,11 @@ sectionSuivi
     ;
 
 objectif
-    :   MUL BACKTICK id=text BACKTICK dateValue=date COMMA MOT_OBJECTIF_DE valeurComptable=argent MOT_POUR compteNom=variable
+    :   MUL id dateValue=date COMMA MOT_OBJECTIF_DE valeurComptable=argent MOT_POUR compteNom=variable
     ;
 
 correction
-    :   MUL BACKTICK id=text BACKTICK dateValue=date COMMA MOT_CORRIGER valeurComptable=argent MOT_DANS compteNom=variable
+    :   MUL id dateValue=date COMMA MOT_CORRIGER valeurComptable=argent MOT_DANS compteNom=variable
     ;
 /* -------------------- Possessions --------------------  */
 /* Trésorerie */
@@ -134,23 +134,23 @@ compte
     ;
 
 fluxArgentTransferer
-    :   MUL BACKTICK id=text BACKTICK dateValue=date COMMA MOT_TRANSFERER valeurComptable=argent MOT_DEPUIS compteDebiteurNom=variable MOT_VERS compteCrediteurNom=variable dateFin?
+    :   MUL id dateValue=date COMMA MOT_TRANSFERER valeurComptable=argent MOT_DEPUIS compteDebiteurNom=variable MOT_VERS compteCrediteurNom=variable dateFin?
     ;
 
 fluxArgentEntrer
-    :   MUL BACKTICK id=text BACKTICK dateValue=date COMMA MOT_ENTRER valeurComptable=argent MOT_VERS compteCrediteurNom=variable dateFin?
+    :   MUL id dateValue=date COMMA MOT_ENTRER valeurComptable=argent MOT_VERS compteCrediteurNom=variable dateFin?
     ;
 
 fluxArgentSortir
-    :   MUL BACKTICK id=text BACKTICK dateValue=date COMMA MOT_SORTIR valeurComptable=argent MOT_DEPUIS compteDebiteurNom=variable dateFin?
+    :   MUL id dateValue=date COMMA MOT_SORTIR valeurComptable=argent MOT_DEPUIS compteDebiteurNom=variable dateFin?
     ;
 
 acheterMateriel
-    :   MUL BACKTICK id=text BACKTICK dateValue=date COMMA MOT_ACHETER materielNom=text COMMA MOT_VALANT valeurComptable=argent COMMA MATERIEL_APPRECIATION MOT_ANNUELLEMENT_DE pourcentageAppreciation=nombre PERCENT COMMA MOT_DEPUIS compteDebiteurNom=variable
+    :   MUL id dateValue=date COMMA MOT_ACHETER materielNom=text COMMA MOT_VALANT valeurComptable=argent COMMA MATERIEL_APPRECIATION MOT_ANNUELLEMENT_DE pourcentageAppreciation=nombre PERCENT COMMA MOT_DEPUIS compteDebiteurNom=variable
     ;
 
 possedeMateriel
-    :   MUL BACKTICK id=text BACKTICK dateValue=date COMMA MOT_POSSEDER materielNom=text COMMA MOT_VALANT valeurComptable=argent COMMA MATERIEL_APPRECIATION MOT_ANNUELLEMENT_DE pourcentageAppreciation=nombre PERCENT
+    :   MUL id dateValue=date COMMA MOT_POSSEDER materielNom=text COMMA MOT_VALANT valeurComptable=argent COMMA MATERIEL_APPRECIATION MOT_ANNUELLEMENT_DE pourcentageAppreciation=nombre PERCENT
     ;
 
 /* -------------------- Commun --------------------  */
@@ -223,10 +223,14 @@ jourPart
     :   ENTIER (MOT_JOUR | MOT_JOURS)
     ;
 
+id
+    : BACKTICK text (PLUS variable)? BACKTICK
+    ;
+
 variable
-    :   BACKTICK VARIABLE BACKTICK
+    :   VARIABLE
     ;
 
 text
-    :   TEXT
+    :   TEXT PLUS? variable?
     ;
