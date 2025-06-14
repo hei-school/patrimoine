@@ -27,7 +27,7 @@ public class ZetyPersonnelCas extends Cas {
       Compte zetyLoyerMaison,
       Creance zetyCreance,
       Dette zetyDette) {
-    super(ajd.plusMonths(1), finSimulation.plusMonths(1), possesseurs);
+    super(ajd.plusMonths(1).plusDays(5), finSimulation.minusYears(1), possesseurs);
     this.zetyPersonnel = zetyPersonnel;
     this.zetyLoyerMaison = zetyLoyerMaison;
     this.zetyCreance = zetyCreance;

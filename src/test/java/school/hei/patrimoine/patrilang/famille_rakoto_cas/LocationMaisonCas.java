@@ -30,7 +30,7 @@ public class LocationMaisonCas extends Cas {
       Compte zetyLoyerMaison,
       Compte rasoaPersonnel,
       Compte litaPersonnel) {
-    super(ajd, finSimulation, possesseurs);
+    super(ajd, finSimulation.minusYears(1).minusMonths(2).minusDays(10), possesseurs);
     this.zetyLoyerMaison = zetyLoyerMaison;
     this.loyerMaison = loyerMaison;
     this.litaPersonnel = litaPersonnel;

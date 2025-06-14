@@ -1,6 +1,6 @@
 # Général
 * Spécifier `Dates:ajd`
-* Fin de simulation `Dates:finSimulation`
+* Fin de simulation `Dates:finSimulation` - 1 année et 2 mois et 10 jours
 * Cas de LocationMaison 
 * Devise en Ar
 

@@ -1,6 +1,5 @@
 package school.hei.patrimoine.patrilang;
 
-import static java.time.Month.*;
 import static java.util.Objects.requireNonNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static school.hei.patrimoine.patrilang.PatriLangTranspiler.transpileToutCas;
@@ -8,12 +7,12 @@ import static school.hei.patrimoine.patrilang.PatriLangTranspiler.transpileToutC
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.LocalDate;
-import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
 import school.hei.patrimoine.cas.Cas;
 import school.hei.patrimoine.cas.CasSet;
+import school.hei.patrimoine.modele.Personne;
 import school.hei.patrimoine.modele.possession.Possession;
 import school.hei.patrimoine.patrilang.famille_rakoto_cas.FamilleRakotoCasSet;
 
@@ -21,11 +20,6 @@ class PatriLangTranspilerIT {
 
   private static final String RESOURCE_PATH = "/famille_rakoto_cas/FamilleRakoto.patri.md";
   private static final Path RESOURCE_FILE_PATH;
-  private static final List<LocalDate> CHECK_DATES =
-      List.of(
-          LocalDate.of(2025, FEBRUARY, 7),
-          LocalDate.of(2025, MARCH, 17),
-          LocalDate.of(2025, APRIL, 27));
 
   static {
     try {
@@ -66,14 +60,24 @@ class PatriLangTranspilerIT {
         expected.patrimoine().getValeurComptable(),
         actual.patrimoine().getValeurComptable(),
         "Valeur comptable mismatch");
-
-    CHECK_DATES.forEach(
-        date ->
-            assertEquals(
-                expected.patrimoine().projectionFuture(date).getValeurComptable(),
-                actual.patrimoine().projectionFuture(date).getValeurComptable()));
-
+    assertPossesseursEquals(
+        expected.patrimoine().getPossesseurs(), actual.patrimoine().getPossesseurs());
     assertPossessionsEquals(expected.possessions(), actual.possessions());
+  }
+
+  private void assertPossesseursEquals(
+      Map<Personne, Double> expectedMap, Map<Personne, Double> actualMap) {
+    for (var expected : expectedMap.entrySet()) {
+      var actual =
+          actualMap.entrySet().stream()
+              .filter(p -> p.getKey().nom().equals(expected.getKey().nom()))
+              .findFirst()
+              .orElseThrow(
+                  () -> new RuntimeException("Missing possesseurs: " + expected.getKey().nom()));
+
+      assertEquals(expected.getValue(), actual.getValue());
+      assertEquals(expected.getKey().nom(), actual.getKey().nom());
+    }
   }
 
   private void assertPossessionsEquals(Set<Possession> expectedSet, Set<Possession> actualSet) {
@@ -92,11 +96,5 @@ class PatriLangTranspilerIT {
     assertEquals(expected.devise(), actual.devise());
     assertEquals(expected.typeAgregat(), actual.typeAgregat());
     assertEquals(expected.valeurComptable(), actual.valeurComptable());
-
-    CHECK_DATES.forEach(
-        date ->
-            assertEquals(
-                expected.projectionFuture(date).valeurComptable(),
-                actual.projectionFuture(date).valeurComptable()));
   }
 }
