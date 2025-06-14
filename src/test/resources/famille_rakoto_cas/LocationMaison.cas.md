@@ -1,6 +1,6 @@
 # Général
 * Spécifier `Dates:ajd`
-* Fin de simulation `Dates:finSimulation` - 1 année et 2 mois et 10 jours
+* Fin de simulation `Dates:finSimulation` - 1 année et 2 mois et 10 jours `/* Retard sur les actions */`
 * Cas de LocationMaison 
 * Devise en Ar
 
@@ -15,11 +15,11 @@
 
 # Initialisation
 * `objectifInitLocationMaison` `Dates:ajd`, objectif de 500000Ar pour `Trésoreries:loyerMaison`
-* `initCompteLoyerMaison` `Dates:ajd`, entrer 500000Ar vers `Trésoreries:loyerMaison`
+* `initCompteLoyerMaison` `Dates:ajd`, entrer 500000Ar vers `Trésoreries:loyerMaison``/* Commentaire */` 
 
 # Opérations
 ## Rem2025, `Dates:ajd`, devise en Ar
-* `remZety2025` `Dates:ajd`, entrer 400000Ar vers `Trésoreries:zetyLoyerMaison` , jusqu'à le 31 du 12-2025 tous les 1 du mois
+* `remZety2025` `/* Commentaire */` `Dates:ajd`, entrer 400000Ar vers `Trésoreries:zetyLoyerMaison` , jusqu'à le 31 du 12-2025 tous les 1 du mois
 * `remRasoa2025` `Dates:ajd`, entrer 500000Ar vers `Trésoreries:rasoaPersonnel` , jusqu'à le 31 du 12-2025 tous les 1 du mois
 * `remLita2025` `Dates:ajd`, entrer 100000Ar vers `Trésoreries:litaPersonnel` , jusqu'à le 31 du 12-2025 tous les 1 du mois
  

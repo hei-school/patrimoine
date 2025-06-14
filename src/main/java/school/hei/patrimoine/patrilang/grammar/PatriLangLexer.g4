@@ -237,9 +237,14 @@ TEXT
     :   STRING
     ;
 /* Ignorés */
+
 WS
     : [ \t]+    -> skip
     ;
 NEWLINE
     : [\r\n]+   -> skip
+    ;
+
+COMMENTAIRE
+    :   BACKTICK DIV MUL .*? MUL DIV BACKTICK -> skip
     ;
