@@ -8,22 +8,27 @@ public class SectionVisitorFactory {
   public static SectionVisitor make(String casSetFolderPath) {
     var variableContainer = new VariableContainer();
     var variableVisitor = new VariableVisitor(variableContainer);
+    var expressionVisitor = new ExpressionVisitor();
     var dateVisitor = new DateVisitor(variableVisitor);
+    var argentVisitor = new ArgentVisitor(expressionVisitor);
 
     return SectionVisitor.builder()
+        .expressionVisitor(expressionVisitor)
+        .argentVisitor(argentVisitor)
         .casSetFolderPath(casSetFolderPath)
         .dateVisitor(dateVisitor)
         .variableContainer(variableContainer)
         .variableVisitor(variableVisitor)
-        .objectifVisitor(new ObjectifVisitor(variableVisitor, dateVisitor))
-        .compteVisitor(new CompteVisitor(dateVisitor))
-        .creanceVisitor(new CreanceVisitor(dateVisitor))
-        .detteVisitor(new DetteVisitor(dateVisitor))
-        .materielVisitor(new MaterielVisitor(dateVisitor))
-        .achatMaterielVisitor(new AchatMaterielVisitor(variableVisitor, dateVisitor))
-        .fluxArgentVisitor(new FluxArgentVisitor(dateVisitor, variableVisitor))
-        .transferArgentVisitor(new TransferArgentVisitor(variableVisitor, dateVisitor))
-        .correctionVisitor(new CorrectionVisitor(variableVisitor, dateVisitor))
+        .objectifVisitor(new ObjectifVisitor(variableVisitor, dateVisitor, argentVisitor))
+        .compteVisitor(new CompteVisitor(dateVisitor, argentVisitor))
+        .creanceVisitor(new CreanceVisitor(dateVisitor, argentVisitor))
+        .detteVisitor(new DetteVisitor(dateVisitor, argentVisitor))
+        .materielVisitor(new MaterielVisitor(dateVisitor, argentVisitor))
+        .achatMaterielVisitor(new AchatMaterielVisitor(variableVisitor, dateVisitor, argentVisitor))
+        .fluxArgentVisitor(new FluxArgentVisitor(dateVisitor, variableVisitor, argentVisitor))
+        .transferArgentVisitor(
+            new TransferArgentVisitor(variableVisitor, dateVisitor, argentVisitor))
+        .correctionVisitor(new CorrectionVisitor(variableVisitor, dateVisitor, argentVisitor))
         .groupPossessionVisitor(new GroupPossessionVisitor(dateVisitor))
         .build();
   }

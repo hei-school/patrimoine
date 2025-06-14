@@ -29,7 +29,9 @@ import school.hei.patrimoine.patrilang.visitors.possession.*;
 @RequiredArgsConstructor
 public class SectionVisitor {
   private final String casSetFolderPath;
+  private final ExpressionVisitor expressionVisitor;
   private final VariableVisitor variableVisitor;
+  private final ArgentVisitor argentVisitor;
   private final DateVisitor dateVisitor;
   private final VariableContainer variableContainer;
   private final ObjectifVisitor objectifVisitor;

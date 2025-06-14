@@ -17,10 +17,11 @@ public class TransferArgentVisitor
     implements SimpleVisitor<FluxArgentTransfererContext, TransfertArgent> {
   private final VariableVisitor variableVisitor;
   private final DateVisitor dateVisitor;
+  private final ArgentVisitor argentVisitor;
 
   public TransfertArgent apply(FluxArgentTransfererContext ctx) {
     String id = visitText(ctx.id);
-    Argent valeurComptable = visitArgent(ctx.valeurComptable);
+    Argent valeurComptable = this.argentVisitor.apply(ctx.valeurComptable);
     LocalDate t = this.dateVisitor.apply(ctx.dateValue);
     Compte débiteur = this.variableVisitor.asCompte(ctx.compteDebiteurNom);
     Compte créditeur = this.variableVisitor.asCompte(ctx.compteCrediteurNom);

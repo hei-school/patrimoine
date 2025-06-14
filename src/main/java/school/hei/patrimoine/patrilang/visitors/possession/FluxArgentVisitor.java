@@ -16,10 +16,11 @@ import school.hei.patrimoine.patrilang.visitors.VariableVisitor;
 public class FluxArgentVisitor {
   private final DateVisitor dateVisitor;
   private final VariableVisitor variableVisitor;
+  private final ArgentVisitor argentVisitor;
 
   public FluxArgent apply(FluxArgentEntrerContext ctx) {
     String id = visitText(ctx.id);
-    Argent valeurComptable = visitArgent(ctx.valeurComptable);
+    Argent valeurComptable = this.argentVisitor.apply(ctx.valeurComptable);
     LocalDate t = this.dateVisitor.apply(ctx.dateValue);
     Compte compte = this.variableVisitor.asCompte(ctx.compteCrediteurNom);
     var dateFinOpt =
@@ -35,7 +36,7 @@ public class FluxArgentVisitor {
 
   public FluxArgent apply(FluxArgentSortirContext ctx) {
     String id = visitText(ctx.id);
-    Argent valeurComptable = visitArgent(ctx.valeurComptable).mult(-1);
+    Argent valeurComptable = this.argentVisitor.apply(ctx.valeurComptable).mult(-1);
     LocalDate t = this.dateVisitor.apply(ctx.dateValue);
     Compte compte = this.variableVisitor.asCompte(ctx.compteDebiteurNom);
     var dateFinOpt =

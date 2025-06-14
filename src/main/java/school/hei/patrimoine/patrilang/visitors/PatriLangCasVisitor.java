@@ -15,7 +15,6 @@ import school.hei.patrimoine.modele.possession.Possession;
 
 @RequiredArgsConstructor
 public class PatriLangCasVisitor implements Function<CasContext, Cas> {
-  private final DateVisitor dateVisitor;
   private final SectionVisitor sectionVisitor;
 
   @Override
@@ -24,9 +23,14 @@ public class PatriLangCasVisitor implements Function<CasContext, Cas> {
 
     var nom = visitText(sectionCasGeneral.ligneCasNom().nom);
     var devise = visitDevise(sectionCasGeneral.ligneDevise().devise());
-    var ajd = this.dateVisitor.apply(sectionCasGeneral.ligneDateSpecification().dateValue);
+    var ajd =
+        this.sectionVisitor
+            .getDateVisitor()
+            .apply(sectionCasGeneral.ligneDateSpecification().dateValue);
     var finSimulation =
-        this.dateVisitor.apply(sectionCasGeneral.ligneDateFinSimulation().dateValue);
+        this.sectionVisitor
+            .getDateVisitor()
+            .apply(sectionCasGeneral.ligneDateFinSimulation().dateValue);
     var possesseurs = this.sectionVisitor.visitSectionPossesseurs(ctx.sectionPossesseurs());
     var possessions = collectPossessions(ctx);
 

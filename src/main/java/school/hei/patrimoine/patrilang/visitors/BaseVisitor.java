@@ -2,12 +2,10 @@ package school.hei.patrimoine.patrilang.visitors;
 
 import static java.lang.Double.parseDouble;
 import static java.lang.Integer.parseInt;
-import static java.util.Objects.nonNull;
 import static school.hei.patrimoine.modele.Devise.*;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.*;
 
 import org.antlr.v4.runtime.tree.TerminalNode;
-import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.Devise;
 import school.hei.patrimoine.modele.Personne;
 import school.hei.patrimoine.patrilang.modele.DateFin;
@@ -23,11 +21,6 @@ public class BaseVisitor {
     var dateFinValue = dateVisitor.apply(ctx.dateValue);
 
     return new DateFin(dateDOpération, dateFinValue);
-  }
-
-  public static Argent visitArgent(ArgentContext ctx) {
-    double facteur = nonNull(ctx.MOINS()) ? -1 : 1;
-    return new Argent(visitNombre(ctx.nombre()), visitDevise(ctx.devise())).mult(facteur);
   }
 
   public static Devise visitDevise(DeviseContext ctx) {

@@ -2,7 +2,6 @@ package school.hei.patrimoine.patrilang.visitors;
 
 import static java.util.Objects.nonNull;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.*;
-import static school.hei.patrimoine.patrilang.visitors.BaseVisitor.visitArgent;
 
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +14,9 @@ public class PatriLangToutCasVisitor implements Function<ToutCasContext, CasSet>
   @Override
   public CasSet apply(ToutCasContext ctx) {
     var objectifFinal =
-        visitArgent(ctx.sectionToutCasGeneral().ligneObjectifFinal().valeurComptable);
+        this.sectionVisitor
+            .getArgentVisitor()
+            .apply(ctx.sectionToutCasGeneral().ligneObjectifFinal().valeurComptable);
 
     if (nonNull(ctx.sectionDates())) {
       this.sectionVisitor.visitSectionDates(ctx.sectionDates());

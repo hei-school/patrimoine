@@ -183,6 +183,14 @@ BACKTICK
     :   '`'
     ;
 
+LPAREN
+    :   '('
+    ;
+
+RPAREN
+    :   ')'
+    ;
+
 COLON
     :   ':'
     ;

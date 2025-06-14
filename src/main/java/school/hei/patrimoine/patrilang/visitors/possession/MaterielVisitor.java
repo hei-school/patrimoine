@@ -12,13 +12,14 @@ import school.hei.patrimoine.patrilang.visitors.DateVisitor;
 @RequiredArgsConstructor
 public class MaterielVisitor implements SimpleVisitor<PossedeMaterielContext, Materiel> {
   private final DateVisitor dateVisitor;
+  private final ArgentVisitor argentVisitor;
 
   @Override
   public Materiel apply(PossedeMaterielContext ctx) {
     String nom = visitText(ctx.materielNom);
-    Argent valeurComptable = visitArgent(ctx.valeurComptable);
     double tauxDAppreciation = visitNombre(ctx.pourcentageAppreciation);
     double facteurTauxDAppreciation = visitMaterielAppreciationFacteur(ctx.MATERIEL_APPRECIATION());
+    Argent valeurComptable = this.argentVisitor.apply(ctx.valeurComptable);
     LocalDate t = this.dateVisitor.apply(ctx.dateValue);
 
     return new Materiel(

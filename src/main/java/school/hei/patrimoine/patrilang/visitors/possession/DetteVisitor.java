@@ -1,7 +1,6 @@
 package school.hei.patrimoine.patrilang.visitors.possession;
 
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.CompteContext;
-import static school.hei.patrimoine.patrilang.visitors.BaseVisitor.visitArgent;
 import static school.hei.patrimoine.patrilang.visitors.BaseVisitor.visitText;
 
 import java.time.LocalDate;
@@ -13,11 +12,12 @@ import school.hei.patrimoine.patrilang.visitors.DateVisitor;
 @RequiredArgsConstructor
 public class DetteVisitor implements SimpleVisitor<CompteContext, Dette> {
   private final DateVisitor dateVisitor;
+  private final ArgentVisitor argentVisitor;
 
   @Override
   public Dette apply(CompteContext ctx) {
     String nom = visitText(ctx.nom);
-    Argent valeurComptable = visitArgent(ctx.valeurComptable);
+    Argent valeurComptable = this.argentVisitor.apply(ctx.valeurComptable);
     LocalDate t = this.dateVisitor.apply(ctx.dateValue);
 
     return new Dette(nom, t, valeurComptable.mult(-1));

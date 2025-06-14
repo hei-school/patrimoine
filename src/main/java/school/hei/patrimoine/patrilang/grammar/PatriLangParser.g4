@@ -167,7 +167,25 @@ ligneNom
     ;
 
 argent
-    :   MOINS? nombre devise
+    :   expression devise
+    ;
+
+expression
+    :   additionExpr
+    ;
+
+additionExpr
+    :   multiplicationExpr ( (PLUS | MOINS) multiplicationExpr )*
+    ;
+
+multiplicationExpr
+    :   atom ( (MUL | DIV) atom )*
+    ;
+
+atom
+    :   MOINS atom                    # NegateExpr
+    |   LPAREN expression RPAREN      # ParenExpr
+    |   nombre                        # NombreExpr
     ;
 
 devise

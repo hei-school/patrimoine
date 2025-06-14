@@ -1,7 +1,6 @@
 package school.hei.patrimoine.patrilang.visitors.possession;
 
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.ObjectifContext;
-import static school.hei.patrimoine.patrilang.visitors.BaseVisitor.visitArgent;
 
 import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
@@ -15,10 +14,11 @@ import school.hei.patrimoine.patrilang.visitors.VariableVisitor;
 public class ObjectifVisitor implements SimpleVisitor<ObjectifContext, Objectif> {
   private final VariableVisitor variableVisitor;
   private final DateVisitor dateVisitor;
+  private final ArgentVisitor argentVisitor;
 
   @Override
   public Objectif apply(ObjectifContext ctx) {
-    Argent valeurComptable = visitArgent(ctx.valeurComptable);
+    Argent valeurComptable = this.argentVisitor.apply(ctx.valeurComptable);
     LocalDate t = this.dateVisitor.apply(ctx.dateValue);
     Compte compte = this.variableVisitor.asCompte(ctx.compteNom);
 

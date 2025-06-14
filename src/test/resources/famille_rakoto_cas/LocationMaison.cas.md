@@ -15,7 +15,7 @@
 
 # Initialisation
 * `objectifInitLocationMaison` `Dates:ajd`, objectif de 500000Ar pour `Trésoreries:loyerMaison`
-* `initCompteLoyerMaison` `Dates:ajd`, entrer 500000Ar vers `Trésoreries:loyerMaison``/* Commentaire */` 
+* `initCompteLoyerMaison` `Dates:ajd`, entrer 500000Ar vers `Trésoreries:loyerMaison` `/* Commentaire */` 
 
 # Opérations
 ## Rem2025, `Dates:ajd`, devise en Ar

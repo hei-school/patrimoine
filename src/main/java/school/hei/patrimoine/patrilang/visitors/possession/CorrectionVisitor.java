@@ -1,7 +1,6 @@
 package school.hei.patrimoine.patrilang.visitors.possession;
 
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.CorrectionContext;
-import static school.hei.patrimoine.patrilang.visitors.BaseVisitor.visitArgent;
 import static school.hei.patrimoine.patrilang.visitors.BaseVisitor.visitText;
 
 import java.time.LocalDate;
@@ -17,11 +16,12 @@ import school.hei.patrimoine.patrilang.visitors.VariableVisitor;
 public class CorrectionVisitor implements SimpleVisitor<CorrectionContext, Correction> {
   private final VariableVisitor variableVisitor;
   private final DateVisitor dateVisitor;
+  private final ArgentVisitor argentVisitor;
 
   @Override
   public Correction apply(CorrectionContext ctx) {
     String id = visitText(ctx.id);
-    Argent valeurComptable = visitArgent(ctx.valeurComptable);
+    Argent valeurComptable = this.argentVisitor.apply(ctx.valeurComptable);
     LocalDate t = this.dateVisitor.apply(ctx.dateValue);
     Compte compte = this.variableVisitor.asCompte(ctx.compteNom);
 

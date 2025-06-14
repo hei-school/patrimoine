@@ -16,13 +16,14 @@ public class AchatMaterielVisitor
     implements SimpleVisitor<AcheterMaterielContext, AchatMaterielAuComptant> {
   private final VariableVisitor variableVisitor;
   private final DateVisitor dateVisitor;
+  private final ArgentVisitor argentVisitor;
 
   @Override
   public AchatMaterielAuComptant apply(AcheterMaterielContext ctx) {
     String materielNom = visitText(ctx.materielNom);
-    Argent valeurComptable = visitArgent(ctx.valeurComptable);
     double tauxDAppreciation = visitNombre(ctx.pourcentageAppreciation);
     double facteurTauxDAppreciation = visitMaterielAppreciationFacteur(ctx.MATERIEL_APPRECIATION());
+    Argent valeurComptable = this.argentVisitor.apply(ctx.valeurComptable);
     LocalDate t = this.dateVisitor.apply(ctx.dateValue);
     Compte financeur = this.variableVisitor.asCompte(ctx.compteDebiteurNom);
 
