@@ -6,6 +6,7 @@ import com.vaadin.flow.function.ValueProvider;
 
 public class RoundedGrid<T> extends VerticalLayout {
   private final Grid<T> grid;
+
   public RoundedGrid(Class<T> beanType) {
     this.grid = new Grid<>(beanType, false);
     this.grid.getStyle().set("border-radius", "10px");

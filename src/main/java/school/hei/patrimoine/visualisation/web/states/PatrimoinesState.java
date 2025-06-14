@@ -1,17 +1,15 @@
 package school.hei.patrimoine.visualisation.web.states;
 
+import static java.time.LocalDate.now;
+
+import java.time.LocalDate;
+import java.util.List;
 import lombok.Getter;
 import school.hei.patrimoine.modele.Patrimoine;
 import school.hei.patrimoine.modele.evolution.EvolutionPatrimoine;
 
-import java.time.LocalDate;
-import java.util.List;
-
-import static java.time.LocalDate.now;
-
 public final class PatrimoinesState extends State {
-  @Getter
-  private final List<Patrimoine> patrimoines;
+  @Getter private final List<Patrimoine> patrimoines;
   private Patrimoine selectedPatrimoine;
   private LocalDate evolutionStart;
   private LocalDate evolutionEnd;
@@ -40,10 +38,6 @@ public final class PatrimoinesState extends State {
 
   public EvolutionPatrimoine getEvolutionPatrimoine() {
     return new EvolutionPatrimoine(
-        this.selectedPatrimoine.getNom(),
-        this.selectedPatrimoine,
-        evolutionStart,
-        evolutionEnd
-    );
+        this.selectedPatrimoine.getNom(), this.selectedPatrimoine, evolutionStart, evolutionEnd);
   }
 }

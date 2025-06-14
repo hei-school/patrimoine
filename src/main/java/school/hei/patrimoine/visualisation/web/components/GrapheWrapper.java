@@ -3,14 +3,12 @@ package school.hei.patrimoine.visualisation.web.components;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.server.StreamResource;
+import java.util.Observable;
+import java.util.Observer;
 import school.hei.patrimoine.modele.evolution.EvolutionPatrimoine;
 import school.hei.patrimoine.visualisation.web.service.WebGrapheurService;
 import school.hei.patrimoine.visualisation.web.states.GrapheConfState;
 import school.hei.patrimoine.visualisation.web.states.PatrimoinesState;
-import school.hei.patrimoine.visualisation.xchart.GrapheConf;
-
-import java.util.Observable;
-import java.util.Observer;
 
 public class GrapheWrapper extends Div implements Observer {
   private final Image imageComponent;
@@ -21,8 +19,7 @@ public class GrapheWrapper extends Div implements Observer {
   public GrapheWrapper(
       WebGrapheurService webGrapheurService,
       PatrimoinesState patrimoinesState,
-      GrapheConfState grapheConfState
-  ) {
+      GrapheConfState grapheConfState) {
     this.grapheurService = webGrapheurService;
     this.patrimoinesState = patrimoinesState;
     this.grapheConfState = grapheConfState;
@@ -38,11 +35,13 @@ public class GrapheWrapper extends Div implements Observer {
   }
 
   private void loadImage(EvolutionPatrimoine evolutionPatrimoine) {
-      StreamResource ressource = new StreamResource(
-        "graphe-image.png",
-          () -> grapheurService.generateGraphe(evolutionPatrimoine, grapheConfState.getGrapheConf())
-      );
-      this.imageComponent.setSrc(ressource);
+    StreamResource ressource =
+        new StreamResource(
+            "graphe-image.png",
+            () ->
+                grapheurService.generateGraphe(
+                    evolutionPatrimoine, grapheConfState.getGrapheConf()));
+    this.imageComponent.setSrc(ressource);
   }
 
   @Override
