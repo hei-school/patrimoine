@@ -10,16 +10,18 @@ import school.hei.patrimoine.visualisation.web.states.PatrimoinesState;
 public class PatrimoineSelector extends HorizontalLayout {
   public PatrimoineSelector(PatrimoinesState patrimoinesState) {
     setWidthFull();
-    var patrimoineSelect =  new Select<Patrimoine>();
+    var patrimoineSelect = new Select<Patrimoine>();
     patrimoineSelect.setLabel("Patrimoine");
     patrimoineSelect.setPlaceholder("Sélectionnez un Patrimoine");
     patrimoineSelect.setItems(patrimoinesState.getPatrimoines());
-    patrimoineSelect.setRenderer(new ComponentRenderer<>(patrimoine -> new Text(patrimoine.getNom())));
+    patrimoineSelect.setRenderer(
+        new ComponentRenderer<>(patrimoine -> new Text(patrimoine.getNom())));
     patrimoineSelect.getStyle().set("--vaadin-input-field-border-width", "1px");
     patrimoineSelect.setWidth("50%");
-    patrimoineSelect.addValueChangeListener((e) -> {
-      patrimoinesState.setSelectedPatrimoine(e.getValue());
-    });
+    patrimoineSelect.addValueChangeListener(
+        (e) -> {
+          patrimoinesState.setSelectedPatrimoine(e.getValue());
+        });
     add(patrimoineSelect);
   }
 }

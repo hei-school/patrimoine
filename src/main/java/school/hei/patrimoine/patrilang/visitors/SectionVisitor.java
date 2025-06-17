@@ -25,10 +25,14 @@ import school.hei.patrimoine.patrilang.modele.VariableType;
 import school.hei.patrimoine.patrilang.visitors.possession.*;
 
 @Builder
+@Getter
 @RequiredArgsConstructor
 public class SectionVisitor {
-  @Getter private final String casSetFolderPath;
-  @Getter private final VariableVisitor variableVisitor;
+  private final String casSetFolderPath;
+  private final ExpressionVisitor expressionVisitor;
+  private final VariableVisitor variableVisitor;
+  private final ArgentVisitor argentVisitor;
+  private final DateVisitor dateVisitor;
   private final VariableContainer variableContainer;
   private final ObjectifVisitor objectifVisitor;
   private final CompteVisitor compteVisitor;
@@ -54,7 +58,7 @@ public class SectionVisitor {
             ligne -> {
               var newVariable =
                   new Variable<>(
-                      visitText(ligne.nom), DATE, this.variableVisitor.asDate(ligne.dateValue));
+                      visitText(ligne.nom), DATE, this.dateVisitor.apply(ligne.dateValue));
               this.variableContainer.add(newVariable);
             });
   }

@@ -12,8 +12,7 @@ public class GrapheContainer extends VerticalLayout {
   public GrapheContainer(
       WebGrapheurService grapheurService,
       PatrimoinesState patrimoinesState,
-      GrapheConfState grapheConfState
-  ) {
+      GrapheConfState grapheConfState) {
     setWidthFull();
     setHeightFull();
     add(label, new GrapheWrapper(grapheurService, patrimoinesState, grapheConfState));

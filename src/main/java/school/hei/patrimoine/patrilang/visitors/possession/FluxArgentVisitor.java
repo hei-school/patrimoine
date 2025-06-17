@@ -9,19 +9,24 @@ import lombok.RequiredArgsConstructor;
 import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.possession.Compte;
 import school.hei.patrimoine.modele.possession.FluxArgent;
+import school.hei.patrimoine.patrilang.visitors.DateVisitor;
+import school.hei.patrimoine.patrilang.visitors.IdVisitor;
 import school.hei.patrimoine.patrilang.visitors.VariableVisitor;
 
 @RequiredArgsConstructor
 public class FluxArgentVisitor {
+  private final DateVisitor dateVisitor;
   private final VariableVisitor variableVisitor;
+  private final ArgentVisitor argentVisitor;
+  private final IdVisitor idVisitor;
 
   public FluxArgent apply(FluxArgentEntrerContext ctx) {
-    String id = visitText(ctx.id);
-    Argent valeurComptable = visitArgent(ctx.valeurComptable);
-    LocalDate t = this.variableVisitor.asDate(ctx.dateValue);
+    String id = this.idVisitor.apply(ctx.id());
+    Argent valeurComptable = this.argentVisitor.apply(ctx.valeurComptable);
+    LocalDate t = this.dateVisitor.apply(ctx.dateValue);
     Compte compte = this.variableVisitor.asCompte(ctx.compteCrediteurNom);
     var dateFinOpt =
-        ofNullable(ctx.dateFin()).map(dateFin -> visitDateFin(dateFin, this.variableVisitor));
+        ofNullable(ctx.dateFin()).map(dateFin -> visitDateFin(dateFin, this.dateVisitor));
 
     return dateFinOpt
         .map(
@@ -32,12 +37,12 @@ public class FluxArgentVisitor {
   }
 
   public FluxArgent apply(FluxArgentSortirContext ctx) {
-    String id = visitText(ctx.id);
-    Argent valeurComptable = visitArgent(ctx.valeurComptable).mult(-1);
-    LocalDate t = this.variableVisitor.asDate(ctx.dateValue);
+    String id = this.idVisitor.apply(ctx.id());
+    Argent valeurComptable = this.argentVisitor.apply(ctx.valeurComptable).mult(-1);
+    LocalDate t = this.dateVisitor.apply(ctx.dateValue);
     Compte compte = this.variableVisitor.asCompte(ctx.compteDebiteurNom);
     var dateFinOpt =
-        ofNullable(ctx.dateFin()).map(dateFin -> visitDateFin(dateFin, this.variableVisitor));
+        ofNullable(ctx.dateFin()).map(dateFin -> visitDateFin(dateFin, this.dateVisitor));
 
     return dateFinOpt
         .map(

@@ -10,20 +10,20 @@ import school.hei.patrimoine.patrilang.modele.Variable;
 import school.hei.patrimoine.patrilang.modele.VariableContainer;
 
 class VariableContainerTest {
-  private VariableContainer container;
+  private VariableContainer subject;
 
   @BeforeEach
   void setUp() {
-    container = new VariableContainer();
+    subject = new VariableContainer();
   }
 
   @Test
   void can_add_and_get_variable() {
     var expected = new Variable<>("nom", PERSONNE, new Personne("Jean"));
 
-    container.add(expected);
+    subject.add(expected);
 
-    var actual = container.get("nom", PERSONNE);
+    var actual = subject.get("nom", PERSONNE);
 
     assertEquals(expected, actual);
   }
@@ -33,9 +33,9 @@ class VariableContainerTest {
     var v1 = new Variable<>("nom", PERSONNE, "Jean");
     var v2 = new Variable<>("nom", PERSONNE, "Marie");
 
-    container.add(v1);
+    subject.add(v1);
 
-    var error = assertThrows(IllegalArgumentException.class, () -> container.add(v2));
+    var error = assertThrows(IllegalArgumentException.class, () -> subject.add(v2));
 
     assertTrue(error.getMessage().contains("déjà été définie"));
   }
@@ -43,7 +43,7 @@ class VariableContainerTest {
   @Test
   void get_throws_exception_if_variable_not_found() {
     var error =
-        assertThrows(IllegalArgumentException.class, () -> container.get("inexistant", DETTE));
+        assertThrows(IllegalArgumentException.class, () -> subject.get("inexistant", DETTE));
 
     assertTrue(error.getMessage().contains("n'existe pas"));
   }

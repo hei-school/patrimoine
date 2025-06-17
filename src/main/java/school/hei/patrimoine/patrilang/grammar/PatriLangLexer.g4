@@ -142,10 +142,6 @@ MOT_LE
 MOT_DU
     :   'du'
     ;
-TIRER
-    :   '-'
-    ;
-
 /* Mots */
 MOT_DATE_INDETERMINER
     :   'date indéterminée'
@@ -163,10 +159,6 @@ MOT_TOUT_LES
     :   'Tous les'
     |   'tous les'
     ;
-MOT_MOIS
-    :   'mois'
-    |   'Mois'
-    ;
 MOT_DEVISE_EN
     :   'Devise en'
     |   'devise en'
@@ -181,9 +173,6 @@ DEVISE
     |   '€'
     |   '$'
     ;
-PUCE
-    :   '*'
-    ;
 HASHES
     :   '#'
     ;
@@ -192,6 +181,14 @@ COMMA
     ;
 BACKTICK
     :   '`'
+    ;
+
+LPAREN
+    :   '('
+    ;
+
+RPAREN
+    :   ')'
     ;
 
 COLON
@@ -208,14 +205,54 @@ DECIMAL
 ENTIER
     :   DIGIT+
     ;
+PLUS
+    :   '+'
+    ;
+MUL
+    :   '*'
+    ;
+DIV
+    :   '/'
+    ;
+MOINS
+    :   '-'
+    ;
+MOT_JOUR
+    :   'jour'
+    ;
+MOT_JOURS
+    :   'jours'
+    ;
+MOT_MOIS
+    :   'mois'
+    ;
+MOT_ANNEE
+    :   'année'
+    ;
+MOT_ANNEES
+    :   'années'
+    ;
+MOT_SECONDE
+    :   'seconde'
+    ;
+MOT_SECONDES
+    :   'secondes'
+    ;
+MOT_ET
+    :   'et'
+    ;
 TEXT
     :   STRING
     ;
-
 /* Ignorés */
+
 WS
     : [ \t]+    -> skip
     ;
 NEWLINE
     : [\r\n]+   -> skip
+    ;
+
+COMMENTAIRE
+    :   BACKTICK DIV MUL .*? MUL DIV BACKTICK -> skip
     ;
