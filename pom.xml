@@ -148,6 +148,7 @@
                         <configuration>
                             <excludes>
                                 <exclude>school/hei/patrimoine/visualisation/swing/**/*</exclude>
+                                <exclude>school/hei/patrimoine/visualisation/web/**/*</exclude>
                                 <exclude>school/hei/patrimoine/google/**/*</exclude>
                                 <exclude>school/hei/patrimoine/patrilang/**/*</exclude>
                             </excludes>
