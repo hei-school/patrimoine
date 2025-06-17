@@ -15,7 +15,11 @@ public class DateVisitor implements SimpleVisitor<DateContext, LocalDate> {
 
   @Override
   public LocalDate apply(DateContext ctx) {
-    if (nonNull(ctx.MOT_DATE_INDETERMINER())) {
+    if (nonNull(ctx.MOT_DATE_MINIMUM())) {
+      return LocalDate.MIN;
+    }
+
+    if (nonNull(ctx.MOT_DATE_INDETERMINER()) || nonNull(ctx.MOT_DATE_MAXIMUM())) {
       return LocalDate.MAX;
     }
 
