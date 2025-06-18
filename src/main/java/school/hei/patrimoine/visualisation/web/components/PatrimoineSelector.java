@@ -11,7 +11,10 @@ import school.hei.patrimoine.visualisation.web.states.GrapheConfState;
 import school.hei.patrimoine.visualisation.web.states.PatrimoinesState;
 
 public class PatrimoineSelector extends HorizontalLayout {
-  public PatrimoineSelector(WebGrapheurService webGrapheurService, PatrimoinesState patrimoinesState, GrapheConfState grapheConfState) {
+  public PatrimoineSelector(
+      WebGrapheurService webGrapheurService,
+      PatrimoinesState patrimoinesState,
+      GrapheConfState grapheConfState) {
     setAlignItems(Alignment.BASELINE);
     setWidthFull();
     var patrimoineSelect = new Select<Patrimoine>();
@@ -26,10 +29,12 @@ public class PatrimoineSelector extends HorizontalLayout {
         e -> patrimoinesState.setSelectedPatrimoine(e.getValue()));
 
     var allPatrimoineButton = new Button("Tous");
-    var allPatrimoinesDialog = new AllPatrimoineGrapheDialog(webGrapheurService, patrimoinesState,  grapheConfState);
-    allPatrimoineButton.addClickListener(e -> {
-      allPatrimoinesDialog.open();
-    });
+    var allPatrimoinesDialog =
+        new AllPatrimoineGrapheDialog(webGrapheurService, patrimoinesState, grapheConfState);
+    allPatrimoineButton.addClickListener(
+        e -> {
+          allPatrimoinesDialog.open();
+        });
 
     add(patrimoineSelect, allPatrimoineButton);
   }
