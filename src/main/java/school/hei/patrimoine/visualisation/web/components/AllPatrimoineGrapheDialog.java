@@ -25,24 +25,33 @@ public class AllPatrimoineGrapheDialog extends Dialog {
 
     var grapheContainer = grapheGridContainer();
     var evolutionPatrimoine = patrimoinesState.getEvolutionPatrimoine();
-    patrimoinesState.getPatrimoines().forEach(patrimoine -> {
-      var withTitleConf = grapheConfState.getGrapheConf().toBuilder().avecTitre(true).build();
-      try {
-        var gridWrapper = grapheGridWrapper();
-        gridWrapper.add(
-            new GrapheWrapper(
-                grapheurService,
-                withTitleConf,
-                new EvolutionPatrimoine(patrimoine.nom(), patrimoine, evolutionPatrimoine.getDebut(), evolutionPatrimoine.getFin())
-            ));
-        grapheContainer.add(gridWrapper);
-      } catch (Exception e) {
-        var notification = Notification.show(String.format(
-            "An error occured while trying to create the graphe of %s",
-            patrimoine.nom()));
-        notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
-      }
-    });
+    patrimoinesState
+        .getPatrimoines()
+        .forEach(
+            patrimoine -> {
+              var withTitleConf =
+                  grapheConfState.getGrapheConf().toBuilder().avecTitre(true).build();
+              try {
+                var gridWrapper = grapheGridWrapper();
+                gridWrapper.add(
+                    new GrapheWrapper(
+                        grapheurService,
+                        withTitleConf,
+                        new EvolutionPatrimoine(
+                            patrimoine.nom(),
+                            patrimoine,
+                            evolutionPatrimoine.getDebut(),
+                            evolutionPatrimoine.getFin())));
+                grapheContainer.add(gridWrapper);
+              } catch (Exception e) {
+                var notification =
+                    Notification.show(
+                        String.format(
+                            "An error occured while trying to create the graphe of %s",
+                            patrimoine.nom()));
+                notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
+              }
+            });
 
     add(grapheContainer);
   }

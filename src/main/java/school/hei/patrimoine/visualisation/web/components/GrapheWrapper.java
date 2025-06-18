@@ -3,10 +3,8 @@ package school.hei.patrimoine.visualisation.web.components;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.server.StreamResource;
-
 import java.util.Observable;
 import java.util.Observer;
-
 import school.hei.patrimoine.modele.evolution.EvolutionPatrimoine;
 import school.hei.patrimoine.visualisation.web.service.WebGrapheurService;
 import school.hei.patrimoine.visualisation.xchart.GrapheConf;
@@ -17,10 +15,7 @@ public class GrapheWrapper extends Div implements Observer {
   private EvolutionPatrimoine evolutionPatrimoine;
   private final GrapheConf grapheConf;
 
-  public GrapheWrapper(
-      WebGrapheurService webGrapheurService,
-      GrapheConf grapheConf
-  ) {
+  public GrapheWrapper(WebGrapheurService webGrapheurService, GrapheConf grapheConf) {
     this.grapheurService = webGrapheurService;
     this.grapheConf = grapheConf;
     this.evolutionPatrimoine = null;
@@ -36,8 +31,7 @@ public class GrapheWrapper extends Div implements Observer {
   public GrapheWrapper(
       WebGrapheurService webGrapheurService,
       GrapheConf grapheConf,
-      EvolutionPatrimoine evolutionPatrimoine
-  ) {
+      EvolutionPatrimoine evolutionPatrimoine) {
     this.grapheurService = webGrapheurService;
     this.grapheConf = grapheConf;
     this.evolutionPatrimoine = evolutionPatrimoine;
@@ -55,9 +49,7 @@ public class GrapheWrapper extends Div implements Observer {
     StreamResource ressource =
         new StreamResource(
             "graphe-image.png",
-            () ->
-                grapheurService.generateGraphe(
-                    evolutionPatrimoine, grapheConf));
+            () -> grapheurService.generateGraphe(evolutionPatrimoine, grapheConf));
     this.imageComponent.setSrc(ressource);
     this.evolutionPatrimoine = evolutionPatrimoine;
   }
