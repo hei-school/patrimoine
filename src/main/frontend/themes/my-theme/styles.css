@@ -50,3 +50,9 @@
     vertical-align: middle;
     text-align: center;
 }
+
+.graphe-grid-container {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+}
