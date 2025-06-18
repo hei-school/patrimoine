@@ -25,7 +25,7 @@ public class PatrimoineEvolutionLayout extends HorizontalLayout {
     getStyle().setAlignItems(Style.AlignItems.CENTER);
     setWidthFull();
     var controlsLayout = new VerticalLayout();
-    controlsLayout.add(new PatrimoineSelector(patrimoinesState));
+    controlsLayout.add(new PatrimoineSelector(grapheurService, patrimoinesState, grapheConfState));
     controlsLayout.add(new GraphConfSelector(grapheConfState));
     controlsLayout.add(new PeriodSelector(patrimoinesState));
     controlsLayout.add(new Separator());
