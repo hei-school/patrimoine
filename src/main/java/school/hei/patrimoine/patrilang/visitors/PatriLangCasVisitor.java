@@ -32,12 +32,11 @@ public class PatriLangCasVisitor implements Function<CasContext, Cas> {
             .getDateVisitor()
             .apply(sectionCasGeneral.ligneDateFinSimulation().dateValue);
     var possesseurs = this.sectionVisitor.visitSectionPossesseurs(ctx.sectionPossesseurs());
-    var possessions = collectPossessions(ctx);
-
     if (nonNull(ctx.sectionInitialisation())) {
       sectionVisitor.visitSectionInitialisation(ctx.sectionInitialisation());
     }
 
+    var possessions = collectPossessions(ctx);
     if (nonNull(ctx.sectionSuivi())) {
       sectionVisitor.visitSectionSuivi(ctx.sectionSuivi());
     }

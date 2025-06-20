@@ -3,21 +3,30 @@ package school.hei.patrimoine.patrilang.visitors;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.VariableContext;
 
 import java.time.LocalDate;
-import lombok.RequiredArgsConstructor;
+import java.util.Optional;
+import lombok.Getter;
 import school.hei.patrimoine.modele.Personne;
 import school.hei.patrimoine.modele.possession.Compte;
 import school.hei.patrimoine.modele.possession.Creance;
 import school.hei.patrimoine.modele.possession.Dette;
-import school.hei.patrimoine.patrilang.modele.Variable;
-import school.hei.patrimoine.patrilang.modele.VariableContainer;
-import school.hei.patrimoine.patrilang.modele.VariableType;
+import school.hei.patrimoine.patrilang.modele.variable.Variable;
+import school.hei.patrimoine.patrilang.modele.variable.VariableScope;
+import school.hei.patrimoine.patrilang.modele.variable.VariableType;
 import school.hei.patrimoine.patrilang.visitors.possession.SimpleVisitor;
 
+@Getter
 @SuppressWarnings("all")
-@RequiredArgsConstructor
 public class VariableVisitor implements SimpleVisitor<VariableContext, Variable<?>> {
   private static final String COLON = ":";
-  private final VariableContainer variableContainer;
+  private final VariableScope variableScope;
+
+  public VariableVisitor() {
+    this.variableScope = new VariableScope(Optional.empty());
+  }
+
+  public VariableVisitor(Optional<VariableScope> parentScope) {
+    this.variableScope = new VariableScope(parentScope);
+  }
 
   public Compte asCompte(VariableContext ctx) {
     return visitVariableAsExpectedType(Compte.class, ctx);
@@ -39,10 +48,14 @@ public class VariableVisitor implements SimpleVisitor<VariableContext, Variable<
     return visitVariableAsExpectedType(LocalDate.class, ctx);
   }
 
+  public <T> void addToScope(String name, VariableType type, T value) {
+    this.variableScope.add(name, type, value);
+  }
+
   @Override
   public Variable<?> apply(VariableContext ctx) {
     var variableValue = ctx.VARIABLE().getText();
-    return this.variableContainer.get(getName(variableValue), getType(variableValue));
+    return this.variableScope.get(getName(variableValue), getType(variableValue));
   }
 
   private static VariableType getType(String value) {

@@ -14,7 +14,7 @@ document
 
 /* ToutCas */
 toutCas
-    :   sectionToutCasGeneral sectionCas? sectionDates? sectionPersonnes? sectionTresoreries? sectionCreances? sectionDettes? EOF
+    :   sectionToutCasGeneral sectionCas? sectionDatesDeclarations? sectionPersonnesDeclarations? sectionTresoreries? sectionCreances? sectionDettes? EOF
     ;
 
 ligneObjectifFinal
@@ -29,21 +29,21 @@ sectionCas
     :   HASHES ENTETE_CAS ligneNom*
     ;
 
-sectionPersonnes
+sectionPersonnesDeclarations
     :   HASHES ENTETE_PERSONNES ligneNom*
     ;
 
-sectionDates
-    :   HASHES ENTETE_DATES ligneDate*
+sectionDatesDeclarations
+    :   HASHES ENTETE_DATES ligneDateDeclaration*
     ;
 
-ligneDate
+ligneDateDeclaration
     :   MUL nom=text COLON dateValue=date
     ;
 
 /* Cas */
 cas
-    :   sectionCasGeneral sectionPossesseurs sectionTresoreries? sectionCreances? sectionDettes? sectionInitialisation? sectionOperations? sectionSuivi? EOF
+    :   sectionCasGeneral sectionDatesDeclarations? sectionPossesseurs  sectionTresoreries? sectionCreances? sectionDettes? sectionInitialisation? sectionOperations? sectionSuivi? EOF
     ;
 
 sectionCasGeneral

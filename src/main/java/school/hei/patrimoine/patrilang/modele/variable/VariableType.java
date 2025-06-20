@@ -1,4 +1,4 @@
-package school.hei.patrimoine.patrilang.modele;
+package school.hei.patrimoine.patrilang.modele.variable;
 
 import lombok.Getter;
 

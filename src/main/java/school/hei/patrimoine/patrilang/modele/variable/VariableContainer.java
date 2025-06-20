@@ -1,9 +1,6 @@
-package school.hei.patrimoine.patrilang.modele;
+package school.hei.patrimoine.patrilang.modele.variable;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class VariableContainer {
   private final Map<VariableType, Set<Variable<?>>> values = new HashMap<>();
@@ -24,14 +21,8 @@ public class VariableContainer {
     this.values.put(variable.type(), container);
   }
 
-  public Variable<?> get(String name, VariableType type) {
+  public Optional<Variable<?>> find(String name, VariableType type) {
     var container = this.values.getOrDefault(type, new HashSet<>());
-    return container.stream()
-        .filter(variable -> variable.name().equals(name))
-        .findFirst()
-        .orElseThrow(
-            () ->
-                new IllegalArgumentException(
-                    "La variable " + name + " de type " + type + " n'existe pas"));
+    return container.stream().filter(variable -> variable.name().equals(name)).findFirst();
   }
 }

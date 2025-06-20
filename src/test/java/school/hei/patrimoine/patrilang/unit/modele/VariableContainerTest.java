@@ -1,13 +1,14 @@
 package school.hei.patrimoine.patrilang.unit.modele;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static school.hei.patrimoine.patrilang.modele.VariableType.*;
+import static school.hei.patrimoine.patrilang.modele.variable.VariableType.*;
 
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import school.hei.patrimoine.modele.Personne;
-import school.hei.patrimoine.patrilang.modele.Variable;
-import school.hei.patrimoine.patrilang.modele.VariableContainer;
+import school.hei.patrimoine.patrilang.modele.variable.Variable;
+import school.hei.patrimoine.patrilang.modele.variable.VariableContainer;
 
 class VariableContainerTest {
   private VariableContainer subject;
@@ -18,14 +19,14 @@ class VariableContainerTest {
   }
 
   @Test
-  void can_add_and_get_variable() {
+  void can_add_and_find_variable() {
     var expected = new Variable<>("nom", PERSONNE, new Personne("Jean"));
 
     subject.add(expected);
 
-    var actual = subject.get("nom", PERSONNE);
+    var actual = subject.find("nom", PERSONNE);
 
-    assertEquals(expected, actual);
+    assertEquals(Optional.of(expected), actual);
   }
 
   @Test
@@ -41,10 +42,9 @@ class VariableContainerTest {
   }
 
   @Test
-  void get_throws_exception_if_variable_not_found() {
-    var error =
-        assertThrows(IllegalArgumentException.class, () -> subject.get("inexistant", DETTE));
+  void find_throws_exception_if_variable_not_found() {
+    var actual = subject.find("inexistant", DETTE);
 
-    assertTrue(error.getMessage().contains("n'existe pas"));
+    assertTrue(actual.isEmpty());
   }
 }

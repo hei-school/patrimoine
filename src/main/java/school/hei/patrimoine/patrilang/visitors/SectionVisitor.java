@@ -6,7 +6,7 @@ import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
 import static school.hei.patrimoine.patrilang.PatriLangTranspiler.transpileCas;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.*;
-import static school.hei.patrimoine.patrilang.modele.VariableType.*;
+import static school.hei.patrimoine.patrilang.modele.variable.VariableType.*;
 import static school.hei.patrimoine.patrilang.visitors.BaseVisitor.*;
 
 import java.util.List;
@@ -15,27 +15,23 @@ import java.util.Optional;
 import java.util.Set;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import school.hei.patrimoine.cas.Cas;
 import school.hei.patrimoine.modele.Personne;
 import school.hei.patrimoine.modele.possession.*;
-import school.hei.patrimoine.patrilang.modele.Variable;
-import school.hei.patrimoine.patrilang.modele.VariableContainer;
-import school.hei.patrimoine.patrilang.modele.VariableType;
+import school.hei.patrimoine.patrilang.factory.SectionVisitorFactory;
+import school.hei.patrimoine.patrilang.modele.variable.VariableType;
 import school.hei.patrimoine.patrilang.visitors.possession.*;
 
 @Builder
 @Getter
-@RequiredArgsConstructor
 public class SectionVisitor {
   private final String casSetFolderPath;
-  private final ExpressionVisitor expressionVisitor;
   private final VariableVisitor variableVisitor;
-  private final ArgentVisitor argentVisitor;
   private final DateVisitor dateVisitor;
-  private final VariableContainer variableContainer;
-  private final ObjectifVisitor objectifVisitor;
+  private final ArgentVisitor argentVisitor;
   private final CompteVisitor compteVisitor;
+  private final ExpressionVisitor expressionVisitor;
+  private final ObjectifVisitor objectifVisitor;
   private final CreanceVisitor creanceVisitor;
   private final DetteVisitor detteVisitor;
   private final MaterielVisitor materielVisitor;
@@ -46,20 +42,29 @@ public class SectionVisitor {
   private final GroupPossessionVisitor groupPossessionVisitor;
 
   public Set<Cas> visitSectionCas(SectionCasContext ctx) {
+    var newSectionVisitor =
+        SectionVisitorFactory.make(
+            this.casSetFolderPath, Optional.of(this.variableVisitor.getVariableScope()));
     return ctx.ligneNom().stream()
         .map(ligne -> visitText(ligne.nom))
-        .map(nom -> transpileCas(nom, this))
+        .map(nom -> transpileCas(nom, newSectionVisitor))
         .collect(toSet());
   }
 
-  public void visitSectionDates(SectionDatesContext ctx) {
-    ctx.ligneDate()
+  public void visitSectionDatesDeclarations(SectionDatesDeclarationsContext ctx) {
+    ctx.ligneDateDeclaration()
+        .forEach(
+            ligne ->
+                this.variableVisitor.addToScope(
+                    visitText(ligne.nom), DATE, this.dateVisitor.apply(ligne.dateValue)));
+  }
+
+  public void visitSectionPersonnesDeclarations(SectionPersonnesDeclarationsContext ctx) {
+    ctx.ligneNom()
         .forEach(
             ligne -> {
-              var newVariable =
-                  new Variable<>(
-                      visitText(ligne.nom), DATE, this.dateVisitor.apply(ligne.dateValue));
-              this.variableContainer.add(newVariable);
+              var personne = visitPersonne(ligne.nom);
+              this.variableVisitor.addToScope(personne.nom(), PERSONNE, personne);
             });
   }
 
@@ -77,15 +82,6 @@ public class SectionVisitor {
             toMap(
                 ligne -> variableVisitor.asPersonne(ligne.nom),
                 ligne -> visitNombre(ligne.pourcentage) / 100));
-  }
-
-  public void visitSectionPersonnes(SectionPersonnesContext ctx) {
-    ctx.ligneNom()
-        .forEach(
-            ligne -> {
-              var personne = visitPersonne(ligne.nom);
-              this.variableContainer.add(new Variable<>(personne.nom(), PERSONNE, personne));
-            });
   }
 
   public Set<Compte> visitSectionTrésoreries(SectionTresoreriesContext ctx) {
@@ -168,7 +164,7 @@ public class SectionVisitor {
               }
 
               var value = visitor.apply(element.compte());
-              this.variableContainer.add(new Variable<>(value.nom(), type, value));
+              this.variableVisitor.addToScope(value.nom(), type, value);
               return value;
             })
         .collect(toSet());

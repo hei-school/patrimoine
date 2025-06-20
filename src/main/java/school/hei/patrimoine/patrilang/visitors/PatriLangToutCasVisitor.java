@@ -18,12 +18,12 @@ public class PatriLangToutCasVisitor implements Function<ToutCasContext, CasSet>
             .getArgentVisitor()
             .apply(ctx.sectionToutCasGeneral().ligneObjectifFinal().valeurComptable);
 
-    if (nonNull(ctx.sectionDates())) {
-      this.sectionVisitor.visitSectionDates(ctx.sectionDates());
+    if (nonNull(ctx.sectionDatesDeclarations())) {
+      this.sectionVisitor.visitSectionDatesDeclarations(ctx.sectionDatesDeclarations());
     }
 
-    if (nonNull(ctx.sectionPersonnes())) {
-      this.sectionVisitor.visitSectionPersonnes(ctx.sectionPersonnes());
+    if (nonNull(ctx.sectionPersonnesDeclarations())) {
+      this.sectionVisitor.visitSectionPersonnesDeclarations(ctx.sectionPersonnesDeclarations());
     }
 
     if (nonNull(ctx.sectionTresoreries())) {

@@ -1,26 +1,28 @@
 package school.hei.patrimoine.patrilang.factory;
 
-import school.hei.patrimoine.patrilang.modele.VariableContainer;
+import java.util.Optional;
+import school.hei.patrimoine.patrilang.modele.variable.VariableScope;
 import school.hei.patrimoine.patrilang.visitors.*;
 import school.hei.patrimoine.patrilang.visitors.possession.*;
 
 public class SectionVisitorFactory {
   public static SectionVisitor make(String casSetFolderPath) {
+    return make(casSetFolderPath, Optional.empty());
+  }
 
-    var variableContainer = new VariableContainer();
-    var variableVisitor = new VariableVisitor(variableContainer);
-    var idVisitor = new IdVisitor(variableVisitor);
+  public static SectionVisitor make(String casSetFolderPath, Optional<VariableScope> parentScope) {
+    var variableVisitor = new VariableVisitor(parentScope);
     var expressionVisitor = new ExpressionVisitor();
+    var idVisitor = new IdVisitor(variableVisitor);
     var dateVisitor = new DateVisitor(variableVisitor);
     var argentVisitor = new ArgentVisitor(expressionVisitor);
 
     return SectionVisitor.builder()
-        .expressionVisitor(expressionVisitor)
-        .argentVisitor(argentVisitor)
         .casSetFolderPath(casSetFolderPath)
-        .dateVisitor(dateVisitor)
-        .variableContainer(variableContainer)
         .variableVisitor(variableVisitor)
+        .dateVisitor(dateVisitor)
+        .argentVisitor(argentVisitor)
+        .expressionVisitor(expressionVisitor)
         .objectifVisitor(new ObjectifVisitor(variableVisitor, dateVisitor, argentVisitor))
         .compteVisitor(new CompteVisitor(dateVisitor, argentVisitor))
         .creanceVisitor(new CreanceVisitor(dateVisitor, argentVisitor))

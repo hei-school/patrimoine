@@ -4,28 +4,26 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.*;
-import static school.hei.patrimoine.patrilang.modele.VariableType.DATE;
+import static school.hei.patrimoine.patrilang.modele.variable.VariableType.DATE;
 
 import java.time.LocalDate;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import school.hei.patrimoine.patrilang.modele.Variable;
-import school.hei.patrimoine.patrilang.modele.VariableContainer;
 import school.hei.patrimoine.patrilang.visitors.DateVisitor;
 import school.hei.patrimoine.patrilang.visitors.VariableVisitor;
 
 class DateVisitorTest {
   DateVisitor subject;
-  VariableContainer variableContainer;
+  VariableVisitor variableVisitor;
   DateContext dateContextMock;
 
   @BeforeEach
   void setUp() {
     dateContextMock = mock();
-    variableContainer = new VariableContainer();
-    subject = new DateVisitor(new VariableVisitor(variableContainer));
+    variableVisitor = new VariableVisitor();
+    subject = new DateVisitor(variableVisitor);
   }
 
   @Test
@@ -59,7 +57,7 @@ class DateVisitorTest {
   @Test
   void can_parse_variable_without_delta() {
     var expected = LocalDate.of(2025, 10, 27);
-    variableContainer.add(new Variable<>("ajd", DATE, expected));
+    variableVisitor.addToScope("ajd", DATE, expected);
 
     var dateExprMock = mock(DateExprContext.class);
     when(dateContextMock.MOT_DATE_INDETERMINER()).thenReturn(null);
@@ -82,7 +80,7 @@ class DateVisitorTest {
   void can_parse_variable_with_full_delta() {
     var baseDate = LocalDate.of(2026, 7, 13);
     var expected = baseDate.plusYears(2).plusMonths(3).plusDays(4);
-    variableContainer.add(new Variable<>("ajd", DATE, baseDate));
+    variableVisitor.addToScope("ajd", DATE, baseDate);
 
     var dateExprMock = mock(DateExprContext.class);
     when(dateContextMock.MOT_DATE_INDETERMINER()).thenReturn(null);
