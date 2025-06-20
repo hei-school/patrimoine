@@ -43,7 +43,7 @@ ligneDateDeclaration
 
 /* Cas */
 cas
-    :   sectionCasGeneral sectionDatesDeclarations? sectionPossesseurs  sectionTresoreries? sectionCreances? sectionDettes? sectionInitialisation? sectionOperations? sectionSuivi? EOF
+    :   sectionCasGeneral sectionDatesDeclarations? sectionPossesseurs  sectionTresoreries? sectionCreances? sectionDettes? sectionInitialisation? sectionOperations? sectionSuivi?  sectionOperationTemplateDeclaration? EOF
     ;
 
 sectionCasGeneral
@@ -110,8 +110,37 @@ compteElement
     |   MUL variable
     ;
 /* Opérations */
+sectionOperationTemplateDeclaration
+    :   HASHES ENTETE_TEMPLATES operationTemplate*
+    ;
+
+operationTemplate
+    :   HASHES HASHES name=text LPAREN operationTemplateParam? RPAREN operations*
+    ;
+
+operationTemplateParam
+    :   operationTemplateParamValue (COMMA operationTemplateParamValue)*
+    ;
+
+operationTemplateParamValue
+    :   argName=text
+    ;
+
+operationTemplateCall
+    :   MUL templateName=text LPAREN operationTemplateCallArg? RPAREN
+    ;
+
+operationTemplateCallArg
+    :   operationTemplateCallArgValue (COMMA operationTemplateCallArgValue)*
+    ;
+
+operationTemplateCallArgValue
+    :   date
+    |   variable
+    ;
+
 sectionOperations
-    : HASHES ENTETE_OPERATIONS operations*
+    :   HASHES ENTETE_OPERATIONS operations*
     ;
 
 operations
@@ -126,6 +155,7 @@ operation
     |   acheterMateriel
     |   correction
     |   objectif
+    |   operationTemplateCall
     ;
 
 /* Simple Possessions */

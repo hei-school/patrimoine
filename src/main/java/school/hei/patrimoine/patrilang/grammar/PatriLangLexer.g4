@@ -98,6 +98,9 @@ ENTETE_DETTES
     ;
 
 /* Opérations */
+ENTETE_TEMPLATES
+    :   'Templates'
+    ;
 ENTETE_OPERATIONS
     :   'Opérations'
     ;
