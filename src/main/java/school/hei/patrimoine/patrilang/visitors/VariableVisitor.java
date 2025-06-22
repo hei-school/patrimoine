@@ -12,7 +12,6 @@ import school.hei.patrimoine.modele.possession.Dette;
 import school.hei.patrimoine.patrilang.modele.variable.Variable;
 import school.hei.patrimoine.patrilang.modele.variable.VariableScope;
 import school.hei.patrimoine.patrilang.modele.variable.VariableType;
-import school.hei.patrimoine.patrilang.visitors.possession.SimpleVisitor;
 
 @Getter
 @SuppressWarnings("all")
@@ -55,14 +54,16 @@ public class VariableVisitor implements SimpleVisitor<VariableContext, Variable<
   @Override
   public Variable<?> apply(VariableContext ctx) {
     var variableValue = ctx.VARIABLE().getText();
-    return this.variableScope.get(getName(variableValue), getType(variableValue));
+    return this.variableScope.get(extractVariableName(ctx), extractVariableType(ctx));
   }
 
-  private static VariableType getType(String value) {
+  public static VariableType extractVariableType(VariableContext ctx) {
+    var value = ctx.VARIABLE().getText();
     return VariableType.fromString(value.substring(0, value.indexOf(COLON)));
   }
 
-  private static String getName(String value) {
+  public static String extractVariableName(VariableContext ctx) {
+    var value = ctx.VARIABLE().getText();
     return value.substring(value.indexOf(COLON) + 1);
   }
 

@@ -123,7 +123,7 @@ operationTemplateParam
     ;
 
 operationTemplateParamValue
-    :   argName=text
+    :   argName=variable
     ;
 
 operationTemplateCall

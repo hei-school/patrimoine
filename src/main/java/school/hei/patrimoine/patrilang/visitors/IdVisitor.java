@@ -5,7 +5,6 @@ import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.IdContext;
 import static school.hei.patrimoine.patrilang.visitors.BaseVisitor.visitText;
 
 import lombok.RequiredArgsConstructor;
-import school.hei.patrimoine.patrilang.visitors.possession.SimpleVisitor;
 
 @RequiredArgsConstructor
 public class IdVisitor implements SimpleVisitor<IdContext, String> {

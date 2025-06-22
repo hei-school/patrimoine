@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.possession.Dette;
 import school.hei.patrimoine.patrilang.visitors.DateVisitor;
+import school.hei.patrimoine.patrilang.visitors.SimpleVisitor;
 
 @RequiredArgsConstructor
 public class DetteVisitor implements SimpleVisitor<CompteContext, Dette> {

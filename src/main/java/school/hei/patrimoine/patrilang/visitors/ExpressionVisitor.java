@@ -2,7 +2,6 @@ package school.hei.patrimoine.patrilang.visitors;
 
 import school.hei.patrimoine.patrilang.antlr.PatriLangParser;
 import school.hei.patrimoine.patrilang.antlr.PatriLangParserBaseVisitor;
-import school.hei.patrimoine.patrilang.visitors.possession.SimpleVisitor;
 
 public class ExpressionVisitor extends PatriLangParserBaseVisitor<Double>
     implements SimpleVisitor<PatriLangParser.ExpressionContext, Double> {

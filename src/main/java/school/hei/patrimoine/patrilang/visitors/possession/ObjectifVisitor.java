@@ -8,6 +8,7 @@ import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.objectif.Objectif;
 import school.hei.patrimoine.modele.possession.Compte;
 import school.hei.patrimoine.patrilang.visitors.DateVisitor;
+import school.hei.patrimoine.patrilang.visitors.SimpleVisitor;
 import school.hei.patrimoine.patrilang.visitors.VariableVisitor;
 
 @RequiredArgsConstructor

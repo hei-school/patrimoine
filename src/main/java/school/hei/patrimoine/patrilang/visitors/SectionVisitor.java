@@ -1,7 +1,6 @@
 package school.hei.patrimoine.patrilang.visitors;
 
 import static java.util.Objects.isNull;
-import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
 import static school.hei.patrimoine.patrilang.PatriLangTranspiler.transpileCas;
@@ -28,18 +27,12 @@ public class SectionVisitor {
   private final String casSetFolderPath;
   private final VariableVisitor variableVisitor;
   private final DateVisitor dateVisitor;
-  private final ArgentVisitor argentVisitor;
   private final CompteVisitor compteVisitor;
-  private final ExpressionVisitor expressionVisitor;
-  private final ObjectifVisitor objectifVisitor;
   private final CreanceVisitor creanceVisitor;
   private final DetteVisitor detteVisitor;
-  private final MaterielVisitor materielVisitor;
-  private final AchatMaterielVisitor achatMaterielVisitor;
-  private final FluxArgentVisitor fluxArgentVisitor;
-  private final TransferArgentVisitor transferArgentVisitor;
-  private final CorrectionVisitor correctionVisitor;
-  private final GroupPossessionVisitor groupPossessionVisitor;
+  private final OperationVisitor operationVisitor;
+  private final OperationTemplateVisitor operationTemplateVisitor;
+  private final ArgentVisitor argentVisitor;
 
   public Set<Cas> visitSectionCas(SectionCasContext ctx) {
     var newSectionVisitor =
@@ -69,11 +62,21 @@ public class SectionVisitor {
   }
 
   public void visitSectionInitialisation(SectionInitialisationContext ctx) {
-    ctx.operations().forEach(this::visitOperations);
+    this.operationVisitor.apply(ctx.operations());
   }
 
   public void visitSectionSuivi(SectionSuiviContext ctx) {
-    ctx.operations().forEach(this::visitOperations);
+    this.operationVisitor.apply(ctx.operations());
+  }
+
+  public void visitTemplateDeclarations(SectionOperationTemplateDeclarationContext ctx) {
+    ctx.operationTemplate()
+        .forEach(
+            operation -> {
+              var operationTemplate = this.operationTemplateVisitor.apply(operation);
+              this.variableVisitor.addToScope(
+                  operationTemplate.name(), OPERATION_TEMPLATE, operationTemplate);
+            });
   }
 
   public Map<Personne, Double> visitSectionPossesseurs(SectionPossesseursContext ctx) {
@@ -100,55 +103,7 @@ public class SectionVisitor {
   }
 
   public Set<Possession> visitSectionOperations(SectionOperationsContext ctx) {
-    return ctx.operations().stream().flatMap(op -> visitOperations(op).stream()).collect(toSet());
-  }
-
-  private Set<Possession> visitOperations(OperationsContext ctx) {
-    var possessions =
-        ctx.operation().stream()
-            .map(this::visitOperation)
-            .filter(Optional::isPresent)
-            .map(Optional::get)
-            .collect(toSet());
-
-    if (isNull(ctx.sousTitre())) {
-      return possessions;
-    }
-
-    return Set.of(this.groupPossessionVisitor.apply(ctx.sousTitre(), possessions));
-  }
-
-  private Optional<Possession> visitOperation(OperationContext ctx) {
-    if (nonNull(ctx.fluxArgentTransferer())) {
-      return Optional.of(this.transferArgentVisitor.apply(ctx.fluxArgentTransferer()));
-    }
-
-    if (nonNull(ctx.fluxArgentEntrer())) {
-      return Optional.of(this.fluxArgentVisitor.apply(ctx.fluxArgentEntrer()));
-    }
-
-    if (nonNull(ctx.fluxArgentSortir())) {
-      return Optional.of(this.fluxArgentVisitor.apply(ctx.fluxArgentSortir()));
-    }
-
-    if (nonNull(ctx.acheterMateriel())) {
-      return Optional.of(this.achatMaterielVisitor.apply(ctx.acheterMateriel()));
-    }
-
-    if (nonNull(ctx.possedeMateriel())) {
-      return Optional.of(this.materielVisitor.apply(ctx.possedeMateriel()));
-    }
-
-    if (nonNull(ctx.correction())) {
-      return Optional.of(this.correctionVisitor.apply(ctx.correction()));
-    }
-
-    if (nonNull(ctx.objectif())) {
-      this.objectifVisitor.apply(ctx.objectif());
-      return Optional.empty();
-    }
-
-    throw new IllegalArgumentException("Opération inconnue");
+    return this.operationVisitor.apply(ctx.operations());
   }
 
   private <T extends Possession> Set<T> visitCompteElements(

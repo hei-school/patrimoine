@@ -6,6 +6,7 @@ import static school.hei.patrimoine.patrilang.visitors.BaseVisitor.visitDevise;
 import lombok.RequiredArgsConstructor;
 import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.patrilang.visitors.ExpressionVisitor;
+import school.hei.patrimoine.patrilang.visitors.SimpleVisitor;
 
 @RequiredArgsConstructor
 public class ArgentVisitor implements SimpleVisitor<ArgentContext, Argent> {

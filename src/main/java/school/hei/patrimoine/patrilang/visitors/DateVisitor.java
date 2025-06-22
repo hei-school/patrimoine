@@ -7,7 +7,6 @@ import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.*;
 
 import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
-import school.hei.patrimoine.patrilang.visitors.possession.SimpleVisitor;
 
 @RequiredArgsConstructor
 public class DateVisitor implements SimpleVisitor<DateContext, LocalDate> {

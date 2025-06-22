@@ -4,6 +4,7 @@ import lombok.Getter;
 
 @Getter
 public enum VariableType {
+  OPERATION_TEMPLATE("Templates"),
   DATE("Dates"),
   PERSONNE("Personnes"),
   TRESORERIES("Trésoreries"),
@@ -18,6 +19,7 @@ public enum VariableType {
 
   public static VariableType fromString(String value) {
     return switch (value) {
+      case "Templates" -> OPERATION_TEMPLATE;
       case "Dates" -> DATE;
       case "Personnes" -> PERSONNE;
       case "Trésoreries" -> TRESORERIES;
