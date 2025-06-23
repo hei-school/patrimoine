@@ -2,33 +2,19 @@ package school.hei.patrimoine.patrilang.visitors;
 
 import static java.lang.Double.parseDouble;
 import static java.lang.Integer.parseInt;
-import static java.util.Objects.nonNull;
 import static school.hei.patrimoine.modele.Devise.*;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.*;
 
-import java.time.LocalDate;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import school.hei.patrimoine.modele.Devise;
 import school.hei.patrimoine.modele.Personne;
 import school.hei.patrimoine.patrilang.modele.DateFin;
 import school.hei.patrimoine.patrilang.modele.MaterielAppreciationType;
+import school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor;
 
 public class BaseVisitor {
   public static Personne visitPersonne(TextContext ctx) {
     return new Personne(parseNodeValue(ctx.TEXT()));
-  }
-
-  public static LocalDate visitDate(DateContext ctx) {
-    if (nonNull(ctx.MOT_DATE_MINIMUM())) {
-      return LocalDate.MIN;
-    }
-
-    if (nonNull(ctx.MOT_DATE_INDETERMINER()) || nonNull(ctx.MOT_DATE_MAXIMUM())) {
-      return LocalDate.MAX;
-    }
-
-    return LocalDate.of(
-        parseInt(ctx.annee.getText()), parseInt(ctx.mois.getText()), parseInt(ctx.jour.getText()));
   }
 
   public static DateFin visitDateFin(DateFinContext ctx, VariableVisitor variableVisitor) {

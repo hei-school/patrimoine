@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.possession.Creance;
 import school.hei.patrimoine.patrilang.visitors.SimpleVisitor;
-import school.hei.patrimoine.patrilang.visitors.VariableVisitor;
+import school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor;
 
 @RequiredArgsConstructor
 public class CreanceVisitor implements SimpleVisitor<CompteContext, Creance> {

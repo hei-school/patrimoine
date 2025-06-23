@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import school.hei.patrimoine.patrilang.antlr.PatriLangParser;
 import school.hei.patrimoine.patrilang.utils.UnitTestVisitor;
 import school.hei.patrimoine.patrilang.visitors.IdVisitor;
-import school.hei.patrimoine.patrilang.visitors.VariableVisitor;
+import school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor;
 
 class IdVisitorTest {
   VariableVisitor variableVisitor = new VariableVisitor();

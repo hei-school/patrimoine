@@ -19,7 +19,7 @@ import school.hei.patrimoine.patrilang.modele.template.OperationTemplate;
 import school.hei.patrimoine.patrilang.modele.template.OperationTemplateParam;
 import school.hei.patrimoine.patrilang.utils.UnitTestVisitor;
 import school.hei.patrimoine.patrilang.visitors.OperationTemplateCallVisitor;
-import school.hei.patrimoine.patrilang.visitors.VariableVisitor;
+import school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor;
 
 class OperationTemplateCallVisitorTest {
   private static final VariableVisitor variableVisitor = new VariableVisitor();

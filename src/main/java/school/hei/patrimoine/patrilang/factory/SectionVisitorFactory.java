@@ -4,6 +4,7 @@ import java.util.Optional;
 import school.hei.patrimoine.patrilang.modele.variable.VariableScope;
 import school.hei.patrimoine.patrilang.visitors.*;
 import school.hei.patrimoine.patrilang.visitors.possession.*;
+import school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor;
 
 public class SectionVisitorFactory {
   public static SectionVisitor make(String casSetFolderPath) {

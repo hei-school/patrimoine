@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import school.hei.patrimoine.modele.possession.Possession;
 import school.hei.patrimoine.patrilang.modele.template.OperationTemplate;
 import school.hei.patrimoine.patrilang.modele.variable.Variable;
+import school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor;
 
 @RequiredArgsConstructor
 public class OperationTemplateCallVisitor

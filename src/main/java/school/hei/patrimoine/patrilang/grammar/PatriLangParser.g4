@@ -225,18 +225,6 @@ nombre
     :   DECIMAL
     |   ENTIER
     ;
-
-date
-    :   MOT_LE jour=ENTIER MOT_DU mois=ENTIER MOINS annee=ENTIER
-    |   MOT_DATE_INDETERMINER
-    |   MOT_DATE_MINIMUM
-    |   MOT_DATE_MAXIMUM
-    ;
-
-dateDelta
-    :   anneePart? moisPart? jourPart?
-    ;
-
 anneePart
     :   ENTIER (MOT_ANNEE | MOT_ANNEES) MOT_ET?
     ;
@@ -254,8 +242,19 @@ id
     ;
 
 variable
-    :   date
-    |   VARIABLE ((PLUS | MOINS) dateDelta)?
+    :   date dateDelta?
+    |   VARIABLE dateDelta?
+    ;
+
+date
+    :   MOT_LE jour=ENTIER MOT_DU mois=ENTIER MOINS annee=ENTIER
+    |   MOT_DATE_INDETERMINER
+    |   MOT_DATE_MINIMUM
+    |   MOT_DATE_MAXIMUM
+    ;
+
+dateDelta
+    :   (PLUS | MOINS) anneePart? moisPart? jourPart?
     ;
 
 text

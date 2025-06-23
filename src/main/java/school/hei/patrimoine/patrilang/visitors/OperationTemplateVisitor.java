@@ -5,8 +5,8 @@ import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.OperationTem
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.OperationTemplateParamContext;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.OperationTemplateParamValueContext;
 import static school.hei.patrimoine.patrilang.visitors.BaseVisitor.visitText;
-import static school.hei.patrimoine.patrilang.visitors.VariableVisitor.extractVariableName;
-import static school.hei.patrimoine.patrilang.visitors.VariableVisitor.extractVariableType;
+import static school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor.extractVariableName;
+import static school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor.extractVariableType;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;

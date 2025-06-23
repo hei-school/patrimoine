@@ -1,5 +1,6 @@
 package school.hei.patrimoine.patrilang.unit.visitors.possession;
 
+import static java.time.Month.JUNE;
 import static school.hei.patrimoine.modele.Argent.ariary;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.FluxArgentEntrerContext;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.FluxArgentSortirContext;
@@ -15,13 +16,13 @@ import school.hei.patrimoine.patrilang.antlr.PatriLangParser;
 import school.hei.patrimoine.patrilang.utils.UnitTestVisitor;
 import school.hei.patrimoine.patrilang.visitors.ExpressionVisitor;
 import school.hei.patrimoine.patrilang.visitors.IdVisitor;
-import school.hei.patrimoine.patrilang.visitors.VariableVisitor;
 import school.hei.patrimoine.patrilang.visitors.possession.ArgentVisitor;
 import school.hei.patrimoine.patrilang.visitors.possession.FluxArgentVisitor;
+import school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor;
 
 class FluxArgentVisitorTest {
   private static final VariableVisitor variableVisitor = new VariableVisitor();
-  private static final LocalDate AJD = LocalDate.of(2025, 6, 23);
+  private static final LocalDate AJD = LocalDate.of(2025, JUNE, 23);
   private static final Compte COMPTE_PERSONNEL =
       new Compte("comptePersonnel", AJD, ariary(500_000));
 

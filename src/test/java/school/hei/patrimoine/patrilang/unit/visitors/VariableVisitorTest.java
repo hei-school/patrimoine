@@ -1,5 +1,7 @@
 package school.hei.patrimoine.patrilang.unit.visitors;
 
+import static java.time.Month.FEBRUARY;
+import static java.time.Month.JULY;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static school.hei.patrimoine.modele.Argent.ariary;
@@ -15,7 +17,7 @@ import school.hei.patrimoine.modele.possession.Compte;
 import school.hei.patrimoine.patrilang.antlr.PatriLangParser;
 import school.hei.patrimoine.patrilang.modele.variable.Variable;
 import school.hei.patrimoine.patrilang.utils.UnitTestVisitor;
-import school.hei.patrimoine.patrilang.visitors.VariableVisitor;
+import school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor;
 
 @SuppressWarnings("all")
 class VariableVisitorTest {
@@ -65,7 +67,7 @@ class VariableVisitorTest {
   @Test
   void parse_normal_date() {
     var input = "le 01 du 02-2025";
-    var expected = LocalDate.of(2025, 2, 1);
+    var expected = LocalDate.of(2025, FEBRUARY, 1);
 
     var variable = (Variable<LocalDate>) visitor.visit(input, PatriLangParser::variable);
     var actual = variable.value();
@@ -75,20 +77,22 @@ class VariableVisitorTest {
 
   @Test
   void can_parse_variable_with_full_delta() {
-    var input = "Dates:ajd - 2 années et 3mois et 4jours";
-    var baseDate = LocalDate.of(2026, 7, 13);
+    var input = "Dates:ajd + 2 années et 3mois et 4jours";
+    var baseDate = LocalDate.of(2026, JULY, 13);
     var expected = baseDate.plusYears(2).plusMonths(3).plusDays(4);
 
     subject.addToScope("ajd", DATE, baseDate);
 
     var variable = (Variable<LocalDate>) visitor.visit(input, PatriLangParser::variable);
     var actual = variable.value();
+
+    assertEquals(expected, actual);
   }
 
   @Test
-  void throws_if_delta_provided_but_type_not_date() {
+  void throws_if_date_delta_provided_but_type_not_date() {
     var input = "Trésoreries:compte + 2 années et 3mois et 4jours";
-    var baseDate = LocalDate.of(2026, 7, 13);
+    var baseDate = LocalDate.of(2026, JULY, 13);
     var expected = baseDate.plusYears(2).plusMonths(3).plusDays(4);
 
     subject.addToScope("compte", TRESORERIES, baseDate);
@@ -98,7 +102,6 @@ class VariableVisitorTest {
             IllegalArgumentException.class, () -> visitor.visit(input, PatriLangParser::variable));
 
     assertEquals(
-        "La variable compte doit être de type DATE pour utiliser les opérations comme + y années.",
-        error.getMessage());
+        "Le type attendu est : DATE, mais le type trouvé est : TRESORERIES.", error.getMessage());
   }
 }

@@ -2,6 +2,7 @@ package school.hei.patrimoine.patrilang.factory;
 
 import school.hei.patrimoine.patrilang.visitors.*;
 import school.hei.patrimoine.patrilang.visitors.possession.*;
+import school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor;
 
 public class OperationVisitorFactory {
   public static OperationVisitor make(

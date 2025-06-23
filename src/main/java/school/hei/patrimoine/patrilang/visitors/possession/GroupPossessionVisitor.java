@@ -11,7 +11,7 @@ import lombok.RequiredArgsConstructor;
 import school.hei.patrimoine.modele.Devise;
 import school.hei.patrimoine.modele.possession.GroupePossession;
 import school.hei.patrimoine.modele.possession.Possession;
-import school.hei.patrimoine.patrilang.visitors.VariableVisitor;
+import school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor;
 
 @RequiredArgsConstructor
 public class GroupPossessionVisitor

@@ -1,10 +1,8 @@
-package school.hei.patrimoine.patrilang.visitors;
+package school.hei.patrimoine.patrilang.visitors.variable;
 
 import static java.util.Objects.nonNull;
-import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.DateDeltaContext;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.VariableContext;
 import static school.hei.patrimoine.patrilang.modele.variable.VariableType.DATE;
-import static school.hei.patrimoine.patrilang.visitors.BaseVisitor.visitDate;
 
 import java.time.LocalDate;
 import java.util.Optional;
@@ -16,14 +14,17 @@ import school.hei.patrimoine.modele.possession.Dette;
 import school.hei.patrimoine.patrilang.modele.variable.Variable;
 import school.hei.patrimoine.patrilang.modele.variable.VariableScope;
 import school.hei.patrimoine.patrilang.modele.variable.VariableType;
+import school.hei.patrimoine.patrilang.visitors.SimpleVisitor;
 
 @Getter
 @SuppressWarnings("all")
 public class VariableVisitor implements SimpleVisitor<VariableContext, Variable<?>> {
   private static final String COLON = ":";
+  public static final String R_VALUE_VARIABLE_NAME = "rvalue_variable";
+  private static final VariableDateDeltaVisitor DATE_DELTA_VISITOR = new VariableDateDeltaVisitor();
+
   private final VariableScope variableScope;
-  private static final String R_VALUE_VARIABLE_NAME = "rvalue_variable";
-  private static final DateDeltaVisitor dateDeltaVisitor = new DateDeltaVisitor();
+  private final RValueDateVisitor rValueDateVisitor = new RValueDateVisitor(DATE_DELTA_VISITOR);
 
   public VariableVisitor() {
     this.variableScope = new VariableScope(Optional.empty());
@@ -60,31 +61,17 @@ public class VariableVisitor implements SimpleVisitor<VariableContext, Variable<
   @Override
   public Variable<?> apply(VariableContext ctx) {
     if (nonNull(ctx.date())) {
-      return new Variable(R_VALUE_VARIABLE_NAME, DATE, visitDate(ctx.date()));
+      return rValueDateVisitor.apply(ctx);
     }
 
-    var isMinus = nonNull(ctx.MOINS());
     var baseValue = this.variableScope.get(extractVariableName(ctx), extractVariableType(ctx));
 
     if (nonNull(ctx.dateDelta())) {
-      return visitDateDelta(baseValue, ctx.dateDelta(), isMinus);
+      assertVariableType(baseValue, DATE);
+      return DATE_DELTA_VISITOR.apply((LocalDate) baseValue.value(), ctx);
     }
 
     return baseValue;
-  }
-
-  private static Variable<LocalDate> visitDateDelta(
-      Variable<?> baseValue, DateDeltaContext ctx, boolean isMinus) {
-    if (!DATE.equals(baseValue.type())) {
-      throw new IllegalArgumentException(
-          "La variable "
-              + baseValue.name()
-              + " doit être de type DATE pour utiliser les opérations comme + y années.");
-    }
-
-    var newDate = dateDeltaVisitor.apply((LocalDate) baseValue.value(), ctx, isMinus);
-
-    return new Variable(R_VALUE_VARIABLE_NAME, DATE, newDate);
   }
 
   public static VariableType extractVariableType(VariableContext ctx) {
@@ -106,5 +93,16 @@ public class VariableVisitor implements SimpleVisitor<VariableContext, Variable<
     }
 
     return (T) variable.value();
+  }
+
+  private void assertVariableType(Variable<?> value, VariableType expectedType) {
+    if (!expectedType.equals(value.type())) {
+      throw new IllegalArgumentException(
+          "Le type attendu est : "
+              + expectedType
+              + ", mais le type trouvé est : "
+              + value.type()
+              + ".");
+    }
   }
 }

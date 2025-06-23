@@ -15,9 +15,9 @@ import school.hei.patrimoine.patrilang.antlr.PatriLangParser;
 import school.hei.patrimoine.patrilang.utils.UnitTestVisitor;
 import school.hei.patrimoine.patrilang.visitors.ExpressionVisitor;
 import school.hei.patrimoine.patrilang.visitors.IdVisitor;
-import school.hei.patrimoine.patrilang.visitors.VariableVisitor;
 import school.hei.patrimoine.patrilang.visitors.possession.ArgentVisitor;
 import school.hei.patrimoine.patrilang.visitors.possession.TransferArgentVisitor;
+import school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor;
 
 class TransferArgentVisitorTest {
   private static final VariableVisitor variableVisitor = new VariableVisitor();

@@ -20,6 +20,7 @@ import school.hei.patrimoine.modele.possession.*;
 import school.hei.patrimoine.patrilang.factory.SectionVisitorFactory;
 import school.hei.patrimoine.patrilang.modele.variable.VariableType;
 import school.hei.patrimoine.patrilang.visitors.possession.*;
+import school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor;
 
 @Builder
 @Getter

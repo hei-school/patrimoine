@@ -28,7 +28,7 @@ public class PatriLangTranspiler {
     var tree = parseAsTree(casPath.toString());
 
     if (isNull(tree.cas())) {
-      throw new IllegalArgumentException("Expected a Cas file but found a CasSet file.");
+      throw new IllegalArgumentException("Fichier Cas attendu, mais fichier CasSet trouvé.");
     }
 
     var patrilangVisitor = new PatriLangVisitor(null, new PatriLangCasVisitor(sectionVisitor));
@@ -39,7 +39,7 @@ public class PatriLangTranspiler {
     var tree = parseAsTree(casSetPath);
 
     if (isNull(tree.toutCas())) {
-      throw new IllegalArgumentException("Expected a CasSet file but found a Cas file.");
+      throw new IllegalArgumentException("Fichier CasSet attendu, mais fichier Cas trouvé.");
     }
 
     var casSetFolderPath = Paths.get(casSetPath).getParent().toAbsolutePath();
