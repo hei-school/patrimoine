@@ -153,12 +153,14 @@ MOT_DATE_INDETERMINER
     |   'Date indéterminer'
     ;
 MOT_DATE_MINIMUM
-    :   'DATE_MINIMUM'
+    :   'DATE_MIN'
+    |   'DATE_MINIMUM'
     |   'LE_DEBUT_DU_TEMPS'
     |   'DEBUT_DU_TEMPS'
     ;
 MOT_DATE_MAXIMUM
-    :   'DATE_MAXIMUM'
+    :   'DATE_MAX'
+    |   'DATE_MAXIMUM'
     |   'FIN_DES_TEMPS'
     |   'FIN_DU_TEMPS'
     ;

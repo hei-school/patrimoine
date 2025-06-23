@@ -64,7 +64,6 @@ public class VariableVisitor implements SimpleVisitor<VariableContext, Variable<
     }
 
     var isMinus = nonNull(ctx.MOINS());
-    var variableValue = ctx.VARIABLE().getText();
     var baseValue = this.variableScope.get(extractVariableName(ctx), extractVariableType(ctx));
 
     if (nonNull(ctx.dateDelta())) {
