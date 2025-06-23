@@ -4,8 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static school.hei.patrimoine.modele.Argent.ariary;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.VariableContext;
-import static school.hei.patrimoine.patrilang.modele.variable.VariableType.PERSONNE;
-import static school.hei.patrimoine.patrilang.modele.variable.VariableType.TRESORERIES;
+import static school.hei.patrimoine.patrilang.modele.variable.VariableType.*;
 
 import java.time.LocalDate;
 import org.antlr.v4.runtime.tree.TerminalNode;
@@ -13,17 +12,29 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import school.hei.patrimoine.modele.Personne;
 import school.hei.patrimoine.modele.possession.Compte;
+import school.hei.patrimoine.patrilang.antlr.PatriLangParser;
+import school.hei.patrimoine.patrilang.modele.variable.Variable;
+import school.hei.patrimoine.patrilang.utils.UnitTestVisitor;
 import school.hei.patrimoine.patrilang.visitors.VariableVisitor;
 
+@SuppressWarnings("all")
 class VariableVisitorTest {
-  private VariableVisitor subject;
   private final VariableContext variableContextMock = mock(VariableContext.class);
   private final TerminalNode terminalNodeMock = mock(TerminalNode.class);
+
+  VariableVisitor subject;
+
+  UnitTestVisitor visitor =
+      new UnitTestVisitor() {
+        @Override
+        public Variable<?> visitVariable(VariableContext ctx) {
+          return subject.apply(ctx);
+        }
+      };
 
   @BeforeEach
   void setUp() {
     subject = new VariableVisitor();
-
     when(variableContextMock.VARIABLE()).thenReturn(terminalNodeMock);
   }
 
@@ -49,5 +60,45 @@ class VariableVisitorTest {
     when(terminalNodeMock.getText()).thenReturn("Personnes:Jean");
 
     assertThrows(IllegalArgumentException.class, () -> subject.asCompte(variableContextMock));
+  }
+
+  @Test
+  void parse_normal_date() {
+    var input = "le 01 du 02-2025";
+    var expected = LocalDate.of(2025, 2, 1);
+
+    var variable = (Variable<LocalDate>) visitor.visit(input, PatriLangParser::variable);
+    var actual = variable.value();
+
+    assertEquals(expected, actual);
+  }
+
+  @Test
+  void can_parse_variable_with_full_delta() {
+    var input = "Dates:ajd - 2 années et 3mois et 4jours";
+    var baseDate = LocalDate.of(2026, 7, 13);
+    var expected = baseDate.plusYears(2).plusMonths(3).plusDays(4);
+
+    subject.addToScope("ajd", DATE, baseDate);
+
+    var variable = (Variable<LocalDate>) visitor.visit(input, PatriLangParser::variable);
+    var actual = variable.value();
+  }
+
+  @Test
+  void throws_if_delta_provided_but_type_not_date() {
+    var input = "Trésoreries:compte + 2 années et 3mois et 4jours";
+    var baseDate = LocalDate.of(2026, 7, 13);
+    var expected = baseDate.plusYears(2).plusMonths(3).plusDays(4);
+
+    subject.addToScope("compte", TRESORERIES, baseDate);
+
+    var error =
+        assertThrows(
+            IllegalArgumentException.class, () -> visitor.visit(input, PatriLangParser::variable));
+
+    assertEquals(
+        "La variable compte doit être de type DATE pour utiliser les opérations comme + y années.",
+        error.getMessage());
   }
 }

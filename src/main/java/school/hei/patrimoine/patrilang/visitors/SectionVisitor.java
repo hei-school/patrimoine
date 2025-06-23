@@ -26,7 +26,6 @@ import school.hei.patrimoine.patrilang.visitors.possession.*;
 public class SectionVisitor {
   private final String casSetFolderPath;
   private final VariableVisitor variableVisitor;
-  private final DateVisitor dateVisitor;
   private final CompteVisitor compteVisitor;
   private final CreanceVisitor creanceVisitor;
   private final DetteVisitor detteVisitor;
@@ -49,7 +48,7 @@ public class SectionVisitor {
         .forEach(
             ligne ->
                 this.variableVisitor.addToScope(
-                    visitText(ligne.nom), DATE, this.dateVisitor.apply(ligne.dateValue)));
+                    visitText(ligne.nom), DATE, this.variableVisitor.asDate(ligne.dateValue)));
   }
 
   public void visitSectionPersonnesDeclarations(SectionPersonnesDeclarationsContext ctx) {

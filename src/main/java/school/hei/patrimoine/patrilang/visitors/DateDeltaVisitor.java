@@ -2,46 +2,18 @@ package school.hei.patrimoine.patrilang.visitors;
 
 import static java.lang.Integer.parseInt;
 import static java.util.Objects.isNull;
-import static java.util.Objects.nonNull;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.*;
 
 import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.function.TriFunction;
 
 @RequiredArgsConstructor
-public class DateVisitor implements SimpleVisitor<DateContext, LocalDate> {
-  private final VariableVisitor variableVisitor;
+public class DateDeltaVisitor
+    implements TriFunction<LocalDate, DateDeltaContext, Boolean, LocalDate> {
 
   @Override
-  public LocalDate apply(DateContext ctx) {
-    if (nonNull(ctx.MOT_DATE_MINIMUM())) {
-      return LocalDate.MIN;
-    }
-
-    if (nonNull(ctx.MOT_DATE_INDETERMINER()) || nonNull(ctx.MOT_DATE_MAXIMUM())) {
-      return LocalDate.MAX;
-    }
-
-    if (nonNull(ctx.dateExpr())) {
-      return visitDateExpr(ctx.dateExpr());
-    }
-
-    return LocalDate.of(
-        parseInt(ctx.annee.getText()), parseInt(ctx.mois.getText()), parseInt(ctx.jour.getText()));
-  }
-
-  private LocalDate visitDateExpr(DateExprContext ctx) {
-    var baseDate = this.variableVisitor.asDate(ctx.variable());
-    var isMinus = nonNull(ctx.MOINS());
-
-    if (isNull(ctx.dateDelta())) {
-      return baseDate;
-    }
-
-    return applyDelta(isMinus, baseDate, ctx.dateDelta());
-  }
-
-  private LocalDate applyDelta(boolean isMinus, LocalDate baseDate, DateDeltaContext ctx) {
+  public LocalDate apply(LocalDate baseDate, DateDeltaContext ctx, Boolean isMinus) {
     var anneePart = visitAnneePart(ctx.anneePart());
     var moisPart = visitMoisPart(ctx.moisPart());
     var joursPart = visitJours(ctx.jourPart());

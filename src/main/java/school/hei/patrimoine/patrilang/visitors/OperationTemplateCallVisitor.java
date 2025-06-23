@@ -1,6 +1,6 @@
 package school.hei.patrimoine.patrilang.visitors;
 
-import static java.util.Objects.nonNull;
+import static java.util.Objects.isNull;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.OperationTemplateCallArgContext;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.OperationTemplateCallArgValueContext;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.OperationTemplateCallContext;
@@ -18,7 +18,6 @@ import school.hei.patrimoine.patrilang.modele.variable.Variable;
 public class OperationTemplateCallVisitor
     implements SimpleVisitor<OperationTemplateCallContext, Set<Possession>> {
   private final VariableVisitor variableVisitor;
-  private final DateVisitor dateVisitor;
 
   @Override
   public Set<Possession> apply(OperationTemplateCallContext ctx) {
@@ -32,14 +31,14 @@ public class OperationTemplateCallVisitor
   }
 
   private List<Object> visitArgValues(OperationTemplateCallArgContext ctx) {
+    if (isNull(ctx)) {
+      return List.of();
+    }
+
     return ctx.operationTemplateCallArgValue().stream().map(this::visitArgValue).toList();
   }
 
   private Object visitArgValue(OperationTemplateCallArgValueContext ctx) {
-    if (nonNull(ctx.date())) {
-      return this.dateVisitor.apply(ctx.date());
-    }
-
     return this.variableVisitor.apply(ctx.variable()).value();
   }
 }

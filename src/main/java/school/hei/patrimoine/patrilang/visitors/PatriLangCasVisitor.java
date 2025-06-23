@@ -25,12 +25,12 @@ public class PatriLangCasVisitor implements Function<CasContext, Cas> {
     var devise = visitDevise(sectionCasGeneral.ligneDevise().devise());
     var ajd =
         this.sectionVisitor
-            .getDateVisitor()
-            .apply(sectionCasGeneral.ligneDateSpecification().dateValue);
+            .getVariableVisitor()
+            .asDate(sectionCasGeneral.ligneDateSpecification().dateValue);
     var finSimulation =
         this.sectionVisitor
-            .getDateVisitor()
-            .apply(sectionCasGeneral.ligneDateFinSimulation().dateValue);
+            .getVariableVisitor()
+            .asDate(sectionCasGeneral.ligneDateFinSimulation().dateValue);
     var possesseurs = this.sectionVisitor.visitSectionPossesseurs(ctx.sectionPossesseurs());
     if (nonNull(ctx.sectionInitialisation())) {
       sectionVisitor.visitSectionInitialisation(ctx.sectionInitialisation());

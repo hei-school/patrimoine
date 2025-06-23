@@ -4,6 +4,9 @@ import java.util.Optional;
 
 @SuppressWarnings("all")
 public record VariableScope(VariableContainer container, Optional<VariableScope> parentScope) {
+  public VariableScope() {
+    this(Optional.empty());
+  }
 
   public VariableScope(Optional<VariableScope> parentScope) {
     this(new VariableContainer(), parentScope);

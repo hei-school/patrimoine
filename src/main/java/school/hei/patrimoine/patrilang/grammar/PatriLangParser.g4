@@ -38,7 +38,7 @@ sectionDatesDeclarations
     ;
 
 ligneDateDeclaration
-    :   MUL nom=text COLON dateValue=date
+    :   MUL nom=text COLON dateValue=variable
     ;
 
 /* Cas */
@@ -63,11 +63,11 @@ lignePossesseur
     ;
 
 ligneDateSpecification
-    :   MUL MOT_SPECIFIER dateValue=date
+    :   MUL MOT_SPECIFIER dateValue=variable
     ;
 
 ligneDateFinSimulation
-    :   MUL MOT_FIN_SIMULATION dateValue=date
+    :   MUL MOT_FIN_SIMULATION dateValue=variable
     ;
 
 ligneDevise
@@ -83,11 +83,11 @@ sectionSuivi
     ;
 
 objectif
-    :   MUL id dateValue=date COMMA MOT_OBJECTIF_DE valeurComptable=argent MOT_POUR compteNom=variable
+    :   MUL id dateValue=variable COMMA MOT_OBJECTIF_DE valeurComptable=argent MOT_POUR compteNom=variable
     ;
 
 correction
-    :   MUL id dateValue=date COMMA MOT_CORRIGER valeurComptable=argent MOT_DANS compteNom=variable
+    :   MUL id dateValue=variable COMMA MOT_CORRIGER valeurComptable=argent MOT_DANS compteNom=variable
     ;
 /* -------------------- Possessions --------------------  */
 /* Trésorerie */
@@ -135,8 +135,7 @@ operationTemplateCallArg
     ;
 
 operationTemplateCallArgValue
-    :   date
-    |   variable
+    :   variable
     ;
 
 sectionOperations
@@ -160,36 +159,36 @@ operation
 
 /* Simple Possessions */
 compte
-    :   MUL nom=text COMMA MOT_VALANT valeurComptable=argent dateValue=date
+    :   MUL nom=text COMMA MOT_VALANT valeurComptable=argent dateValue=variable
     ;
 
 fluxArgentTransferer
-    :   MUL id dateValue=date COMMA MOT_TRANSFERER valeurComptable=argent MOT_DEPUIS compteDebiteurNom=variable MOT_VERS compteCrediteurNom=variable dateFin?
+    :   MUL id dateValue=variable COMMA MOT_TRANSFERER valeurComptable=argent MOT_DEPUIS compteDebiteurNom=variable MOT_VERS compteCrediteurNom=variable dateFin?
     ;
 
 fluxArgentEntrer
-    :   MUL id dateValue=date COMMA MOT_ENTRER valeurComptable=argent MOT_VERS compteCrediteurNom=variable dateFin?
+    :   MUL id dateValue=variable COMMA MOT_ENTRER valeurComptable=argent MOT_VERS compteCrediteurNom=variable dateFin?
     ;
 
 fluxArgentSortir
-    :   MUL id dateValue=date COMMA MOT_SORTIR valeurComptable=argent MOT_DEPUIS compteDebiteurNom=variable dateFin?
+    :   MUL id dateValue=variable COMMA MOT_SORTIR valeurComptable=argent MOT_DEPUIS compteDebiteurNom=variable dateFin?
     ;
 
 acheterMateriel
-    :   MUL id dateValue=date COMMA MOT_ACHETER materielNom=text COMMA MOT_VALANT valeurComptable=argent COMMA MATERIEL_APPRECIATION MOT_ANNUELLEMENT_DE pourcentageAppreciation=nombre PERCENT COMMA MOT_DEPUIS compteDebiteurNom=variable
+    :   MUL id dateValue=variable COMMA MOT_ACHETER materielNom=text COMMA MOT_VALANT valeurComptable=argent COMMA MATERIEL_APPRECIATION MOT_ANNUELLEMENT_DE pourcentageAppreciation=nombre PERCENT COMMA MOT_DEPUIS compteDebiteurNom=variable
     ;
 
 possedeMateriel
-    :   MUL id dateValue=date COMMA MOT_POSSEDER materielNom=text COMMA MOT_VALANT valeurComptable=argent COMMA MATERIEL_APPRECIATION MOT_ANNUELLEMENT_DE pourcentageAppreciation=nombre PERCENT
+    :   MUL id dateValue=variable COMMA MOT_POSSEDER materielNom=text COMMA MOT_VALANT valeurComptable=argent COMMA MATERIEL_APPRECIATION MOT_ANNUELLEMENT_DE pourcentageAppreciation=nombre PERCENT
     ;
 
 /* -------------------- Commun --------------------  */
 sousTitre
-    :   HASHES HASHES nom=text COMMA dateValue=date COMMA MOT_DEVISE_EN devise
+    :   HASHES HASHES nom=text COMMA dateValue=variable COMMA MOT_DEVISE_EN devise
     ;
 
 dateFin
-    :   COMMA MOT_JUSQUA dateValue=date MOT_TOUT_LES ENTIER MOT_DU MOT_MOIS
+    :   COMMA MOT_JUSQUA dateValue=variable MOT_TOUT_LES ENTIER MOT_DU MOT_MOIS
     ;
 
 ligneNom
@@ -232,11 +231,6 @@ date
     |   MOT_DATE_INDETERMINER
     |   MOT_DATE_MINIMUM
     |   MOT_DATE_MAXIMUM
-    |   dateExpr
-    ;
-
-dateExpr
-    :   variable ( (PLUS | MOINS) dateDelta )?
     ;
 
 dateDelta
@@ -244,7 +238,7 @@ dateDelta
     ;
 
 anneePart
-    :   ENTIER MOT_ANNEE MOT_ET?
+    :   ENTIER (MOT_ANNEE | MOT_ANNEES) MOT_ET?
     ;
 
 moisPart
@@ -260,9 +254,10 @@ id
     ;
 
 variable
-    :   VARIABLE
+    :   date
+    |   VARIABLE ((PLUS | MOINS) dateDelta)?
     ;
 
 text
-    :   TEXT PLUS? variable?
+    :   TEXT
     ;

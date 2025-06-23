@@ -8,7 +8,6 @@ import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.possession.Compte;
 import school.hei.patrimoine.modele.possession.Correction;
 import school.hei.patrimoine.modele.possession.FluxArgent;
-import school.hei.patrimoine.patrilang.visitors.DateVisitor;
 import school.hei.patrimoine.patrilang.visitors.IdVisitor;
 import school.hei.patrimoine.patrilang.visitors.SimpleVisitor;
 import school.hei.patrimoine.patrilang.visitors.VariableVisitor;
@@ -16,7 +15,6 @@ import school.hei.patrimoine.patrilang.visitors.VariableVisitor;
 @RequiredArgsConstructor
 public class CorrectionVisitor implements SimpleVisitor<CorrectionContext, Correction> {
   private final VariableVisitor variableVisitor;
-  private final DateVisitor dateVisitor;
   private final ArgentVisitor argentVisitor;
   private final IdVisitor idVisitor;
 
@@ -24,7 +22,7 @@ public class CorrectionVisitor implements SimpleVisitor<CorrectionContext, Corre
   public Correction apply(CorrectionContext ctx) {
     String id = this.idVisitor.apply(ctx.id());
     Argent valeurComptable = this.argentVisitor.apply(ctx.valeurComptable);
-    LocalDate t = this.dateVisitor.apply(ctx.dateValue);
+    LocalDate t = this.variableVisitor.asDate(ctx.dateValue);
     Compte compte = this.variableVisitor.asCompte(ctx.compteNom);
 
     return new Correction(new FluxArgent(id, compte, t, valeurComptable));

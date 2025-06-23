@@ -42,7 +42,7 @@ class VariableContainerTest {
   }
 
   @Test
-  void find_throws_exception_if_variable_not_found() {
+  void empty_if_variable_not_found() {
     var actual = subject.find("inexistant", DETTE);
 
     assertTrue(actual.isEmpty());

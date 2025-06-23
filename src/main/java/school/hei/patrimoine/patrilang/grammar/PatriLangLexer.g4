@@ -245,12 +245,6 @@ MOT_ANNEE
 MOT_ANNEES
     :   'années'
     ;
-MOT_SECONDE
-    :   'seconde'
-    ;
-MOT_SECONDES
-    :   'secondes'
-    ;
 MOT_ET
     :   'et'
     ;

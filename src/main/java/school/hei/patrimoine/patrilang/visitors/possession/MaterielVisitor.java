@@ -7,12 +7,12 @@ import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.possession.Materiel;
-import school.hei.patrimoine.patrilang.visitors.DateVisitor;
 import school.hei.patrimoine.patrilang.visitors.SimpleVisitor;
+import school.hei.patrimoine.patrilang.visitors.VariableVisitor;
 
 @RequiredArgsConstructor
 public class MaterielVisitor implements SimpleVisitor<PossedeMaterielContext, Materiel> {
-  private final DateVisitor dateVisitor;
+  private final VariableVisitor variableVisitor;
   private final ArgentVisitor argentVisitor;
 
   @Override
@@ -21,7 +21,7 @@ public class MaterielVisitor implements SimpleVisitor<PossedeMaterielContext, Ma
     double tauxDAppreciation = visitNombre(ctx.pourcentageAppreciation);
     double facteurTauxDAppreciation = visitMaterielAppreciationFacteur(ctx.MATERIEL_APPRECIATION());
     Argent valeurComptable = this.argentVisitor.apply(ctx.valeurComptable);
-    LocalDate t = this.dateVisitor.apply(ctx.dateValue);
+    LocalDate t = this.variableVisitor.asDate(ctx.dateValue);
 
     return new Materiel(
         nom, t, t, valeurComptable, tauxDAppreciation / 100 * facteurTauxDAppreciation);

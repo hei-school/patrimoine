@@ -2,9 +2,11 @@ package school.hei.patrimoine.patrilang.visitors;
 
 import static java.lang.Double.parseDouble;
 import static java.lang.Integer.parseInt;
+import static java.util.Objects.nonNull;
 import static school.hei.patrimoine.modele.Devise.*;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.*;
 
+import java.time.LocalDate;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import school.hei.patrimoine.modele.Devise;
 import school.hei.patrimoine.modele.Personne;
@@ -16,9 +18,22 @@ public class BaseVisitor {
     return new Personne(parseNodeValue(ctx.TEXT()));
   }
 
-  public static DateFin visitDateFin(DateFinContext ctx, DateVisitor dateVisitor) {
+  public static LocalDate visitDate(DateContext ctx) {
+    if (nonNull(ctx.MOT_DATE_MINIMUM())) {
+      return LocalDate.MIN;
+    }
+
+    if (nonNull(ctx.MOT_DATE_INDETERMINER()) || nonNull(ctx.MOT_DATE_MAXIMUM())) {
+      return LocalDate.MAX;
+    }
+
+    return LocalDate.of(
+        parseInt(ctx.annee.getText()), parseInt(ctx.mois.getText()), parseInt(ctx.jour.getText()));
+  }
+
+  public static DateFin visitDateFin(DateFinContext ctx, VariableVisitor variableVisitor) {
     int dateDOpération = parseInt(parseNodeValue(ctx.ENTIER()));
-    var dateFinValue = dateVisitor.apply(ctx.dateValue);
+    var dateFinValue = variableVisitor.asDate(ctx.dateValue);
 
     return new DateFin(dateDOpération, dateFinValue);
   }

@@ -1,5 +1,6 @@
 package school.hei.patrimoine.patrilang.visitors;
 
+import static java.util.Objects.isNull;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.OperationTemplateContext;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.OperationTemplateParamContext;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.OperationTemplateParamValueContext;
@@ -25,6 +26,10 @@ public class OperationTemplateVisitor
   }
 
   private static List<OperationTemplateParam> visitParams(OperationTemplateParamContext ctx) {
+    if (isNull(ctx)) {
+      return List.of();
+    }
+
     return ctx.operationTemplateParamValue().stream()
         .map(OperationTemplateVisitor::visitParam)
         .toList();
