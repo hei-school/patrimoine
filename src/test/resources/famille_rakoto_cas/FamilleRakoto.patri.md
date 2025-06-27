@@ -2,7 +2,6 @@
 `/* Objectif final 4884000Ar */`
 * Objectif final (((4000000 + (-(-888000)) - 4000 * 2 + 4000) * 3) / 3) / 2 * 2 Ar
 
-
 # Cas
 * ZetyPersonnel
 * LocationMaison

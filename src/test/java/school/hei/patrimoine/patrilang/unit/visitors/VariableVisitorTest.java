@@ -14,6 +14,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import school.hei.patrimoine.modele.Personne;
 import school.hei.patrimoine.modele.possession.Compte;
+import school.hei.patrimoine.modele.possession.PersonneMorale;
 import school.hei.patrimoine.patrilang.antlr.PatriLangParser;
 import school.hei.patrimoine.patrilang.modele.variable.Variable;
 import school.hei.patrimoine.patrilang.utils.UnitTestVisitor;
@@ -62,6 +63,19 @@ class VariableVisitorTest {
     when(terminalNodeMock.getText()).thenReturn("Personnes:Jean");
 
     assertThrows(IllegalArgumentException.class, () -> subject.asCompte(variableContextMock));
+  }
+
+  @Test
+  void should_handle_personnes_morale() {
+    var familleRakoto = new PersonneMorale("FamilleRakoto");
+
+    subject.addToScope(familleRakoto.nom(), PERSONNE_MORALE, familleRakoto);
+
+    when(terminalNodeMock.getText()).thenReturn("PersonnesMorales:FamilleRakoto");
+
+    var actual = subject.asPersonne(variableContextMock);
+
+    assertEquals(familleRakoto.personne(), actual);
   }
 
   @Test

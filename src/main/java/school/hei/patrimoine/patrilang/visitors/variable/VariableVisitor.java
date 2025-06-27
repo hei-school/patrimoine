@@ -5,12 +5,14 @@ import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.VariableCont
 import static school.hei.patrimoine.patrilang.modele.variable.VariableType.DATE;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import lombok.Getter;
 import school.hei.patrimoine.modele.Personne;
 import school.hei.patrimoine.modele.possession.Compte;
 import school.hei.patrimoine.modele.possession.Creance;
 import school.hei.patrimoine.modele.possession.Dette;
+import school.hei.patrimoine.modele.possession.PersonneMorale;
 import school.hei.patrimoine.patrilang.modele.variable.Variable;
 import school.hei.patrimoine.patrilang.modele.variable.VariableScope;
 import school.hei.patrimoine.patrilang.modele.variable.VariableType;
@@ -47,7 +49,13 @@ public class VariableVisitor implements SimpleVisitor<VariableContext, Variable<
   }
 
   public Personne asPersonne(VariableContext ctx) {
-    return visitVariableAsExpectedType(Personne.class, ctx);
+    var value = visitVariableAsExpectedType(List.of(Personne.class, PersonneMorale.class), ctx);
+
+    if (Personne.class.isInstance(value)) {
+      return (Personne) value;
+    }
+
+    return ((PersonneMorale) value).personne();
   }
 
   public LocalDate asDate(VariableContext ctx) {
@@ -85,11 +93,17 @@ public class VariableVisitor implements SimpleVisitor<VariableContext, Variable<
   }
 
   private <T> T visitVariableAsExpectedType(Class<?> expectedType, VariableContext ctx) {
-    var variable = (Variable) this.apply(ctx);
+    return visitVariableAsExpectedType(List.of(expectedType), ctx);
+  }
 
-    if (!(expectedType.isInstance(variable.value()))) {
+  private <T> T visitVariableAsExpectedType(List<Class<?>> expectedTypes, VariableContext ctx) {
+    var variable = (Variable) this.apply(ctx);
+    var isExpectedType =
+        expectedTypes.stream().anyMatch(expectedType -> expectedType.isInstance(variable.value()));
+
+    if (!isExpectedType) {
       throw new IllegalArgumentException(
-          "La variable " + variable.name() + " n'est pas du type " + expectedType);
+          "La variable " + variable.name() + " n'est pas une des types: " + expectedTypes);
     }
 
     return (T) variable.value();

@@ -20,7 +20,6 @@ public class PatriLangCasVisitor implements Function<CasContext, Cas> {
   @Override
   public Cas apply(CasContext ctx) {
     var sectionCasGeneral = ctx.sectionCasGeneral();
-
     var nom = visitText(sectionCasGeneral.ligneCasNom().nom);
     var devise = visitDevise(sectionCasGeneral.ligneDevise().devise());
     var ajd =
@@ -31,14 +30,12 @@ public class PatriLangCasVisitor implements Function<CasContext, Cas> {
         this.sectionVisitor
             .getVariableVisitor()
             .asDate(sectionCasGeneral.ligneDateFinSimulation().dateValue);
-    var possesseurs = this.sectionVisitor.visitSectionPossesseurs(ctx.sectionPossesseurs());
-    if (nonNull(ctx.sectionInitialisation())) {
-      sectionVisitor.visitSectionInitialisation(ctx.sectionInitialisation());
-    }
 
-    var possessions = collectPossessions(ctx);
-    if (nonNull(ctx.sectionSuivi())) {
-      sectionVisitor.visitSectionSuivi(ctx.sectionSuivi());
+    var possesseurs = this.sectionVisitor.visitSectionPossesseurs(ctx.sectionPossesseurs());
+
+    if (nonNull(ctx.sectionOperationTemplateDeclaration())) {
+      this.sectionVisitor.visitOperationTemplateDeclarations(
+          ctx.sectionOperationTemplateDeclaration());
     }
 
     return new Cas(ajd, finSimulation, possesseurs) {
@@ -53,37 +50,41 @@ public class PatriLangCasVisitor implements Function<CasContext, Cas> {
       }
 
       @Override
-      protected void init() {}
+      protected void init() {
+        if (nonNull(ctx.sectionInitialisation())) {
+          sectionVisitor.visitSectionInitialisation(ctx.sectionInitialisation());
+        }
+      }
 
       @Override
-      protected void suivi() {}
+      protected void suivi() {
+        if (nonNull(ctx.sectionSuivi())) {
+          sectionVisitor.visitSectionSuivi(ctx.sectionSuivi());
+        }
+      }
 
       @Override
       public Set<Possession> possessions() {
+        Set<Possession> possessions = new HashSet<>();
+
+        if (nonNull(ctx.sectionTresoreries())) {
+          possessions.addAll(sectionVisitor.visitSectionTrésoreries(ctx.sectionTresoreries()));
+        }
+
+        if (nonNull(ctx.sectionCreances())) {
+          possessions.addAll(sectionVisitor.visitSectionCréances(ctx.sectionCreances()));
+        }
+
+        if (nonNull(ctx.sectionDettes())) {
+          possessions.addAll(sectionVisitor.visitSectionDettes(ctx.sectionDettes()));
+        }
+
+        if (nonNull(ctx.sectionOperations())) {
+          sectionVisitor.visitSectionOperations(ctx.sectionOperations());
+        }
+
         return possessions;
       }
     };
-  }
-
-  private Set<Possession> collectPossessions(CasContext ctx) {
-    Set<Possession> possessions = new HashSet<>();
-
-    if (nonNull(ctx.sectionTresoreries())) {
-      possessions.addAll(sectionVisitor.visitSectionTrésoreries(ctx.sectionTresoreries()));
-    }
-
-    if (nonNull(ctx.sectionCreances())) {
-      possessions.addAll(sectionVisitor.visitSectionCréances(ctx.sectionCreances()));
-    }
-
-    if (nonNull(ctx.sectionDettes())) {
-      possessions.addAll(sectionVisitor.visitSectionDettes(ctx.sectionDettes()));
-    }
-
-    if (nonNull(ctx.sectionOperations())) {
-      sectionVisitor.visitSectionOperations(ctx.sectionOperations());
-    }
-
-    return possessions;
   }
 }

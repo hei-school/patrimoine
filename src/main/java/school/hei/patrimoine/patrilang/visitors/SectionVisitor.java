@@ -52,6 +52,16 @@ public class SectionVisitor {
                     visitText(ligne.nom), DATE, this.variableVisitor.asDate(ligne.dateValue)));
   }
 
+  public void visitPersonnesMoralesDeclarations(SectionPersonnesMoralesDeclarationsContext ctx) {
+    ctx.ligneNom()
+        .forEach(
+            ligne -> {
+              var personneMorale = visitPersonneMorale(ligne.nom);
+              this.variableVisitor.addToScope(
+                  personneMorale.nom(), PERSONNE_MORALE, personneMorale);
+            });
+  }
+
   public void visitSectionPersonnesDeclarations(SectionPersonnesDeclarationsContext ctx) {
     ctx.ligneNom()
         .forEach(
@@ -61,15 +71,7 @@ public class SectionVisitor {
             });
   }
 
-  public void visitSectionInitialisation(SectionInitialisationContext ctx) {
-    this.operationVisitor.apply(ctx.operations());
-  }
-
-  public void visitSectionSuivi(SectionSuiviContext ctx) {
-    this.operationVisitor.apply(ctx.operations());
-  }
-
-  public void visitTemplateDeclarations(SectionOperationTemplateDeclarationContext ctx) {
+  public void visitOperationTemplateDeclarations(SectionOperationTemplateDeclarationContext ctx) {
     ctx.operationTemplate()
         .forEach(
             operation -> {
@@ -77,6 +79,14 @@ public class SectionVisitor {
               this.variableVisitor.addToScope(
                   operationTemplate.name(), OPERATION_TEMPLATE, operationTemplate);
             });
+  }
+
+  public void visitSectionInitialisation(SectionInitialisationContext ctx) {
+    this.operationVisitor.apply(ctx.operations());
+  }
+
+  public void visitSectionSuivi(SectionSuiviContext ctx) {
+    this.operationVisitor.apply(ctx.operations());
   }
 
   public Map<Personne, Double> visitSectionPossesseurs(SectionPossesseursContext ctx) {

@@ -14,7 +14,7 @@ document
 
 /* ToutCas */
 toutCas
-    :   sectionToutCasGeneral sectionCas? sectionDatesDeclarations? sectionPersonnesDeclarations? sectionTresoreries? sectionCreances? sectionDettes? EOF
+    :   sectionToutCasGeneral sectionCas? sectionDatesDeclarations? sectionPersonnesMoralesDeclarations? sectionPersonnesDeclarations? sectionTresoreries? sectionCreances? sectionDettes? EOF
     ;
 
 ligneObjectifFinal
@@ -27,6 +27,10 @@ sectionToutCasGeneral
 
 sectionCas
     :   HASHES ENTETE_CAS ligneNom*
+    ;
+
+sectionPersonnesMoralesDeclarations
+    :   HASHES ENTETE_PERSONNES_MORALES ligneNom*
     ;
 
 sectionPersonnesDeclarations
@@ -43,7 +47,7 @@ ligneDateDeclaration
 
 /* Cas */
 cas
-    :   sectionCasGeneral sectionDatesDeclarations? sectionPossesseurs  sectionTresoreries? sectionCreances? sectionDettes? sectionInitialisation? sectionOperations? sectionSuivi?  sectionOperationTemplateDeclaration? EOF
+    :   sectionCasGeneral sectionPossesseurs  sectionDatesDeclarations? sectionTresoreries? sectionCreances? sectionDettes? sectionInitialisation? sectionOperations? sectionSuivi?  sectionOperationTemplateDeclaration? EOF
     ;
 
 sectionCasGeneral
@@ -127,7 +131,7 @@ operationTemplateParamValue
     ;
 
 operationTemplateCall
-    :   MUL templateName=text LPAREN operationTemplateCallArg? RPAREN
+    :   MUL BACKTICK templateName=text LPAREN operationTemplateCallArg? RPAREN BACKTICK
     ;
 
 operationTemplateCallArg

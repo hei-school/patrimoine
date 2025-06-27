@@ -22,6 +22,11 @@ public class PatriLangToutCasVisitor implements Function<ToutCasContext, CasSet>
       this.sectionVisitor.visitSectionDatesDeclarations(ctx.sectionDatesDeclarations());
     }
 
+    if (nonNull(ctx.sectionPersonnesMoralesDeclarations())) {
+      this.sectionVisitor.visitPersonnesMoralesDeclarations(
+          ctx.sectionPersonnesMoralesDeclarations());
+    }
+
     if (nonNull(ctx.sectionPersonnesDeclarations())) {
       this.sectionVisitor.visitSectionPersonnesDeclarations(ctx.sectionPersonnesDeclarations());
     }

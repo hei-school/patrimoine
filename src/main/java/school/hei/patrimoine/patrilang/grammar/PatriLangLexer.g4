@@ -8,8 +8,12 @@ fragment DIGIT
     :   [0-9]
     ;
 
+fragment STRING_RAW_VALUE
+    :   '[' | ']' | '>' | '<'
+    ;
+
 fragment STRING
-    :   ([\p{L}_]) ([\p{L}\p{N}_])*
+    :   ([\p{L}] | STRING_RAW_VALUE) (([\p{L}\p{N}_]) | STRING_RAW_VALUE)*
     ;
 
 /* -------------------- Base --------------------  */
@@ -67,6 +71,11 @@ ENTETE_DATES
 
 ENTETE_PERSONNES
     :   'Personnes'
+    ;
+
+ENTETE_PERSONNES_MORALES
+    :   'Personnes Morales'
+    |   'Personnes morales'
     ;
 
 MOT_POUR

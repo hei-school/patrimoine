@@ -52,7 +52,7 @@ class OperationTemplateCallVisitorTest {
     var operationTemplate = new OperationTemplate("myTemplate", List.of(), templateContent);
     variableVisitor.addToScope("myTemplate", OPERATION_TEMPLATE, operationTemplate);
 
-    var input = "* myTemplate()";
+    var input = "* `myTemplate()`";
     var expected =
         new FluxArgent("salaireMensuel", COMPTE_PERSONNEL, AJD, LocalDate.MAX, 31, ariary(4_000));
     Set<FluxArgent> operations = visitor.visit(input, PatriLangParser::operationTemplateCall);
@@ -75,7 +75,7 @@ class OperationTemplateCallVisitorTest {
     var operationTemplate = new OperationTemplate("charges", params, templateContent);
     variableVisitor.addToScope("charges", OPERATION_TEMPLATE, operationTemplate);
 
-    var input = "* charges(Trésoreries:comptePersonnel, le 23 du 12-2025)";
+    var input = "* `charges(Trésoreries:comptePersonnel, le 23 du 12-2025)`";
     var expected =
         new FluxArgent("salaireMensuel", COMPTE_PERSONNEL, AJD, DATE_FIN, 31, ariary(4_000));
     Set<FluxArgent> operations = visitor.visit(input, PatriLangParser::operationTemplateCall);
