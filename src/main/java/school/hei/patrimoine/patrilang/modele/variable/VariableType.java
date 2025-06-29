@@ -6,6 +6,7 @@ import lombok.Getter;
 public enum VariableType {
   OPERATION_TEMPLATE("Templates"),
   DATE("Dates"),
+  NOMBRE("Nombres"),
   PERSONNE("Personnes"),
   TRESORERIES("Trésoreries"),
   CREANCE("Créances"),
@@ -22,6 +23,7 @@ public enum VariableType {
     return switch (value) {
       case "Templates" -> OPERATION_TEMPLATE;
       case "Dates" -> DATE;
+      case "Nombres" -> NOMBRE;
       case "Personnes" -> PERSONNE;
       case "Trésoreries" -> TRESORERIES;
       case "Créances" -> CREANCE;

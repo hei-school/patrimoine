@@ -20,8 +20,8 @@ public class AchatMaterielVisitor
   @Override
   public AchatMaterielAuComptant apply(AcheterMaterielContext ctx) {
     String materielNom = visitText(ctx.materielNom);
-    double tauxDAppreciation = visitNombre(ctx.pourcentageAppreciation);
     double facteurTauxDAppreciation = visitMaterielAppreciationFacteur(ctx.MATERIEL_APPRECIATION());
+    double tauxDAppreciation = this.variableVisitor.asNombre(ctx.pourcentageAppreciation);
     Argent valeurComptable = this.argentVisitor.apply(ctx.valeurComptable);
     LocalDate t = this.variableVisitor.asDate(ctx.dateValue);
     Compte financeur = this.variableVisitor.asCompte(ctx.compteDebiteurNom);

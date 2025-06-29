@@ -21,7 +21,7 @@ class ArgentMaterielVisitorTest {
   private static final VariableVisitor variableVisitor = new VariableVisitor();
   private static final Compte MON_COMPTE = new Compte("monCompte", LocalDate.MIN, ariary(200_000));
   AchatMaterielVisitor subject =
-      new AchatMaterielVisitor(variableVisitor, new ArgentVisitor(new ExpressionVisitor()));
+      new AchatMaterielVisitor(variableVisitor, new ArgentVisitor(new ExpressionVisitor(variableVisitor)));
 
   UnitTestVisitor visitor =
       new UnitTestVisitor() {

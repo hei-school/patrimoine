@@ -18,8 +18,8 @@ public class MaterielVisitor implements SimpleVisitor<PossedeMaterielContext, Ma
   @Override
   public Materiel apply(PossedeMaterielContext ctx) {
     String nom = visitText(ctx.materielNom);
-    double tauxDAppreciation = visitNombre(ctx.pourcentageAppreciation);
     double facteurTauxDAppreciation = visitMaterielAppreciationFacteur(ctx.MATERIEL_APPRECIATION());
+    double tauxDAppreciation = this.variableVisitor.asNombre(ctx.pourcentageAppreciation);
     Argent valeurComptable = this.argentVisitor.apply(ctx.valeurComptable);
     LocalDate t = this.variableVisitor.asDate(ctx.dateValue);
 

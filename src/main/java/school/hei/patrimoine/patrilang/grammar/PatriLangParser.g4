@@ -59,7 +59,7 @@ sectionPossesseurs
     ;
 
 lignePossesseur
-    :   MUL nom=variable pourcentage=nombre PERCENT
+    :   MUL nom=variable pourcentage=variable PERCENT
     ;
 
 ligneDateSpecification
@@ -155,11 +155,11 @@ operation
     |   correction
     |   objectif
     |   operationTemplateCall
-    |   ligneDateDeclaration
+    |   ligneVariableDeclaration
     ;
 
-ligneDateDeclaration
-    :   MUL nom=text COLON dateValue=variable
+ligneVariableDeclaration
+    :   MUL nomEtType=variable COLON valeur=variable
     ;
 
 /* Simple Possessions */
@@ -180,11 +180,11 @@ fluxArgentSortir
     ;
 
 acheterMateriel
-    :   MUL id COMMA? dateValue=variable COMMA? MOT_ACHETER materielNom=text COMMA? MOT_VALANT valeurComptable=argent COMMA? MATERIEL_APPRECIATION MOT_ANNUELLEMENT_DE pourcentageAppreciation=nombre PERCENT COMMA? MOT_DEPUIS compteDebiteurNom=variable
+    :   MUL id COMMA? dateValue=variable COMMA? MOT_ACHETER materielNom=text COMMA? MOT_VALANT valeurComptable=argent COMMA? MATERIEL_APPRECIATION MOT_ANNUELLEMENT_DE pourcentageAppreciation=variable PERCENT COMMA? MOT_DEPUIS compteDebiteurNom=variable
     ;
 
 possedeMateriel
-    :   MUL id COMMA? dateValue=variable COMMA? MOT_POSSEDER materielNom=text COMMA? MOT_VALANT valeurComptable=argent COMMA? MATERIEL_APPRECIATION MOT_ANNUELLEMENT_DE pourcentageAppreciation=nombre PERCENT
+    :   MUL id COMMA? dateValue=variable COMMA? MOT_POSSEDER materielNom=text COMMA? MOT_VALANT valeurComptable=argent COMMA? MATERIEL_APPRECIATION MOT_ANNUELLEMENT_DE pourcentageAppreciation=variable PERCENT
     ;
 
 /* -------------------- Commun --------------------  */
@@ -193,7 +193,7 @@ sousTitre
     ;
 
 dateFin
-    :   COMMA? MOT_JUSQUA dateValue=variable MOT_TOUT_LES ENTIER MOT_DU MOT_MOIS
+    :   COMMA? MOT_JUSQUA dateValue=variable MOT_TOUT_LES jourOperation=variable MOT_DU MOT_MOIS
     ;
 
 ligneNom
@@ -202,6 +202,44 @@ ligneNom
 
 argent
     :   expression devise
+    ;
+
+devise
+    :   DEVISE
+    ;
+
+variable
+    :   nombre
+    |   date dateDelta?
+    |   VARIABLE dateDelta?
+    ;
+
+anneePart
+    :   variable (MOT_ANNEE | MOT_ANNEES) MOT_ET?
+    ;
+
+moisPart
+    :   variable MOT_MOIS MOT_ET?
+    ;
+
+jourPart
+    :   variable (MOT_JOUR | MOT_JOURS)
+    ;
+
+id
+    : BACKTICK text (PLUS variable)? BACKTICK
+    ;
+
+date
+    :   MOT_LE jour=variable MOT_DU moisEntier=variable MOINS annee=variable
+    |   MOT_LE jour=variable moisTextuel=MOIS annee=variable
+    |   MOT_DATE_INDETERMINER
+    |   MOT_DATE_MINIMUM
+    |   MOT_DATE_MAXIMUM
+    ;
+
+dateDelta
+    :   (PLUS | MOINS) anneePart? moisPart? jourPart?
     ;
 
 expression
@@ -219,49 +257,12 @@ multiplicationExpr
 atom
     :   MOINS atom                    # NegateExpr
     |   LPAREN expression RPAREN      # ParenExpr
-    |   nombre                        # NombreExpr
-    ;
-
-devise
-    :   DEVISE
+    |   variable                      # NombreExpr
     ;
 
 nombre
     :   DECIMAL
     |   ENTIER
-    ;
-anneePart
-    :   ENTIER (MOT_ANNEE | MOT_ANNEES) MOT_ET?
-    ;
-
-moisPart
-    :   ENTIER MOT_MOIS MOT_ET?
-    ;
-
-jourPart
-    :   ENTIER (MOT_JOUR | MOT_JOURS)
-    ;
-
-id
-    : BACKTICK text (PLUS variable)? BACKTICK
-    ;
-
-variable
-    :   date dateDelta?
-    |   VARIABLE dateDelta?
-    ;
-
-date
-    :   MOT_LE jour=ENTIER MOT_DU mois=ENTIER MOINS annee=ENTIER               #DateEntier
-    |   MOT_LE jour=ENTIER mois=MOIS annee=ENTIER                             #DateTextuelle
-    |   MOT_DATE_INDETERMINER                                                  #DateIndeterminee
-    |   MOT_DATE_MINIMUM                                                       #DateMinimum
-    |   MOT_DATE_MAXIMUM                                                       #DateMaximum
-    ;
-
-
-dateDelta
-    :   (PLUS | MOINS) anneePart? moisPart? jourPart?
     ;
 
 text

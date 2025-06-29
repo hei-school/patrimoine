@@ -1,10 +1,14 @@
 package school.hei.patrimoine.patrilang.visitors;
 
+import lombok.RequiredArgsConstructor;
 import school.hei.patrimoine.patrilang.antlr.PatriLangParser;
 import school.hei.patrimoine.patrilang.antlr.PatriLangParserBaseVisitor;
+import school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor;
 
+@RequiredArgsConstructor
 public class ExpressionVisitor extends PatriLangParserBaseVisitor<Double>
     implements SimpleVisitor<PatriLangParser.ExpressionContext, Double> {
+  private final VariableVisitor variableVisitor;
 
   @Override
   public Double apply(PatriLangParser.ExpressionContext ctx) {
@@ -64,6 +68,6 @@ public class ExpressionVisitor extends PatriLangParserBaseVisitor<Double>
 
   @Override
   public Double visitNombreExpr(PatriLangParser.NombreExprContext ctx) {
-    return BaseVisitor.visitNombre(ctx.nombre());
+    return variableVisitor.asNombre(ctx.variable());
   }
 }

@@ -90,7 +90,7 @@ public class SectionVisitor {
         .collect(
             toMap(
                 ligne -> variableVisitor.asPersonne(ligne.nom),
-                ligne -> visitNombre(ligne.pourcentage) / 100));
+                ligne -> variableVisitor.asNombre(ligne.pourcentage) / 100));
   }
 
   public Set<Compte> visitSectionTrésoreries(SectionTresoreriesContext ctx) {

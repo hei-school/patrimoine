@@ -90,9 +90,38 @@ class VariableVisitorTest {
   }
 
   @Test
-  void parse_normal_textuel() {
+  void parse_normal_date_textuel() {
     var input = "le 01 février 2025";
     var expected = LocalDate.of(2025, FEBRUARY, 1);
+
+    var variable = (Variable<LocalDate>) visitor.visit(input, PatriLangParser::variable);
+    var actual = variable.value();
+
+    assertEquals(expected, actual);
+  }
+
+  @Test
+  void parse_normal_date_with_variable() {
+    var input = "le Nombres:jour du Nombres:mois-Nombres:annee";
+    var expected = LocalDate.of(2025, FEBRUARY, 1);
+
+    subject.addToScope("jour", NOMBRE, (double) expected.getDayOfMonth());
+    subject.addToScope("mois", NOMBRE, (double) expected.getMonth().getValue());
+    subject.addToScope("annee", NOMBRE, (double) expected.getYear());
+
+    var variable = (Variable<LocalDate>) visitor.visit(input, PatriLangParser::variable);
+    var actual = variable.value();
+
+    assertEquals(expected, actual);
+  }
+
+  @Test
+  void parse_normal_date_textuel_with_variable() {
+    var input = "le Nombres:premierDuMois février Nombres:anneeRecap";
+    var expected = LocalDate.of(2025, FEBRUARY, 1);
+
+    subject.addToScope("premierDuMois", NOMBRE, (double) expected.getDayOfMonth());
+    subject.addToScope("anneeRecap", NOMBRE, (double) expected.getYear());
 
     var variable = (Variable<LocalDate>) visitor.visit(input, PatriLangParser::variable);
     var actual = variable.value();

@@ -28,7 +28,7 @@ class TransferArgentVisitorTest {
   TransferArgentVisitor subject =
       new TransferArgentVisitor(
           variableVisitor,
-          new ArgentVisitor(new ExpressionVisitor()),
+          new ArgentVisitor(new ExpressionVisitor(variableVisitor)),
           new IdVisitor(variableVisitor));
 
   UnitTestVisitor visitor =

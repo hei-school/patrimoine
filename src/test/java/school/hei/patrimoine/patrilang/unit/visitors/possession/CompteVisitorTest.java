@@ -17,7 +17,7 @@ import school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor;
 
 class CompteVisitorTest {
   CompteVisitor subject =
-      new CompteVisitor(new VariableVisitor(), new ArgentVisitor(new ExpressionVisitor()));
+      new CompteVisitor(new VariableVisitor(), new ArgentVisitor(new ExpressionVisitor(new VariableVisitor())));
 
   UnitTestVisitor visitor =
       new UnitTestVisitor() {

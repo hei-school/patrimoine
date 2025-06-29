@@ -1,6 +1,5 @@
 package school.hei.patrimoine.patrilang.visitors.variable;
 
-import static java.lang.Integer.parseInt;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.*;
@@ -12,11 +11,11 @@ import school.hei.patrimoine.patrilang.modele.variable.Variable;
 
 public class VariableDateDeltaVisitor implements VariableDeltaVisitor<LocalDate> {
   @Override
-  public Variable<LocalDate> apply(LocalDate baseValue, VariableContext ctx) {
+  public Variable<LocalDate> apply(LocalDate baseValue, VariableContext ctx, VariableVisitor variableVisitor) {
     var isMinus = nonNull(ctx.dateDelta().MOINS());
-    var anneePart = visitAnneePart(ctx.dateDelta().anneePart());
-    var moisPart = visitMoisPart(ctx.dateDelta().moisPart());
-    var joursPart = visitJours(ctx.dateDelta().jourPart());
+    var anneePart = visitAnneePart(ctx.dateDelta().anneePart(), variableVisitor);
+    var moisPart = visitMoisPart(ctx.dateDelta().moisPart(), variableVisitor);
+    var joursPart = visitJours(ctx.dateDelta().jourPart(), variableVisitor);
     LocalDate newValue;
 
     if (isMinus) {
@@ -28,15 +27,15 @@ public class VariableDateDeltaVisitor implements VariableDeltaVisitor<LocalDate>
     return new Variable<>(R_VALUE_VARIABLE_NAME, DATE, newValue);
   }
 
-  private static int visitAnneePart(AnneePartContext ctx) {
-    return isNull(ctx) ? 0 : parseInt(ctx.ENTIER().getText());
+  private int visitAnneePart(AnneePartContext ctx, VariableVisitor variableVisitor) {
+    return isNull(ctx) ? 0 : variableVisitor.asInt((ctx.variable()));
   }
 
-  private static int visitMoisPart(MoisPartContext ctx) {
-    return isNull(ctx) ? 0 : parseInt(ctx.ENTIER().getText());
+  private int visitMoisPart(MoisPartContext ctx, VariableVisitor variableVisitor) {
+    return isNull(ctx) ? 0 : variableVisitor.asInt((ctx.variable()));
   }
 
-  private static int visitJours(JourPartContext ctx) {
-    return isNull(ctx) ? 0 : parseInt(ctx.ENTIER().getText());
+  private int visitJours(JourPartContext ctx, VariableVisitor variableVisitor) {
+    return isNull(ctx) ? 0 : variableVisitor.asInt((ctx.variable()));
   }
 }

@@ -1,7 +1,5 @@
 package school.hei.patrimoine.patrilang.visitors;
 
-import static java.lang.Double.parseDouble;
-import static java.lang.Integer.parseInt;
 import static school.hei.patrimoine.modele.Devise.*;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.*;
 import static school.hei.patrimoine.patrilang.mapper.MaterielAppreciationTokenMapper.stringToMaterielAppreciationType;
@@ -23,7 +21,7 @@ public class BaseVisitor {
   }
 
   public static DateFin visitDateFin(DateFinContext ctx, VariableVisitor variableVisitor) {
-    int dateDOpération = parseInt(parseNodeValue(ctx.ENTIER()));
+    int dateDOpération = variableVisitor.asInt(ctx.jourOperation);
     var dateFinValue = variableVisitor.asDate(ctx.dateValue);
 
     return new DateFin(dateDOpération, dateFinValue);
@@ -38,10 +36,6 @@ public class BaseVisitor {
           throw new IllegalArgumentException(
               "Unknown devise type: " + parseNodeValue(ctx.DEVISE()));
     };
-  }
-
-  public static Double visitNombre(NombreContext ctx) {
-    return parseDouble(ctx.getText().replaceAll("_", ""));
   }
 
   public static double visitMaterielAppreciationFacteur(TerminalNode ctx) {

@@ -34,7 +34,7 @@ class FluxArgentVisitorTest {
   FluxArgentVisitor subject =
       new FluxArgentVisitor(
           variableVisitor,
-          new ArgentVisitor(new ExpressionVisitor()),
+          new ArgentVisitor(new ExpressionVisitor(variableVisitor)),
           new IdVisitor(variableVisitor));
 
   UnitTestVisitor visitor =

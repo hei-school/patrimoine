@@ -5,8 +5,8 @@ import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toSet;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.OperationsContext;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.OperationContext;
-import static school.hei.patrimoine.patrilang.modele.variable.VariableType.DATE;
-import static school.hei.patrimoine.patrilang.visitors.BaseVisitor.visitText;
+import static school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor.extractVariableName;
+import static school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor.extractVariableType;
 
 import java.util.List;
 import java.util.Set;
@@ -80,9 +80,11 @@ public class OperationVisitor implements BiFunction<List<OperationsContext>, Var
       return Set.of();
     }
 
-    if(nonNull(ctx.ligneDateDeclaration())){
-      var nom = visitText(ctx.ligneDateDeclaration().nom);
-      variableVisitor.addToScope(nom, DATE, variableVisitor.asDate(ctx.ligneDateDeclaration().dateValue));
+    if(nonNull(ctx.ligneVariableDeclaration())){
+      var nom = extractVariableName(ctx.ligneVariableDeclaration().nomEtType);
+      var type = extractVariableType(ctx.ligneVariableDeclaration().nomEtType);
+
+      variableVisitor.addToScope(nom, type, variableVisitor.apply(ctx.ligneVariableDeclaration().valeur).value());
       return Set.of();
     }
 

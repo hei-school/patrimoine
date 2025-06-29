@@ -14,7 +14,7 @@ public class SectionVisitorFactory {
   public static SectionVisitor make(String casSetFolderPath, Optional<VariableScope> parentScope) {
     var variableVisitor = new VariableVisitor(parentScope);
     var idVisitor = new IdVisitor(variableVisitor);
-    var argentVisitor = new ArgentVisitor(new ExpressionVisitor());
+    var argentVisitor = new ArgentVisitor(new ExpressionVisitor(variableVisitor));
 
     var operationVisitor = OperationVisitorFactory.make(variableVisitor, idVisitor, argentVisitor);
 

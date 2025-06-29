@@ -26,6 +26,7 @@ public class VariableVisitor implements SimpleVisitor<VariableContext, Variable<
   private static final VariableDateDeltaVisitor DATE_DELTA_VISITOR = new VariableDateDeltaVisitor();
 
   private final VariableScope variableScope;
+  private final RValueNombreVisitor rValueNombreVisitor = new RValueNombreVisitor();
   private final RValueDateVisitor rValueDateVisitor = new RValueDateVisitor(DATE_DELTA_VISITOR);
 
   public VariableVisitor() {
@@ -37,7 +38,16 @@ public class VariableVisitor implements SimpleVisitor<VariableContext, Variable<
   }
 
   public Compte asCompte(VariableContext ctx) {
-    return visitVariableAsExpectedType(Compte.class, ctx);
+    return visitVariableAsExpectedType(List.of(Compte.class, Creance.class, Dette.class), ctx);
+  }
+
+  public double asNombre(VariableContext ctx) {
+    return visitVariableAsExpectedType(List.of(Double.class, double.class), ctx);
+  }
+
+  public int asInt(VariableContext ctx) {
+    double value = visitVariableAsExpectedType(List.of(Double.class, double.class), ctx);
+    return (int) value;
   }
 
   public Dette asDette(VariableContext ctx) {
@@ -68,15 +78,19 @@ public class VariableVisitor implements SimpleVisitor<VariableContext, Variable<
 
   @Override
   public Variable<?> apply(VariableContext ctx) {
+    if (nonNull(ctx.nombre())) {
+      return rValueNombreVisitor.apply(ctx, this);
+    }
+
     if (nonNull(ctx.date())) {
-      return rValueDateVisitor.apply(ctx);
+      return rValueDateVisitor.apply(ctx, this);
     }
 
     var baseValue = this.variableScope.get(extractVariableName(ctx), extractVariableType(ctx));
 
     if (nonNull(ctx.dateDelta())) {
       assertVariableType(baseValue, DATE);
-      return DATE_DELTA_VISITOR.apply((LocalDate) baseValue.value(), ctx);
+      return DATE_DELTA_VISITOR.apply((LocalDate) baseValue.value(), ctx, this);
     }
 
     return baseValue;

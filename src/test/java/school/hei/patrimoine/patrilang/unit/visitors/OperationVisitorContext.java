@@ -32,8 +32,8 @@ class OperationVisitorContext {
     void add_date_declaration_in_scope(){
         var input = """
             # Opérations
-            * t1: le 24 février 2025
-            * t2: Dates:t1 + 1mois
+            * Dates:t1 : le 24 février 2025
+            * Dates:t2 : Dates:t1 + 1mois
         """;
 
         var expected1 = LocalDate.of(2025, FEBRUARY, 24);

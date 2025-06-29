@@ -20,7 +20,7 @@ class MaterielVisitorTest {
   private static final VariableVisitor variableVisitor = new VariableVisitor();
 
   MaterielVisitor subject =
-      new MaterielVisitor(variableVisitor, new ArgentVisitor(new ExpressionVisitor()));
+      new MaterielVisitor(variableVisitor, new ArgentVisitor(new ExpressionVisitor(variableVisitor)));
 
   UnitTestVisitor visitor =
       new UnitTestVisitor() {

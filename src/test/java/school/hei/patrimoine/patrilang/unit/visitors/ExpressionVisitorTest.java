@@ -7,9 +7,10 @@ import org.junit.jupiter.api.Test;
 import school.hei.patrimoine.patrilang.antlr.PatriLangParser;
 import school.hei.patrimoine.patrilang.utils.UnitTestVisitor;
 import school.hei.patrimoine.patrilang.visitors.ExpressionVisitor;
+import school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor;
 
 class ExpressionVisitorTest {
-  ExpressionVisitor subject = new ExpressionVisitor();
+  ExpressionVisitor subject = new ExpressionVisitor(new VariableVisitor());
 
   UnitTestVisitor visitor =
       new UnitTestVisitor() {
