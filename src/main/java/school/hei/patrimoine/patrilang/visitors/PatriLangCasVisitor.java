@@ -8,6 +8,7 @@ import static school.hei.patrimoine.patrilang.visitors.BaseVisitor.visitText;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Function;
+
 import lombok.RequiredArgsConstructor;
 import school.hei.patrimoine.cas.Cas;
 import school.hei.patrimoine.modele.Devise;
@@ -51,36 +52,39 @@ public class PatriLangCasVisitor implements Function<CasContext, Cas> {
 
       @Override
       protected void init() {
+        var chilSectionVisitor = sectionVisitor.createChildSectionVisitor();
         if (nonNull(ctx.sectionInitialisation())) {
-          sectionVisitor.visitSectionInitialisation(ctx.sectionInitialisation());
+          chilSectionVisitor.visitSectionInitialisation(ctx.sectionInitialisation());
         }
       }
 
       @Override
       protected void suivi() {
+        var chilSectionVisitor = sectionVisitor.createChildSectionVisitor();
         if (nonNull(ctx.sectionSuivi())) {
-          sectionVisitor.visitSectionSuivi(ctx.sectionSuivi());
+          chilSectionVisitor.visitSectionSuivi(ctx.sectionSuivi());
         }
       }
 
       @Override
       public Set<Possession> possessions() {
+        var chilSectionVisitor = sectionVisitor.createChildSectionVisitor();
         Set<Possession> possessions = new HashSet<>();
 
         if (nonNull(ctx.sectionTresoreries())) {
-          possessions.addAll(sectionVisitor.visitSectionTrésoreries(ctx.sectionTresoreries()));
+          possessions.addAll(chilSectionVisitor.visitSectionTrésoreries(ctx.sectionTresoreries()));
         }
 
         if (nonNull(ctx.sectionCreances())) {
-          possessions.addAll(sectionVisitor.visitSectionCréances(ctx.sectionCreances()));
+          possessions.addAll(chilSectionVisitor.visitSectionCréances(ctx.sectionCreances()));
         }
 
         if (nonNull(ctx.sectionDettes())) {
-          possessions.addAll(sectionVisitor.visitSectionDettes(ctx.sectionDettes()));
+          possessions.addAll(chilSectionVisitor.visitSectionDettes(ctx.sectionDettes()));
         }
 
         if (nonNull(ctx.sectionOperations())) {
-          sectionVisitor.visitSectionOperations(ctx.sectionOperations());
+          chilSectionVisitor.visitSectionOperations(ctx.sectionOperations());
         }
 
         return possessions;

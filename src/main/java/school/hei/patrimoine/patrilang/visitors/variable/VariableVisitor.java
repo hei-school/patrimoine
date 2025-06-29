@@ -46,8 +46,7 @@ public class VariableVisitor implements SimpleVisitor<VariableContext, Variable<
   }
 
   public int asInt(VariableContext ctx) {
-    double value = visitVariableAsExpectedType(List.of(Double.class, double.class), ctx);
-    return (int) value;
+    return (int) this.asNombre(ctx);
   }
 
   public Dette asDette(VariableContext ctx) {
