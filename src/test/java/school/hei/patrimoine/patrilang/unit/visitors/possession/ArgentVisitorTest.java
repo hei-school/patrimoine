@@ -43,9 +43,19 @@ class ArgentVisitorTest {
   }
 
   @Test
-  void parse_argent_with_with_expression() {
+  void parse_argent_with_expression() {
     var input = "(300 `/*comment1*/` +  450 `/*comment2*/`)Ar";
     var expected = ariary(750);
+
+    var actual = visitor.visit(input, PatriLangParser::argent);
+
+    assertEquals(expected, actual);
+  }
+
+  @Test
+  void parse_int_argent_with_underscore() {
+    var input = "300_000_000Ar";
+    var expected = ariary(300_000_000);
 
     var actual = visitor.visit(input, PatriLangParser::argent);
 

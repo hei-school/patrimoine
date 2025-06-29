@@ -224,10 +224,10 @@ VARIABLE
     :   [\p{L}]+ COLON STRING
     ;
 DECIMAL
-    :   DIGIT+ '.' DIGIT+
+    :   DIGIT+ ('_' DIGIT+)* '.' DIGIT+
     ;
 ENTIER
-    :   DIGIT+
+    :   DIGIT+ ('_' DIGIT+)*
     ;
 PLUS
     :   '+'

@@ -41,7 +41,7 @@ public class BaseVisitor {
   }
 
   public static Double visitNombre(NombreContext ctx) {
-    return parseDouble(ctx.getText());
+    return parseDouble(ctx.getText().replaceAll("_", ""));
   }
 
   public static double visitMaterielAppreciationFacteur(TerminalNode ctx) {
