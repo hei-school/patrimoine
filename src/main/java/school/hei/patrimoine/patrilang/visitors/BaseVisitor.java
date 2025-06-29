@@ -4,13 +4,13 @@ import static java.lang.Double.parseDouble;
 import static java.lang.Integer.parseInt;
 import static school.hei.patrimoine.modele.Devise.*;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.*;
+import static school.hei.patrimoine.patrilang.mapper.MaterielAppreciationTokenMapper.stringToMaterielAppreciationType;
 
 import org.antlr.v4.runtime.tree.TerminalNode;
 import school.hei.patrimoine.modele.Devise;
 import school.hei.patrimoine.modele.Personne;
 import school.hei.patrimoine.modele.possession.PersonneMorale;
 import school.hei.patrimoine.patrilang.modele.DateFin;
-import school.hei.patrimoine.patrilang.modele.MaterielAppreciationType;
 import school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor;
 
 public class BaseVisitor {
@@ -45,7 +45,7 @@ public class BaseVisitor {
   }
 
   public static double visitMaterielAppreciationFacteur(TerminalNode ctx) {
-    return MaterielAppreciationType.fromString(parseNodeValue(ctx)).getFacteur();
+    return stringToMaterielAppreciationType(ctx.getText()).getFacteur();
   }
 
   public static String visitText(TextContext ctx) {

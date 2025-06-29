@@ -220,6 +220,20 @@ COLON
     ;
 
 /* Valeurs */
+MOIS
+    :   [Jj]'anvier'
+    |   [Ff]('é'|'e') 'vrier'
+    |   [Mm]'ars'
+    |   [Aa]'vril'
+    |   [Mm]'ai'
+    |   [Jj]'uin'
+    |   [Jj]'uillet'
+    |   [Aa]'o(û|u)t'
+    |   [Ss]'eptembre'
+    |   [Oo]'ctobre'
+    |   [Nn]'ovembre'
+    |   [Dd]'(é|e)cembre'
+;
 VARIABLE
     :   [\p{L}]+ COLON STRING
     ;

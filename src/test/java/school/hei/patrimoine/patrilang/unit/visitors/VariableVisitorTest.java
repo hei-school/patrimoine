@@ -90,6 +90,17 @@ class VariableVisitorTest {
   }
 
   @Test
+  void parse_normal_textuel() {
+    var input = "le 01 février 2025";
+    var expected = LocalDate.of(2025, FEBRUARY, 1);
+
+    var variable = (Variable<LocalDate>) visitor.visit(input, PatriLangParser::variable);
+    var actual = variable.value();
+
+    assertEquals(expected, actual);
+  }
+
+  @Test
   void can_parse_variable_with_full_delta() {
     var input = "Dates:ajd + 2 années et 3mois et 4jours";
     var baseDate = LocalDate.of(2026, JULY, 13);

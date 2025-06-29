@@ -251,11 +251,13 @@ variable
     ;
 
 date
-    :   MOT_LE jour=ENTIER MOT_DU mois=ENTIER MOINS annee=ENTIER
-    |   MOT_DATE_INDETERMINER
-    |   MOT_DATE_MINIMUM
-    |   MOT_DATE_MAXIMUM
+    :   MOT_LE jour=ENTIER MOT_DU mois=ENTIER MOINS annee=ENTIER               #DateEntier
+    |   MOT_LE jour=ENTIER mois=MOIS annee=ENTIER                             #DateTextuelle
+    |   MOT_DATE_INDETERMINER                                                  #DateIndeterminee
+    |   MOT_DATE_MINIMUM                                                       #DateMinimum
+    |   MOT_DATE_MAXIMUM                                                       #DateMaximum
     ;
+
 
 dateDelta
     :   (PLUS | MOINS) anneePart? moisPart? jourPart?
