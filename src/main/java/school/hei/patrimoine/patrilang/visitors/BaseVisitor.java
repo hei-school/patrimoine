@@ -2,7 +2,7 @@ package school.hei.patrimoine.patrilang.visitors;
 
 import static school.hei.patrimoine.modele.Devise.*;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.*;
-import static school.hei.patrimoine.patrilang.mapper.MaterielAppreciationTokenMapper.stringToMaterielAppreciationType;
+import static school.hei.patrimoine.patrilang.mapper.MaterielAppreciationMapper.stringToMaterielAppreciationType;
 
 import org.antlr.v4.runtime.tree.TerminalNode;
 import school.hei.patrimoine.modele.Devise;

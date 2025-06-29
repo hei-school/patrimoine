@@ -8,7 +8,6 @@ import static school.hei.patrimoine.patrilang.visitors.BaseVisitor.visitText;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Function;
-
 import lombok.RequiredArgsConstructor;
 import school.hei.patrimoine.cas.Cas;
 import school.hei.patrimoine.modele.Devise;

@@ -107,8 +107,10 @@ ENTETE_DETTES
     ;
 
 /* Opérations */
-ENTETE_TEMPLATES
-    :   'Templates'
+ENTETE_CONTSTRUCTEUR_D_OPERATIONS
+    :   'Constructeurs'
+    |   'Constructeurs d\'opérations'
+    |   'Constructeurs d\'Opérations'
     ;
 ENTETE_OPERATIONS
     :   'Opérations'
@@ -254,6 +256,12 @@ COLON
     ;
 
 /* Valeurs */
+NOMBRE_VARIABLE
+    :   'Nombres' COLON STRING
+    ;
+DATE_VARIABLE
+    :   'Dates' COLON STRING
+    ;
 VARIABLE
     :   [\p{L}]+ COLON STRING
     ;

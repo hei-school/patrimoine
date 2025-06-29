@@ -23,18 +23,19 @@ import school.hei.patrimoine.patrilang.visitors.SimpleVisitor;
 public class VariableVisitor implements SimpleVisitor<VariableContext, Variable<?>> {
   private static final String COLON = ":";
   public static final String R_VALUE_VARIABLE_NAME = "rvalue_variable";
-  private static final VariableDateDeltaVisitor DATE_DELTA_VISITOR = new VariableDateDeltaVisitor();
 
   private final VariableScope variableScope;
-  private final RValueNombreVisitor rValueNombreVisitor = new RValueNombreVisitor();
-  private final RValueDateVisitor rValueDateVisitor = new RValueDateVisitor(DATE_DELTA_VISITOR);
+  private final VariableExpressionVisitor variableExpressionVisitor;
+  private final VariableDateVisitor variableDateVisitor;
 
   public VariableVisitor() {
-    this.variableScope = new VariableScope(Optional.empty());
+    this(Optional.empty());
   }
 
   public VariableVisitor(Optional<VariableScope> parentScope) {
     this.variableScope = new VariableScope(parentScope);
+    this.variableExpressionVisitor = new VariableExpressionVisitor(variableScope);
+    this.variableDateVisitor = new VariableDateVisitor();
   }
 
   public Compte asCompte(VariableContext ctx) {
@@ -77,32 +78,19 @@ public class VariableVisitor implements SimpleVisitor<VariableContext, Variable<
 
   @Override
   public Variable<?> apply(VariableContext ctx) {
-    if (nonNull(ctx.nombre())) {
-      return rValueNombreVisitor.apply(ctx, this);
-    }
-
     if (nonNull(ctx.date())) {
-      return rValueDateVisitor.apply(ctx, this);
+      var value = variableDateVisitor.apply(ctx.date(), this);
+      return new Variable<>(R_VALUE_VARIABLE_NAME, DATE, value);
     }
 
-    var baseValue = this.variableScope.get(extractVariableName(ctx), extractVariableType(ctx));
-
-    if (nonNull(ctx.dateDelta())) {
-      assertVariableType(baseValue, DATE);
-      return DATE_DELTA_VISITOR.apply((LocalDate) baseValue.value(), ctx, this);
+    if (nonNull(ctx.expression())) {
+      var value = variableExpressionVisitor.apply(ctx.expression());
+      return new Variable<>(R_VALUE_VARIABLE_NAME, DATE, value);
     }
 
-    return baseValue;
-  }
-
-  public static VariableType extractVariableType(VariableContext ctx) {
-    var value = ctx.VARIABLE().getText();
-    return VariableType.fromString(value.substring(0, value.indexOf(COLON)));
-  }
-
-  public static String extractVariableName(VariableContext ctx) {
-    var value = ctx.VARIABLE().getText();
-    return value.substring(value.indexOf(COLON) + 1);
+    var name = extractVariableName(ctx.VARIABLE().getText());
+    var type = extractVariableType(ctx.VARIABLE().getText());
+    return this.variableScope.get(name, type);
   }
 
   private <T> T visitVariableAsExpectedType(Class<?> expectedType, VariableContext ctx) {
@@ -122,14 +110,11 @@ public class VariableVisitor implements SimpleVisitor<VariableContext, Variable<
     return (T) variable.value();
   }
 
-  private void assertVariableType(Variable<?> value, VariableType expectedType) {
-    if (!expectedType.equals(value.type())) {
-      throw new IllegalArgumentException(
-          "Le type attendu est : "
-              + expectedType
-              + ", mais le type trouvé est : "
-              + value.type()
-              + ".");
-    }
+  public static VariableType extractVariableType(String ctx) {
+    return VariableType.fromString(ctx.substring(0, ctx.indexOf(COLON)));
+  }
+
+  public static String extractVariableName(String ctx) {
+    return ctx.substring(ctx.indexOf(COLON) + 1);
   }
 }

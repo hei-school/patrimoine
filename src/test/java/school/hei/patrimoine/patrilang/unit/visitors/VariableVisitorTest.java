@@ -3,13 +3,11 @@ package school.hei.patrimoine.patrilang.unit.visitors;
 import static java.time.Month.FEBRUARY;
 import static java.time.Month.JULY;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 import static school.hei.patrimoine.modele.Argent.ariary;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.VariableContext;
 import static school.hei.patrimoine.patrilang.modele.variable.VariableType.*;
 
 import java.time.LocalDate;
-import org.antlr.v4.runtime.tree.TerminalNode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import school.hei.patrimoine.modele.Personne;
@@ -22,9 +20,6 @@ import school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor;
 
 @SuppressWarnings("all")
 class VariableVisitorTest {
-  private final VariableContext variableContextMock = mock(VariableContext.class);
-  private final TerminalNode terminalNodeMock = mock(TerminalNode.class);
-
   VariableVisitor subject;
 
   UnitTestVisitor visitor =
@@ -38,44 +33,41 @@ class VariableVisitorTest {
   @BeforeEach
   void setUp() {
     subject = new VariableVisitor();
-    when(variableContextMock.VARIABLE()).thenReturn(terminalNodeMock);
   }
 
   @Test
   void can_cast_variable_to_expected_type() {
+    var input = "Trésoreries:compte";
     var expected = new Compte("compte", LocalDate.MAX, ariary(500_000));
 
     subject.addToScope(expected.nom(), TRESORERIES, expected);
 
-    when(terminalNodeMock.getText()).thenReturn("Trésoreries:compte");
+    var actual = (Variable<?>) visitor.visit(input, PatriLangParser::variable);
 
-    var actual = subject.asCompte(variableContextMock);
-
-    assertEquals(expected, actual);
+    assertEquals(expected, actual.value());
   }
 
   @Test
   void throws_if_wrong_type_cast() {
+    var input = "Personnes:Jean";
     var personne = new Personne("Billy");
 
     subject.addToScope(personne.nom(), PERSONNE, personne);
 
-    when(terminalNodeMock.getText()).thenReturn("Personnes:Jean");
-
-    assertThrows(IllegalArgumentException.class, () -> subject.asCompte(variableContextMock));
+    assertThrows(
+        IllegalArgumentException.class, () -> visitor.visit(input, PatriLangParser::variable));
   }
 
   @Test
   void should_handle_personnes_morale() {
+    var input = "PersonnesMorales:FamilleRakoto";
     var familleRakoto = new PersonneMorale("FamilleRakoto");
 
     subject.addToScope(familleRakoto.nom(), PERSONNE_MORALE, familleRakoto);
 
-    when(terminalNodeMock.getText()).thenReturn("PersonnesMorales:FamilleRakoto");
+    var actual = (Variable<PersonneMorale>) visitor.visit(input, PatriLangParser::variable);
 
-    var actual = subject.asPersonne(variableContextMock);
-
-    assertEquals(familleRakoto.personne(), actual);
+    assertEquals(familleRakoto.personne(), actual.value().personne());
   }
 
   @Test
@@ -141,21 +133,5 @@ class VariableVisitorTest {
     var actual = variable.value();
 
     assertEquals(expected, actual);
-  }
-
-  @Test
-  void throws_if_date_delta_provided_but_type_not_date() {
-    var input = "Trésoreries:compte + 2 années et 3mois et 4jours";
-    var baseDate = LocalDate.of(2026, JULY, 13);
-    var expected = baseDate.plusYears(2).plusMonths(3).plusDays(4);
-
-    subject.addToScope("compte", TRESORERIES, baseDate);
-
-    var error =
-        assertThrows(
-            IllegalArgumentException.class, () -> visitor.visit(input, PatriLangParser::variable));
-
-    assertEquals(
-        "Le type attendu est : DATE, mais le type trouvé est : TRESORERIES.", error.getMessage());
   }
 }

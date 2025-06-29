@@ -43,7 +43,7 @@ sectionDatesDeclarations
 
 /* Cas */
 cas
-    :   sectionCasGeneral sectionPossesseurs  sectionDatesDeclarations? sectionTresoreries? sectionCreances? sectionDettes? sectionInitialisation? sectionOperations? sectionSuivi?  sectionOperationTemplateDeclaration? EOF
+    :   sectionCasGeneral sectionPossesseurs  sectionDatesDeclarations? sectionTresoreries? sectionCreances? sectionDettes? sectionInitialisation? sectionOperations? sectionOperationTemplateDeclaration? sectionSuivi? EOF
     ;
 
 sectionCasGeneral
@@ -111,7 +111,7 @@ compteElement
     ;
 /* Opérations */
 sectionOperationTemplateDeclaration
-    :   HASHES ENTETE_TEMPLATES operationTemplate*
+    :   HASHES ENTETE_CONTSTRUCTEUR_D_OPERATIONS operationTemplate*
     ;
 
 operationTemplate
@@ -201,7 +201,7 @@ ligneNom
     ;
 
 argent
-    :   expression devise
+    :   variable devise
     ;
 
 devise
@@ -209,9 +209,19 @@ devise
     ;
 
 variable
-    :   nombre
-    |   date dateDelta?
-    |   VARIABLE dateDelta?
+    :   date
+    |   expression
+    |   VARIABLE
+    ;
+
+dateDelta
+    :   (PLUS | MOINS) anneePart moisPart jourPart
+    |   (PLUS | MOINS) anneePart moisPart
+    |   (PLUS | MOINS) anneePart
+    |   (PLUS | MOINS) anneePart jourPart
+    |   (PLUS | MOINS) moisPart jourPart
+    |   (PLUS | MOINS) moisPart
+    |   (PLUS | MOINS) jourPart
     ;
 
 anneePart
@@ -231,15 +241,16 @@ id
     ;
 
 date
+    :    dateAtom dateDelta?
+    ;
+
+dateAtom
     :   MOT_LE jour=variable MOT_DU moisEntier=variable MOINS annee=variable
     |   MOT_LE jour=variable moisTextuel=MOIS annee=variable
     |   MOT_DATE_INDETERMINER
     |   MOT_DATE_MINIMUM
     |   MOT_DATE_MAXIMUM
-    ;
-
-dateDelta
-    :   (PLUS | MOINS) anneePart? moisPart? jourPart?
+    |   DATE_VARIABLE
     ;
 
 expression
@@ -255,9 +266,10 @@ multiplicationExpr
     ;
 
 atom
-    :   MOINS atom                    # NegateExpr
-    |   LPAREN expression RPAREN      # ParenExpr
-    |   variable                      # NombreExpr
+    :   MOINS atom                                  # NegateExpr
+    |   LPAREN expression RPAREN                    # ParenExpr
+    |   nombre                                      # NombreExpr
+    |   NOMBRE_VARIABLE                             # NombreVariableExpr
     ;
 
 nombre

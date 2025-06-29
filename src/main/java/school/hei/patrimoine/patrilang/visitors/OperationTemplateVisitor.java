@@ -36,8 +36,8 @@ public class OperationTemplateVisitor
   }
 
   private static OperationTemplateParam visitParam(OperationTemplateParamValueContext ctx) {
-    var name = extractVariableName(ctx.variable());
-    var type = extractVariableType(ctx.variable());
+    var name = extractVariableName(ctx.variable().getText());
+    var type = extractVariableType(ctx.variable().getText());
 
     return new OperationTemplateParam(name, type);
   }

@@ -3,15 +3,14 @@ package school.hei.patrimoine.patrilang.visitors;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toSet;
-import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.OperationsContext;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.OperationContext;
+import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.OperationsContext;
 import static school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor.extractVariableName;
 import static school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor.extractVariableType;
 
 import java.util.List;
 import java.util.Set;
 import java.util.function.BiFunction;
-
 import lombok.Builder;
 import lombok.Getter;
 import school.hei.patrimoine.modele.possession.Possession;
@@ -20,7 +19,8 @@ import school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor;
 
 @Builder
 @Getter
-public class OperationVisitor implements BiFunction<List<OperationsContext>, VariableVisitor, Set<Possession>> {
+public class OperationVisitor
+    implements BiFunction<List<OperationsContext>, VariableVisitor, Set<Possession>> {
   private final MaterielVisitor materielVisitor;
   private final ObjectifVisitor objectifVisitor;
   private final CorrectionVisitor correctionVisitor;
@@ -32,12 +32,17 @@ public class OperationVisitor implements BiFunction<List<OperationsContext>, Var
 
   @Override
   public Set<Possession> apply(List<OperationsContext> contexts, VariableVisitor variableVisitor) {
-    return contexts.stream().flatMap(op -> visitOperations(op, variableVisitor).stream()).collect(toSet());
+    return contexts.stream()
+        .flatMap(op -> visitOperations(op, variableVisitor).stream())
+        .collect(toSet());
   }
 
   private Set<Possession> visitOperations(OperationsContext ctx, VariableVisitor variableVisitor) {
     var possessions =
-        ctx.operation().stream().map(operationContext -> visitOperation(operationContext, variableVisitor)).flatMap(Set::stream).collect(toSet());
+        ctx.operation().stream()
+            .map(operationContext -> visitOperation(operationContext, variableVisitor))
+            .flatMap(Set::stream)
+            .collect(toSet());
 
     if (isNull(ctx.sousTitre())) {
       return possessions;
@@ -80,11 +85,12 @@ public class OperationVisitor implements BiFunction<List<OperationsContext>, Var
       return Set.of();
     }
 
-    if(nonNull(ctx.ligneVariableDeclaration())){
-      var nom = extractVariableName(ctx.ligneVariableDeclaration().nomEtType);
-      var type = extractVariableType(ctx.ligneVariableDeclaration().nomEtType);
+    if (nonNull(ctx.ligneVariableDeclaration())) {
+      var nom = extractVariableName(ctx.ligneVariableDeclaration().nomEtType.getText());
+      var type = extractVariableType(ctx.ligneVariableDeclaration().nomEtType.getText());
 
-      variableVisitor.addToScope(nom, type, variableVisitor.apply(ctx.ligneVariableDeclaration().valeur).value());
+      variableVisitor.addToScope(
+          nom, type, variableVisitor.apply(ctx.ligneVariableDeclaration().valeur).value());
       return Set.of();
     }
 

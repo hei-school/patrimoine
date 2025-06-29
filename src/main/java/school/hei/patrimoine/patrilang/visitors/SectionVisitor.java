@@ -34,14 +34,15 @@ public class SectionVisitor {
   private final OperationTemplateVisitor operationTemplateVisitor;
   private final ArgentVisitor argentVisitor;
 
-  public SectionVisitor createChildSectionVisitor(){
-      return SectionVisitorFactory.make(this.casSetFolderPath, Optional.of(this.variableVisitor.getVariableScope()));
+  public SectionVisitor createChildSectionVisitor() {
+    return SectionVisitorFactory.make(
+        this.casSetFolderPath, Optional.of(this.variableVisitor.getVariableScope()));
   }
 
   public Set<Cas> visitSectionCas(SectionCasContext ctx) {
     return ctx.ligneNom().stream()
         .map(ligne -> visitText(ligne.nom))
-        .map(nom ->  transpileCas(nom, this.createChildSectionVisitor()))
+        .map(nom -> transpileCas(nom, this.createChildSectionVisitor()))
         .collect(toSet());
   }
 

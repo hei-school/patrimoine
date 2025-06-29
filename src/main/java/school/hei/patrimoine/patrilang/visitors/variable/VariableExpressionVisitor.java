@@ -1,22 +1,27 @@
-package school.hei.patrimoine.patrilang.visitors;
+package school.hei.patrimoine.patrilang.visitors.variable;
+
+import static java.lang.Double.parseDouble;
+import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.*;
+import static school.hei.patrimoine.patrilang.modele.variable.VariableType.NOMBRE;
+import static school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor.extractVariableName;
 
 import lombok.RequiredArgsConstructor;
-import school.hei.patrimoine.patrilang.antlr.PatriLangParser;
 import school.hei.patrimoine.patrilang.antlr.PatriLangParserBaseVisitor;
-import school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor;
+import school.hei.patrimoine.patrilang.modele.variable.VariableScope;
+import school.hei.patrimoine.patrilang.visitors.SimpleVisitor;
 
 @RequiredArgsConstructor
-public class ExpressionVisitor extends PatriLangParserBaseVisitor<Double>
-    implements SimpleVisitor<PatriLangParser.ExpressionContext, Double> {
-  private final VariableVisitor variableVisitor;
+public class VariableExpressionVisitor extends PatriLangParserBaseVisitor<Double>
+    implements SimpleVisitor<ExpressionContext, Double> {
+  private final VariableScope variableScope;
 
   @Override
-  public Double apply(PatriLangParser.ExpressionContext ctx) {
-    return visitAdditionExpr(ctx.additionExpr());
+  public Double apply(ExpressionContext ctx) {
+    return visit(ctx.additionExpr());
   }
 
   @Override
-  public Double visitAdditionExpr(PatriLangParser.AdditionExprContext ctx) {
+  public Double visitAdditionExpr(AdditionExprContext ctx) {
     // Visit the first operand
     Double result = visitMultiplicationExpr(ctx.multiplicationExpr(0));
 
@@ -36,7 +41,7 @@ public class ExpressionVisitor extends PatriLangParserBaseVisitor<Double>
   }
 
   @Override
-  public Double visitMultiplicationExpr(PatriLangParser.MultiplicationExprContext ctx) {
+  public Double visitMultiplicationExpr(MultiplicationExprContext ctx) {
     // Visit the first operand
     Double result = visit(ctx.atom(0));
 
@@ -57,17 +62,23 @@ public class ExpressionVisitor extends PatriLangParserBaseVisitor<Double>
   }
 
   @Override
-  public Double visitNegateExpr(PatriLangParser.NegateExprContext ctx) {
+  public Double visitNegateExpr(NegateExprContext ctx) {
     return -visit(ctx.atom());
   }
 
   @Override
-  public Double visitParenExpr(PatriLangParser.ParenExprContext ctx) {
+  public Double visitParenExpr(ParenExprContext ctx) {
     return visit(ctx.expression());
   }
 
   @Override
-  public Double visitNombreExpr(PatriLangParser.NombreExprContext ctx) {
-    return variableVisitor.asNombre(ctx.variable());
+  public Double visitNombreExpr(NombreExprContext ctx) {
+    return parseDouble(ctx.getText().replaceAll("_", ""));
+  }
+
+  @Override
+  public Double visitNombreVariableExpr(NombreVariableExprContext ctx) {
+    var name = extractVariableName(ctx.getText());
+    return (Double) variableScope.get(name, NOMBRE).value();
   }
 }

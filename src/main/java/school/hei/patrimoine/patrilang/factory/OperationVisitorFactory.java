@@ -21,7 +21,7 @@ public class OperationVisitorFactory {
 
   public static OperationVisitor make(VariableVisitor variableVisitor) {
     var idVisitor = new IdVisitor(variableVisitor);
-    var argentVisitor = new ArgentVisitor(new ExpressionVisitor(variableVisitor));
+    var argentVisitor = new ArgentVisitor(variableVisitor);
 
     return make(variableVisitor, idVisitor, argentVisitor);
   }

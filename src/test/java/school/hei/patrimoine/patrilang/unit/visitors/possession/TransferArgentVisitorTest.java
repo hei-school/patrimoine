@@ -13,7 +13,6 @@ import school.hei.patrimoine.modele.possession.FluxArgent;
 import school.hei.patrimoine.modele.possession.TransfertArgent;
 import school.hei.patrimoine.patrilang.antlr.PatriLangParser;
 import school.hei.patrimoine.patrilang.utils.UnitTestVisitor;
-import school.hei.patrimoine.patrilang.visitors.ExpressionVisitor;
 import school.hei.patrimoine.patrilang.visitors.IdVisitor;
 import school.hei.patrimoine.patrilang.visitors.possession.ArgentVisitor;
 import school.hei.patrimoine.patrilang.visitors.possession.TransferArgentVisitor;
@@ -27,9 +26,7 @@ class TransferArgentVisitorTest {
 
   TransferArgentVisitor subject =
       new TransferArgentVisitor(
-          variableVisitor,
-          new ArgentVisitor(new ExpressionVisitor(variableVisitor)),
-          new IdVisitor(variableVisitor));
+          variableVisitor, new ArgentVisitor(variableVisitor), new IdVisitor(variableVisitor));
 
   UnitTestVisitor visitor =
       new UnitTestVisitor() {

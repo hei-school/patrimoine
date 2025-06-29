@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Test;
 import school.hei.patrimoine.modele.possession.Materiel;
 import school.hei.patrimoine.patrilang.antlr.PatriLangParser;
 import school.hei.patrimoine.patrilang.utils.UnitTestVisitor;
-import school.hei.patrimoine.patrilang.visitors.ExpressionVisitor;
 import school.hei.patrimoine.patrilang.visitors.possession.ArgentVisitor;
 import school.hei.patrimoine.patrilang.visitors.possession.MaterielVisitor;
 import school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor;
@@ -20,7 +19,7 @@ class MaterielVisitorTest {
   private static final VariableVisitor variableVisitor = new VariableVisitor();
 
   MaterielVisitor subject =
-      new MaterielVisitor(variableVisitor, new ArgentVisitor(new ExpressionVisitor(variableVisitor)));
+      new MaterielVisitor(variableVisitor, new ArgentVisitor(variableVisitor));
 
   UnitTestVisitor visitor =
       new UnitTestVisitor() {

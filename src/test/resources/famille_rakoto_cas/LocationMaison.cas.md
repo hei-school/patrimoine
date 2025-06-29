@@ -5,7 +5,7 @@
 * Devise en Ar
 
 # Possesseurs
-* Personnes:Zety 40%
+* Personnes:Zety ((40 * 2 / 2) - 2 + 3 * 1 - 1)%
 * Personnes:Lita 10%
 * Personnes:Rasoa 50%
 

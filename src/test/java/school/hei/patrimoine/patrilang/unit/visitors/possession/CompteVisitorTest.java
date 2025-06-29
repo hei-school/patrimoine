@@ -10,14 +10,13 @@ import org.junit.jupiter.api.Test;
 import school.hei.patrimoine.modele.possession.Compte;
 import school.hei.patrimoine.patrilang.antlr.PatriLangParser;
 import school.hei.patrimoine.patrilang.utils.UnitTestVisitor;
-import school.hei.patrimoine.patrilang.visitors.ExpressionVisitor;
 import school.hei.patrimoine.patrilang.visitors.possession.ArgentVisitor;
 import school.hei.patrimoine.patrilang.visitors.possession.CompteVisitor;
 import school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor;
 
 class CompteVisitorTest {
   CompteVisitor subject =
-      new CompteVisitor(new VariableVisitor(), new ArgentVisitor(new ExpressionVisitor(new VariableVisitor())));
+      new CompteVisitor(new VariableVisitor(), new ArgentVisitor(new VariableVisitor()));
 
   UnitTestVisitor visitor =
       new UnitTestVisitor() {

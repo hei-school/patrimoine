@@ -12,7 +12,6 @@ import school.hei.patrimoine.modele.possession.AchatMaterielAuComptant;
 import school.hei.patrimoine.modele.possession.Compte;
 import school.hei.patrimoine.patrilang.antlr.PatriLangParser;
 import school.hei.patrimoine.patrilang.utils.UnitTestVisitor;
-import school.hei.patrimoine.patrilang.visitors.ExpressionVisitor;
 import school.hei.patrimoine.patrilang.visitors.possession.AchatMaterielVisitor;
 import school.hei.patrimoine.patrilang.visitors.possession.ArgentVisitor;
 import school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor;
@@ -21,7 +20,7 @@ class ArgentMaterielVisitorTest {
   private static final VariableVisitor variableVisitor = new VariableVisitor();
   private static final Compte MON_COMPTE = new Compte("monCompte", LocalDate.MIN, ariary(200_000));
   AchatMaterielVisitor subject =
-      new AchatMaterielVisitor(variableVisitor, new ArgentVisitor(new ExpressionVisitor(variableVisitor)));
+      new AchatMaterielVisitor(variableVisitor, new ArgentVisitor(variableVisitor));
 
   UnitTestVisitor visitor =
       new UnitTestVisitor() {

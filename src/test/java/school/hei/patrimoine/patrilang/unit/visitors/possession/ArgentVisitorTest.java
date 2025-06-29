@@ -9,15 +9,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.patrilang.antlr.PatriLangParser;
-import school.hei.patrimoine.patrilang.modele.variable.VariableType;
 import school.hei.patrimoine.patrilang.utils.UnitTestVisitor;
-import school.hei.patrimoine.patrilang.visitors.ExpressionVisitor;
 import school.hei.patrimoine.patrilang.visitors.possession.ArgentVisitor;
 import school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor;
 
 class ArgentVisitorTest {
   VariableVisitor variableVisitor = new VariableVisitor();
-  ArgentVisitor subject = new ArgentVisitor(new ExpressionVisitor(variableVisitor));
+  ArgentVisitor subject = new ArgentVisitor(variableVisitor);
 
   UnitTestVisitor visitor =
       new UnitTestVisitor() {
@@ -28,9 +26,9 @@ class ArgentVisitorTest {
       };
 
   @BeforeEach
-  void setUp(){
+  void setUp() {
     variableVisitor = new VariableVisitor();
-    subject = new ArgentVisitor(new ExpressionVisitor(variableVisitor));
+    subject = new ArgentVisitor(variableVisitor);
   }
 
   @Test
@@ -45,7 +43,7 @@ class ArgentVisitorTest {
 
   @Test
   void parse_argent_with_negation() {
-    var input = "-300000Ar";
+    var input = "-300_000Ar";
     var expected = ariary(-300_000);
 
     var actual = visitor.visit(input, PatriLangParser::argent);
