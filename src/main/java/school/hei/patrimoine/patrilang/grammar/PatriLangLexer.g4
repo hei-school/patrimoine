@@ -9,7 +9,7 @@ fragment DIGIT
     ;
 
 fragment STRING_RAW_VALUE
-    :   '[' | ']' | '>' | '<'
+    :   '[' | ']' | '>' | '<' | '&'
     ;
 
 fragment STRING
@@ -154,7 +154,40 @@ MOT_LE
 MOT_DU
     :   'du'
     ;
-/* Mots */
+
+MOIS
+    : 'janvier'
+    | 'Janvier'
+    | 'février'
+    | 'Février'
+    | 'fevrier'
+    | 'Fevrier'
+    | 'mars'
+    | 'Mars'
+    | 'avril'
+    | 'Avril'
+    | 'mai'
+    | 'Mai'
+    | 'juin'
+    | 'Juin'
+    | 'juillet'
+    | 'Juillet'
+    | 'août'
+    | 'Août'
+    | 'aout'
+    | 'Aout'
+    | 'septembre'
+    | 'Septembre'
+    | 'octobre'
+    | 'Octobre'
+    | 'novembre'
+    | 'Novembre'
+    | 'décembre'
+    | 'Décembre'
+    | 'decembre'
+    | 'Decembre'
+    ;
+
 MOT_DATE_INDETERMINER
     :   'date indéterminée'
     |   'date indéterminer'
@@ -183,6 +216,7 @@ MOT_TOUT_LES
     :   'Tous les'
     |   'tous les'
     ;
+/* Mots */
 MOT_DEVISE_EN
     :   'Devise en'
     |   'devise en'
@@ -220,20 +254,6 @@ COLON
     ;
 
 /* Valeurs */
-MOIS
-    :   [Jj]'anvier'
-    |   [Ff]('é'|'e') 'vrier'
-    |   [Mm]'ars'
-    |   [Aa]'vril'
-    |   [Mm]'ai'
-    |   [Jj]'uin'
-    |   [Jj]'uillet'
-    |   [Aa]'o(û|u)t'
-    |   [Ss]'eptembre'
-    |   [Oo]'ctobre'
-    |   [Nn]'ovembre'
-    |   [Dd]'(é|e)cembre'
-;
 VARIABLE
     :   [\p{L}]+ COLON STRING
     ;

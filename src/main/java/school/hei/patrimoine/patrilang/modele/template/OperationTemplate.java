@@ -22,7 +22,7 @@ public record OperationTemplate(
     var variableVisitor = createNewVariableVisitorWithNewScope(parentScope, argValues);
     var operationVisitor = OperationVisitorFactory.make(variableVisitor);
 
-    return operationVisitor.apply(this.contentCtx);
+    return operationVisitor.apply(this.contentCtx, variableVisitor);
   }
 
   private VariableVisitor createNewVariableVisitorWithNewScope(

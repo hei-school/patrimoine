@@ -38,11 +38,7 @@ sectionPersonnesDeclarations
     ;
 
 sectionDatesDeclarations
-    :   HASHES ENTETE_DATES ligneDateDeclaration*
-    ;
-
-ligneDateDeclaration
-    :   MUL nom=text COLON dateValue=variable
+    :   HASHES ENTETE_DATES operations*
     ;
 
 /* Cas */
@@ -87,11 +83,11 @@ sectionSuivi
     ;
 
 objectif
-    :   MUL id dateValue=variable COMMA MOT_OBJECTIF_DE valeurComptable=argent MOT_POUR compteNom=variable
+    :   MUL id COMMA? dateValue=variable COMMA? MOT_OBJECTIF_DE valeurComptable=argent MOT_POUR compteNom=variable
     ;
 
 correction
-    :   MUL id dateValue=variable COMMA MOT_CORRIGER valeurComptable=argent MOT_DANS compteNom=variable
+    :   MUL id COMMA? dateValue=variable COMMA? MOT_CORRIGER valeurComptable=argent MOT_DANS compteNom=variable
     ;
 /* -------------------- Possessions --------------------  */
 /* Trésorerie */
@@ -123,7 +119,7 @@ operationTemplate
     ;
 
 operationTemplateParam
-    :   operationTemplateParamValue (COMMA operationTemplateParamValue)*
+    :   operationTemplateParamValue (COMMA? operationTemplateParamValue)*
     ;
 
 operationTemplateParamValue
@@ -135,7 +131,7 @@ operationTemplateCall
     ;
 
 operationTemplateCallArg
-    :   operationTemplateCallArgValue (COMMA operationTemplateCallArgValue)*
+    :   operationTemplateCallArgValue (COMMA? operationTemplateCallArgValue)*
     ;
 
 operationTemplateCallArgValue
@@ -159,40 +155,45 @@ operation
     |   correction
     |   objectif
     |   operationTemplateCall
+    |   ligneDateDeclaration
+    ;
+
+ligneDateDeclaration
+    :   MUL nom=text COLON dateValue=variable
     ;
 
 /* Simple Possessions */
 compte
-    :   MUL nom=text COMMA MOT_VALANT valeurComptable=argent dateValue=variable
+    :   MUL nom=text COMMA? MOT_VALANT valeurComptable=argent dateValue=variable
     ;
 
 fluxArgentTransferer
-    :   MUL id dateValue=variable COMMA MOT_TRANSFERER valeurComptable=argent MOT_DEPUIS compteDebiteurNom=variable MOT_VERS compteCrediteurNom=variable dateFin?
+    :   MUL id COMMA? dateValue=variable COMMA? MOT_TRANSFERER valeurComptable=argent MOT_DEPUIS compteDebiteurNom=variable MOT_VERS compteCrediteurNom=variable dateFin?
     ;
 
 fluxArgentEntrer
-    :   MUL id dateValue=variable COMMA MOT_ENTRER valeurComptable=argent MOT_VERS compteCrediteurNom=variable dateFin?
+    :   MUL id COMMA? dateValue=variable COMMA? MOT_ENTRER valeurComptable=argent MOT_VERS compteCrediteurNom=variable dateFin?
     ;
 
 fluxArgentSortir
-    :   MUL id dateValue=variable COMMA MOT_SORTIR valeurComptable=argent MOT_DEPUIS compteDebiteurNom=variable dateFin?
+    :   MUL id COMMA? dateValue=variable COMMA? MOT_SORTIR valeurComptable=argent MOT_DEPUIS compteDebiteurNom=variable dateFin?
     ;
 
 acheterMateriel
-    :   MUL id dateValue=variable COMMA MOT_ACHETER materielNom=text COMMA MOT_VALANT valeurComptable=argent COMMA MATERIEL_APPRECIATION MOT_ANNUELLEMENT_DE pourcentageAppreciation=nombre PERCENT COMMA MOT_DEPUIS compteDebiteurNom=variable
+    :   MUL id COMMA? dateValue=variable COMMA? MOT_ACHETER materielNom=text COMMA? MOT_VALANT valeurComptable=argent COMMA? MATERIEL_APPRECIATION MOT_ANNUELLEMENT_DE pourcentageAppreciation=nombre PERCENT COMMA? MOT_DEPUIS compteDebiteurNom=variable
     ;
 
 possedeMateriel
-    :   MUL id dateValue=variable COMMA MOT_POSSEDER materielNom=text COMMA MOT_VALANT valeurComptable=argent COMMA MATERIEL_APPRECIATION MOT_ANNUELLEMENT_DE pourcentageAppreciation=nombre PERCENT
+    :   MUL id COMMA? dateValue=variable COMMA? MOT_POSSEDER materielNom=text COMMA? MOT_VALANT valeurComptable=argent COMMA? MATERIEL_APPRECIATION MOT_ANNUELLEMENT_DE pourcentageAppreciation=nombre PERCENT
     ;
 
 /* -------------------- Commun --------------------  */
 sousTitre
-    :   HASHES HASHES nom=text COMMA dateValue=variable COMMA MOT_DEVISE_EN devise
+    :   HASHES HASHES nom=text COMMA? dateValue=variable COMMA? MOT_DEVISE_EN devise
     ;
 
 dateFin
-    :   COMMA MOT_JUSQUA dateValue=variable MOT_TOUT_LES ENTIER MOT_DU MOT_MOIS
+    :   COMMA? MOT_JUSQUA dateValue=variable MOT_TOUT_LES ENTIER MOT_DU MOT_MOIS
     ;
 
 ligneNom

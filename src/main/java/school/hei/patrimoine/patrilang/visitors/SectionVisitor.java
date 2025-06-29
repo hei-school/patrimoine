@@ -45,11 +45,7 @@ public class SectionVisitor {
   }
 
   public void visitSectionDatesDeclarations(SectionDatesDeclarationsContext ctx) {
-    ctx.ligneDateDeclaration()
-        .forEach(
-            ligne ->
-                this.variableVisitor.addToScope(
-                    visitText(ligne.nom), DATE, this.variableVisitor.asDate(ligne.dateValue)));
+    this.operationVisitor.apply(ctx.operations(), variableVisitor);
   }
 
   public void visitPersonnesMoralesDeclarations(SectionPersonnesMoralesDeclarationsContext ctx) {
@@ -82,11 +78,11 @@ public class SectionVisitor {
   }
 
   public void visitSectionInitialisation(SectionInitialisationContext ctx) {
-    this.operationVisitor.apply(ctx.operations());
+    this.operationVisitor.apply(ctx.operations(), variableVisitor);
   }
 
   public void visitSectionSuivi(SectionSuiviContext ctx) {
-    this.operationVisitor.apply(ctx.operations());
+    this.operationVisitor.apply(ctx.operations(), variableVisitor);
   }
 
   public Map<Personne, Double> visitSectionPossesseurs(SectionPossesseursContext ctx) {
@@ -113,7 +109,7 @@ public class SectionVisitor {
   }
 
   public Set<Possession> visitSectionOperations(SectionOperationsContext ctx) {
-    return this.operationVisitor.apply(ctx.operations());
+    return this.operationVisitor.apply(ctx.operations(), variableVisitor);
   }
 
   private <T extends Possession> Set<T> visitCompteElements(

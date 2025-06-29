@@ -23,6 +23,7 @@ public class SectionVisitorFactory {
         .argentVisitor(argentVisitor)
         .operationVisitor(operationVisitor)
         .variableVisitor(variableVisitor)
+        .operationTemplateVisitor(new OperationTemplateVisitor())
         .compteVisitor(new CompteVisitor(variableVisitor, argentVisitor))
         .creanceVisitor(new CreanceVisitor(variableVisitor, argentVisitor))
         .detteVisitor(new DetteVisitor(variableVisitor, argentVisitor))
