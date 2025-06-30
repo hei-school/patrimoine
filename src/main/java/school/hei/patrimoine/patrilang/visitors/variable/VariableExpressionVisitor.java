@@ -2,18 +2,23 @@ package school.hei.patrimoine.patrilang.visitors.variable;
 
 import static java.lang.Double.parseDouble;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.*;
+import static school.hei.patrimoine.patrilang.mapper.DurationMapper.stringToDurationType;
 import static school.hei.patrimoine.patrilang.modele.variable.VariableType.NOMBRE;
 import static school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor.extractVariableName;
 
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import school.hei.patrimoine.patrilang.antlr.PatriLangParserBaseVisitor;
 import school.hei.patrimoine.patrilang.modele.variable.VariableScope;
 import school.hei.patrimoine.patrilang.visitors.SimpleVisitor;
 
-@RequiredArgsConstructor
+import java.time.Period;
+import java.util.function.Supplier;
+
+@AllArgsConstructor
 public class VariableExpressionVisitor extends PatriLangParserBaseVisitor<Double>
     implements SimpleVisitor<ExpressionContext, Double> {
   private final VariableScope variableScope;
+  private Supplier<VariableDateVisitor> variableDateVisitorSupplier;
 
   @Override
   public Double apply(ExpressionContext ctx) {
@@ -74,6 +79,19 @@ public class VariableExpressionVisitor extends PatriLangParserBaseVisitor<Double
   @Override
   public Double visitNombreExpr(NombreExprContext ctx) {
     return parseDouble(ctx.getText().replaceAll("_", ""));
+  }
+
+  @Override
+  public Double visitDurationExpr(DurationExprContext ctx) {
+    var lhs = this.variableDateVisitorSupplier.get().apply(ctx.duration().lhs);
+    var rhs = this.variableDateVisitorSupplier.get().apply(ctx.duration().rhs);
+    var type = stringToDurationType(ctx.duration().DUREE_UNITE().getText());
+
+    return switch (type){
+      case YEARS -> (double) Period.between(rhs, lhs).getYears();
+      case MONTH -> (double) Period.between(rhs, lhs).getMonths();
+      case DAYS -> (double) Period.between(rhs, lhs).getDays();
+    };
   }
 
   @Override

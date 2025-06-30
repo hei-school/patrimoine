@@ -268,8 +268,13 @@ multiplicationExpr
 atom
     :   MOINS atom                                  # NegateExpr
     |   LPAREN expression RPAREN                    # ParenExpr
+    |   duration                                    # DurationExpr
     |   nombre                                      # NombreExpr
     |   NOMBRE_VARIABLE                             # NombreVariableExpr
+    ;
+
+duration
+    :   lhs=date MOINS rhs=date DUREE_UNITE
     ;
 
 nombre

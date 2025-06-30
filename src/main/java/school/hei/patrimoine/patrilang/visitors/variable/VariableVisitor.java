@@ -34,8 +34,8 @@ public class VariableVisitor implements SimpleVisitor<VariableContext, Variable<
 
   public VariableVisitor(Optional<VariableScope> parentScope) {
     this.variableScope = new VariableScope(parentScope);
-    this.variableExpressionVisitor = new VariableExpressionVisitor(variableScope);
-    this.variableDateVisitor = new VariableDateVisitor();
+    this.variableExpressionVisitor = new VariableExpressionVisitor(variableScope, this::getVariableDateVisitor);
+    this.variableDateVisitor = new VariableDateVisitor(variableScope, this::getVariableExpressionVisitor);
   }
 
   public Compte asCompte(VariableContext ctx) {
@@ -79,7 +79,7 @@ public class VariableVisitor implements SimpleVisitor<VariableContext, Variable<
   @Override
   public Variable<?> apply(VariableContext ctx) {
     if (nonNull(ctx.date())) {
-      var value = variableDateVisitor.apply(ctx.date(), this);
+      var value = variableDateVisitor.apply(ctx.date());
       return new Variable<>(R_VALUE_VARIABLE_NAME, DATE, value);
     }
 

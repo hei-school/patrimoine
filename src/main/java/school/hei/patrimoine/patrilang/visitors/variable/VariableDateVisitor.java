@@ -8,21 +8,27 @@ import static school.hei.patrimoine.patrilang.modele.variable.VariableType.DATE;
 import static school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor.extractVariableName;
 
 import java.time.LocalDate;
+import java.util.function.Supplier;
+
 import lombok.RequiredArgsConstructor;
+import school.hei.patrimoine.patrilang.modele.variable.VariableScope;
 
 @RequiredArgsConstructor
 public class VariableDateVisitor {
-  public LocalDate apply(DateContext ctx, VariableVisitor variableVisitor) {
-    var baseDate = visitBaseDate(ctx.dateAtom(), variableVisitor);
+  private final VariableScope variableScope;
+  private final Supplier<VariableExpressionVisitor> variableExpressionVisitorSupplier;
+
+  public LocalDate apply(DateContext ctx) {
+    var baseDate = visitBaseDate(ctx.dateAtom());
 
     if (isNull(ctx.dateDelta())) {
       return baseDate;
     }
 
-    return applyDelta(baseDate, ctx.dateDelta(), variableVisitor);
+    return applyDelta(baseDate, ctx.dateDelta());
   }
 
-  private static LocalDate visitBaseDate(DateAtomContext ctx, VariableVisitor variableVisitor) {
+  private LocalDate visitBaseDate(DateAtomContext ctx) {
     if (nonNull(ctx.MOT_DATE_INDETERMINER())) {
       return LocalDate.MAX;
     }
@@ -37,24 +43,24 @@ public class VariableDateVisitor {
 
     if (nonNull(ctx.DATE_VARIABLE())) {
       var name = extractVariableName(ctx.DATE_VARIABLE().getText());
-      return (LocalDate) variableVisitor.getVariableScope().get(name, DATE).value();
+      return (LocalDate) this.variableScope.get(name, DATE).value();
     }
 
-    var jour = variableVisitor.asInt(ctx.jour);
-    var annee = variableVisitor.asInt(ctx.annee);
+    var jour = this.variableExpressionVisitorSupplier.get().apply(ctx.jour.expression());
+    var annee = this.variableExpressionVisitorSupplier.get().apply(ctx.annee.expression());
     if (nonNull(ctx.moisEntier)) {
-      return LocalDate.of(annee, variableVisitor.asInt(ctx.moisEntier), jour);
+      var mois = this.variableExpressionVisitorSupplier.get().apply(ctx.moisEntier.expression());
+      return LocalDate.of(annee.intValue(), mois.intValue(), jour.intValue());
     }
 
-    return LocalDate.of(annee, stringToMonth(ctx.moisTextuel.getText()), jour);
+    return LocalDate.of(annee.intValue(), stringToMonth(ctx.moisTextuel.getText()), jour.intValue());
   }
 
-  private static LocalDate applyDelta(
-      LocalDate baseValue, DateDeltaContext ctx, VariableVisitor variableVisitor) {
+  private LocalDate applyDelta(LocalDate baseValue, DateDeltaContext ctx) {
     var isMinus = nonNull(ctx.MOINS());
-    var anneePart = visitAnneePart(ctx.anneePart(), variableVisitor);
-    var moisPart = visitMoisPart(ctx.moisPart(), variableVisitor);
-    var joursPart = visitJours(ctx.jourPart(), variableVisitor);
+    var anneePart = visitAnneePart(ctx.anneePart());
+    var moisPart = visitMoisPart(ctx.moisPart());
+    var joursPart = visitJours(ctx.jourPart());
     LocalDate newValue;
 
     if (isMinus) {
@@ -66,15 +72,15 @@ public class VariableDateVisitor {
     return newValue;
   }
 
-  private static int visitAnneePart(AnneePartContext ctx, VariableVisitor variableVisitor) {
-    return isNull(ctx) ? 0 : variableVisitor.asInt((ctx.variable()));
+  private int visitAnneePart(AnneePartContext ctx) {
+    return isNull(ctx) ? 0 : this.variableExpressionVisitorSupplier.get().apply(ctx.variable().expression()).intValue();
   }
 
-  private static int visitMoisPart(MoisPartContext ctx, VariableVisitor variableVisitor) {
-    return isNull(ctx) ? 0 : variableVisitor.asInt((ctx.variable()));
+  private int visitMoisPart(MoisPartContext ctx) {
+    return isNull(ctx) ? 0 : this.variableExpressionVisitorSupplier.get().apply(ctx.variable().expression()).intValue();
   }
 
-  private static int visitJours(JourPartContext ctx, VariableVisitor variableVisitor) {
-    return isNull(ctx) ? 0 : variableVisitor.asInt((ctx.variable()));
+  private int visitJours(JourPartContext ctx) {
+    return isNull(ctx) ? 0 : this.variableExpressionVisitorSupplier.get().apply(ctx.variable().expression()).intValue();
   }
 }

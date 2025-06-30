@@ -5,7 +5,7 @@
 * Devise en Ar
 
 # Possesseurs
-* Personnes:Zety 100%
+* Personnes:Zety ((le 2 février 2050 - 1année - le 2 février 2025 en années) * 4 + 1 * 4)%
 
 # Trésoreries
 * Trésoreries:zetyPersonnel

@@ -228,6 +228,14 @@ MOT_VALANT
     ;
 
 /* Opérateurs */
+DUREE_UNITE
+    :   'en jours'
+    |   'en Jours'
+    |   'en mois'
+    |   'en Mois'
+    |   'en années'
+    |   'en Années'
+    ;
 DEVISE
     :   'Ar'
     |   '€'
@@ -270,6 +278,9 @@ DECIMAL
     ;
 ENTIER
     :   DIGIT+ ('_' DIGIT+)*
+    ;
+POINT
+    :   '.'
     ;
 PLUS
     :   '+'
