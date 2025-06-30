@@ -95,6 +95,18 @@ public class VariableExpressionVisitor extends PatriLangParserBaseVisitor<Double
   }
 
   @Override
+  public Double visitUniteDateDeExpr(UniteDateDeExprContext ctx) {
+    var date = this.variableDateVisitorSupplier.get().apply(ctx.uniteDateDe().date());
+    var type = stringToDurationType(ctx.uniteDateDe().UNITE_DATE_DE().getText());
+
+    return switch (type){
+      case YEARS -> (double) date.getYear();
+      case MONTH -> (double) date.getMonthValue();
+      case DAYS -> (double) date.getDayOfMonth();
+    };
+  }
+
+  @Override
   public Double visitNombreVariableExpr(NombreVariableExprContext ctx) {
     var name = extractVariableName(ctx.getText());
     return (Double) variableScope.get(name, NOMBRE).value();

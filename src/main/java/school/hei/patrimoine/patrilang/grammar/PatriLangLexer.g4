@@ -228,6 +228,10 @@ MOT_VALANT
     ;
 
 /* Opérateurs */
+UNITE_DATE_DE
+    : ('année' | 'mois' | 'jour') ' de'
+    ;
+
 DUREE_UNITE
     :   'en jours'
     |   'en Jours'

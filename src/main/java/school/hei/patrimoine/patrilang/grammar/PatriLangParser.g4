@@ -269,12 +269,17 @@ atom
     :   MOINS atom                                  # NegateExpr
     |   LPAREN expression RPAREN                    # ParenExpr
     |   duration                                    # DurationExpr
+    |   uniteDateDe                                 # UniteDateDeExpr
     |   nombre                                      # NombreExpr
     |   NOMBRE_VARIABLE                             # NombreVariableExpr
     ;
 
 duration
     :   lhs=date MOINS rhs=date DUREE_UNITE
+    ;
+
+uniteDateDe
+    :   UNITE_DATE_DE date
     ;
 
 nombre

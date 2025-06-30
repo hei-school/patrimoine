@@ -1,5 +1,6 @@
 package school.hei.patrimoine.patrilang.unit.visitors;
 
+import static java.time.Month.FEBRUARY;
 import static java.time.Month.JANUARY;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.ExpressionContext;
@@ -91,6 +92,18 @@ class VariableExpressionVisitorTest {
     ).getYears();
 
     variableVisitor.addToScope("myDate", DATE, au1Janvier2025);
+    var actual = visitor.visit(input, PatriLangParser::expression);
+
+    assertEquals(expected, actual);
+  }
+
+  @Test
+  void parse_nombre_from_date_using_date_de() {
+    var au1Janvier2025 = LocalDate.of(2000, FEBRUARY, 1);
+    var input = "(mois de Dates:au1Janvier2025)";
+    double expected = au1Janvier2025.getMonthValue();
+
+    variableVisitor.addToScope("au1Janvier2025", DATE, au1Janvier2025);
     var actual = visitor.visit(input, PatriLangParser::expression);
 
     assertEquals(expected, actual);
