@@ -15,11 +15,10 @@ import school.hei.patrimoine.modele.possession.FluxArgent;
 import school.hei.patrimoine.patrilang.antlr.PatriLangParser;
 import school.hei.patrimoine.patrilang.utils.UnitTestVisitor;
 import school.hei.patrimoine.patrilang.visitors.IdVisitor;
-import school.hei.patrimoine.patrilang.visitors.possession.ArgentVisitor;
 import school.hei.patrimoine.patrilang.visitors.possession.FluxArgentVisitor;
 import school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor;
 
-class FluxArgentVisitorTest {
+class FluxVariableArgentVisitorTest {
   private static final VariableVisitor variableVisitor = new VariableVisitor();
   private static final LocalDate AJD = LocalDate.of(2025, JUNE, 23);
   private static final Compte COMPTE_PERSONNEL =
@@ -31,8 +30,7 @@ class FluxArgentVisitorTest {
   }
 
   FluxArgentVisitor subject =
-      new FluxArgentVisitor(
-          variableVisitor, new ArgentVisitor(variableVisitor), new IdVisitor(variableVisitor));
+      new FluxArgentVisitor(variableVisitor, new IdVisitor(variableVisitor));
 
   UnitTestVisitor visitor =
       new UnitTestVisitor() {

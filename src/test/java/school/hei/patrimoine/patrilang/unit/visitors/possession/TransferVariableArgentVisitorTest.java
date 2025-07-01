@@ -14,19 +14,17 @@ import school.hei.patrimoine.modele.possession.TransfertArgent;
 import school.hei.patrimoine.patrilang.antlr.PatriLangParser;
 import school.hei.patrimoine.patrilang.utils.UnitTestVisitor;
 import school.hei.patrimoine.patrilang.visitors.IdVisitor;
-import school.hei.patrimoine.patrilang.visitors.possession.ArgentVisitor;
 import school.hei.patrimoine.patrilang.visitors.possession.TransferArgentVisitor;
 import school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor;
 
-class TransferArgentVisitorTest {
+class TransferVariableArgentVisitorTest {
   private static final VariableVisitor variableVisitor = new VariableVisitor();
   private static final LocalDate AJD = LocalDate.of(2025, 6, 23);
   private static final Compte COMPTE_DÉBITEUR = new Compte("débiteur", AJD, ariary(600_000));
   private static final Compte COMPTE_CRÉDITEUR = new Compte("créditeur", AJD, ariary(1_600_000));
 
   TransferArgentVisitor subject =
-      new TransferArgentVisitor(
-          variableVisitor, new ArgentVisitor(variableVisitor), new IdVisitor(variableVisitor));
+      new TransferArgentVisitor(variableVisitor, new IdVisitor(variableVisitor));
 
   UnitTestVisitor visitor =
       new UnitTestVisitor() {

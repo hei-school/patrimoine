@@ -6,13 +6,12 @@ import static school.hei.patrimoine.patrilang.mapper.DurationMapper.stringToDura
 import static school.hei.patrimoine.patrilang.modele.variable.VariableType.NOMBRE;
 import static school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor.extractVariableName;
 
+import java.time.Period;
+import java.util.function.Supplier;
 import lombok.AllArgsConstructor;
 import school.hei.patrimoine.patrilang.antlr.PatriLangParserBaseVisitor;
 import school.hei.patrimoine.patrilang.modele.variable.VariableScope;
 import school.hei.patrimoine.patrilang.visitors.SimpleVisitor;
-
-import java.time.Period;
-import java.util.function.Supplier;
 
 @AllArgsConstructor
 public class VariableExpressionVisitor extends PatriLangParserBaseVisitor<Double>
@@ -87,7 +86,7 @@ public class VariableExpressionVisitor extends PatriLangParserBaseVisitor<Double
     var rhs = this.variableDateVisitorSupplier.get().apply(ctx.duration().rhs);
     var type = stringToDurationType(ctx.duration().DUREE_UNITE().getText());
 
-    return switch (type){
+    return switch (type) {
       case YEARS -> (double) Period.between(rhs, lhs).getYears();
       case MONTH -> (double) Period.between(rhs, lhs).getMonths();
       case DAYS -> (double) Period.between(rhs, lhs).getDays();
@@ -99,7 +98,7 @@ public class VariableExpressionVisitor extends PatriLangParserBaseVisitor<Double
     var date = this.variableDateVisitorSupplier.get().apply(ctx.uniteDateDe().date());
     var type = stringToDurationType(ctx.uniteDateDe().UNITE_DATE_DE().getText());
 
-    return switch (type){
+    return switch (type) {
       case YEARS -> (double) date.getYear();
       case MONTH -> (double) date.getMonthValue();
       case DAYS -> (double) date.getDayOfMonth();

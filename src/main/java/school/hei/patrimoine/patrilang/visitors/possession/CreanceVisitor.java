@@ -13,12 +13,11 @@ import school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor;
 @RequiredArgsConstructor
 public class CreanceVisitor implements SimpleVisitor<CompteContext, Creance> {
   private final VariableVisitor variableVisitor;
-  private final ArgentVisitor argentVisitor;
 
   @Override
   public Creance apply(CompteContext ctx) {
     String nom = visitText(ctx.nom);
-    Argent valeurComptable = this.argentVisitor.apply(ctx.valeurComptable);
+    Argent valeurComptable = this.variableVisitor.asArgent(ctx.valeurComptable);
     LocalDate t = this.variableVisitor.asDate(ctx.dateValue);
 
     return new Creance(nom, t, valeurComptable);

@@ -14,19 +14,17 @@ public class SectionVisitorFactory {
   public static SectionVisitor make(String casSetFolderPath, Optional<VariableScope> parentScope) {
     var variableVisitor = new VariableVisitor(parentScope);
     var idVisitor = new IdVisitor(variableVisitor);
-    var argentVisitor = new ArgentVisitor(variableVisitor);
 
-    var operationVisitor = OperationVisitorFactory.make(variableVisitor, idVisitor, argentVisitor);
+    var operationVisitor = OperationVisitorFactory.make(variableVisitor, idVisitor);
 
     return SectionVisitor.builder()
         .casSetFolderPath(casSetFolderPath)
-        .argentVisitor(argentVisitor)
         .operationVisitor(operationVisitor)
         .variableVisitor(variableVisitor)
         .operationTemplateVisitor(new OperationTemplateVisitor())
-        .compteVisitor(new CompteVisitor(variableVisitor, argentVisitor))
-        .creanceVisitor(new CreanceVisitor(variableVisitor, argentVisitor))
-        .detteVisitor(new DetteVisitor(variableVisitor, argentVisitor))
+        .compteVisitor(new CompteVisitor(variableVisitor))
+        .creanceVisitor(new CreanceVisitor(variableVisitor))
+        .detteVisitor(new DetteVisitor(variableVisitor))
         .build();
   }
 }

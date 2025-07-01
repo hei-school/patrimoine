@@ -10,6 +10,7 @@ import static school.hei.patrimoine.patrilang.modele.variable.VariableType.*;
 import java.time.LocalDate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.Personne;
 import school.hei.patrimoine.modele.possession.Compte;
 import school.hei.patrimoine.modele.possession.PersonneMorale;
@@ -130,6 +131,20 @@ class VariableVisitorTest {
     subject.addToScope("ajd", DATE, baseDate);
 
     var variable = (Variable<LocalDate>) visitor.visit(input, PatriLangParser::variable);
+    var actual = variable.value();
+
+    assertEquals(expected, actual);
+  }
+
+  @Test
+  void can_parse_argent_visitor() {
+    var input = "(10_000 - 200)Ar - 500Ar évalué Dates:ajd";
+    var ajd = LocalDate.of(2026, JULY, 13);
+    var expected = ariary(10_000 - 200).minus(ariary(500), ajd);
+
+    subject.addToScope("ajd", DATE, ajd);
+
+    var variable = (Variable<Argent>) visitor.visit(input, PatriLangParser::variable);
     var actual = variable.value();
 
     assertEquals(expected, actual);

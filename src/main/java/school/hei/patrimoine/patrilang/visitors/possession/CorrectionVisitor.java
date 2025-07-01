@@ -15,13 +15,12 @@ import school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor;
 @RequiredArgsConstructor
 public class CorrectionVisitor implements SimpleVisitor<CorrectionContext, Correction> {
   private final VariableVisitor variableVisitor;
-  private final ArgentVisitor argentVisitor;
   private final IdVisitor idVisitor;
 
   @Override
   public Correction apply(CorrectionContext ctx) {
     String id = this.idVisitor.apply(ctx.id());
-    Argent valeurComptable = this.argentVisitor.apply(ctx.valeurComptable);
+    Argent valeurComptable = this.variableVisitor.asArgent(ctx.valeurComptable);
     LocalDate t = this.variableVisitor.asDate(ctx.dateValue);
     Compte compte = this.variableVisitor.asCompte(ctx.compteNom);
 

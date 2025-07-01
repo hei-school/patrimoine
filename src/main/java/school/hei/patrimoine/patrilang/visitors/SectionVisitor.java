@@ -32,7 +32,6 @@ public class SectionVisitor {
   private final DetteVisitor detteVisitor;
   private final OperationVisitor operationVisitor;
   private final OperationTemplateVisitor operationTemplateVisitor;
-  private final ArgentVisitor argentVisitor;
 
   public SectionVisitor createChildSectionVisitor() {
     return SectionVisitorFactory.make(

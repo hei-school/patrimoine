@@ -10,12 +10,20 @@ import org.junit.jupiter.api.Test;
 import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.patrilang.antlr.PatriLangParser;
 import school.hei.patrimoine.patrilang.utils.UnitTestVisitor;
-import school.hei.patrimoine.patrilang.visitors.possession.ArgentVisitor;
+import school.hei.patrimoine.patrilang.visitors.variable.VariableArgentVisitor;
+import school.hei.patrimoine.patrilang.visitors.variable.VariableDateVisitor;
+import school.hei.patrimoine.patrilang.visitors.variable.VariableExpressionVisitor;
 import school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor;
 
-class ArgentVisitorTest {
+class VariableArgentVisitorTest {
   VariableVisitor variableVisitor = new VariableVisitor();
-  ArgentVisitor subject = new ArgentVisitor(variableVisitor);
+  VariableArgentVisitor subject =
+      new VariableArgentVisitor(
+          variableVisitor.getVariableScope(),
+          new VariableExpressionVisitor(
+              variableVisitor.getVariableScope(), variableVisitor::getVariableDateVisitor),
+          new VariableDateVisitor(
+              variableVisitor.getVariableScope(), variableVisitor::getVariableExpressionVisitor));
 
   UnitTestVisitor visitor =
       new UnitTestVisitor() {
@@ -28,7 +36,13 @@ class ArgentVisitorTest {
   @BeforeEach
   void setUp() {
     variableVisitor = new VariableVisitor();
-    subject = new ArgentVisitor(variableVisitor);
+    subject =
+        new VariableArgentVisitor(
+            variableVisitor.getVariableScope(),
+            new VariableExpressionVisitor(
+                variableVisitor.getVariableScope(), variableVisitor::getVariableDateVisitor),
+            new VariableDateVisitor(
+                variableVisitor.getVariableScope(), variableVisitor::getVariableExpressionVisitor));
   }
 
   @Test

@@ -13,12 +13,11 @@ import school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor;
 @RequiredArgsConstructor
 public class CompteVisitor implements SimpleVisitor<CompteContext, Compte> {
   private final VariableVisitor variableVisitor;
-  private final ArgentVisitor argentVisitor;
 
   @Override
   public Compte apply(CompteContext ctx) {
     String nom = visitText(ctx.nom);
-    Argent valeurComptable = this.argentVisitor.apply(ctx.valeurComptable);
+    Argent valeurComptable = this.variableVisitor.asArgent(ctx.valeurComptable);
     LocalDate t = this.variableVisitor.asDate(ctx.dateValue);
 
     return new Compte(nom, t, valeurComptable);

@@ -9,7 +9,6 @@ import static school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor.
 
 import java.time.LocalDate;
 import java.util.function.Supplier;
-
 import lombok.RequiredArgsConstructor;
 import school.hei.patrimoine.patrilang.modele.variable.VariableScope;
 
@@ -53,7 +52,8 @@ public class VariableDateVisitor {
       return LocalDate.of(annee.intValue(), mois.intValue(), jour.intValue());
     }
 
-    return LocalDate.of(annee.intValue(), stringToMonth(ctx.moisTextuel.getText()), jour.intValue());
+    return LocalDate.of(
+        annee.intValue(), stringToMonth(ctx.moisTextuel.getText()), jour.intValue());
   }
 
   private LocalDate applyDelta(LocalDate baseValue, DateDeltaContext ctx) {
@@ -73,14 +73,29 @@ public class VariableDateVisitor {
   }
 
   private int visitAnneePart(AnneePartContext ctx) {
-    return isNull(ctx) ? 0 : this.variableExpressionVisitorSupplier.get().apply(ctx.variable().expression()).intValue();
+    return isNull(ctx)
+        ? 0
+        : this.variableExpressionVisitorSupplier
+            .get()
+            .apply(ctx.variable().expression())
+            .intValue();
   }
 
   private int visitMoisPart(MoisPartContext ctx) {
-    return isNull(ctx) ? 0 : this.variableExpressionVisitorSupplier.get().apply(ctx.variable().expression()).intValue();
+    return isNull(ctx)
+        ? 0
+        : this.variableExpressionVisitorSupplier
+            .get()
+            .apply(ctx.variable().expression())
+            .intValue();
   }
 
   private int visitJours(JourPartContext ctx) {
-    return isNull(ctx) ? 0 : this.variableExpressionVisitorSupplier.get().apply(ctx.variable().expression()).intValue();
+    return isNull(ctx)
+        ? 0
+        : this.variableExpressionVisitorSupplier
+            .get()
+            .apply(ctx.variable().expression())
+            .intValue();
   }
 }

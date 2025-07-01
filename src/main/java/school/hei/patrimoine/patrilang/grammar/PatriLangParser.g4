@@ -18,7 +18,7 @@ toutCas
     ;
 
 ligneObjectifFinal
-    :   MUL MOT_OBJECTIF_FINAL valeurComptable=argent
+    :   MUL MOT_OBJECTIF_FINAL valeurComptable=variable
     ;
 
 sectionToutCasGeneral
@@ -83,11 +83,11 @@ sectionSuivi
     ;
 
 objectif
-    :   MUL id COMMA? dateValue=variable COMMA? MOT_OBJECTIF_DE valeurComptable=argent MOT_POUR compteNom=variable
+    :   MUL id COMMA? dateValue=variable COMMA? MOT_OBJECTIF_DE valeurComptable=variable MOT_POUR compteNom=variable
     ;
 
 correction
-    :   MUL id COMMA? dateValue=variable COMMA? MOT_CORRIGER valeurComptable=argent MOT_DANS compteNom=variable
+    :   MUL id COMMA? dateValue=variable COMMA? MOT_CORRIGER valeurComptable=variable MOT_DANS compteNom=variable
     ;
 /* -------------------- Possessions --------------------  */
 /* Trésorerie */
@@ -164,32 +164,32 @@ ligneVariableDeclaration
 
 /* Simple Possessions */
 compte
-    :   MUL nom=text COMMA? MOT_VALANT valeurComptable=argent dateValue=variable
+    :   MUL nom=text COMMA? MOT_VALANT valeurComptable=variable dateValue=variable
     ;
 
 fluxArgentTransferer
-    :   MUL id COMMA? dateValue=variable COMMA? MOT_TRANSFERER valeurComptable=argent MOT_DEPUIS compteDebiteurNom=variable MOT_VERS compteCrediteurNom=variable dateFin?
+    :   MUL id COMMA? dateValue=variable COMMA? MOT_TRANSFERER valeurComptable=variable MOT_DEPUIS compteDebiteurNom=variable MOT_VERS compteCrediteurNom=variable dateFin?
     ;
 
 fluxArgentEntrer
-    :   MUL id COMMA? dateValue=variable COMMA? MOT_ENTRER valeurComptable=argent MOT_VERS compteCrediteurNom=variable dateFin?
+    :   MUL id COMMA? dateValue=variable COMMA? MOT_ENTRER valeurComptable=variable MOT_VERS compteCrediteurNom=variable dateFin?
     ;
 
 fluxArgentSortir
-    :   MUL id COMMA? dateValue=variable COMMA? MOT_SORTIR valeurComptable=argent MOT_DEPUIS compteDebiteurNom=variable dateFin?
+    :   MUL id COMMA? dateValue=variable COMMA? MOT_SORTIR valeurComptable=variable MOT_DEPUIS compteDebiteurNom=variable dateFin?
     ;
 
 acheterMateriel
-    :   MUL id COMMA? dateValue=variable COMMA? MOT_ACHETER materielNom=text COMMA? MOT_VALANT valeurComptable=argent COMMA? MATERIEL_APPRECIATION MOT_ANNUELLEMENT_DE pourcentageAppreciation=variable PERCENT COMMA? MOT_DEPUIS compteDebiteurNom=variable
+    :   MUL id COMMA? dateValue=variable COMMA? MOT_ACHETER materielNom=text COMMA? MOT_VALANT valeurComptable=variable COMMA? MOT_DEPUIS compteDebiteurNom=variable COMMA? MATERIEL_APPRECIATION MOT_ANNUELLEMENT_DE pourcentageAppreciation=variable PERCENT
     ;
 
 possedeMateriel
-    :   MUL id COMMA? dateValue=variable COMMA? MOT_POSSEDER materielNom=text COMMA? MOT_VALANT valeurComptable=argent COMMA? MATERIEL_APPRECIATION MOT_ANNUELLEMENT_DE pourcentageAppreciation=variable PERCENT
+    :   MUL id COMMA? dateValue=variable COMMA? MOT_POSSEDER materielNom=text COMMA? MOT_VALANT valeurComptable=variable (MOT_OBTENU dateObtention=variable)? COMMA? MATERIEL_APPRECIATION MOT_ANNUELLEMENT_DE pourcentageAppreciation=variable PERCENT
     ;
 
 /* -------------------- Commun --------------------  */
 sousTitre
-    :   HASHES HASHES nom=text COMMA? dateValue=variable COMMA? MOT_DEVISE_EN devise
+    :   HASHES HASHES HASHES? nom=text COMMA? dateValue=variable COMMA? MOT_DEVISE_EN devise
     ;
 
 dateFin
@@ -200,18 +200,24 @@ ligneNom
     :   MUL nom=text
     ;
 
-argent
-    :   variable devise
-    ;
-
 devise
     :   DEVISE
     ;
 
 variable
     :   date
+    |   argent
     |   expression
     |   VARIABLE
+    ;
+
+argent
+    :   lhs=argentValue  ((PLUS | MOINS) rhs=argentValue MOT_EVALUER date)?
+    ;
+
+argentValue
+    :   expression devise
+    |   ARGENT_VARIABLE
     ;
 
 dateDelta

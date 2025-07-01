@@ -7,6 +7,7 @@ public enum VariableType {
   OPERATION_TEMPLATE("Templates"),
   DATE("Dates"),
   NOMBRE("Nombres"),
+  ARGENT("Argents"),
   PERSONNE("Personnes"),
   TRESORERIES("Trésoreries"),
   CREANCE("Créances"),
@@ -24,6 +25,7 @@ public enum VariableType {
       case "Templates" -> OPERATION_TEMPLATE;
       case "Dates" -> DATE;
       case "Nombres" -> NOMBRE;
+      case "Argents" -> ARGENT;
       case "Personnes" -> PERSONNE;
       case "Trésoreries" -> TRESORERIES;
       case "Créances" -> CREANCE;

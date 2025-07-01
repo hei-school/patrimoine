@@ -118,6 +118,9 @@ ENTETE_OPERATIONS
 MOT_POSSEDER
     :   'posséder'
     ;
+MOT_OBTENU
+    :   'obtenu'
+    ;
 MOT_ACHETER
     :   'acheter'
     ;
@@ -228,8 +231,20 @@ MOT_VALANT
     ;
 
 /* Opérateurs */
+MOT_EVALUER
+    :  'évalué'
+    ;
 UNITE_DATE_DE
-    : ('année' | 'mois' | 'jour') ' de'
+    : 'années de'
+    | 'année de'
+    | 'Année de'
+    | 'Années de'
+    | 'mois de'
+    | 'Mois de'
+    | 'jour de'
+    | 'Jour de'
+    | 'jours de'
+    | 'Jours de'
     ;
 
 DUREE_UNITE
@@ -268,6 +283,9 @@ COLON
     ;
 
 /* Valeurs */
+ARGENTS_VARIABLE
+    :   'Argents' COLON STRING
+    ;
 NOMBRE_VARIABLE
     :   'Nombres' COLON STRING
     ;

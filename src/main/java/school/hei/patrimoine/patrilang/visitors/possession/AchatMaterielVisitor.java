@@ -15,14 +15,13 @@ import school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor;
 public class AchatMaterielVisitor
     implements SimpleVisitor<AcheterMaterielContext, AchatMaterielAuComptant> {
   private final VariableVisitor variableVisitor;
-  private final ArgentVisitor argentVisitor;
 
   @Override
   public AchatMaterielAuComptant apply(AcheterMaterielContext ctx) {
     String materielNom = visitText(ctx.materielNom);
     double facteurTauxDAppreciation = visitMaterielAppreciationFacteur(ctx.MATERIEL_APPRECIATION());
     double tauxDAppreciation = this.variableVisitor.asNombre(ctx.pourcentageAppreciation);
-    Argent valeurComptable = this.argentVisitor.apply(ctx.valeurComptable);
+    Argent valeurComptable = this.variableVisitor.asArgent(ctx.valeurComptable);
     LocalDate t = this.variableVisitor.asDate(ctx.dateValue);
     Compte financeur = this.variableVisitor.asCompte(ctx.compteDebiteurNom);
 

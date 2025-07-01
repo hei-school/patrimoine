@@ -1,5 +1,6 @@
 package school.hei.patrimoine.patrilang.visitors.possession;
 
+import static java.util.Objects.nonNull;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.PossedeMaterielContext;
 import static school.hei.patrimoine.patrilang.visitors.BaseVisitor.*;
 
@@ -13,17 +14,17 @@ import school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor;
 @RequiredArgsConstructor
 public class MaterielVisitor implements SimpleVisitor<PossedeMaterielContext, Materiel> {
   private final VariableVisitor variableVisitor;
-  private final ArgentVisitor argentVisitor;
 
   @Override
   public Materiel apply(PossedeMaterielContext ctx) {
     String nom = visitText(ctx.materielNom);
     double facteurTauxDAppreciation = visitMaterielAppreciationFacteur(ctx.MATERIEL_APPRECIATION());
     double tauxDAppreciation = this.variableVisitor.asNombre(ctx.pourcentageAppreciation);
-    Argent valeurComptable = this.argentVisitor.apply(ctx.valeurComptable);
+    Argent valeurComptable = this.variableVisitor.asArgent(ctx.valeurComptable);
     LocalDate t = this.variableVisitor.asDate(ctx.dateValue);
+    LocalDate dateAcquisition = nonNull(ctx.dateObtention) ? this.variableVisitor.asDate(ctx.dateObtention) : t;
 
     return new Materiel(
-        nom, t, t, valeurComptable, tauxDAppreciation / 100 * facteurTauxDAppreciation);
+        nom, dateAcquisition, t, valeurComptable, tauxDAppreciation / 100 * facteurTauxDAppreciation);
   }
 }

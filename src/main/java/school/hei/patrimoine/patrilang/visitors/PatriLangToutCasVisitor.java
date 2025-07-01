@@ -15,8 +15,8 @@ public class PatriLangToutCasVisitor implements Function<ToutCasContext, CasSet>
   public CasSet apply(ToutCasContext ctx) {
     var objectifFinal =
         this.sectionVisitor
-            .getArgentVisitor()
-            .apply(ctx.sectionToutCasGeneral().ligneObjectifFinal().valeurComptable);
+            .getVariableVisitor()
+            .asArgent(ctx.sectionToutCasGeneral().ligneObjectifFinal().valeurComptable);
 
     if (nonNull(ctx.sectionDatesDeclarations())) {
       this.sectionVisitor.visitSectionDatesDeclarations(ctx.sectionDatesDeclarations());

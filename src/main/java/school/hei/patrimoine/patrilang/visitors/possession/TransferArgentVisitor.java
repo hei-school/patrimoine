@@ -17,12 +17,11 @@ import school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor;
 public class TransferArgentVisitor
     implements SimpleVisitor<FluxArgentTransfererContext, TransfertArgent> {
   private final VariableVisitor variableVisitor;
-  private final ArgentVisitor argentVisitor;
   private final IdVisitor idVisitor;
 
   public TransfertArgent apply(FluxArgentTransfererContext ctx) {
     String id = this.idVisitor.apply(ctx.id());
-    Argent valeurComptable = this.argentVisitor.apply(ctx.valeurComptable);
+    Argent valeurComptable = this.variableVisitor.asArgent(ctx.valeurComptable);
     LocalDate t = this.variableVisitor.asDate(ctx.dateValue);
     Compte débiteur = this.variableVisitor.asCompte(ctx.compteDebiteurNom);
     Compte créditeur = this.variableVisitor.asCompte(ctx.compteCrediteurNom);

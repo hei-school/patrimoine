@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import lombok.Getter;
+import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.Personne;
 import school.hei.patrimoine.modele.possession.Compte;
 import school.hei.patrimoine.modele.possession.Creance;
@@ -26,6 +27,7 @@ public class VariableVisitor implements SimpleVisitor<VariableContext, Variable<
 
   private final VariableScope variableScope;
   private final VariableExpressionVisitor variableExpressionVisitor;
+  private final VariableArgentVisitor variableArgentVisitor;
   private final VariableDateVisitor variableDateVisitor;
 
   public VariableVisitor() {
@@ -34,12 +36,20 @@ public class VariableVisitor implements SimpleVisitor<VariableContext, Variable<
 
   public VariableVisitor(Optional<VariableScope> parentScope) {
     this.variableScope = new VariableScope(parentScope);
-    this.variableExpressionVisitor = new VariableExpressionVisitor(variableScope, this::getVariableDateVisitor);
-    this.variableDateVisitor = new VariableDateVisitor(variableScope, this::getVariableExpressionVisitor);
+    this.variableExpressionVisitor =
+        new VariableExpressionVisitor(variableScope, this::getVariableDateVisitor);
+    this.variableDateVisitor =
+        new VariableDateVisitor(variableScope, this::getVariableExpressionVisitor);
+    this.variableArgentVisitor =
+        new VariableArgentVisitor(variableScope, variableExpressionVisitor, variableDateVisitor);
   }
 
   public Compte asCompte(VariableContext ctx) {
     return visitVariableAsExpectedType(List.of(Compte.class, Creance.class, Dette.class), ctx);
+  }
+
+  public Argent asArgent(VariableContext ctx) {
+    return visitVariableAsExpectedType(Argent.class, ctx);
   }
 
   public double asNombre(VariableContext ctx) {
@@ -78,6 +88,11 @@ public class VariableVisitor implements SimpleVisitor<VariableContext, Variable<
 
   @Override
   public Variable<?> apply(VariableContext ctx) {
+    if (nonNull(ctx.argent())) {
+      var value = variableArgentVisitor.apply(ctx.argent());
+      return new Variable<>(R_VALUE_VARIABLE_NAME, DATE, value);
+    }
+
     if (nonNull(ctx.date())) {
       var value = variableDateVisitor.apply(ctx.date());
       return new Variable<>(R_VALUE_VARIABLE_NAME, DATE, value);
