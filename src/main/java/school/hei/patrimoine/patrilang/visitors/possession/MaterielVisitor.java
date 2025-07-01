@@ -22,9 +22,14 @@ public class MaterielVisitor implements SimpleVisitor<PossedeMaterielContext, Ma
     double tauxDAppreciation = this.variableVisitor.asNombre(ctx.pourcentageAppreciation);
     Argent valeurComptable = this.variableVisitor.asArgent(ctx.valeurComptable);
     LocalDate t = this.variableVisitor.asDate(ctx.dateValue);
-    LocalDate dateAcquisition = nonNull(ctx.dateObtention) ? this.variableVisitor.asDate(ctx.dateObtention) : t;
+    LocalDate dateAcquisition =
+        nonNull(ctx.dateObtention) ? this.variableVisitor.asDate(ctx.dateObtention) : t;
 
     return new Materiel(
-        nom, dateAcquisition, t, valeurComptable, tauxDAppreciation / 100 * facteurTauxDAppreciation);
+        nom,
+        dateAcquisition,
+        t,
+        valeurComptable,
+        tauxDAppreciation / 100 * facteurTauxDAppreciation);
   }
 }

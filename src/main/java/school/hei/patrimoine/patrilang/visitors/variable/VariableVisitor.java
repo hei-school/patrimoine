@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import lombok.Getter;
+import school.hei.patrimoine.cas.Cas;
 import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.Personne;
 import school.hei.patrimoine.modele.possession.Compte;
@@ -42,6 +43,10 @@ public class VariableVisitor implements SimpleVisitor<VariableContext, Variable<
         new VariableDateVisitor(variableScope, this::getVariableExpressionVisitor);
     this.variableArgentVisitor =
         new VariableArgentVisitor(variableScope, variableExpressionVisitor, variableDateVisitor);
+  }
+
+  public Cas asCas(VariableContext ctx) {
+    return visitVariableAsExpectedType(Cas.class, ctx);
   }
 
   public Compte asCompte(VariableContext ctx) {

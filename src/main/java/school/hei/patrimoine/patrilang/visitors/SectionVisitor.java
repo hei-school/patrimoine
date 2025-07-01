@@ -41,11 +41,20 @@ public class SectionVisitor {
   public Set<Cas> visitSectionCas(SectionCasContext ctx) {
     return ctx.ligneNom().stream()
         .map(ligne -> visitText(ligne.nom))
-        .map(nom -> transpileCas(nom, this.createChildSectionVisitor()))
+        .map(
+            nom -> {
+              var cas = transpileCas(nom, this.createChildSectionVisitor());
+              this.variableVisitor.addToScope(nom, CAS, cas);
+              return cas;
+            })
         .collect(toSet());
   }
 
   public void visitSectionDatesDeclarations(SectionDatesDeclarationsContext ctx) {
+    this.operationVisitor.apply(ctx.operations(), variableVisitor);
+  }
+
+  public void visitSectionNombresDeclarations(SectionNombresDeclarationsContext ctx) {
     this.operationVisitor.apply(ctx.operations(), variableVisitor);
   }
 

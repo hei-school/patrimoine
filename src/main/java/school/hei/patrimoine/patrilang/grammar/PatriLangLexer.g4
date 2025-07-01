@@ -69,6 +69,10 @@ ENTETE_DATES
     :   'Dates'
     ;
 
+ENTETE_NOMBRES
+    :   'Nombres'
+    ;
+
 ENTETE_PERSONNES
     :   'Personnes'
     ;
@@ -114,6 +118,10 @@ ENTETE_CONTSTRUCTEUR_D_OPERATIONS
     ;
 ENTETE_OPERATIONS
     :   'Opérations'
+    ;
+MOT_REMBOURSER
+    :   'Rembourser'
+    |   'rembourser'
     ;
 MOT_POSSEDER
     :   'posséder'
@@ -333,6 +341,12 @@ MOT_ANNEES
     ;
 MOT_ET
     :   'et'
+    ;
+MOT_AVEC
+    :   'avec'
+    ;
+MOT_DE
+    :   'de'
     ;
 TEXT
     :   STRING

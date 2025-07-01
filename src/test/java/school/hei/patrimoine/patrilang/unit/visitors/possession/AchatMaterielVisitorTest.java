@@ -36,8 +36,8 @@ class AchatMaterielVisitorTest {
   void parse_normal_achat_materiel() {
     var expectedFluxArgentName = "Financement AchatMaterielAuComptant: ordinateur";
     var input =
-        "`achatOrdinateur` le 01 du 01-2025, acheter ordinateur, valant 300000Ar, s'appréciant"
-            + " annuellement de 1%, depuis Trésoreries:monCompte";
+        "`achatOrdinateur` le 01 du 01-2025, acheter ordinateur, valant 300000Ar, depuis"
+            + " Trésoreries:monCompte, s'appréciant annuellement de 1%";
 
     visitor.visit(input, PatriLangParser::acheterMateriel);
 

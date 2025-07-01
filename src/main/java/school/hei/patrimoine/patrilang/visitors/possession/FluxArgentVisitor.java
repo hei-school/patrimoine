@@ -25,6 +25,15 @@ public class FluxArgentVisitor {
     var dateFinOpt =
         ofNullable(ctx.dateFin()).map(dateFin -> visitDateFin(dateFin, this.variableVisitor));
 
+    if (valeurComptable.lt(0)) {
+      throw new IllegalArgumentException(
+          "Entrer "
+              + valeurComptable
+              + " pour l'opération "
+              + id
+              + " n'est pas possible, la valeur est inférieur à 0");
+    }
+
     return dateFinOpt
         .map(
             dateFin ->
@@ -40,6 +49,15 @@ public class FluxArgentVisitor {
     Compte compte = this.variableVisitor.asCompte(ctx.compteDebiteurNom);
     var dateFinOpt =
         ofNullable(ctx.dateFin()).map(dateFin -> visitDateFin(dateFin, this.variableVisitor));
+
+    if (valeurComptable.gt(0)) {
+      throw new IllegalArgumentException(
+          "Sortir "
+              + valeurComptable
+              + " pour l'opération "
+              + id
+              + " n'est pas possible, la valeur est supérieur à 0");
+    }
 
     return dateFinOpt
         .map(

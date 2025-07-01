@@ -31,6 +31,13 @@ public class CasSetAnalyzer implements Consumer<CasSet> {
       throw new RuntimeException(
           "Objectifs non atteints : "
               + objectifsNonAtteints.stream()
+                  .sorted(
+                      (lhs, rhs) -> {
+                        if (lhs.objectif().t().equals(rhs.objectif().t())) {
+                          return 0;
+                        }
+                        return lhs.objectif().t().isBefore(rhs.objectif().t()) ? -1 : 1;
+                      })
                   .map(ObjectifNonAtteint::prettyPrint)
                   .collect(Collectors.joining("\n")));
     }

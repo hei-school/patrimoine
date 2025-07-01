@@ -47,7 +47,7 @@ class OperationTemplateCallVisitorTest {
     var templateContent =
         createContent(
             """
-    * `salaireMensuel` Dates:ajd, entrer 4000Ar vers Trésoreries:comptePersonnel, jusqu'à date indéterminée tous les 31 du mois,
+    * `salaireMensuel` Dates:ajd, entrer 4000Ar vers Trésoreries:comptePersonnel, jusqu'à date indéterminée tous les 31 du mois
 """);
     var operationTemplate = new OperationTemplate("myTemplate", List.of(), templateContent);
     variableVisitor.addToScope("myTemplate", OPERATION_TEMPLATE, operationTemplate);
@@ -66,7 +66,7 @@ class OperationTemplateCallVisitorTest {
     var templateContent =
         createContent(
             """
-    * `salaireMensuel` Dates:ajd, entrer 4000Ar vers Trésoreries:compte, jusqu'à Dates:dateFin tous les 31 du mois,
+    * `salaireMensuel` Dates:ajd, entrer 4000Ar vers Trésoreries:compte, jusqu'à Dates:dateFin tous les 31 du mois
 """);
     var params =
         List.of(

@@ -7,6 +7,8 @@ import school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor;
 public class OperationVisitorFactory {
   public static OperationVisitor make(VariableVisitor variableVisitor, IdVisitor idVisitor) {
     return OperationVisitor.builder()
+        .variableVisitor(variableVisitor)
+        .remboursementDetteVisitor(new RemboursementDetteVisitor(variableVisitor, idVisitor))
         .groupPossessionVisitor(new GroupPossessionVisitor(variableVisitor))
         .achatMaterielVisitor(new AchatMaterielVisitor(variableVisitor))
         .correctionVisitor(new CorrectionVisitor(variableVisitor, idVisitor))

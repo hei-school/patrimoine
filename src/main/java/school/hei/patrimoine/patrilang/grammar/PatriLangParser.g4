@@ -41,9 +41,12 @@ sectionDatesDeclarations
     :   HASHES ENTETE_DATES operations*
     ;
 
+sectionNombresDeclarations
+    :   HASHES ENTETE_NOMBRES operations*
+    ;
 /* Cas */
 cas
-    :   sectionCasGeneral sectionPossesseurs  sectionDatesDeclarations? sectionTresoreries? sectionCreances? sectionDettes? sectionInitialisation? sectionOperations? sectionOperationTemplateDeclaration? sectionSuivi? EOF
+    :   sectionCasGeneral sectionPossesseurs sectionNombresDeclarations? sectionDatesDeclarations? sectionTresoreries? sectionCreances? sectionDettes? sectionInitialisation? sectionOperations? sectionOperationTemplateDeclaration? sectionSuivi? EOF
     ;
 
 sectionCasGeneral
@@ -152,10 +155,17 @@ operation
     |   fluxArgentSortir
     |   possedeMateriel
     |   acheterMateriel
+    |   rembourserDette
     |   correction
     |   objectif
     |   operationTemplateCall
     |   ligneVariableDeclaration
+    |   ligneCasOperations
+
+    ;
+
+ligneCasOperations
+    :   MUL ENTETE_OPERATIONS MOT_DE variable
     ;
 
 ligneVariableDeclaration
@@ -185,6 +195,10 @@ acheterMateriel
 
 possedeMateriel
     :   MUL id COMMA? dateValue=variable COMMA? MOT_POSSEDER materielNom=text COMMA? MOT_VALANT valeurComptable=variable (MOT_OBTENU dateObtention=variable)? COMMA? MATERIEL_APPRECIATION MOT_ANNUELLEMENT_DE pourcentageAppreciation=variable PERCENT
+    ;
+
+rembourserDette
+    :   MUL id COMMA? dateValue=variable COMMA? MOT_REMBOURSER dette=variable MOT_DE rembourseur=variable MOT_AVEC creance=variable MOT_DE rembourse=variable MOT_VALANT valeurComptable=variable
     ;
 
 /* -------------------- Commun --------------------  */
@@ -217,7 +231,7 @@ argent
 
 argentValue
     :   expression devise
-    |   ARGENT_VARIABLE
+    |   ARGENTS_VARIABLE
     ;
 
 dateDelta

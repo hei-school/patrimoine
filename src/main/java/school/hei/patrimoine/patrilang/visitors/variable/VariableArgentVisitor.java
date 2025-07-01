@@ -9,7 +9,6 @@ import static school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor.
 
 import lombok.RequiredArgsConstructor;
 import school.hei.patrimoine.modele.Argent;
-import school.hei.patrimoine.patrilang.modele.variable.Variable;
 import school.hei.patrimoine.patrilang.modele.variable.VariableScope;
 import school.hei.patrimoine.patrilang.visitors.SimpleVisitor;
 
@@ -32,10 +31,10 @@ public class VariableArgentVisitor implements SimpleVisitor<ArgentContext, Argen
   }
 
   private Argent visitArgentValue(ArgentValueContext ctx) {
-    if (nonNull(ctx.ARGENT_VARIABLE())) {
-      var name = extractVariableName(ctx.ARGENT_VARIABLE().getText());
-      var variable = (Variable<Argent>) this.variableScope.get(name, ARGENT).value();
-      return variable.value();
+    if (nonNull(ctx.ARGENTS_VARIABLE())) {
+      var name = extractVariableName(ctx.ARGENTS_VARIABLE().getText());
+      var variable = (Argent) this.variableScope.get(name, ARGENT).value();
+      return variable;
     }
 
     var valeurComptable = this.variableExpressionVisitor.apply(ctx.expression());

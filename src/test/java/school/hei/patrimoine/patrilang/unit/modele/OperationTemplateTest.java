@@ -32,7 +32,8 @@ class OperationTemplateTest {
             IllegalArgumentException.class, () -> operationTemplate.apply(parentScope, args));
 
     assertEquals(
-        "Le nombre d'arguments fournis ne peut pas dépasser celui attendu par le template",
+        "Erreur au niveau du constructeurs d'opérations name=charges. Le nombre d'arguments fournis"
+            + " ne peut pas dépasser celui attendu par le template.",
         error.getMessage());
   }
 

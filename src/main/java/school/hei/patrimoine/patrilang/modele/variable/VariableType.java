@@ -4,6 +4,7 @@ import lombok.Getter;
 
 @Getter
 public enum VariableType {
+  CAS("Cas"),
   OPERATION_TEMPLATE("Templates"),
   DATE("Dates"),
   NOMBRE("Nombres"),
@@ -27,6 +28,7 @@ public enum VariableType {
       case "Nombres" -> NOMBRE;
       case "Argents" -> ARGENT;
       case "Personnes" -> PERSONNE;
+      case "Cas" -> CAS;
       case "Trésoreries" -> TRESORERIES;
       case "Créances" -> CREANCE;
       case "Dettes" -> DETTE;

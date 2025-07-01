@@ -33,6 +33,14 @@ public class PatriLangCasVisitor implements Function<CasContext, Cas> {
 
     var possesseurs = this.sectionVisitor.visitSectionPossesseurs(ctx.sectionPossesseurs());
 
+    if (nonNull(ctx.sectionNombresDeclarations())) {
+      this.sectionVisitor.visitSectionNombresDeclarations(ctx.sectionNombresDeclarations());
+    }
+
+    if (nonNull(ctx.sectionDatesDeclarations())) {
+      this.sectionVisitor.visitSectionDatesDeclarations(ctx.sectionDatesDeclarations());
+    }
+
     if (nonNull(ctx.sectionOperationTemplateDeclaration())) {
       this.sectionVisitor.visitOperationTemplateDeclarations(
           ctx.sectionOperationTemplateDeclaration());
@@ -83,7 +91,7 @@ public class PatriLangCasVisitor implements Function<CasContext, Cas> {
         }
 
         if (nonNull(ctx.sectionOperations())) {
-          chilSectionVisitor.visitSectionOperations(ctx.sectionOperations());
+          possessions.addAll(chilSectionVisitor.visitSectionOperations(ctx.sectionOperations()));
         }
 
         return possessions;

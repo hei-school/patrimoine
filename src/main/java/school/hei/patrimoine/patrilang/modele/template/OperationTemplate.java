@@ -29,7 +29,10 @@ public record OperationTemplate(
       VariableScope parentScope, List<Object> argValues) {
     if (argValues.size() > params.size()) {
       throw new IllegalArgumentException(
-          "Le nombre d'arguments fournis ne peut pas dépasser celui attendu par le template");
+          "Erreur au niveau du constructeurs d'opérations name="
+              + this.name
+              + ". Le nombre d'arguments fournis ne peut pas dépasser celui attendu par le"
+              + " template.");
     }
 
     var variableVisitor = new VariableVisitor(Optional.of(parentScope));

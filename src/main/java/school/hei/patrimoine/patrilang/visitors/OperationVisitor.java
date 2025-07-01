@@ -21,12 +21,14 @@ import school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor;
 @Getter
 public class OperationVisitor
     implements BiFunction<List<OperationsContext>, VariableVisitor, Set<Possession>> {
+  private final VariableVisitor variableVisitor;
   private final MaterielVisitor materielVisitor;
   private final ObjectifVisitor objectifVisitor;
   private final CorrectionVisitor correctionVisitor;
   private final FluxArgentVisitor fluxArgentVisitor;
   private final AchatMaterielVisitor achatMaterielVisitor;
   private final TransferArgentVisitor transferArgentVisitor;
+  private final RemboursementDetteVisitor remboursementDetteVisitor;
   private final GroupPossessionVisitor groupPossessionVisitor;
   private final OperationTemplateCallVisitor operationTemplateCallVisitor;
 
@@ -80,9 +82,18 @@ public class OperationVisitor
       return this.operationTemplateCallVisitor.apply(ctx.operationTemplateCall());
     }
 
+    if (nonNull(ctx.rembourserDette())) {
+      return Set.of(this.remboursementDetteVisitor.apply(ctx.rembourserDette()));
+    }
+
     if (nonNull(ctx.objectif())) {
       this.objectifVisitor.apply(ctx.objectif());
       return Set.of();
+    }
+
+    if (nonNull(ctx.ligneCasOperations())) {
+      var cas = this.variableVisitor.asCas(ctx.ligneCasOperations().variable());
+      return cas.possessions();
     }
 
     if (nonNull(ctx.ligneVariableDeclaration())) {
