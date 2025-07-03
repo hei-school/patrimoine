@@ -1,4 +1,4 @@
-package school.hei.patrimoine.compiler;
+package school.hei.patrimoine.visualisation.swing.ihm.google;
 
 import java.util.List;
 import java.util.function.Function;

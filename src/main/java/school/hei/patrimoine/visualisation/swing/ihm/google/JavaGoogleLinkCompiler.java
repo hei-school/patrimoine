@@ -1,4 +1,4 @@
-package school.hei.patrimoine.compiler;
+package school.hei.patrimoine.visualisation.swing.ihm.google;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -10,6 +10,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import school.hei.patrimoine.cas.CasSet;
 import school.hei.patrimoine.cas.CasSetAnalyzer;
+import school.hei.patrimoine.compiler.CasFileCompiler;
+import school.hei.patrimoine.compiler.JavaFileNameExtractor;
+import school.hei.patrimoine.compiler.PatrimoineDocsCompiler;
+import school.hei.patrimoine.compiler.PatrimoineFileCompiler;
 import school.hei.patrimoine.google.GoogleApi;
 import school.hei.patrimoine.modele.Patrimoine;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.GoogleLinkList;

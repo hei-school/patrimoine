@@ -16,8 +16,6 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import javax.swing.*;
 import lombok.extern.slf4j.Slf4j;
-import school.hei.patrimoine.compiler.GoogleLinkListCompiler;
-import school.hei.patrimoine.compiler.PatriLangGoogleLinkListCompiler;
 import school.hei.patrimoine.google.GoogleApi;
 import school.hei.patrimoine.google.GoogleApi.GoogleAuthenticationDetails;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.GoogleLinkList;

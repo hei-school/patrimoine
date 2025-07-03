@@ -1,4 +1,4 @@
-package school.hei.patrimoine.compiler;
+package school.hei.patrimoine.visualisation.swing.ihm.google;
 
 import static java.nio.file.StandardOpenOption.CREATE;
 import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
@@ -14,6 +14,7 @@ import java.nio.file.Path;
 import java.util.*;
 import lombok.RequiredArgsConstructor;
 import school.hei.patrimoine.cas.CasSetAnalyzer;
+import school.hei.patrimoine.compiler.PatriLangFileNameExtractor;
 import school.hei.patrimoine.google.GoogleApi;
 import school.hei.patrimoine.modele.Patrimoine;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.GoogleLinkList;
