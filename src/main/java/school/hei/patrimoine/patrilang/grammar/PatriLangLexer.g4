@@ -8,8 +8,12 @@ fragment DIGIT
     :   [0-9]
     ;
 
+fragment STRING_RAW_VALUE
+    :   '[' | ']' | '>' | '<' | '&'
+    ;
+
 fragment STRING
-    :   ([\p{L}_]) ([\p{L}\p{N}_])*
+    :   ([\p{L}] | STRING_RAW_VALUE) (([\p{L}\p{N}_]) | STRING_RAW_VALUE)*
     ;
 
 /* -------------------- Base --------------------  */
@@ -65,8 +69,17 @@ ENTETE_DATES
     :   'Dates'
     ;
 
+ENTETE_NOMBRES
+    :   'Nombres'
+    ;
+
 ENTETE_PERSONNES
     :   'Personnes'
+    ;
+
+ENTETE_PERSONNES_MORALES
+    :   'Personnes Morales'
+    |   'Personnes morales'
     ;
 
 MOT_POUR
@@ -98,11 +111,23 @@ ENTETE_DETTES
     ;
 
 /* Opérations */
+ENTETE_CONTSTRUCTEUR_D_OPERATIONS
+    :   'Constructeurs'
+    |   'Constructeurs d\'opérations'
+    |   'Constructeurs d\'Opérations'
+    ;
 ENTETE_OPERATIONS
     :   'Opérations'
     ;
+MOT_REMBOURSER
+    :   'Rembourser'
+    |   'rembourser'
+    ;
 MOT_POSSEDER
     :   'posséder'
+    ;
+MOT_OBTENU
+    :   'obtenu'
     ;
 MOT_ACHETER
     :   'acheter'
@@ -142,12 +167,57 @@ MOT_LE
 MOT_DU
     :   'du'
     ;
-/* Mots */
+
+MOIS
+    : 'janvier'
+    | 'Janvier'
+    | 'février'
+    | 'Février'
+    | 'fevrier'
+    | 'Fevrier'
+    | 'mars'
+    | 'Mars'
+    | 'avril'
+    | 'Avril'
+    | 'mai'
+    | 'Mai'
+    | 'juin'
+    | 'Juin'
+    | 'juillet'
+    | 'Juillet'
+    | 'août'
+    | 'Août'
+    | 'aout'
+    | 'Aout'
+    | 'septembre'
+    | 'Septembre'
+    | 'octobre'
+    | 'Octobre'
+    | 'novembre'
+    | 'Novembre'
+    | 'décembre'
+    | 'Décembre'
+    | 'decembre'
+    | 'Decembre'
+    ;
+
 MOT_DATE_INDETERMINER
     :   'date indéterminée'
     |   'date indéterminer'
     |   'Date indéterminée'
     |   'Date indéterminer'
+    ;
+MOT_DATE_MINIMUM
+    :   'DATE_MIN'
+    |   'DATE_MINIMUM'
+    |   'LE_DEBUT_DU_TEMPS'
+    |   'DEBUT_DU_TEMPS'
+    ;
+MOT_DATE_MAXIMUM
+    :   'DATE_MAX'
+    |   'DATE_MAXIMUM'
+    |   'FIN_DES_TEMPS'
+    |   'FIN_DU_TEMPS'
     ;
 MOT_JUSQUA
     :   'Jusqu\'à'
@@ -159,6 +229,7 @@ MOT_TOUT_LES
     :   'Tous les'
     |   'tous les'
     ;
+/* Mots */
 MOT_DEVISE_EN
     :   'Devise en'
     |   'devise en'
@@ -168,6 +239,30 @@ MOT_VALANT
     ;
 
 /* Opérateurs */
+MOT_EVALUER
+    :  'évalué'
+    ;
+UNITE_DATE_DE
+    : 'années de'
+    | 'année de'
+    | 'Année de'
+    | 'Années de'
+    | 'mois de'
+    | 'Mois de'
+    | 'jour de'
+    | 'Jour de'
+    | 'jours de'
+    | 'Jours de'
+    ;
+
+DUREE_UNITE
+    :   'en jours'
+    |   'en Jours'
+    |   'en mois'
+    |   'en Mois'
+    |   'en années'
+    |   'en Années'
+    ;
 DEVISE
     :   'Ar'
     |   '€'
@@ -196,14 +291,26 @@ COLON
     ;
 
 /* Valeurs */
+ARGENTS_VARIABLE
+    :   'Argents' COLON STRING
+    ;
+NOMBRE_VARIABLE
+    :   'Nombres' COLON STRING
+    ;
+DATE_VARIABLE
+    :   'Dates' COLON STRING
+    ;
 VARIABLE
     :   [\p{L}]+ COLON STRING
     ;
 DECIMAL
-    :   DIGIT+ '.' DIGIT+
+    :   DIGIT+ ('_' DIGIT+)* '.' DIGIT+
     ;
 ENTIER
-    :   DIGIT+
+    :   DIGIT+ ('_' DIGIT+)*
+    ;
+POINT
+    :   '.'
     ;
 PLUS
     :   '+'
@@ -232,14 +339,14 @@ MOT_ANNEE
 MOT_ANNEES
     :   'années'
     ;
-MOT_SECONDE
-    :   'seconde'
-    ;
-MOT_SECONDES
-    :   'secondes'
-    ;
 MOT_ET
     :   'et'
+    ;
+MOT_AVEC
+    :   'avec'
+    ;
+MOT_DE
+    :   'de'
     ;
 TEXT
     :   STRING

@@ -2,14 +2,13 @@
 `/* Objectif final 4884000Ar */`
 * Objectif final (((4000000 + (-(-888000)) - 4000 * 2 + 4000) * 3) / 3) / 2 * 2 Ar
 
-
 # Cas
 * ZetyPersonnel
 * LocationMaison
  
 # Dates
-* ajd: le 10 du 01-2025
-* finSimulation: le 10 du 04-2025
+* Dates:ajd: le 10 du 01-2025
+* Dates:finSimulation: le 10 du 04-2025
 
 # Personnes
 * Zety

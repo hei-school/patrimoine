@@ -11,8 +11,10 @@ import school.hei.patrimoine.cas.Cas;
 import school.hei.patrimoine.cas.CasSet;
 import school.hei.patrimoine.patrilang.antlr.PatriLangLexer;
 import school.hei.patrimoine.patrilang.antlr.PatriLangParser;
-import school.hei.patrimoine.patrilang.factory.PatriLangVisitorFactory;
 import school.hei.patrimoine.patrilang.factory.SectionVisitorFactory;
+import school.hei.patrimoine.patrilang.visitors.PatriLangCasVisitor;
+import school.hei.patrimoine.patrilang.visitors.PatriLangToutCasVisitor;
+import school.hei.patrimoine.patrilang.visitors.PatriLangVisitor;
 import school.hei.patrimoine.patrilang.visitors.SectionVisitor;
 
 public class PatriLangTranspiler {
@@ -26,22 +28,25 @@ public class PatriLangTranspiler {
     var tree = parseAsTree(casPath.toString());
 
     if (isNull(tree.cas())) {
-      throw new IllegalArgumentException("Expected a Cas file but found a CasSet file.");
+      throw new IllegalArgumentException("Fichier Cas attendu, mais fichier CasSet trouvé.");
     }
 
-    return (Cas) PatriLangVisitorFactory.make(sectionVisitor).visitDocument(tree);
+    var patrilangVisitor = new PatriLangVisitor(null, new PatriLangCasVisitor(sectionVisitor));
+    return (Cas) patrilangVisitor.visitDocument(tree);
   }
 
   public static CasSet transpileToutCas(String casSetPath) {
     var tree = parseAsTree(casSetPath);
 
     if (isNull(tree.toutCas())) {
-      throw new IllegalArgumentException("Expected a CasSet file but found a Cas file.");
+      throw new IllegalArgumentException("Fichier CasSet attendu, mais fichier Cas trouvé.");
     }
 
     var casSetFolderPath = Paths.get(casSetPath).getParent().toAbsolutePath();
     var sectionVisitor = SectionVisitorFactory.make(casSetFolderPath.toString());
-    return (CasSet) PatriLangVisitorFactory.make(sectionVisitor).visitDocument(tree);
+    var patrilangVisitor = new PatriLangVisitor(new PatriLangToutCasVisitor(sectionVisitor), null);
+
+    return (CasSet) patrilangVisitor.visitDocument(tree);
   }
 
   private static DocumentContext parseAsTree(String filePath) {

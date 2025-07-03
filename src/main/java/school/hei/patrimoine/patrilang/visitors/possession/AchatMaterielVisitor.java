@@ -8,23 +8,21 @@ import lombok.RequiredArgsConstructor;
 import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.possession.AchatMaterielAuComptant;
 import school.hei.patrimoine.modele.possession.Compte;
-import school.hei.patrimoine.patrilang.visitors.DateVisitor;
-import school.hei.patrimoine.patrilang.visitors.VariableVisitor;
+import school.hei.patrimoine.patrilang.visitors.SimpleVisitor;
+import school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor;
 
 @RequiredArgsConstructor
 public class AchatMaterielVisitor
     implements SimpleVisitor<AcheterMaterielContext, AchatMaterielAuComptant> {
   private final VariableVisitor variableVisitor;
-  private final DateVisitor dateVisitor;
-  private final ArgentVisitor argentVisitor;
 
   @Override
   public AchatMaterielAuComptant apply(AcheterMaterielContext ctx) {
     String materielNom = visitText(ctx.materielNom);
-    double tauxDAppreciation = visitNombre(ctx.pourcentageAppreciation);
     double facteurTauxDAppreciation = visitMaterielAppreciationFacteur(ctx.MATERIEL_APPRECIATION());
-    Argent valeurComptable = this.argentVisitor.apply(ctx.valeurComptable);
-    LocalDate t = this.dateVisitor.apply(ctx.dateValue);
+    double tauxDAppreciation = this.variableVisitor.asNombre(ctx.pourcentageAppreciation);
+    Argent valeurComptable = this.variableVisitor.asArgent(ctx.valeurComptable);
+    LocalDate t = this.variableVisitor.asDate(ctx.dateValue);
     Compte financeur = this.variableVisitor.asCompte(ctx.compteDebiteurNom);
 
     return new AchatMaterielAuComptant(

@@ -19,7 +19,6 @@ public class LocationMaisonCas extends Cas {
   private final Compte loyerMaison;
   private final Compte litaPersonnel;
   private final Compte rasoaPersonnel;
-  private final Compte newCompte;
   private static final LocalDate AU_02_MARS_2025 = LocalDate.of(2025, MARCH, 2);
 
   public LocationMaisonCas(
@@ -35,7 +34,6 @@ public class LocationMaisonCas extends Cas {
     this.loyerMaison = loyerMaison;
     this.litaPersonnel = litaPersonnel;
     this.rasoaPersonnel = rasoaPersonnel;
-    this.newCompte = new Compte("newCompte", AU_02_MARS_2025, ariary(500_000));
   }
 
   @Override
@@ -55,10 +53,7 @@ public class LocationMaisonCas extends Cas {
   }
 
   @Override
-  protected void suivi() {
-    new Correction(
-        new FluxArgent("correctionOuvertureCompte", newCompte, AU_02_MARS_2025, ariary(-500_000)));
-  }
+  protected void suivi() {}
 
   @Override
   public Set<Possession> possessions() {
@@ -92,6 +87,6 @@ public class LocationMaisonCas extends Cas {
                 "paiementCommune" + ajd, loyerMaison, ajd, LocalDate.MAX, 1, ariary(-200_000)),
             new FluxArgent("JIRAMA" + ajd, loyerMaison, ajd, LocalDate.MAX, 1, ariary(-100_000))));
 
-    return Set.of(newCompte, loyerMaison);
+    return Set.of(loyerMaison);
   }
 }

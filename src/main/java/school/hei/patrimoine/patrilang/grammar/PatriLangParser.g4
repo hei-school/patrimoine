@@ -14,11 +14,11 @@ document
 
 /* ToutCas */
 toutCas
-    :   sectionToutCasGeneral sectionCas? sectionDates? sectionPersonnes? sectionTresoreries? sectionCreances? sectionDettes? EOF
+    :   sectionToutCasGeneral sectionCas? sectionDatesDeclarations? sectionPersonnesMoralesDeclarations? sectionPersonnesDeclarations? sectionTresoreries? sectionCreances? sectionDettes? EOF
     ;
 
 ligneObjectifFinal
-    :   MUL MOT_OBJECTIF_FINAL valeurComptable=argent
+    :   MUL MOT_OBJECTIF_FINAL valeurComptable=variable
     ;
 
 sectionToutCasGeneral
@@ -29,21 +29,24 @@ sectionCas
     :   HASHES ENTETE_CAS ligneNom*
     ;
 
-sectionPersonnes
+sectionPersonnesMoralesDeclarations
+    :   HASHES ENTETE_PERSONNES_MORALES ligneNom*
+    ;
+
+sectionPersonnesDeclarations
     :   HASHES ENTETE_PERSONNES ligneNom*
     ;
 
-sectionDates
-    :   HASHES ENTETE_DATES ligneDate*
+sectionDatesDeclarations
+    :   HASHES ENTETE_DATES operations*
     ;
 
-ligneDate
-    :   MUL nom=text COLON dateValue=date
+sectionNombresDeclarations
+    :   HASHES ENTETE_NOMBRES operations*
     ;
-
 /* Cas */
 cas
-    :   sectionCasGeneral sectionPossesseurs sectionTresoreries? sectionCreances? sectionDettes? sectionInitialisation? sectionOperations? sectionSuivi? EOF
+    :   sectionCasGeneral sectionPossesseurs sectionNombresDeclarations? sectionDatesDeclarations? sectionTresoreries? sectionCreances? sectionDettes? sectionInitialisation? sectionOperations? sectionOperationTemplateDeclaration? sectionSuivi? EOF
     ;
 
 sectionCasGeneral
@@ -59,15 +62,15 @@ sectionPossesseurs
     ;
 
 lignePossesseur
-    :   MUL nom=variable pourcentage=nombre PERCENT
+    :   MUL nom=variable pourcentage=variable PERCENT
     ;
 
 ligneDateSpecification
-    :   MUL MOT_SPECIFIER dateValue=date
+    :   MUL MOT_SPECIFIER dateValue=variable
     ;
 
 ligneDateFinSimulation
-    :   MUL MOT_FIN_SIMULATION dateValue=date
+    :   MUL MOT_FIN_SIMULATION dateValue=variable
     ;
 
 ligneDevise
@@ -83,11 +86,11 @@ sectionSuivi
     ;
 
 objectif
-    :   MUL id dateValue=date COMMA MOT_OBJECTIF_DE valeurComptable=argent MOT_POUR compteNom=variable
+    :   MUL id COMMA? dateValue=variable COMMA? MOT_OBJECTIF_DE valeurComptable=variable MOT_POUR compteNom=variable
     ;
 
 correction
-    :   MUL id dateValue=date COMMA MOT_CORRIGER valeurComptable=argent MOT_DANS compteNom=variable
+    :   MUL id COMMA? dateValue=variable COMMA? MOT_CORRIGER valeurComptable=variable MOT_DANS compteNom=variable
     ;
 /* -------------------- Possessions --------------------  */
 /* Trésorerie */
@@ -110,8 +113,36 @@ compteElement
     |   MUL variable
     ;
 /* Opérations */
+sectionOperationTemplateDeclaration
+    :   HASHES ENTETE_CONTSTRUCTEUR_D_OPERATIONS operationTemplate*
+    ;
+
+operationTemplate
+    :   HASHES HASHES name=text LPAREN operationTemplateParam? RPAREN operations*
+    ;
+
+operationTemplateParam
+    :   operationTemplateParamValue (COMMA? operationTemplateParamValue)*
+    ;
+
+operationTemplateParamValue
+    :   argName=variable
+    ;
+
+operationTemplateCall
+    :   MUL BACKTICK templateName=text LPAREN operationTemplateCallArg? RPAREN BACKTICK
+    ;
+
+operationTemplateCallArg
+    :   operationTemplateCallArgValue (COMMA? operationTemplateCallArgValue)*
+    ;
+
+operationTemplateCallArgValue
+    :   variable
+    ;
+
 sectionOperations
-    : HASHES ENTETE_OPERATIONS operations*
+    :   HASHES ENTETE_OPERATIONS operations*
     ;
 
 operations
@@ -124,50 +155,122 @@ operation
     |   fluxArgentSortir
     |   possedeMateriel
     |   acheterMateriel
+    |   rembourserDette
     |   correction
     |   objectif
+    |   operationTemplateCall
+    |   ligneVariableDeclaration
+    |   ligneCasOperations
+
+    ;
+
+ligneCasOperations
+    :   MUL ENTETE_OPERATIONS MOT_DE variable
+    ;
+
+ligneVariableDeclaration
+    :   MUL nomEtType=variable COLON valeur=variable
     ;
 
 /* Simple Possessions */
 compte
-    :   MUL nom=text COMMA MOT_VALANT valeurComptable=argent dateValue=date
+    :   MUL nom=text COMMA? MOT_VALANT valeurComptable=variable dateValue=variable
     ;
 
 fluxArgentTransferer
-    :   MUL id dateValue=date COMMA MOT_TRANSFERER valeurComptable=argent MOT_DEPUIS compteDebiteurNom=variable MOT_VERS compteCrediteurNom=variable dateFin?
+    :   MUL id COMMA? dateValue=variable COMMA? MOT_TRANSFERER valeurComptable=variable MOT_DEPUIS compteDebiteurNom=variable MOT_VERS compteCrediteurNom=variable dateFin?
     ;
 
 fluxArgentEntrer
-    :   MUL id dateValue=date COMMA MOT_ENTRER valeurComptable=argent MOT_VERS compteCrediteurNom=variable dateFin?
+    :   MUL id COMMA? dateValue=variable COMMA? MOT_ENTRER valeurComptable=variable MOT_VERS compteCrediteurNom=variable dateFin?
     ;
 
 fluxArgentSortir
-    :   MUL id dateValue=date COMMA MOT_SORTIR valeurComptable=argent MOT_DEPUIS compteDebiteurNom=variable dateFin?
+    :   MUL id COMMA? dateValue=variable COMMA? MOT_SORTIR valeurComptable=variable MOT_DEPUIS compteDebiteurNom=variable dateFin?
     ;
 
 acheterMateriel
-    :   MUL id dateValue=date COMMA MOT_ACHETER materielNom=text COMMA MOT_VALANT valeurComptable=argent COMMA MATERIEL_APPRECIATION MOT_ANNUELLEMENT_DE pourcentageAppreciation=nombre PERCENT COMMA MOT_DEPUIS compteDebiteurNom=variable
+    :   MUL id COMMA? dateValue=variable COMMA? MOT_ACHETER materielNom=text COMMA? MOT_VALANT valeurComptable=variable COMMA? MOT_DEPUIS compteDebiteurNom=variable COMMA? MATERIEL_APPRECIATION MOT_ANNUELLEMENT_DE pourcentageAppreciation=variable PERCENT
     ;
 
 possedeMateriel
-    :   MUL id dateValue=date COMMA MOT_POSSEDER materielNom=text COMMA MOT_VALANT valeurComptable=argent COMMA MATERIEL_APPRECIATION MOT_ANNUELLEMENT_DE pourcentageAppreciation=nombre PERCENT
+    :   MUL id COMMA? dateValue=variable COMMA? MOT_POSSEDER materielNom=text COMMA? MOT_VALANT valeurComptable=variable (MOT_OBTENU dateObtention=variable)? COMMA? MATERIEL_APPRECIATION MOT_ANNUELLEMENT_DE pourcentageAppreciation=variable PERCENT
+    ;
+
+rembourserDette
+    :   MUL id COMMA? dateValue=variable COMMA? MOT_REMBOURSER dette=variable MOT_DE rembourseur=variable MOT_AVEC creance=variable MOT_DE rembourse=variable MOT_VALANT valeurComptable=variable
     ;
 
 /* -------------------- Commun --------------------  */
 sousTitre
-    :   HASHES HASHES nom=text COMMA dateValue=date COMMA MOT_DEVISE_EN devise
+    :   HASHES HASHES HASHES? nom=text COMMA? dateValue=variable COMMA? MOT_DEVISE_EN devise
     ;
 
 dateFin
-    :   COMMA MOT_JUSQUA dateValue=date MOT_TOUT_LES ENTIER MOT_DU MOT_MOIS
+    :   COMMA? MOT_JUSQUA dateValue=variable MOT_TOUT_LES jourOperation=variable MOT_DU MOT_MOIS
     ;
 
 ligneNom
     :   MUL nom=text
     ;
 
+devise
+    :   DEVISE
+    ;
+
+variable
+    :   date
+    |   argent
+    |   expression
+    |   VARIABLE
+    ;
+
 argent
+    :   lhs=argentValue  ((PLUS | MOINS) rhs=argentValue MOT_EVALUER date)?
+    ;
+
+argentValue
     :   expression devise
+    |   ARGENTS_VARIABLE
+    ;
+
+dateDelta
+    :   (PLUS | MOINS) anneePart moisPart jourPart
+    |   (PLUS | MOINS) anneePart moisPart
+    |   (PLUS | MOINS) anneePart
+    |   (PLUS | MOINS) anneePart jourPart
+    |   (PLUS | MOINS) moisPart jourPart
+    |   (PLUS | MOINS) moisPart
+    |   (PLUS | MOINS) jourPart
+    ;
+
+anneePart
+    :   variable (MOT_ANNEE | MOT_ANNEES) MOT_ET?
+    ;
+
+moisPart
+    :   variable MOT_MOIS MOT_ET?
+    ;
+
+jourPart
+    :   variable (MOT_JOUR | MOT_JOURS)
+    ;
+
+id
+    : BACKTICK text (PLUS variable)? BACKTICK
+    ;
+
+date
+    :    dateAtom dateDelta?
+    ;
+
+dateAtom
+    :   MOT_LE jour=variable MOT_DU moisEntier=variable MOINS annee=variable
+    |   MOT_LE jour=variable moisTextuel=MOIS annee=variable
+    |   MOT_DATE_INDETERMINER
+    |   MOT_DATE_MINIMUM
+    |   MOT_DATE_MAXIMUM
+    |   DATE_VARIABLE
     ;
 
 expression
@@ -183,13 +286,20 @@ multiplicationExpr
     ;
 
 atom
-    :   MOINS atom                    # NegateExpr
-    |   LPAREN expression RPAREN      # ParenExpr
-    |   nombre                        # NombreExpr
+    :   MOINS atom                                  # NegateExpr
+    |   LPAREN expression RPAREN                    # ParenExpr
+    |   duration                                    # DurationExpr
+    |   uniteDateDe                                 # UniteDateDeExpr
+    |   nombre                                      # NombreExpr
+    |   NOMBRE_VARIABLE                             # NombreVariableExpr
     ;
 
-devise
-    :   DEVISE
+duration
+    :   lhs=date MOINS rhs=date DUREE_UNITE
+    ;
+
+uniteDateDe
+    :   UNITE_DATE_DE date
     ;
 
 nombre
@@ -197,40 +307,6 @@ nombre
     |   ENTIER
     ;
 
-date
-    :   MOT_LE jour=ENTIER MOT_DU mois=ENTIER MOINS annee=ENTIER
-    |   MOT_DATE_INDETERMINER
-    |   dateExpr
-    ;
-
-dateExpr
-    :   variable ( (PLUS | MOINS) dateDelta )?
-    ;
-
-dateDelta
-    :   anneePart? moisPart? jourPart?
-    ;
-
-anneePart
-    :   ENTIER MOT_ANNEE MOT_ET?
-    ;
-
-moisPart
-    :   ENTIER MOT_MOIS MOT_ET?
-    ;
-
-jourPart
-    :   ENTIER (MOT_JOUR | MOT_JOURS)
-    ;
-
-id
-    : BACKTICK text (PLUS variable)? BACKTICK
-    ;
-
-variable
-    :   VARIABLE
-    ;
-
 text
-    :   TEXT PLUS? variable?
+    :   TEXT
     ;

@@ -7,18 +7,18 @@ import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.possession.Dette;
-import school.hei.patrimoine.patrilang.visitors.DateVisitor;
+import school.hei.patrimoine.patrilang.visitors.SimpleVisitor;
+import school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor;
 
 @RequiredArgsConstructor
 public class DetteVisitor implements SimpleVisitor<CompteContext, Dette> {
-  private final DateVisitor dateVisitor;
-  private final ArgentVisitor argentVisitor;
+  private final VariableVisitor variableVisitor;
 
   @Override
   public Dette apply(CompteContext ctx) {
     String nom = visitText(ctx.nom);
-    Argent valeurComptable = this.argentVisitor.apply(ctx.valeurComptable);
-    LocalDate t = this.dateVisitor.apply(ctx.dateValue);
+    Argent valeurComptable = this.variableVisitor.asArgent(ctx.valeurComptable);
+    LocalDate t = this.variableVisitor.asDate(ctx.dateValue);
 
     return new Dette(nom, t, valeurComptable.mult(-1));
   }

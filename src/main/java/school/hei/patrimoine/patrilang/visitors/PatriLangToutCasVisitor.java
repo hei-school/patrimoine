@@ -15,15 +15,20 @@ public class PatriLangToutCasVisitor implements Function<ToutCasContext, CasSet>
   public CasSet apply(ToutCasContext ctx) {
     var objectifFinal =
         this.sectionVisitor
-            .getArgentVisitor()
-            .apply(ctx.sectionToutCasGeneral().ligneObjectifFinal().valeurComptable);
+            .getVariableVisitor()
+            .asArgent(ctx.sectionToutCasGeneral().ligneObjectifFinal().valeurComptable);
 
-    if (nonNull(ctx.sectionDates())) {
-      this.sectionVisitor.visitSectionDates(ctx.sectionDates());
+    if (nonNull(ctx.sectionDatesDeclarations())) {
+      this.sectionVisitor.visitSectionDatesDeclarations(ctx.sectionDatesDeclarations());
     }
 
-    if (nonNull(ctx.sectionPersonnes())) {
-      this.sectionVisitor.visitSectionPersonnes(ctx.sectionPersonnes());
+    if (nonNull(ctx.sectionPersonnesMoralesDeclarations())) {
+      this.sectionVisitor.visitPersonnesMoralesDeclarations(
+          ctx.sectionPersonnesMoralesDeclarations());
+    }
+
+    if (nonNull(ctx.sectionPersonnesDeclarations())) {
+      this.sectionVisitor.visitSectionPersonnesDeclarations(ctx.sectionPersonnesDeclarations());
     }
 
     if (nonNull(ctx.sectionTresoreries())) {

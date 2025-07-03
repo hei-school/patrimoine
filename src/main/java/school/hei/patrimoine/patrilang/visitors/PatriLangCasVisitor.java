@@ -20,26 +20,30 @@ public class PatriLangCasVisitor implements Function<CasContext, Cas> {
   @Override
   public Cas apply(CasContext ctx) {
     var sectionCasGeneral = ctx.sectionCasGeneral();
-
     var nom = visitText(sectionCasGeneral.ligneCasNom().nom);
     var devise = visitDevise(sectionCasGeneral.ligneDevise().devise());
     var ajd =
         this.sectionVisitor
-            .getDateVisitor()
-            .apply(sectionCasGeneral.ligneDateSpecification().dateValue);
+            .getVariableVisitor()
+            .asDate(sectionCasGeneral.ligneDateSpecification().dateValue);
     var finSimulation =
         this.sectionVisitor
-            .getDateVisitor()
-            .apply(sectionCasGeneral.ligneDateFinSimulation().dateValue);
-    var possesseurs = this.sectionVisitor.visitSectionPossesseurs(ctx.sectionPossesseurs());
-    var possessions = collectPossessions(ctx);
+            .getVariableVisitor()
+            .asDate(sectionCasGeneral.ligneDateFinSimulation().dateValue);
 
-    if (nonNull(ctx.sectionInitialisation())) {
-      sectionVisitor.visitSectionInitialisation(ctx.sectionInitialisation());
+    var possesseurs = this.sectionVisitor.visitSectionPossesseurs(ctx.sectionPossesseurs());
+
+    if (nonNull(ctx.sectionNombresDeclarations())) {
+      this.sectionVisitor.visitSectionNombresDeclarations(ctx.sectionNombresDeclarations());
     }
 
-    if (nonNull(ctx.sectionSuivi())) {
-      sectionVisitor.visitSectionSuivi(ctx.sectionSuivi());
+    if (nonNull(ctx.sectionDatesDeclarations())) {
+      this.sectionVisitor.visitSectionDatesDeclarations(ctx.sectionDatesDeclarations());
+    }
+
+    if (nonNull(ctx.sectionOperationTemplateDeclaration())) {
+      this.sectionVisitor.visitOperationTemplateDeclarations(
+          ctx.sectionOperationTemplateDeclaration());
     }
 
     return new Cas(ajd, finSimulation, possesseurs) {
@@ -54,37 +58,44 @@ public class PatriLangCasVisitor implements Function<CasContext, Cas> {
       }
 
       @Override
-      protected void init() {}
+      protected void init() {
+        var chilSectionVisitor = sectionVisitor.createChildSectionVisitor();
+        if (nonNull(ctx.sectionInitialisation())) {
+          chilSectionVisitor.visitSectionInitialisation(ctx.sectionInitialisation());
+        }
+      }
 
       @Override
-      protected void suivi() {}
+      protected void suivi() {
+        var chilSectionVisitor = sectionVisitor.createChildSectionVisitor();
+        if (nonNull(ctx.sectionSuivi())) {
+          chilSectionVisitor.visitSectionSuivi(ctx.sectionSuivi());
+        }
+      }
 
       @Override
       public Set<Possession> possessions() {
+        var chilSectionVisitor = sectionVisitor.createChildSectionVisitor();
+        Set<Possession> possessions = new HashSet<>();
+
+        if (nonNull(ctx.sectionTresoreries())) {
+          possessions.addAll(chilSectionVisitor.visitSectionTrésoreries(ctx.sectionTresoreries()));
+        }
+
+        if (nonNull(ctx.sectionCreances())) {
+          possessions.addAll(chilSectionVisitor.visitSectionCréances(ctx.sectionCreances()));
+        }
+
+        if (nonNull(ctx.sectionDettes())) {
+          possessions.addAll(chilSectionVisitor.visitSectionDettes(ctx.sectionDettes()));
+        }
+
+        if (nonNull(ctx.sectionOperations())) {
+          possessions.addAll(chilSectionVisitor.visitSectionOperations(ctx.sectionOperations()));
+        }
+
         return possessions;
       }
     };
-  }
-
-  private Set<Possession> collectPossessions(CasContext ctx) {
-    Set<Possession> possessions = new HashSet<>();
-
-    if (nonNull(ctx.sectionTresoreries())) {
-      possessions.addAll(sectionVisitor.visitSectionTrésoreries(ctx.sectionTresoreries()));
-    }
-
-    if (nonNull(ctx.sectionCreances())) {
-      possessions.addAll(sectionVisitor.visitSectionCréances(ctx.sectionCreances()));
-    }
-
-    if (nonNull(ctx.sectionDettes())) {
-      possessions.addAll(sectionVisitor.visitSectionDettes(ctx.sectionDettes()));
-    }
-
-    if (nonNull(ctx.sectionOperations())) {
-      sectionVisitor.visitSectionOperations(ctx.sectionOperations());
-    }
-
-    return possessions;
   }
 }

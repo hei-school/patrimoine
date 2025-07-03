@@ -5,13 +5,12 @@
 * Devise en Ar
 
 # Possesseurs
-* Personnes:Zety 40%
+* Personnes:Zety ((40 * 2 / 2) - 2 + 3 * 1 - 1)%
 * Personnes:Lita 10%
 * Personnes:Rasoa 50%
 
 # Trésoreries
 * Trésoreries:loyerMaison
-* newCompte, valant 500000Ar le 02 du 03-2025
 
 # Initialisation
 * `objectifInitLocationMaison` Dates:ajd, objectif de 500000Ar pour Trésoreries:loyerMaison
@@ -29,6 +28,3 @@
 ## ChargesLoyer, Dates:ajd, devise en Ar
 * `paiementCommune + Dates:ajd` Dates:ajd, sortir 200000Ar depuis Trésoreries:loyerMaison, jusqu'à date indéterminée tous les 01 du mois
 * `JIRAMA + Dates:ajd` Dates:ajd, sortir 100000Ar depuis Trésoreries:loyerMaison, jusqu'à date indéterminée tous les 01 du mois
-
-#  Suivi
-* `correctionOuvertureCompte` le 02 du 03-2025, corriger -500000Ar dans Trésoreries:newCompte

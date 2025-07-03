@@ -12,12 +12,4 @@ public enum MaterielAppreciationType {
   MaterielAppreciationType(int facteur) {
     this.facteur = facteur;
   }
-
-  public static MaterielAppreciationType fromString(String text) {
-    return switch (text) {
-      case "se dépréciant" -> DEPRECIATION;
-      case "s'appréciant" -> APPRECIATION;
-      default -> throw new IllegalArgumentException("Type d'appréciation inconnu: " + text);
-    };
-  }
 }

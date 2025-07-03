@@ -9,24 +9,30 @@ import lombok.RequiredArgsConstructor;
 import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.possession.Compte;
 import school.hei.patrimoine.modele.possession.FluxArgent;
-import school.hei.patrimoine.patrilang.visitors.DateVisitor;
 import school.hei.patrimoine.patrilang.visitors.IdVisitor;
-import school.hei.patrimoine.patrilang.visitors.VariableVisitor;
+import school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor;
 
 @RequiredArgsConstructor
 public class FluxArgentVisitor {
-  private final DateVisitor dateVisitor;
   private final VariableVisitor variableVisitor;
-  private final ArgentVisitor argentVisitor;
   private final IdVisitor idVisitor;
 
   public FluxArgent apply(FluxArgentEntrerContext ctx) {
     String id = this.idVisitor.apply(ctx.id());
-    Argent valeurComptable = this.argentVisitor.apply(ctx.valeurComptable);
-    LocalDate t = this.dateVisitor.apply(ctx.dateValue);
+    Argent valeurComptable = this.variableVisitor.asArgent(ctx.valeurComptable);
+    LocalDate t = this.variableVisitor.asDate(ctx.dateValue);
     Compte compte = this.variableVisitor.asCompte(ctx.compteCrediteurNom);
     var dateFinOpt =
-        ofNullable(ctx.dateFin()).map(dateFin -> visitDateFin(dateFin, this.dateVisitor));
+        ofNullable(ctx.dateFin()).map(dateFin -> visitDateFin(dateFin, this.variableVisitor));
+
+    if (valeurComptable.lt(0)) {
+      throw new IllegalArgumentException(
+          "Entrer "
+              + valeurComptable
+              + " pour l'opération "
+              + id
+              + " n'est pas possible, la valeur est inférieur à 0");
+    }
 
     return dateFinOpt
         .map(
@@ -38,11 +44,20 @@ public class FluxArgentVisitor {
 
   public FluxArgent apply(FluxArgentSortirContext ctx) {
     String id = this.idVisitor.apply(ctx.id());
-    Argent valeurComptable = this.argentVisitor.apply(ctx.valeurComptable).mult(-1);
-    LocalDate t = this.dateVisitor.apply(ctx.dateValue);
+    Argent valeurComptable = this.variableVisitor.asArgent(ctx.valeurComptable).mult(-1);
+    LocalDate t = this.variableVisitor.asDate(ctx.dateValue);
     Compte compte = this.variableVisitor.asCompte(ctx.compteDebiteurNom);
     var dateFinOpt =
-        ofNullable(ctx.dateFin()).map(dateFin -> visitDateFin(dateFin, this.dateVisitor));
+        ofNullable(ctx.dateFin()).map(dateFin -> visitDateFin(dateFin, this.variableVisitor));
+
+    if (valeurComptable.gt(0)) {
+      throw new IllegalArgumentException(
+          "Sortir "
+              + valeurComptable
+              + " pour l'opération "
+              + id
+              + " n'est pas possible, la valeur est supérieur à 0");
+    }
 
     return dateFinOpt
         .map(
