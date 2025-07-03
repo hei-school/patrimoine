@@ -4,16 +4,20 @@ import static java.awt.BorderLayout.CENTER;
 import static java.awt.Font.*;
 import static javax.swing.SwingUtilities.invokeLater;
 import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
+import static school.hei.patrimoine.google.GoogleApi.DOWNLOADS_DIRECTORY_PATH;
 import static school.hei.patrimoine.google.GoogleDocsLinkIdParser.GOOGLE_DOCS_ID_PATTERN;
 import static school.hei.patrimoine.google.GoogleDriveLinkIdParser.GOOGLE_DRIVE_ID_PATTERN;
 
 import java.awt.*;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import javax.swing.*;
 import lombok.extern.slf4j.Slf4j;
+import school.hei.patrimoine.compiler.GoogleLinkListCompiler;
+import school.hei.patrimoine.compiler.PatriLangGoogleLinkListCompiler;
 import school.hei.patrimoine.google.GoogleApi;
 import school.hei.patrimoine.google.GoogleApi.GoogleAuthenticationDetails;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.GoogleLinkList;
@@ -135,7 +139,12 @@ public class GoogleSubmitScreen {
             loadingDialog.dispose();
             try {
               final GoogleLinkList<NamedString> inputData = get();
-              openResultFrame(inputData, googleApi, authDetails);
+
+              GoogleLinkListCompiler googleLinkListCompiler =
+                  new PatriLangGoogleLinkListCompiler(
+                      new File(DOWNLOADS_DIRECTORY_PATH), googleApi, authDetails);
+
+              openResultFrame(inputData, googleApi, authDetails, googleLinkListCompiler);
             } catch (InterruptedException | ExecutionException e) {
               throw new RuntimeException(e);
             }
@@ -189,9 +198,12 @@ public class GoogleSubmitScreen {
   private void openResultFrame(
       GoogleLinkList<NamedString> googleLinkList,
       GoogleApi googleApi,
-      GoogleAuthenticationDetails authReqRes) {
+      GoogleAuthenticationDetails authReqRes,
+      GoogleLinkListCompiler googleLinkListCompiler) {
     invokeLater(
-        () -> new GoogleLinkVerifierScreen(googleApi, authReqRes, googleLinkList, inputFrame));
+        () ->
+            new GoogleLinkVerifierScreen(
+                googleApi, authReqRes, googleLinkListCompiler, googleLinkList, inputFrame));
     inputFrame.setVisible(false);
   }
 }

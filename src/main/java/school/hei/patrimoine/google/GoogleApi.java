@@ -28,7 +28,7 @@ import java.util.Objects;
 import java.util.UUID;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import school.hei.patrimoine.compiler.ClassNameExtractor;
+import school.hei.patrimoine.compiler.FileNameExtractor;
 
 @Slf4j
 public class GoogleApi {
@@ -173,15 +173,15 @@ public class GoogleApi {
     }
   }
 
-  public void downloadDriveFile(GoogleAuthenticationDetails authDetails, String fileId) {
+  public void downloadDriveFile(
+      GoogleAuthenticationDetails authDetails, FileNameExtractor fileNameExtractor, String fileId) {
     Drive driveService =
         new Drive.Builder(authDetails.httpTransport(), JSON_FACTORY, authDetails.credential())
             .setApplicationName(APPLICATION_NAME)
             .build();
 
     // Create a temporary file to store downloaded content
-    File tempFile =
-        new File(System.getProperty("java.io.tmpdir"), "prefix_" + UUID.randomUUID() + ".java");
+    File tempFile = new File(System.getProperty("java.io.tmpdir"), "prefix_" + UUID.randomUUID());
 
     try (InputStream inputStream = driveService.files().get(fileId).executeMediaAsInputStream();
         FileOutputStream tempOutputStream = new FileOutputStream(tempFile)) {
@@ -196,11 +196,11 @@ public class GoogleApi {
       // Read the contents of the temporary file as a String
       String fileContent = Files.readString(tempFile.toPath());
 
-      // Extract class name
-      String className = new ClassNameExtractor().apply(fileContent);
+      // Extract filename
+      String filename = fileNameExtractor.apply(fileContent);
 
       // Define final file name based on class name
-      File finalFile = new File(DOWNLOADS_DIRECTORY_PATH, className + ".java");
+      File finalFile = new File(DOWNLOADS_DIRECTORY_PATH, filename);
 
       copyFileContent(tempFile, finalFile);
 

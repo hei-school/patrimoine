@@ -1,6 +1,7 @@
 package school.hei.patrimoine.compiler;
 
 import static javax.tools.ToolProvider.getSystemJavaCompiler;
+import static school.hei.patrimoine.compiler.JavaFileNameExtractor.JAVA_FILE_EXTENSION;
 import static school.hei.patrimoine.google.GoogleApi.COMPILE_DIR_NAME;
 
 import java.io.File;
@@ -24,14 +25,14 @@ public class PatrimoineDocsCompiler implements BiFunction<String, String, Patrim
 
   @SneakyThrows
   @Override
-  public Patrimoine apply(String className, String javaSource) {
+  public Patrimoine apply(String filename, String javaSource) {
     var ioDirPath = Path.of(COMPILE_DIR_NAME);
-    var sourcePath = Path.of(ioDirPath + "/" + className + ".java");
+    var sourcePath = Path.of(ioDirPath + "/" + filename);
     Files.write(sourcePath, javaSource.getBytes());
 
     compile(ioDirPath, sourcePath);
-
-    var dynamicClass = loadClass(className, ioDirPath);
+    var classname = filename.replace(JAVA_FILE_EXTENSION, "");
+    var dynamicClass = loadClass(classname, ioDirPath);
     var patrimoineSupplier =
         (Supplier<Patrimoine>) dynamicClass.getDeclaredConstructor().newInstance();
     return patrimoineSupplier.get();

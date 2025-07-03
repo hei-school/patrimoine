@@ -98,7 +98,7 @@ public class PatrimoineRicheSupplier implements Supplier<Patrimoine> {
     Patrimoine patrimoineRiche = patrimoineRicheSupplier.get();
 
     PatrimoineDocsCompiler patrimoineDocsCompiler = new PatrimoineDocsCompiler();
-    Patrimoine patrimoine = patrimoineDocsCompiler.apply("PatrimoineRicheSupplier", code);
+    Patrimoine patrimoine = patrimoineDocsCompiler.apply("PatrimoineRicheSupplier.java", code);
 
     assertEquals(patrimoineRiche.getValeurComptable(), patrimoine.getValeurComptable());
   }

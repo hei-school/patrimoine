@@ -18,7 +18,8 @@ import school.hei.patrimoine.patrilang.visitors.PatriLangVisitor;
 import school.hei.patrimoine.patrilang.visitors.SectionVisitor;
 
 public class PatriLangTranspiler {
-  private static final String CAS_FILE_EXTENSION = ".cas.md";
+  public static final String CAS_FILE_EXTENSION = ".cas.md";
+  public static final String TOUT_CAS_FILE_EXTENSION = ".tout.md";
 
   public static Cas transpileCas(String casName, SectionVisitor sectionVisitor) {
     var casPath =
