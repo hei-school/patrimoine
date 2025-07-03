@@ -93,18 +93,19 @@ public class PatrimoineRicheSupplier implements Supplier<Patrimoine> {
 
 """;
 
-    ClassNameExtractor classNameExtractor = new ClassNameExtractor();
+    JavaFileNameExtractor javaFileNameExtractor = new JavaFileNameExtractor();
 
-    assertEquals("PatrimoineRicheSupplier", classNameExtractor.apply(code));
+    assertEquals("PatrimoineRicheSupplier.java", javaFileNameExtractor.apply(code));
   }
 
   @Test
   void extract_class_name_from_string_ko() {
-    ClassNameExtractor classNameExtractor = new ClassNameExtractor();
+    JavaFileNameExtractor javaFileNameExtractor = new JavaFileNameExtractor();
     String invalidCode = "int x = 42";
 
     Exception exception =
-        assertThrows(IllegalArgumentException.class, () -> classNameExtractor.apply(invalidCode));
+        assertThrows(
+            IllegalArgumentException.class, () -> javaFileNameExtractor.apply(invalidCode));
 
     assertEquals("No class name found in the provided code.", exception.getMessage());
   }

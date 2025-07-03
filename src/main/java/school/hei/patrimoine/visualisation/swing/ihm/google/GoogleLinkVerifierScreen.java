@@ -13,17 +13,11 @@ import static school.hei.patrimoine.google.GoogleApi.*;
 
 import java.awt.*;
 import java.awt.event.ActionListener;
-import java.io.*;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.function.Supplier;
 import javax.swing.*;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import school.hei.patrimoine.cas.CasSet;
-import school.hei.patrimoine.cas.CasSetAnalyzer;
-import school.hei.patrimoine.compiler.*;
 import school.hei.patrimoine.google.GoogleApi;
 import school.hei.patrimoine.google.GoogleApi.GoogleAuthenticationDetails;
 import school.hei.patrimoine.google.GoogleDocsLinkIdParser;
@@ -32,7 +26,6 @@ import school.hei.patrimoine.modele.Patrimoine;
 import school.hei.patrimoine.visualisation.swing.ihm.MainIHM;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.GoogleLinkList;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.NamedID;
-import school.hei.patrimoine.visualisation.swing.ihm.google.modele.NamedSnippet;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.NamedString;
 
 @Slf4j
@@ -50,12 +43,13 @@ public class GoogleLinkVerifierScreen {
   private final GoogleApi googleApi;
   private final GoogleAuthenticationDetails authDetails;
   private final GoogleLinkList<NamedString> linksData;
+  private final GoogleLinkListCompiler googleLinkListCompiler;
   private int inputYPosition;
-  private final File driveDirectory;
 
   public GoogleLinkVerifierScreen(
       GoogleApi googleApi,
       GoogleAuthenticationDetails authDetails,
+      GoogleLinkListCompiler googleLinkListCompiler,
       GoogleLinkList<NamedString> linksData,
       JFrame jFrame) {
     this.googleApi = googleApi;
@@ -66,7 +60,7 @@ public class GoogleLinkVerifierScreen {
     inputPanel = new JPanel(new GridBagLayout());
     inputFields = new ArrayList<>();
     inputYPosition = 2;
-    this.driveDirectory = new File(DOWNLOADS_DIRECTORY_PATH);
+    this.googleLinkListCompiler = googleLinkListCompiler;
 
     addButtons();
     addInputFieldsFromData();
@@ -229,47 +223,12 @@ public class GoogleLinkVerifierScreen {
           @Override
           protected List<Patrimoine> doInBackground() {
             var ids = extractInputIds();
-            List<NamedSnippet> codePatrimoinesVisualisables = new ArrayList<>();
-            List<Patrimoine> patrimoinesVisualisables = new ArrayList<>();
 
             resetIfExist(DOWNLOADS_DIRECTORY_PATH);
             var patrimoineJarId = driveLinkIdParser.apply(PATRIMOINE_JAR_URL);
 
             googleApi.downloadJarDependencyFile(authDetails, patrimoineJarId);
-
-            for (var id : ids.docsLinkList()) {
-              codePatrimoinesVisualisables.add(extractSnippet(id));
-            }
-
-            for (var namedId : ids.driveLinkList()) {
-              googleApi.downloadDriveFile(authDetails, namedId.id());
-            }
-
-            List<File> driveFiles =
-                Optional.ofNullable(driveDirectory.listFiles((dir, name) -> name.endsWith(".java")))
-                    .map(Arrays::asList)
-                    .orElseGet(Collections::emptyList);
-            File casSetFile = null;
-
-            for (NamedSnippet codePatrimoine : codePatrimoinesVisualisables) {
-              patrimoinesVisualisables.add(compilePatrimoine(codePatrimoine));
-            }
-
-            for (File driveFile : driveFiles) {
-              if (isCasSetFile(driveFile)) {
-                casSetFile = driveFile;
-              } else if (isCasFile(driveFile)) {
-                compileCas(driveFile.getAbsolutePath());
-              } else {
-                patrimoinesVisualisables.add(compilePatrimoine(driveFile.getAbsolutePath()));
-              }
-            }
-
-            if (casSetFile.exists()) {
-              compileCasSet(casSetFile.getAbsolutePath());
-            }
-
-            return patrimoinesVisualisables;
+            return googleLinkListCompiler.apply(ids);
           }
 
           @Override
@@ -320,11 +279,6 @@ public class GoogleLinkVerifierScreen {
     return new GoogleLinkList<>(docsIds, driveIds);
   }
 
-  private NamedSnippet extractSnippet(NamedID namedID) {
-    var code = googleApi.readDocsContent(authDetails, String.valueOf(namedID.id()));
-    return new NamedSnippet(namedID.name(), code);
-  }
-
   private void showErrorPage(String errorMessage) {
     JFrame errorFrame = new JFrame("Erreur");
     errorFrame.setSize(400, 200);
@@ -342,65 +296,6 @@ public class GoogleLinkVerifierScreen {
 
     errorFrame.getContentPane().add(panel);
     errorFrame.setVisible(true);
-  }
-
-  private boolean isCasFile(File file) {
-    var casImport = "import school.hei.patrimoine.cas.Cas;";
-    try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-      String line;
-      while ((line = reader.readLine()) != null) {
-        if (line.contains(casImport)) {
-          return true;
-        }
-      }
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
-    return false;
-  }
-
-  private boolean isCasSetFile(File file) {
-    var casSetImport = "import school.hei.patrimoine.cas.CasSet;";
-    try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-      String line;
-      while ((line = reader.readLine()) != null) {
-        if (line.contains(casSetImport)) {
-          return true;
-        }
-      }
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
-    return false;
-  }
-
-  private Patrimoine compilePatrimoine(NamedSnippet namedSnippet) {
-    PatrimoineDocsCompiler patrimoineDocsCompiler = new PatrimoineDocsCompiler();
-    String className = new ClassNameExtractor().apply(namedSnippet.snippet());
-
-    return (patrimoineDocsCompiler.apply(className, namedSnippet.snippet()));
-  }
-
-  private Patrimoine compilePatrimoine(String filePath) {
-    PatrimoineFileCompiler patrimoineFileCompiler = new PatrimoineFileCompiler();
-
-    return (patrimoineFileCompiler.apply(filePath));
-  }
-
-  private void compileCas(String filePath) {
-    CasFileCompiler casFileCompiler = new CasFileCompiler();
-
-    casFileCompiler.apply(filePath);
-  }
-
-  @SneakyThrows
-  private void compileCasSet(String filePath) {
-    CasFileCompiler casFileCompiler = new CasFileCompiler();
-    CasSetAnalyzer casSetAnalyzer = new CasSetAnalyzer();
-    var casSet = casFileCompiler.apply(filePath);
-    var casSetSupplier = (Supplier<CasSet>) casSet.getDeclaredConstructor().newInstance();
-
-    casSetAnalyzer.accept(casSetSupplier.get());
   }
 
   private void openResultFrame(List<Patrimoine> patrimoinesVisualisables) {
