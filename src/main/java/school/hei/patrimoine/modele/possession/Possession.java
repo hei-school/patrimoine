@@ -3,6 +3,7 @@ package school.hei.patrimoine.modele.possession;
 import java.io.Serializable;
 import java.time.LocalDate;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.ToString;
 import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.Devise;
@@ -26,13 +27,35 @@ public abstract sealed class Possession extends Objectivable
   protected final String nom;
   protected final LocalDate t;
   protected final Argent valeurComptable;
+  protected final TypeAgregat type;
+  protected final Argent valeurMarche;
+  private LocalDate dateVente;
+
   @EqualsAndHashCode.Exclude @ToString.Exclude private CompteCorrection compteCorrection;
 
-  public Possession(String nom, LocalDate t, Argent valeurComptable) {
+  public Possession(String nom, LocalDate t, Argent valeurComptable, TypeAgregat type) {
     super();
     this.nom = nom;
     this.t = t;
     this.valeurComptable = valeurComptable;
+    this.type = type;
+    this.valeurMarche = valeurComptable;
+  }
+
+  protected Possession(String nom, LocalDate t, Argent valeurComptable, TypeAgregat type, Argent valeurMarche) {
+    this.nom = nom;
+    this.t = t;
+    this.valeurComptable = valeurComptable;
+    this.type = type;
+    this.valeurMarche = (type == TypeAgregat.IMMOBILISATION || type == TypeAgregat.ENTREPRISE)
+          ? valeurComptable
+          : valeurMarche;
+    this.dateVente = null;
+  }
+
+  public Void vente(LocalDate dateVente, Compte compteBenificiaire) {
+    this.dateVente = dateVente;
+    throw new RuntimeException("Vente de possession non implémentée : " + this.getClass().getSimpleName());
   }
 
   public CompteCorrection getCompteCorrection() {
