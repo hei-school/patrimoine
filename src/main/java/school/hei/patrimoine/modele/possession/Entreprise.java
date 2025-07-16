@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 import static java.time.temporal.ChronoUnit.DAYS;
 import static school.hei.patrimoine.modele.possession.TypeAgregat.ENTREPRISE;
+
 @Getter
 public final class Entreprise extends Possession{
     private Argent valeurMarche;
@@ -31,11 +32,11 @@ public final class Entreprise extends Possession{
     public Entreprise projectionFuture(LocalDate tFutur) {
         if (tFutur.isBefore(t)) {
             Entreprise e = new Entreprise(
-                    nom,
-                    tFutur,
-                    valeurComptable,
-                    new Argent(0, valeurComptable.devise()),
-                    tauxEvolutionMarcheAnnuelle);
+                 nom,
+                 tFutur,
+                 valeurComptable,
+                 new Argent(0, valeurComptable.devise()),
+                 tauxEvolutionMarcheAnnuelle);
             e.historiqueValeurMarche.putAll(historiqueValeurMarche);
             return e;
         }
@@ -43,20 +44,17 @@ public final class Entreprise extends Possession{
         long joursEcoules = DAYS.between(t, tFutur);
 
         var valeurMarcheAjouteeJournaliere = valeurMarche.mult(tauxEvolutionMarcheAnnuelle / 365.);
-        var nouvelleValeurMarche =
-                valeurMarche.add(valeurMarcheAjouteeJournaliere.mult(joursEcoules), tFutur);
+        var nouvelleValeurMarche = valeurMarche.add(valeurMarcheAjouteeJournaliere.mult(joursEcoules), tFutur);
 
-        Argent valeurFinale =
-                nouvelleValeurMarche.lt(0) ? new Argent(0, devise()) : nouvelleValeurMarche;
+        Argent valeurFinale = nouvelleValeurMarche.lt(0) ? new Argent(0, devise()) : nouvelleValeurMarche;
 
         Entreprise eFuture = new Entreprise(
-                nom,
-                tFutur,
-                valeurComptable, // Valeur comptable reste figée
-                valeurFinale,
-                tauxEvolutionMarcheAnnuelle);
+             nom,
+             tFutur,
+             valeurComptable,
+             valeurFinale,
+             tauxEvolutionMarcheAnnuelle);
 
-        // ✅ On garde l’historique précédent et on ajoute la nouvelle date
         eFuture.historiqueValeurMarche.putAll(historiqueValeurMarche);
         eFuture.historiqueValeurMarche.put(tFutur, valeurFinale);
 

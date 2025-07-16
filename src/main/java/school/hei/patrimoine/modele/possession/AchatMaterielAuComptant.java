@@ -24,7 +24,7 @@ public final class AchatMaterielAuComptant extends Possession {
             dateAchat,
             Set.of(
                 new Materiel(
-                    nom, dateAchat, dateAchat, valeurComptableALAchat, tauxAppreciationAnnuelle),
+                    nom, dateAchat, dateAchat, valeurComptableALAchat, valeurComptableALAchat,tauxAppreciationAnnuelle),
                 new FluxArgent(
                     "Financement AchatMaterielAuComptant: " + nom,
                     financeur,
