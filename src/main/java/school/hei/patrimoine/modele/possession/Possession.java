@@ -2,12 +2,15 @@ package school.hei.patrimoine.modele.possession;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.Set;
+
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
 import lombok.ToString;
 import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.Devise;
 import school.hei.patrimoine.modele.objectif.Objectivable;
+import school.hei.patrimoine.modele.vente.ValeurMarche;
+import school.hei.patrimoine.modele.vente.Vendable;
 
 @ToString
 @EqualsAndHashCode(callSuper = false)
@@ -27,34 +30,27 @@ public abstract sealed class Possession extends Objectivable
   protected final String nom;
   protected final LocalDate t;
   protected final Argent valeurComptable;
-  protected final TypeAgregat type;
-  protected final Argent valeurMarche;
-  private LocalDate dateVente;
+  protected final Set<ValeurMarche> valeurMarches;
 
   @EqualsAndHashCode.Exclude @ToString.Exclude private CompteCorrection compteCorrection;
 
-  public Possession(String nom, LocalDate t, Argent valeurComptable, TypeAgregat type) {
+  public Possession(String nom, LocalDate t, Argent valeurComptable, Set<ValeurMarche> valeurMarche) {
     super();
     this.nom = nom;
     this.t = t;
     this.valeurComptable = valeurComptable;
-    this.type = type;
-    this.valeurMarche = valeurComptable;
+    this.valeurMarches = valeurMarche;
   }
 
-  protected Possession(String nom, LocalDate t, Argent valeurComptable, TypeAgregat type, Argent valeurMarche) {
+  protected Possession(String nom, LocalDate t, Argent valeurComptable) {
     this.nom = nom;
     this.t = t;
     this.valeurComptable = valeurComptable;
-    this.type = type;
-    this.valeurMarche = (type == TypeAgregat.IMMOBILISATION || type == TypeAgregat.ENTREPRISE)
-          ? valeurComptable
-          : valeurMarche;
-    this.dateVente = null;
+    valeurMarches = Set.of();
   }
 
-  public Void vente(LocalDate dateVente, Compte compteBenificiaire) {
-    this.dateVente = dateVente;
+  public Void vendre(LocalDate dateVente, Compte compteBenificiaire) {
+    //this.dateVente = dateVente;
     throw new RuntimeException("Vente de possession non implémentée : " + this.getClass().getSimpleName());
   }
 
