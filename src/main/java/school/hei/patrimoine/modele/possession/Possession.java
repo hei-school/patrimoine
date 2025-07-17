@@ -2,36 +2,52 @@ package school.hei.patrimoine.modele.possession;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
+
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.Devise;
 import school.hei.patrimoine.modele.objectif.Objectivable;
+import school.hei.patrimoine.modele.vente.ValeurMarche;
+import school.hei.patrimoine.modele.vente.Vendable;
 
 @ToString
 @EqualsAndHashCode(callSuper = false)
 public abstract sealed class Possession extends Objectivable
-    implements Serializable /*note(no-serializable)*/
-        permits AchatMaterielAuComptant, Compte, CompteCorrection, Correction, Entreprise, FluxArgent, GroupePossession, Materiel, PatrimoinePersonnel, PersonneMorale, RemboursementDette, TransfertArgent {
+        implements Vendable, Serializable /*note(no-serializable)*/
+        permits AchatMaterielAuComptant,
+        Compte,
+        CompteCorrection,
+        Correction,
+        FluxArgent,
+        GroupePossession,
+        Materiel,
+        PatrimoinePersonnel,
+        PersonneMorale,
+        RemboursementDette,
+        TransfertArgent {
   protected final String nom;
   protected final LocalDate t;
   protected final Argent valeurComptable;
-  // Note: valeurComptable is the value at time t, not the current value
-  @EqualsAndHashCode.Exclude @ToString.Exclude private Argent valeurMarche;
-
-  @EqualsAndHashCode.Exclude @ToString.Exclude private boolean estVendue = false;
-
-  @EqualsAndHashCode.Exclude @ToString.Exclude private LocalDate dateVente;
-
-  @EqualsAndHashCode.Exclude @ToString.Exclude private Compte compteBeneficiaire;
+  protected final Set<ValeurMarche> valeurMarches;
 
   @EqualsAndHashCode.Exclude @ToString.Exclude private CompteCorrection compteCorrection;
 
-  public Possession(String nom, LocalDate t, Argent valeurComptable) {
+  public Possession(String nom, LocalDate t, Argent valeurComptable, Set<ValeurMarche> valeurMarche) {
     super();
     this.nom = nom;
     this.t = t;
     this.valeurComptable = valeurComptable;
+    this.valeurMarches = valeurMarche;
+  }
+
+  protected Possession(String nom, LocalDate t, Argent valeurComptable) {
+    this.nom = nom;
+    this.t = t;
+    this.valeurComptable = valeurComptable;
+    valeurMarches = new HashSet<>(Set.of(new ValeurMarche(t, valeurComptable)));
   }
 
   public CompteCorrection getCompteCorrection() {
@@ -42,9 +58,6 @@ public abstract sealed class Possession extends Objectivable
   }
 
   public Argent valeurComptable() {
-    if (estVendue && dateVente != null && !t.isBefore(dateVente)) {
-      return new Argent(0.0, valeurComptable.devise());
-    }
     return valeurComptable;
   }
 
@@ -68,32 +81,5 @@ public abstract sealed class Possession extends Objectivable
   @Override
   public Argent valeurAObjectifT(LocalDate t) {
     return projectionFuture(t).valeurComptable;
-  }
-
-  public Argent valeurMarche() {
-    if (typeAgregat() == TypeAgregat.IMMOBILISATION
-            || typeAgregat() == TypeAgregat.ENTREPRISE) {
-      return valeurMarche != null ? valeurMarche : valeurComptable;
-    }
-    return valeurComptable;
-  }
-
-  public void vendre(LocalDate date, Argent montant, Compte compteDestination) {
-    if (estVendue) {
-      throw new IllegalStateException("Possession déjà vendue : " + this);
-    }
-
-    this.estVendue = true;
-    this.dateVente = date;
-    this.compteBeneficiaire = compteDestination;
-    this.valeurMarche = montant;
-
-    new TransfertArgent(
-            "Vente de " + nom,
-            null,
-            compteDestination,
-            date,
-            montant
-    );
   }
 }
