@@ -27,6 +27,7 @@ public abstract sealed class Possession extends Objectivable
   protected final LocalDate t;
   protected final Argent valeurComptable;
   @EqualsAndHashCode.Exclude @ToString.Exclude private CompteCorrection compteCorrection;
+  @EqualsAndHashCode.Exclude @ToString.Exclude private Argent valeurMarche;
 
   public Possession(String nom, LocalDate t, Argent valeurComptable) {
     super();
@@ -66,5 +67,12 @@ public abstract sealed class Possession extends Objectivable
   @Override
   public Argent valeurAObjectifT(LocalDate t) {
     return projectionFuture(t).valeurComptable;
+  }
+
+  public Argent valeurMarche() {
+    if (typeAgregat() == TypeAgregat.IMMOBILISATION || typeAgregat() == TypeAgregat.ENTREPRISE) {
+      return valeurMarche != null ? valeurMarche : valeurComptable;
+    }
+    return valeurComptable;
   }
 }
