@@ -6,6 +6,7 @@ import static school.hei.patrimoine.modele.possession.TypeAgregat.PATRIMOINE;
 import java.time.LocalDate;
 import lombok.Getter;
 import lombok.experimental.Accessors;
+import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.Personne;
 
 public final class PersonneMorale extends Possession {
@@ -31,5 +32,10 @@ public final class PersonneMorale extends Possession {
   @Override
   public TypeAgregat typeAgregat() {
     return PATRIMOINE;
+  }
+
+  @Override
+  public Argent getValeurMarche(LocalDate t) {
+    return null;
   }
 }

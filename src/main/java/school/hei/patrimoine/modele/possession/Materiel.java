@@ -46,4 +46,9 @@ public final class Materiel extends Possession {
   public TypeAgregat typeAgregat() {
     return IMMOBILISATION;
   }
+
+  @Override
+  public Argent getValeurMarche(LocalDate t) {
+    return null;
+  }
 }

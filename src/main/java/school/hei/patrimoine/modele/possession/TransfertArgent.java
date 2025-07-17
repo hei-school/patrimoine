@@ -54,4 +54,9 @@ public final class TransfertArgent extends Possession {
   public TypeAgregat typeAgregat() {
     return FLUX;
   }
+
+  @Override
+  public Argent getValeurMarche(LocalDate t) {
+    return null;
+  }
 }
