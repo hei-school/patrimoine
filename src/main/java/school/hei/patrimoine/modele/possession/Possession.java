@@ -10,6 +10,9 @@ import lombok.ToString;
 import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.Devise;
 import school.hei.patrimoine.modele.objectif.Objectivable;
+import static school.hei.patrimoine.modele.possession.TypeAgregat.IMMOBILISATION;
+import static school.hei.patrimoine.modele.possession.TypeAgregat.ENTREPRISE;
+
 
 @ToString
 @EqualsAndHashCode(callSuper = false)
@@ -30,7 +33,7 @@ public abstract sealed class Possession extends Objectivable
   protected final String nom;
   protected final LocalDate t;
   protected final Argent valeurComptable;
-  private final NavigableMap<LocalDate, Argent> historiqueValeurMarche = new TreeMap<>();
+  protected final NavigableMap<LocalDate, Argent> historiqueValeurMarche = new TreeMap<>();
   @EqualsAndHashCode.Exclude @ToString.Exclude private CompteCorrection compteCorrection;
 
   public Possession(String nom, LocalDate t, Argent valeurComptable) {
@@ -65,8 +68,13 @@ public abstract sealed class Possession extends Objectivable
   }
 
   public void enregistrerValeurMarche(LocalDate date, Argent valeur) {
-    //check type
-    historiqueValeurMarche.put(date, valeur);
+    if (typeAgregat() == IMMOBILISATION || typeAgregat() == ENTREPRISE) {
+      historiqueValeurMarche.put(date, valeur);
+    } else {
+      throw new UnsupportedOperationException(
+              "Seules les possessions de type IMMOBILISATION, ENTREPRISE !"
+      );
+    }
   }
 
   public Argent valeurMarcheALaDate(LocalDate date) {
