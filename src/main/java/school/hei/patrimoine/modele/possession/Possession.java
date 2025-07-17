@@ -2,12 +2,13 @@ package school.hei.patrimoine.modele.possession;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.Devise;
+import school.hei.patrimoine.modele.ValeurMarche;
 import school.hei.patrimoine.modele.objectif.Objectivable;
 
 @ToString
@@ -29,7 +30,7 @@ public abstract sealed class Possession extends Objectivable
   protected final LocalDate t;
   protected final Argent valeurComptable;
   @EqualsAndHashCode.Exclude @ToString.Exclude private CompteCorrection compteCorrection;
-  private final Map<LocalDate, Argent> historiqueValeurMarche = new HashMap<>();
+  private final Set<ValeurMarche> valeursMarche = new HashSet<>();
 
   public Possession(String nom, LocalDate t, Argent valeurComptable) {
     super();
@@ -77,16 +78,16 @@ public abstract sealed class Possession extends Objectivable
 
   public Argent valeurMarche(LocalDate date) {
     if (typeAgregat() == TypeAgregat.IMMOBILISATION || typeAgregat() == TypeAgregat.ENTREPRISE) {
-      return historiqueValeurMarche.entrySet().stream()
-          .filter(entry -> !entry.getKey().isAfter(date))
-          .max(Map.Entry.comparingByKey())
-          .map(Map.Entry::getValue)
-          .orElse(valeurComptable);
+      return valeursMarche.stream()
+              .filter(vm -> !vm.date().isAfter(date))
+              .max(Comparator.comparing(ValeurMarche::date))
+              .map(ValeurMarche::valeur)
+              .orElse(valeurComptable);
     }
     return valeurComptable;
   }
 
-  public Map<LocalDate, Argent> getHistoriqueValeurMarche() {
-    return new HashMap<>(historiqueValeurMarche);
+  public Set<ValeurMarche> historiqueValeurMarche() {
+    return new HashSet<>(valeursMarche);
   }
 }
