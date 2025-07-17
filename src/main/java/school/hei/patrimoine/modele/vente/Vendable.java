@@ -4,6 +4,6 @@ import school.hei.patrimoine.modele.Argent;
 
 import java.time.LocalDate;
 
-public abstract class Vendable {
+public interface Vendable {
     public abstract Argent getValeurMarche(LocalDate t);
 }

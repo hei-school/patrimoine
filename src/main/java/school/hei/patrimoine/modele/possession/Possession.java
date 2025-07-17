@@ -2,6 +2,7 @@ package school.hei.patrimoine.modele.possession;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Set;
 
 import lombok.EqualsAndHashCode;
@@ -15,7 +16,7 @@ import school.hei.patrimoine.modele.vente.Vendable;
 @ToString
 @EqualsAndHashCode(callSuper = false)
 public abstract sealed class Possession extends Objectivable
-        implements Serializable /*note(no-serializable)*/
+        implements Vendable, Serializable /*note(no-serializable)*/
         permits AchatMaterielAuComptant,
         Compte,
         CompteCorrection,
@@ -46,12 +47,7 @@ public abstract sealed class Possession extends Objectivable
     this.nom = nom;
     this.t = t;
     this.valeurComptable = valeurComptable;
-    valeurMarches = Set.of();
-  }
-
-  public Void vendre(LocalDate dateVente, Compte compteBenificiaire) {
-    //this.dateVente = dateVente;
-    throw new RuntimeException("Vente de possession non implémentée : " + this.getClass().getSimpleName());
+    valeurMarches = new HashSet<>(Set.of(new ValeurMarche(t, valeurComptable)));
   }
 
   public CompteCorrection getCompteCorrection() {
