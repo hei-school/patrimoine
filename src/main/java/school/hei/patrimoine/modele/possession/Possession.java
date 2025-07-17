@@ -87,9 +87,9 @@ public abstract sealed class Possession extends Objectivable
   public Argent valeurMarche(LocalDate date) {
     if (typeAgregat() == TypeAgregat.IMMOBILISATION || typeAgregat() == TypeAgregat.ENTREPRISE) {
       return valeursMarche.stream()
-              .filter(vm -> !vm.date().isAfter(date))
-              .max(Comparator.comparing(ValeurMarche::date))
-              .map(ValeurMarche::valeur)
+              .filter(vm -> !vm.t().isAfter(date))
+              .max(Comparator.comparing(ValeurMarche::t))
+              .map(ValeurMarche::valeurComptable)
               .orElse(valeurComptable);
     }
     return valeurComptable;
