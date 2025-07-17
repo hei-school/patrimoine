@@ -8,7 +8,7 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.Devise;
-import school.hei.patrimoine.modele.ValeurMarche;
+import school.hei.patrimoine.modele.vente.ValeurMarche;
 import school.hei.patrimoine.modele.objectif.Objectivable;
 
 @ToString

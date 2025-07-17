@@ -59,4 +59,9 @@ public final class GroupePossession extends Possession {
             + ", possessions="
             + possessions);
   }
+
+  @Override
+  public Argent getValeurMarche(LocalDate t) {
+    return null;
+  }
 }
