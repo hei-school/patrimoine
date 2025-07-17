@@ -2,6 +2,8 @@ package school.hei.patrimoine.modele.possession;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import school.hei.patrimoine.modele.Argent;
@@ -27,7 +29,7 @@ public abstract sealed class Possession extends Objectivable
   protected final LocalDate t;
   protected final Argent valeurComptable;
   @EqualsAndHashCode.Exclude @ToString.Exclude private CompteCorrection compteCorrection;
-  @EqualsAndHashCode.Exclude @ToString.Exclude private Argent valeurMarche;
+  private final Map<LocalDate, Argent> historiqueValeurMarche = new HashMap<>();
 
   public Possession(String nom, LocalDate t, Argent valeurComptable) {
     super();
@@ -70,9 +72,21 @@ public abstract sealed class Possession extends Objectivable
   }
 
   public Argent valeurMarche() {
+    return valeurMarche(LocalDate.now());
+  }
+
+  public Argent valeurMarche(LocalDate date) {
     if (typeAgregat() == TypeAgregat.IMMOBILISATION || typeAgregat() == TypeAgregat.ENTREPRISE) {
-      return valeurMarche != null ? valeurMarche : valeurComptable;
+      return historiqueValeurMarche.entrySet().stream()
+          .filter(entry -> !entry.getKey().isAfter(date))
+          .max(Map.Entry.comparingByKey())
+          .map(Map.Entry::getValue)
+          .orElse(valeurComptable);
     }
     return valeurComptable;
+  }
+
+  public Map<LocalDate, Argent> getHistoriqueValeurMarche() {
+    return new HashMap<>(historiqueValeurMarche);
   }
 }
