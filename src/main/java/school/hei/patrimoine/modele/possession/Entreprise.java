@@ -3,61 +3,27 @@ package school.hei.patrimoine.modele.possession;
 
 import lombok.Getter;
 import school.hei.patrimoine.modele.Argent;
-
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.Map;
-import static java.time.temporal.ChronoUnit.DAYS;
+
 import static school.hei.patrimoine.modele.possession.TypeAgregat.ENTREPRISE;
 
 @Getter
 public final class Entreprise extends Possession{
-    private Argent valeurMarche;
-    private final double tauxEvolutionMarcheAnnuelle;
-    private final Map<LocalDate, Argent> historiqueValeurMarche = new HashMap<>();
+
 
     public Entreprise(
         String nom,
         LocalDate t,
         Argent valeurComptable,
-        Argent valeurMarche,
-        double tauxEvolutionMarcheAnnuelle) {
-      super(nom, t, valeurComptable);
-      this.valeurMarche = (valeurMarche != null) ? valeurMarche : valeurComptable;
-      this.tauxEvolutionMarcheAnnuelle = tauxEvolutionMarcheAnnuelle;
-      historiqueValeurMarche.put(t, this.valeurMarche);
+        Argent valeurMarcheInitiale) {
+      super(nom, t, valeurComptable, valeurMarcheInitiale);
     }
 
     @Override
     public Entreprise projectionFuture(LocalDate tFutur) {
-        if (tFutur.isBefore(t)) {
-            Entreprise e = new Entreprise(
-                 nom,
-                 tFutur,
-                 valeurComptable,
-                 new Argent(0, valeurComptable.devise()),
-                 tauxEvolutionMarcheAnnuelle);
-            e.historiqueValeurMarche.putAll(historiqueValeurMarche);
-            return e;
-        }
-
-        long joursEcoules = DAYS.between(t, tFutur);
-
-        var valeurMarcheAjouteeJournaliere = valeurMarche.mult(tauxEvolutionMarcheAnnuelle / 365.);
-        var nouvelleValeurMarche = valeurMarche.add(valeurMarcheAjouteeJournaliere.mult(joursEcoules), tFutur);
-
-        Argent valeurFinale = nouvelleValeurMarche.lt(0) ? new Argent(0, devise()) : nouvelleValeurMarche;
-
-        Entreprise eFuture = new Entreprise(
-             nom,
-             tFutur,
-             valeurComptable,
-             valeurFinale,
-             tauxEvolutionMarcheAnnuelle);
-
+        Argent valeurMarcheFuture = valeurMarcheALaDate(tFutur);
+        Entreprise eFuture = new Entreprise(nom, tFutur, valeurComptable, valeurMarcheFuture);
         eFuture.historiqueValeurMarche.putAll(historiqueValeurMarche);
-        eFuture.historiqueValeurMarche.put(tFutur, valeurFinale);
-
         return eFuture;
     }
 
