@@ -29,14 +29,22 @@ public abstract sealed class Possession extends Objectivable
   protected final String nom;
   protected final LocalDate t;
   protected final Argent valeurComptable;
+  protected final Set<ValeurMarche> valeursMarche;
   @EqualsAndHashCode.Exclude @ToString.Exclude private CompteCorrection compteCorrection;
-  private final Set<ValeurMarche> valeursMarche = new HashSet<>();
 
-  public Possession(String nom, LocalDate t, Argent valeurComptable) {
+  public Possession(String nom, LocalDate t, Argent valeurComptable, Set<ValeurMarche> valeursMarche) {
     super();
     this.nom = nom;
     this.t = t;
     this.valeurComptable = valeurComptable;
+    this.valeursMarche = valeursMarche;
+  }
+
+  public Possession(String nom, LocalDate t, Argent valeurComptable) {
+    this.nom = nom;
+    this.t = t;
+    this.valeurComptable = valeurComptable;
+    valeursMarche = new HashSet<>(Set.of(new ValeurMarche(t,  valeurComptable)));
   }
 
   public CompteCorrection getCompteCorrection() {
