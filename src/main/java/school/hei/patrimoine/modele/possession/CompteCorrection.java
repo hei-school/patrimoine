@@ -33,9 +33,4 @@ public final class CompteCorrection extends Possession {
   public TypeAgregat typeAgregat() {
     return CORRECTION;
   }
-
-  @Override
-  public Argent getValeurMarche(LocalDate t) {
-    return null;
-  }
 }

@@ -3,6 +3,7 @@ package school.hei.patrimoine.modele.possession;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 import lombok.EqualsAndHashCode;
@@ -28,26 +29,23 @@ public abstract sealed class Possession extends Objectivable
         PersonneMorale,
         RemboursementDette,
         TransfertArgent {
+
   protected final String nom;
   protected final LocalDate t;
   protected final Argent valeurComptable;
   protected final Set<ValeurMarche> valeurMarches;
 
   @EqualsAndHashCode.Exclude @ToString.Exclude private CompteCorrection compteCorrection;
-
-  public Possession(String nom, LocalDate t, Argent valeurComptable, Set<ValeurMarche> valeurMarche) {
-    super();
-    this.nom = nom;
-    this.t = t;
-    this.valeurComptable = valeurComptable;
-    this.valeurMarches = valeurMarche;
-  }
+  @EqualsAndHashCode.Exclude @ToString.Exclude private boolean estVendu = false;
+  @EqualsAndHashCode.Exclude @ToString.Exclude private LocalDate dateVente;
+  @EqualsAndHashCode.Exclude @ToString.Exclude private Argent prixVente;
 
   protected Possession(String nom, LocalDate t, Argent valeurComptable) {
     this.nom = nom;
     this.t = t;
     this.valeurComptable = valeurComptable;
-    valeurMarches = new HashSet<>(Set.of(new ValeurMarche(t, valeurComptable)));
+    this.valeurMarches = new HashSet<>();
+    this.valeurMarches.add(new ValeurMarche(t, valeurComptable));
   }
 
   public CompteCorrection getCompteCorrection() {
@@ -81,5 +79,61 @@ public abstract sealed class Possession extends Objectivable
   @Override
   public Argent valeurAObjectifT(LocalDate t) {
     return projectionFuture(t).valeurComptable;
+  }
+
+  @Override
+  public Argent getValeurMarche(LocalDate t) {
+    return valeurMarches.stream()
+            .filter(vm -> vm.t().equals(t))
+            .findFirst()
+            .map(ValeurMarche::valeur)
+            .orElse(valeurComptable);
+  }
+
+  @Override
+  public void vendre(LocalDate dateVente, Argent prixVente, Compte compteBeneficiaire) {
+    if (estVendu) throw new IllegalStateException("La possession a déjà été vendue.");
+    if (compteBeneficiaire == null) throw new IllegalArgumentException("Le compte bénéficiaire ne peut pas être null.");
+    if (dateVente == null) throw new IllegalArgumentException("La date de vente ne peut pas être null.");
+    if (prixVente == null) throw new IllegalArgumentException("Le prix de vente doit être positif.");
+
+    this.estVendu = true;
+    this.dateVente = dateVente;
+    this.prixVente = prixVente;
+
+    Compte source = new Compte("Vente de " + nom, dateVente, this.valeurComptable);
+
+    new TransfertArgent(
+            "Vente de " + nom,
+            source,
+            compteBeneficiaire,
+            dateVente,
+            prixVente
+    );
+  }
+
+  @Override
+  public boolean estVendu() {
+    return estVendu;
+  }
+
+  @Override
+  public Optional<LocalDate> getDateVente() {
+    return Optional.ofNullable(dateVente);
+  }
+
+  @Override
+  public Optional<Argent> getPrixVente() {
+    return Optional.ofNullable(prixVente);
+  }
+
+  public void ajouterValeurMarche(ValeurMarche valeurMarche) {
+    if (typeAgregat() != TypeAgregat.IMMOBILISATION &&
+        typeAgregat() != TypeAgregat.ENTREPRISE) {
+      throw new UnsupportedOperationException(
+              "Seules les IMMOBILISATIONs et ENTREPRISEs peuvent avoir une valeur de marché"
+      );
+    }
+    valeurMarches.add(valeurMarche);
   }
 }

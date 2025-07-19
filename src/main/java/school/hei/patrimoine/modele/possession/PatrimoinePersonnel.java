@@ -37,9 +37,4 @@ public final class PatrimoinePersonnel extends Possession {
   public TypeAgregat typeAgregat() {
     return PATRIMOINE;
   }
-
-  @Override
-  public Argent getValeurMarche(LocalDate t) {
-    return null;
-  }
 }
