@@ -5,8 +5,11 @@ import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.Devise;
 import school.hei.patrimoine.modele.possession.Compte;
 import school.hei.patrimoine.modele.possession.Materiel;
+import school.hei.patrimoine.modele.possession.Possession;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -71,4 +74,34 @@ public class VenteTest {
         assertThrows(IllegalStateException.class, () ->
                 materiel.vendre(LocalDate.now(), new Argent(30_000, Devise.EUR), compte));
     }
+
+    @Test
+    void vendre_possession_sans_compte_beneficiaire_doit_echouer() {
+        var materiel = new Materiel("Voiture", LocalDate.now(), LocalDate.now(),
+                new Argent(20_000, Devise.EUR), 0.0);
+
+        assertThrows(IllegalArgumentException.class, () ->
+                materiel.vendre(LocalDate.now(), new Argent(25_000, Devise.EUR), null));
+    }
+
+    @Test
+    void vendre_possession_sans_date_vente_doit_echouer() {
+        var materiel = new Materiel("Voiture", LocalDate.now(), LocalDate.now(),
+                new Argent(20_000, Devise.EUR), 0.0);
+        var compte = new Compte("Compte courant", LocalDate.now(), new Argent(0, Devise.EUR));
+
+        assertThrows(IllegalArgumentException.class, () ->
+                materiel.vendre(null, new Argent(25_000, Devise.EUR), compte));
+    }
+
+    @Test
+    void vendre_possession_sans_prix_vente_doit_echouer() {
+        var materiel = new Materiel("Voiture", LocalDate.now(), LocalDate.now(),
+                new Argent(20_000, Devise.EUR), 0.0);
+        var compte = new Compte("Compte courant", LocalDate.now(), new Argent(0, Devise.EUR));
+
+        assertThrows(IllegalArgumentException.class, () ->
+                materiel.vendre(LocalDate.now(), null, compte));
+    }
+
 }
