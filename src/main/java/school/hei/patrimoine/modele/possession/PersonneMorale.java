@@ -33,9 +33,4 @@ public final class PersonneMorale extends Possession {
   public TypeAgregat typeAgregat() {
     return PATRIMOINE;
   }
-
-  @Override
-  public Argent getValeurMarche(LocalDate t) {
-    return null;
-  }
 }
