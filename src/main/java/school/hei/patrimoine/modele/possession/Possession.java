@@ -6,6 +6,7 @@ import java.util.NavigableMap;
 import java.util.TreeMap;
 
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.ToString;
 import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.Devise;
@@ -14,27 +15,29 @@ import static school.hei.patrimoine.modele.possession.TypeAgregat.IMMOBILISATION
 import static school.hei.patrimoine.modele.possession.TypeAgregat.ENTREPRISE;
 
 
+
 @ToString
 @EqualsAndHashCode(callSuper = false)
 public abstract sealed class Possession extends Objectivable
-    implements Serializable /*note(no-serializable)*/
+    implements Serializable/*note(no-serializable)*/
     permits AchatMaterielAuComptant,
         Compte,
         CompteCorrection,
         Correction,
         FluxArgent,
         GroupePossession,
-        Materiel,
         PatrimoinePersonnel,
         PersonneMorale,
         RemboursementDette,
         TransfertArgent,
+        PossessionVendable,
         Entreprise {
   protected final String nom;
   protected final LocalDate t;
   protected final Argent valeurComptable;
   protected final NavigableMap<LocalDate, Argent> historiqueValeurMarche = new TreeMap<>();
   @EqualsAndHashCode.Exclude @ToString.Exclude private CompteCorrection compteCorrection;
+
 
   public Possession(String nom, LocalDate t, Argent valeurComptable) {
     super();
@@ -59,7 +62,7 @@ public abstract sealed class Possession extends Objectivable
     return compteCorrection;
   }
 
-  public Argent valeurComptable() {
+    public Argent valeurComptable() {
     return valeurComptable;
   }
 
