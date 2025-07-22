@@ -6,21 +6,20 @@ import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.possession.Compte;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
 import java.util.Set;
+import java.util.HashSet;
+import java.util.Comparator;
 
 @Getter
 @Setter
 public class InformationDeVente {
-  private final List<ValeurMarche> valeursMarches;
+  private final Set<ValeurMarche> valeursMarches;
   private Argent valeurDeVente;
   private LocalDate dateDeVente;
   private Compte compteBeneficiaire;
 
   public InformationDeVente() {
-    this.valeursMarches = new ArrayList<>();
+    this.valeursMarches = new HashSet<>();
     this.valeurDeVente = null;
     this.dateDeVente = null;
     this.compteBeneficiaire = null;
