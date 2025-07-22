@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class VenteTest {
 
     @Test
-    void valeurMarche_doitValiderLesParametres() {
+    void valeur_marche_doitvalider_les_parametres() {
         assertThrows(IllegalArgumentException.class,
                 () -> new ValeurMarche(null, new Argent(100, Devise.EUR)));
 
@@ -21,12 +21,12 @@ public class VenteTest {
     }
 
     @Test
-    void valeurMarche_doitStockerCorrectementLesValeurs() {
+    void valeur_marche_doit_stocker_correctement_les_valeurs() {
         var date = LocalDate.of(2025, 1, 1);
         var argent = new Argent(300_000, Devise.EUR);
         var vm = new ValeurMarche(date, argent);
 
-        assertEquals(date, vm.date());
+        assertEquals(date, vm.t());
         assertEquals(argent, vm.valeur());
     }
 
@@ -38,7 +38,7 @@ public class VenteTest {
 
         materiel.vendre(LocalDate.now(), new Argent(25_000, Devise.EUR), compte);
 
-        assertTrue(materiel.estVendue());
+        assertTrue(materiel.estVendu());
         assertEquals(LocalDate.now(), materiel.getDateVente().get());
         assertEquals(new Argent(25_000, Devise.EUR), materiel.getPrixVente().get());
     }
