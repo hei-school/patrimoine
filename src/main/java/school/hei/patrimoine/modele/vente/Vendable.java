@@ -24,5 +24,5 @@ public interface Vendable {
 
   public boolean estVendue();
 
-  public void vendre(Argent valeurDeVente, LocalDate dateDeVente);
+  public void vendre(Argent valeurDeVente, LocalDate dateDeVente, Compte compteBeneficiaire);
 }
