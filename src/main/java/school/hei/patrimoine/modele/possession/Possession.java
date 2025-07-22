@@ -2,6 +2,7 @@ package school.hei.patrimoine.modele.possession;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -81,11 +82,15 @@ public abstract sealed class Possession extends Objectivable
 
   @Override
   public Argent getValeurMarche(LocalDate t) {
-    return valeurMarches.stream()
-            .filter(vm -> vm.date().equals(t))
-            .findFirst()
-            .map(ValeurMarche::valeur)
-            .orElse(valeurComptable);
+    if (typeAgregat() == TypeAgregat.IMMOBILISATION ||
+            typeAgregat() == TypeAgregat.ENTREPRISE) {
+      return valeurMarches.stream()
+              .filter(vm -> !vm.date().isAfter(t))
+              .max(Comparator.comparing(ValeurMarche::date))
+              .map(ValeurMarche::valeur)
+              .orElse(valeurComptable);
+    }
+    return valeurComptable;
   }
 
   @Override
@@ -138,5 +143,9 @@ public abstract sealed class Possession extends Objectivable
               "Seules les IMMOBILISATION et ENTREPRISE peuvent avoir une valeur de marché");
     }
     valeurMarches.add(valeurMarche);
+  }
+
+  public Set<ValeurMarche> historiqueValeurMarche() {
+    return new HashSet<>(valeurMarches);
   }
 }
