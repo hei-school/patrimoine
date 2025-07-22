@@ -45,8 +45,7 @@ public abstract sealed class Possession extends Objectivable
     this.nom = nom;
     this.t = t;
     this.valeurComptable = valeurComptable;
-    this.valeursMarche = new HashSet<>();
-    this.valeursMarche.add(new ValeurMarche(t, valeurComptable));
+    this.valeursMarche = new HashSet<>(Set.of(new ValeurMarche(t, valeurComptable)));
   }
 
   public CompteCorrection getCompteCorrection() {
@@ -84,15 +83,12 @@ public abstract sealed class Possession extends Objectivable
 
   @Override
   public Argent getValeurMarche(LocalDate t) {
-    if (typeAgregat() == TypeAgregat.IMMOBILISATION ||
-        typeAgregat() == TypeAgregat.ENTREPRISE) {
-      return valeursMarche.stream()
-              .filter(vm -> !vm.t().isAfter(t))
-              .max(Comparator.comparing(ValeurMarche::t))
-              .map(ValeurMarche::valeur)
-              .orElse(valeurComptable);
-    }
-    return valeurComptable;
+    return valeursMarche.stream()
+            .filter(vm -> !vm.t().isAfter(t))
+            .max(Comparator.comparing(ValeurMarche::t))
+            .map(ValeurMarche::valeur)
+            .orElse(valeurComptable);
+
   }
 
   @Override
@@ -100,26 +96,15 @@ public abstract sealed class Possession extends Objectivable
     if (estVendu) {
       throw new IllegalStateException("Possession déjà vendue");
     }
-    if (compteBeneficiaire == null) {
-      throw new IllegalArgumentException("Le compte bénéficiaire ne peut pas être null");
-    }
-    if (dateVente == null) {
-      throw new IllegalArgumentException("La date de vente ne peut pas être null");
-    }
-    if (prixVente == null) {
-      throw new IllegalArgumentException("Le prix de vente ne peut pas être null");
-    }
-
     this.estVendu = true;
     this.dateVente = dateVente;
     this.prixVente = prixVente;
 
-    // Créer un flux vers le compte bénéficiaire
     new FluxArgent(
-            "Vente de " + nom,
-            compteBeneficiaire,
-            dateVente,
-            prixVente
+      "Vente de " + nom,
+      compteBeneficiaire,
+      dateVente,
+      prixVente
     );
   }
 
