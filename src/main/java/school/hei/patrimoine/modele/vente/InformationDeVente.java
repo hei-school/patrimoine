@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.possession.Compte;
+import school.hei.patrimoine.modele.possession.FluxArgent;
+import school.hei.patrimoine.modele.possession.Possession;
 
 import java.time.LocalDate;
 import java.util.Set;
@@ -44,10 +46,11 @@ public class InformationDeVente {
     return valeurDeVente != null && dateDeVente != null && compteBeneficiaire != null;
   }
 
-  public void confirmeVente(Argent valeurDeVente, LocalDate dateDeVente, Compte compteBeneficiaire) {
+  public void confirmeVente(Possession possessionVendue, Argent valeurDeVente, LocalDate dateDeVente, Compte compteBeneficiaire) {
     this.valeurDeVente = valeurDeVente;
     this.dateDeVente = dateDeVente;
     this.compteBeneficiaire = compteBeneficiaire;
+    new FluxArgent(String.format("Vente de %s", possessionVendue.nom()), compteBeneficiaire, dateDeVente, valeurDeVente);
   }
 }
 
