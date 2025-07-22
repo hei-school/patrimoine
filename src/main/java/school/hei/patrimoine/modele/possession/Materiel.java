@@ -9,10 +9,9 @@ import lombok.Getter;
 import school.hei.patrimoine.modele.Argent;
 
 @Getter
-public final class Materiel extends Possession {
+public final class Materiel extends PossessionVendable {
   private final LocalDate dateAcquisition;
   private final double tauxDAppreciationAnnuelle;
-  private Argent valeurMarche;
 
   public Materiel(
       String nom,
