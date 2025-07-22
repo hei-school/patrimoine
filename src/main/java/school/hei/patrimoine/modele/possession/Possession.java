@@ -54,7 +54,7 @@ public abstract sealed class Possession extends Objectivable
   }
 
   public Argent valeurComptable() {
-    return valeurComptable;
+    return estVendue ? new Argent(0, devise()) : valeurComptable;
   }
 
   public final Devise devise() {
@@ -107,13 +107,9 @@ public abstract sealed class Possession extends Objectivable
     this.dateVente = dateVente;
     this.prixVente = prixVente;
 
-    // Créer un compte source temporaire avec la valeur comptable actuelle
-    Compte source = new Compte("Vente de " + nom, dateVente, this.valeurComptable);
-
-    // Créer le transfert
-    new TransfertArgent(
+    // Créer un flux vers le compte bénéficiaire
+    new FluxArgent(
             "Vente de " + nom,
-            source,
             compteBeneficiaire,
             dateVente,
             prixVente

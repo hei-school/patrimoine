@@ -45,13 +45,15 @@ public class VenteTest {
 
     @Test
     void vente_doit_transferer_argent_vers_compte() {
-        var materiel = new Materiel("Voiture", LocalDate.now(), LocalDate.now(),
+        var dateVente = LocalDate.now();
+        var materiel = new Materiel("Voiture", dateVente, dateVente,
                 new Argent(20_000, Devise.EUR), 0.0);
-        var compte = new Compte("Compte courant", LocalDate.now(), new Argent(0, Devise.EUR));
+        var compte = new Compte("Compte courant", dateVente, new Argent(0, Devise.EUR));
 
-        materiel.vendre(LocalDate.now(), new Argent(25_000, Devise.EUR), compte);
+        materiel.vendre(dateVente, new Argent(25_000, Devise.EUR), compte);
 
-        assertEquals(new Argent(25_000, Devise.EUR), compte.valeurComptable());
+        // Vérifier la valeur après projection à la date de vente
+        assertEquals(new Argent(25_000, Devise.EUR), compte.projectionFuture(dateVente).valeurComptable());
     }
 
     @Test
