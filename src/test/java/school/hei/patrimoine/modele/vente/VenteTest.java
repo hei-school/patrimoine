@@ -1,9 +1,10 @@
-package school.hei.patrimoine.modele.possession;
+package school.hei.patrimoine.modele.vente;
 
 import org.junit.jupiter.api.Test;
 import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.Devise;
-import school.hei.patrimoine.modele.vente.ValeurMarche;
+import school.hei.patrimoine.modele.possession.Compte;
+import school.hei.patrimoine.modele.possession.Materiel;
 
 import java.time.LocalDate;
 
