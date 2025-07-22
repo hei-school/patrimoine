@@ -109,8 +109,8 @@ public abstract sealed class Possession extends Objectivable
   }
 
   @Override
-  public boolean estVendu() {
-    return estVendu;
+  public boolean estVendu(LocalDate t) {
+    return dateVente != null && !dateVente.isAfter(t);
   }
 
   @Override
