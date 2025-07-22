@@ -2,15 +2,15 @@ package school.hei.patrimoine.modele.possession;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.Devise;
-import school.hei.patrimoine.modele.calculation.ValeurCalculation;
-import school.hei.patrimoine.modele.calculation.ValeurMarcheCase;
 import school.hei.patrimoine.modele.objectif.Objectivable;
 import school.hei.patrimoine.modele.vente.ValeurMarche;
 import school.hei.patrimoine.modele.vente.Vendable;
@@ -18,8 +18,8 @@ import school.hei.patrimoine.modele.vente.Vendable;
 @ToString
 @EqualsAndHashCode(callSuper = false)
 public abstract sealed class Possession extends Objectivable
-    implements Vendable, Serializable /*note(no-serializable)*/
-    permits AchatMaterielAuComptant,
+        implements Vendable, Serializable /*note(no-serializable)*/
+        permits AchatMaterielAuComptant,
         Compte,
         CompteCorrection,
         Correction,
@@ -34,7 +34,7 @@ public abstract sealed class Possession extends Objectivable
   protected final String nom;
   protected final LocalDate t;
   protected final Argent valeurComptable;
-  protected final Set<ValeurMarche> valeurMarches;
+  protected final Set<ValeurMarche> valeursMarche;
 
   @EqualsAndHashCode.Exclude @ToString.Exclude private CompteCorrection compteCorrection;
   @EqualsAndHashCode.Exclude @ToString.Exclude private boolean estVendu = false;
@@ -45,8 +45,7 @@ public abstract sealed class Possession extends Objectivable
     this.nom = nom;
     this.t = t;
     this.valeurComptable = valeurComptable;
-    this.valeurMarches = new HashSet<>();
-    this.valeurMarches.add(new ValeurMarche(t, valeurComptable));
+    this.valeursMarche = new HashSet<>(Set.of(new ValeurMarche(t, valeurComptable)));
   }
 
   public CompteCorrection getCompteCorrection() {
@@ -57,7 +56,7 @@ public abstract sealed class Possession extends Objectivable
   }
 
   public Argent valeurComptable() {
-    return valeurComptable;
+    return estVendu ? new Argent(0, devise()) : valeurComptable;
   }
 
   public final Devise devise() {
@@ -83,22 +82,30 @@ public abstract sealed class Possession extends Objectivable
   }
 
   @Override
-  public void vendre(LocalDate dateVente, Argent prixVente, Compte compteBeneficiaire) {
-    if (estVendu) throw new IllegalStateException("La possession a déjà été vendue.");
-    if (compteBeneficiaire == null)
-      throw new IllegalArgumentException("Le compte bénéficiaire ne peut pas être null.");
-    if (dateVente == null)
-      throw new IllegalArgumentException("La date de vente ne peut pas être null.");
-    if (prixVente == null)
-      throw new IllegalArgumentException("Le prix de vente doit être positif.");
+  public Argent getValeurMarche(LocalDate t) {
+    return valeursMarche.stream()
+            .filter(vm -> !vm.t().isAfter(t))
+            .max(Comparator.comparing(ValeurMarche::t))
+            .map(ValeurMarche::valeur)
+            .orElse(valeurComptable);
 
+  }
+
+  @Override
+  public void vendre(LocalDate dateVente, Argent prixVente, Compte compteBeneficiaire) {
+    if (estVendu) {
+      throw new IllegalStateException("Possession déjà vendue");
+    }
     this.estVendu = true;
     this.dateVente = dateVente;
     this.prixVente = prixVente;
 
-    Compte source = new Compte("Vente de " + nom, dateVente, this.valeurComptable);
-
-    new TransfertArgent("Vente de " + nom, source, compteBeneficiaire, dateVente, prixVente);
+    new FluxArgent(
+      "Vente de " + nom,
+      compteBeneficiaire,
+      dateVente,
+      prixVente
+    );
   }
 
   @Override
@@ -117,33 +124,16 @@ public abstract sealed class Possession extends Objectivable
   }
 
   public void ajouterValeurMarche(ValeurMarche valeurMarche) {
-    if (typeAgregat() != TypeAgregat.IMMOBILISATION && typeAgregat() != TypeAgregat.ENTREPRISE) {
+    if (typeAgregat() != TypeAgregat.IMMOBILISATION &&
+        typeAgregat() != TypeAgregat.ENTREPRISE) {
       throw new UnsupportedOperationException(
-          "Seules les IMMOBILISATIONs et ENTREPRISEs peuvent avoir une valeur de marché");
+              "Seules les IMMOBILISATIONs et ENTREPRISEs peuvent avoir une valeur de marché"
+      );
     }
-    valeurMarches.add(valeurMarche);
-  }
-
-  /*@Override
-  public Argent getValeurMarche(LocalDate t) {
-    if (typeAgregat() == TypeAgregat.IMMOBILISATION ||
-            typeAgregat() == TypeAgregat.ENTREPRISE) {
-      return valeurMarches.stream()
-              .filter(vm -> !vm.t().isAfter(t))
-              .max(Comparator.comparing(ValeurMarche::t))
-              .map(ValeurMarche::valeur)
-              .orElse(valeurComptable);
-    }
-    return valeurComptable;
-  }
-  */
-  public Argent getValeurMarche(LocalDate date) {
-    // depends on type for the choice of calculation mode with  ValeurMarcheCase
-    ValeurMarcheCase calculator = ValeurCalculation.getCalculation(this.typeAgregat());
-    return calculator.calculateValeurCase(this, date);
+    valeursMarche.add(valeurMarche);
   }
 
   public Set<ValeurMarche> historiqueValeurMarche() {
-    return new HashSet<>(valeurMarches);
+    return new HashSet<>(valeursMarche);
   }
 }
