@@ -6,6 +6,7 @@ import school.hei.patrimoine.modele.Devise;
 import school.hei.patrimoine.modele.possession.Compte;
 import school.hei.patrimoine.modele.possession.Materiel;
 import school.hei.patrimoine.modele.possession.Possession;
+import school.hei.patrimoine.modele.possession.Vente;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -40,8 +41,9 @@ public class VenteTest {
         var compte =  new Compte("Compte courant", LocalDate.now(), new Argent(0, Devise.EUR));
 
         materiel.vendre(LocalDate.now(), new Argent(25_000, Devise.EUR), compte);
+        var venduLe = LocalDate.of(2025, 07, 15);
 
-        assertTrue(materiel.estVendu());
+        assertTrue(materiel.estVendu(venduLe));
         assertEquals(LocalDate.now(), materiel.getDateVente().get());
         assertEquals(new Argent(25_000, Devise.EUR), materiel.getPrixVente().get());
     }
@@ -116,5 +118,34 @@ public class VenteTest {
 
         assertEquals(new Argent(25_000, Devise.EUR), compte.projectionFuture(dateVente).valeurComptable());
     }
+    @Test
+    void projection_future_avant_vente() {
+        LocalDate aujourdhui = LocalDate.now();
+        LocalDate dateVente = aujourdhui.plusDays(10);
+        Argent prix = new Argent(1000, Devise.EUR);
+        Compte compte = new Compte("Compte", aujourdhui, new Argent(0, Devise.EUR));
+        Materiel materiel = new Materiel("PC", aujourdhui, aujourdhui, new Argent(800, Devise.EUR), 0.05);
+
+        Vente vente = new Vente("Vente PC", aujourdhui, materiel.valeurComptable(), dateVente, materiel, prix, compte);
+
+        Possession resultat = vente.projectionFuture(aujourdhui.plusDays(5));
+        assertNotNull(resultat);
+        assertTrue(resultat.valeurComptableFuture(aujourdhui.plusDays(5)).gt(800));
+    }
+
+    @Test
+    void projection_future_apres_vente() {
+        LocalDate aujourdhui = LocalDate.now();
+        LocalDate dateVente = aujourdhui.plusDays(10);
+        Argent prix = new Argent(1000, Devise.EUR);
+        Compte compte = new Compte("Compte", aujourdhui, new Argent(0, Devise.EUR));
+        Materiel materiel = new Materiel("PC", aujourdhui, aujourdhui, new Argent(800, Devise.EUR), 0.05);
+
+        Vente vente = new Vente("Vente PC", aujourdhui, materiel.valeurComptable(), dateVente, materiel, prix, compte);
+
+        Possession resultat = vente.projectionFuture(aujourdhui.plusDays(15));
+        assertNull(resultat);
+    }
+
 
 }

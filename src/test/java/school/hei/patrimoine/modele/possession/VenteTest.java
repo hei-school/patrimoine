@@ -37,8 +37,9 @@ public class VenteTest {
         var compte = new Compte("Compte courant", LocalDate.now(), new Argent(0, Devise.EUR));
 
         materiel.vendre(LocalDate.now(), new Argent(25_000, Devise.EUR), compte);
+        var venduLe = LocalDate.of(2025, 07, 16);
 
-        assertTrue(materiel.estVendu());
+        assertTrue(materiel.estVendu(venduLe));
         assertEquals(LocalDate.now(), materiel.getDateVente().get());
         assertEquals(new Argent(25_000, Devise.EUR), materiel.getPrixVente().get());
     }
