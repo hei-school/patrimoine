@@ -57,7 +57,7 @@ public abstract sealed class Possession extends Objectivable
   }
 
   public Argent valeurComptable() {
-    return valeurComptable;
+    return estVendu ? new Argent(0, devise()) : valeurComptable;
   }
 
   public final Devise devise() {
@@ -97,20 +97,26 @@ public abstract sealed class Possession extends Objectivable
 
   @Override
   public void vendre(LocalDate dateVente, Argent prixVente, Compte compteBeneficiaire) {
-    if (estVendu) throw new IllegalStateException("La possession a déjà été vendue.");
-    if (compteBeneficiaire == null) throw new IllegalArgumentException("Le compte bénéficiaire ne peut pas être null.");
-    if (dateVente == null) throw new IllegalArgumentException("La date de vente ne peut pas être null.");
-    if (prixVente == null) throw new IllegalArgumentException("Le prix de vente doit être positif.");
+    if (estVendu) {
+      throw new IllegalStateException("Possession déjà vendue");
+    }
+    if (compteBeneficiaire == null) {
+      throw new IllegalArgumentException("Le compte bénéficiaire ne peut pas être null");
+    }
+    if (dateVente == null) {
+      throw new IllegalArgumentException("La date de vente ne peut pas être null");
+    }
+    if (prixVente == null) {
+      throw new IllegalArgumentException("Le prix de vente ne peut pas être null");
+    }
 
     this.estVendu = true;
     this.dateVente = dateVente;
     this.prixVente = prixVente;
 
-    Compte source = new Compte("Vente de " + nom, dateVente, this.valeurComptable);
-
-    new TransfertArgent(
+    // Créer un flux vers le compte bénéficiaire
+    new FluxArgent(
             "Vente de " + nom,
-            source,
             compteBeneficiaire,
             dateVente,
             prixVente
