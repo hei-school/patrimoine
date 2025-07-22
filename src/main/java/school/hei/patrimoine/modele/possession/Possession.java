@@ -2,15 +2,15 @@ package school.hei.patrimoine.modele.possession;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
-
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.Devise;
+import school.hei.patrimoine.modele.calculation.ValeurCalculation;
+import school.hei.patrimoine.modele.calculation.ValeurMarcheCase;
 import school.hei.patrimoine.modele.objectif.Objectivable;
 import school.hei.patrimoine.modele.vente.ValeurMarche;
 import school.hei.patrimoine.modele.vente.Vendable;
@@ -18,8 +18,8 @@ import school.hei.patrimoine.modele.vente.Vendable;
 @ToString
 @EqualsAndHashCode(callSuper = false)
 public abstract sealed class Possession extends Objectivable
-        implements Vendable, Serializable /*note(no-serializable)*/
-        permits AchatMaterielAuComptant,
+    implements Vendable, Serializable /*note(no-serializable)*/
+    permits AchatMaterielAuComptant,
         Compte,
         CompteCorrection,
         Correction,
@@ -83,24 +83,14 @@ public abstract sealed class Possession extends Objectivable
   }
 
   @Override
-  public Argent getValeurMarche(LocalDate t) {
-    if (typeAgregat() == TypeAgregat.IMMOBILISATION ||
-        typeAgregat() == TypeAgregat.ENTREPRISE) {
-      return valeurMarches.stream()
-              .filter(vm -> !vm.t().isAfter(t))
-              .max(Comparator.comparing(ValeurMarche::t))
-              .map(ValeurMarche::valeur)
-              .orElse(valeurComptable);
-    }
-    return valeurComptable;
-  }
-
-  @Override
   public void vendre(LocalDate dateVente, Argent prixVente, Compte compteBeneficiaire) {
     if (estVendu) throw new IllegalStateException("La possession a déjà été vendue.");
-    if (compteBeneficiaire == null) throw new IllegalArgumentException("Le compte bénéficiaire ne peut pas être null.");
-    if (dateVente == null) throw new IllegalArgumentException("La date de vente ne peut pas être null.");
-    if (prixVente == null) throw new IllegalArgumentException("Le prix de vente doit être positif.");
+    if (compteBeneficiaire == null)
+      throw new IllegalArgumentException("Le compte bénéficiaire ne peut pas être null.");
+    if (dateVente == null)
+      throw new IllegalArgumentException("La date de vente ne peut pas être null.");
+    if (prixVente == null)
+      throw new IllegalArgumentException("Le prix de vente doit être positif.");
 
     this.estVendu = true;
     this.dateVente = dateVente;
@@ -108,13 +98,7 @@ public abstract sealed class Possession extends Objectivable
 
     Compte source = new Compte("Vente de " + nom, dateVente, this.valeurComptable);
 
-    new TransfertArgent(
-            "Vente de " + nom,
-            source,
-            compteBeneficiaire,
-            dateVente,
-            prixVente
-    );
+    new TransfertArgent("Vente de " + nom, source, compteBeneficiaire, dateVente, prixVente);
   }
 
   @Override
@@ -133,13 +117,30 @@ public abstract sealed class Possession extends Objectivable
   }
 
   public void ajouterValeurMarche(ValeurMarche valeurMarche) {
-    if (typeAgregat() != TypeAgregat.IMMOBILISATION &&
-        typeAgregat() != TypeAgregat.ENTREPRISE) {
+    if (typeAgregat() != TypeAgregat.IMMOBILISATION && typeAgregat() != TypeAgregat.ENTREPRISE) {
       throw new UnsupportedOperationException(
-              "Seules les IMMOBILISATIONs et ENTREPRISEs peuvent avoir une valeur de marché"
-      );
+          "Seules les IMMOBILISATIONs et ENTREPRISEs peuvent avoir une valeur de marché");
     }
     valeurMarches.add(valeurMarche);
+  }
+
+  /*@Override
+  public Argent getValeurMarche(LocalDate t) {
+    if (typeAgregat() == TypeAgregat.IMMOBILISATION ||
+            typeAgregat() == TypeAgregat.ENTREPRISE) {
+      return valeurMarches.stream()
+              .filter(vm -> !vm.t().isAfter(t))
+              .max(Comparator.comparing(ValeurMarche::t))
+              .map(ValeurMarche::valeur)
+              .orElse(valeurComptable);
+    }
+    return valeurComptable;
+  }
+  */
+  public Argent getValeurMarche(LocalDate date) {
+    // depends on type for the choice of calculation mode with  ValeurMarcheCase
+    ValeurMarcheCase calculator = ValeurCalculation.getCalculation(this.typeAgregat());
+    return calculator.calculateValeurCase(this, date);
   }
 
   public Set<ValeurMarche> historiqueValeurMarche() {
