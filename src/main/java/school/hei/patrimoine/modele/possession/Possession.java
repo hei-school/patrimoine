@@ -34,7 +34,7 @@ public abstract sealed class Possession extends Objectivable
   protected final String nom;
   protected final LocalDate t;
   protected final Argent valeurComptable;
-  protected final Set<ValeurMarche> valeurMarches;
+  protected final Set<ValeurMarche> valeursMarche;
 
   @EqualsAndHashCode.Exclude @ToString.Exclude private CompteCorrection compteCorrection;
   @EqualsAndHashCode.Exclude @ToString.Exclude private boolean estVendu = false;
@@ -45,8 +45,8 @@ public abstract sealed class Possession extends Objectivable
     this.nom = nom;
     this.t = t;
     this.valeurComptable = valeurComptable;
-    this.valeurMarches = new HashSet<>();
-    this.valeurMarches.add(new ValeurMarche(t, valeurComptable));
+    this.valeursMarche = new HashSet<>();
+    this.valeursMarche.add(new ValeurMarche(t, valeurComptable));
   }
 
   public CompteCorrection getCompteCorrection() {
@@ -86,7 +86,7 @@ public abstract sealed class Possession extends Objectivable
   public Argent getValeurMarche(LocalDate t) {
     if (typeAgregat() == TypeAgregat.IMMOBILISATION ||
         typeAgregat() == TypeAgregat.ENTREPRISE) {
-      return valeurMarches.stream()
+      return valeursMarche.stream()
               .filter(vm -> !vm.t().isAfter(t))
               .max(Comparator.comparing(ValeurMarche::t))
               .map(ValeurMarche::valeur)
@@ -145,10 +145,10 @@ public abstract sealed class Possession extends Objectivable
               "Seules les IMMOBILISATIONs et ENTREPRISEs peuvent avoir une valeur de marché"
       );
     }
-    valeurMarches.add(valeurMarche);
+    valeursMarche.add(valeurMarche);
   }
 
   public Set<ValeurMarche> historiqueValeurMarche() {
-    return new HashSet<>(valeurMarches);
+    return new HashSet<>(valeursMarche);
   }
 }
