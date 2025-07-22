@@ -38,8 +38,8 @@ public class ValeurMarcheHistoriqueTest {
 
         assertEquals(1, historique.size());
         ValeurMarche premiereValeur = historique.iterator().next();
-        assertEquals(aujourdhui, premiereValeur.date());
-        assertEquals(valeurInitiale, premiereValeur.valeur());
+        assertEquals(aujourdhui, premiereValeur.t());
+        assertEquals(valeurInitiale, premiereValeur.t());
     }
 
     @Test
