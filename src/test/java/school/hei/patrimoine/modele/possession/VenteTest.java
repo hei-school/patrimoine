@@ -1,10 +1,9 @@
-package school.hei.patrimoine.modele.vente;
+package school.hei.patrimoine.modele.possession;
 
 import org.junit.jupiter.api.Test;
 import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.Devise;
-import school.hei.patrimoine.modele.possession.Compte;
-import school.hei.patrimoine.modele.possession.Materiel;
+import school.hei.patrimoine.modele.vente.ValeurMarche;
 
 import java.time.LocalDate;
 
@@ -12,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class VenteTest {
     @Test
-    void valeurMarche_doitStockerCorrectementLesValeurs() {
+    void valeur_marche_doit_stocker_correctement_les_valeurs() {
         var date = LocalDate.of(2025, 1, 1);
         var argent = new Argent(300_000, Devise.EUR);
         var vm = new ValeurMarche(date, argent);

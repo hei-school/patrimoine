@@ -8,8 +8,8 @@ import java.util.Optional;
 
 public interface Vendable {
     Argent getValeurMarche(LocalDate t);
-    void vendre(LocalDate dateVente, Argent prixVente, Compte compteBeneficiaire);
-    boolean estVendue();
+    void vendre(LocalDate t, Argent prixVente, Compte compteBenificiaire);
+    boolean estVendu();
     Optional<LocalDate> getDateVente();
     Optional<Argent> getPrixVente();
 }
