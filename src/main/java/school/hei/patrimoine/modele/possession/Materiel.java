@@ -9,7 +9,7 @@ import lombok.Getter;
 import school.hei.patrimoine.modele.Argent;
 
 @Getter
-public final class Materiel extends PossessionVendable {
+public final class Materiel extends Possession {
   private final LocalDate dateAcquisition;
   private final double tauxDAppreciationAnnuelle;
 

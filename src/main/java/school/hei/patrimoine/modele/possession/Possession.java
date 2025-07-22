@@ -20,18 +20,7 @@ import static school.hei.patrimoine.modele.possession.TypeAgregat.ENTREPRISE;
 @EqualsAndHashCode(callSuper = false)
 public abstract sealed class Possession extends Objectivable
     implements Serializable/*note(no-serializable)*/
-    permits AchatMaterielAuComptant,
-        Compte,
-        CompteCorrection,
-        Correction,
-        FluxArgent,
-        GroupePossession,
-        PatrimoinePersonnel,
-        PersonneMorale,
-        RemboursementDette,
-        TransfertArgent,
-        PossessionVendable,
-        Entreprise {
+        permits AchatMaterielAuComptant, Compte, CompteCorrection, Correction, Entreprise, FluxArgent, GroupePossession, Materiel, PatrimoinePersonnel, PersonneMorale, PossessionVendable, RemboursementDette, TransfertArgent {
   protected final String nom;
   protected final LocalDate t;
   protected final Argent valeurComptable;
@@ -70,15 +59,21 @@ public abstract sealed class Possession extends Objectivable
     return valeurMarcheALaDate(t);
   }
 
-  public void enregistrerValeurMarche(LocalDate date, Argent valeur) {
-    if (typeAgregat() == IMMOBILISATION || typeAgregat() == ENTREPRISE) {
-      historiqueValeurMarche.put(date, valeur);
-    } else {
+  public void addValeurMarche(LocalDate date, Argent valeur) {
+    if (typeAgregat() != IMMOBILISATION && typeAgregat() != ENTREPRISE) {
       throw new UnsupportedOperationException(
-              "Seules les possessions de type IMMOBILISATION, ENTREPRISE !"
+              "Seules les possessions de type IMMOBILISATION ou ENTREPRISE peuvent avoir une valeur de marché."
       );
     }
+    historiqueValeurMarche.put(date, valeur);
   }
+
+
+  /*
+  * new ValeurMarche(possession, date, valeur)
+   *   possession.enregistrerValeurMarche(date, valeur)
+  *
+  * */
 
   public Argent valeurMarcheALaDate(LocalDate date) {
     LocalDate key = historiqueValeurMarche.floorKey(date);

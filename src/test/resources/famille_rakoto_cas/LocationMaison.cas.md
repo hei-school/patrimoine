@@ -24,7 +24,7 @@
  
 ## RevenusLoyer, Dates:ajd, devise en Ar
 * `receptionLoyer + Dates:ajd` Dates:ajd, entrer 1000000Ar vers Trésoreries:loyerMaison , jusqu'à date indéterminée tous les 29 du mois
-
+* id, date , arne
 ## ChargesLoyer, Dates:ajd, devise en Ar
 * `paiementCommune + Dates:ajd` Dates:ajd, sortir 200000Ar depuis Trésoreries:loyerMaison, jusqu'à date indéterminée tous les 01 du mois
 * `JIRAMA + Dates:ajd` Dates:ajd, sortir 100000Ar depuis Trésoreries:loyerMaison, jusqu'à date indéterminée tous les 01 du mois
