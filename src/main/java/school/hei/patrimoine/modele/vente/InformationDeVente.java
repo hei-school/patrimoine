@@ -14,25 +14,22 @@ import school.hei.patrimoine.modele.possession.Possession;
 @Getter
 @Setter
 public class InformationDeVente {
-  private final Set<ValeurMarche> valeursMarches;
+  private final Set<ValeurMarche> valeurMarches;
   private Argent valeurDeVente;
   private LocalDate dateDeVente;
   private Compte compteBeneficiaire;
 
   public InformationDeVente() {
-    this.valeursMarches = new HashSet<>();
+    this.valeurMarches = new HashSet<>();
     this.valeurDeVente = null;
     this.dateDeVente = null;
     this.compteBeneficiaire = null;
   }
 
   public void addValeurMarche(ValeurMarche v) {
-    this.valeursMarches.add(v);
+    this.valeurMarches.add(v);
   }
 
-  public Set<ValeurMarche> getValeurMarches() {
-    return Set.copyOf(valeursMarches);
-  }
 
   public ValeurMarche getValeurMarche(LocalDate t) {
     return getValeurMarches().stream()

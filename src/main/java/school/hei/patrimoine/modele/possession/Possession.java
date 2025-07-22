@@ -85,7 +85,7 @@ public abstract sealed class Possession extends Objectivable
 
   @Override
   public Set<ValeurMarche> getValeurMarches() {
-    throw new UnsupportedOperationException("Not yet implemented");
+    return this.informationDeVente.getValeurMarches();
   }
 
   @Override
