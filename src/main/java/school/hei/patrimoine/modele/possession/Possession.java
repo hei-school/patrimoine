@@ -2,16 +2,24 @@ package school.hei.patrimoine.modele.possession;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.*;
+
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import org.springframework.cglib.core.Local;
 import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.Devise;
+import school.hei.patrimoine.modele.objectif.Objectif;
 import school.hei.patrimoine.modele.objectif.Objectivable;
+import school.hei.patrimoine.modele.vente.InformationDeVente;
+import school.hei.patrimoine.modele.vente.ValeurMarche;
+import school.hei.patrimoine.modele.vente.Vendable;
 
 @ToString
 @EqualsAndHashCode(callSuper = false)
 public abstract sealed class Possession extends Objectivable
-    implements Serializable /*note(no-serializable)*/
+    implements Serializable /*note(no-serializable)*/,
+    Vendable
     permits AchatMaterielAuComptant,
         Compte,
         CompteCorrection,
@@ -26,6 +34,7 @@ public abstract sealed class Possession extends Objectivable
   protected final String nom;
   protected final LocalDate t;
   protected final Argent valeurComptable;
+  protected final InformationDeVente informationDeVente;
   @EqualsAndHashCode.Exclude @ToString.Exclude private CompteCorrection compteCorrection;
 
   public Possession(String nom, LocalDate t, Argent valeurComptable) {
@@ -33,6 +42,7 @@ public abstract sealed class Possession extends Objectivable
     this.nom = nom;
     this.t = t;
     this.valeurComptable = valeurComptable;
+    this.informationDeVente = new InformationDeVente();
   }
 
   public CompteCorrection getCompteCorrection() {
@@ -66,5 +76,50 @@ public abstract sealed class Possession extends Objectivable
   @Override
   public Argent valeurAObjectifT(LocalDate t) {
     return projectionFuture(t).valeurComptable;
+  }
+
+  @Override
+  public Set<Objectif> getObjectifs() {
+    throw new UnsupportedOperationException("Not yet implemented");
+  }
+
+  @Override
+  public Set<ValeurMarche> getValeurMarches() {
+    throw new UnsupportedOperationException("Not yet implemented");
+  }
+
+  @Override
+  public ValeurMarche getValeurMarche(LocalDate t) {
+    return informationDeVente.getValeurMarche(t);
+  }
+
+  @Override
+  public void addValeurMarche(ValeurMarche v) {
+    informationDeVente.addValeurMarche(v);
+  }
+
+  @Override
+  public Argent getValeurDeVente() {
+    return informationDeVente.getValeurDeVente();
+  }
+
+  @Override
+  public LocalDate getDateDeVente() {
+    return informationDeVente.getDateDeVente();
+  }
+
+  @Override
+  public Compte getCompteBeneficiaire() {
+    return informationDeVente.getCompteBeneficiaire();
+  }
+
+  @Override
+  public boolean estVendue() {
+    return informationDeVente.estVendue();
+  }
+
+  @Override
+  public void vendre(Argent valeurDeVente, LocalDate dateDeVente, Compte compteBeneficiaire) {
+    informationDeVente.confirmeVente(this, valeurDeVente, dateDeVente, compteBeneficiaire);
   }
 }
