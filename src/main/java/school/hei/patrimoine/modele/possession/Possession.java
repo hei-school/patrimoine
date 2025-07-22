@@ -2,6 +2,7 @@ package school.hei.patrimoine.modele.possession;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -124,25 +125,12 @@ public abstract sealed class Possession extends Objectivable
     valeurMarches.add(valeurMarche);
   }
 
-  /*@Override
-  public Argent getValeurMarche(LocalDate t) {
-    if (typeAgregat() == TypeAgregat.IMMOBILISATION ||
-            typeAgregat() == TypeAgregat.ENTREPRISE) {
-      return valeurMarches.stream()
-              .filter(vm -> !vm.t().isAfter(t))
-              .max(Comparator.comparing(ValeurMarche::t))
-              .map(ValeurMarche::valeur)
-              .orElse(valeurComptable);
-    }
-    return valeurComptable;
-  }
-  */
+
   public Argent getValeurMarche(LocalDate date) {
     // depends on type for the choice of calculation mode with  ValeurMarcheCase
     ValeurMarcheCase calculator = ValeurCalculation.getCalculation(this.typeAgregat());
     return calculator.calculateValeurCase(this, date);
   }
-
   public Set<ValeurMarche> historiqueValeurMarche() {
     return new HashSet<>(valeurMarches);
   }
