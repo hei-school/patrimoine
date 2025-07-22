@@ -3,10 +3,8 @@ package school.hei.patrimoine.modele.possession;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.*;
-
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import org.springframework.cglib.core.Local;
 import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.Devise;
 import school.hei.patrimoine.modele.objectif.Objectif;
@@ -18,8 +16,7 @@ import school.hei.patrimoine.modele.vente.Vendable;
 @ToString
 @EqualsAndHashCode(callSuper = false)
 public abstract sealed class Possession extends Objectivable
-    implements Serializable /*note(no-serializable)*/,
-    Vendable
+    implements Serializable /*note(no-serializable)*/, Vendable
     permits AchatMaterielAuComptant,
         Compte,
         CompteCorrection,
