@@ -9,7 +9,7 @@ import java.util.Optional;
 public interface Vendable {
     Argent getValeurMarche(LocalDate t);
     void vendre(LocalDate t, Argent prixVente, Compte compteBenificiaire);
-    boolean estVendu();
+    boolean estVendu(LocalDate t);
     Optional<LocalDate> getDateVente();
     Optional<Argent> getPrixVente();
 }

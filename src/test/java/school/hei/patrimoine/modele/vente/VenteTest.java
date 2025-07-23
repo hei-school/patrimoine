@@ -29,7 +29,7 @@ public class VenteTest {
 
         materiel.vendre(LocalDate.now(), new Argent(25_000, Devise.EUR), compte);
 
-        assertTrue(materiel.estVendu());
+        assertTrue(materiel.estVendu(LocalDate.now()));
         assertEquals(LocalDate.now(), materiel.getDateVente().get());
         assertEquals(new Argent(25_000, Devise.EUR), materiel.getPrixVente().get());
     }
