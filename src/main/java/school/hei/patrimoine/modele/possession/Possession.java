@@ -3,10 +3,8 @@ package school.hei.patrimoine.modele.possession;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.*;
-
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import org.springframework.cglib.core.Local;
 import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.Devise;
 import school.hei.patrimoine.modele.objectif.Objectif;
@@ -18,8 +16,7 @@ import school.hei.patrimoine.modele.vente.Vendable;
 @ToString
 @EqualsAndHashCode(callSuper = false)
 public abstract sealed class Possession extends Objectivable
-    implements Serializable /*note(no-serializable)*/,
-    Vendable
+    implements Serializable /*note(no-serializable)*/, Vendable
     permits AchatMaterielAuComptant,
         Compte,
         CompteCorrection,
@@ -61,6 +58,9 @@ public abstract sealed class Possession extends Objectivable
   }
 
   public final Argent valeurComptableFuture(LocalDate tFutur) {
+    if (tFutur.isAfter(getDateDeVente())) {
+      return valeurComptable.mult(0);
+    }
     return projectionFuture(tFutur).valeurComptable();
   }
 
@@ -85,12 +85,15 @@ public abstract sealed class Possession extends Objectivable
 
   @Override
   public Set<ValeurMarche> getValeurMarches() {
-    throw new UnsupportedOperationException("Not yet implemented");
+    return this.informationDeVente.getValeurMarches();
   }
 
   @Override
   public ValeurMarche getValeurMarche(LocalDate t) {
-    return informationDeVente.getValeurMarche(t);
+    if (typeAgregat() == TypeAgregat.IMMOBILISATION || typeAgregat() == TypeAgregat.ENTREPRISE){
+      return informationDeVente.getValeurMarche(t);
+    }
+    return new ValeurMarche(t, valeurComptable());
   }
 
   @Override
