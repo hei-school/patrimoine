@@ -19,8 +19,20 @@ import static school.hei.patrimoine.modele.possession.TypeAgregat.ENTREPRISE;
 @ToString
 @EqualsAndHashCode(callSuper = false)
 public abstract sealed class Possession extends Objectivable
-    implements Serializable/*note(no-serializable)*/
-        permits AchatMaterielAuComptant, Compte, CompteCorrection, Correction, Entreprise, FluxArgent, GroupePossession, Materiel, PatrimoinePersonnel, PersonneMorale, PossessionVendable, RemboursementDette, TransfertArgent {
+        implements Serializable/*note(no-serializable)*/
+        permits
+        AchatMaterielAuComptant,
+        Compte,
+        CompteCorrection,
+        Correction,
+        FluxArgent,
+        GroupePossession,
+        PatrimoinePersonnel,
+        PersonneMorale,
+        RemboursementDette,
+        Entreprise,
+        Materiel,
+        TransfertArgent {
   protected final String nom;
   protected final LocalDate t;
   protected final Argent valeurComptable;
@@ -51,7 +63,7 @@ public abstract sealed class Possession extends Objectivable
     return compteCorrection;
   }
 
-    public Argent valeurComptable() {
+  public Argent valeurComptable() {
     return valeurComptable;
   }
 
@@ -70,10 +82,10 @@ public abstract sealed class Possession extends Objectivable
 
 
   /*
-  * new ValeurMarche(possession, date, valeur)
+   * new ValeurMarche(possession, date, valeur)
    *   possession.enregistrerValeurMarche(date, valeur)
-  *
-  * */
+   *
+   * */
 
   public Argent valeurMarcheALaDate(LocalDate date) {
     LocalDate key = historiqueValeurMarche.floorKey(date);
