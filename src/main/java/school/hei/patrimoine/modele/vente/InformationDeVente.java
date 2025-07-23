@@ -1,5 +1,6 @@
 package school.hei.patrimoine.modele.vente;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -13,7 +14,7 @@ import school.hei.patrimoine.modele.possession.Possession;
 
 @Getter
 @Setter
-public class InformationDeVente {
+public class InformationDeVente implements Serializable {
   private final Set<ValeurMarchee> valeurMarches;
   private Argent valeurDeVente;
   private LocalDate dateDeVente;
