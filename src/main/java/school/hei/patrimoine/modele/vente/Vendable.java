@@ -9,11 +9,11 @@ import school.hei.patrimoine.modele.possession.Compte;
 public interface Vendable {
   public Set<Objectif> getObjectifs();
 
-  public Set<ValeurMarche> getValeurMarches();
+  public Set<ValeurMarchee> getValeurMarches();
 
-  public ValeurMarche getValeurMarche(LocalDate t);
+  public ValeurMarchee getValeurMarche(LocalDate t);
 
-  public void addValeurMarche(ValeurMarche v);
+  public void addValeurMarche(ValeurMarchee v);
 
   public Argent getValeurDeVente();
 

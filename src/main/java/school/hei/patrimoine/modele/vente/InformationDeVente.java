@@ -14,7 +14,7 @@ import school.hei.patrimoine.modele.possession.Possession;
 @Getter
 @Setter
 public class InformationDeVente {
-  private final Set<ValeurMarche> valeurMarches;
+  private final Set<ValeurMarchee> valeurMarches;
   private Argent valeurDeVente;
   private LocalDate dateDeVente;
   private Compte compteBeneficiaire;
@@ -26,16 +26,16 @@ public class InformationDeVente {
     this.compteBeneficiaire = null;
   }
 
-  public void addValeurMarche(ValeurMarche v) {
+  public void addValeurMarche(ValeurMarchee v) {
     this.valeurMarches.add(v);
   }
 
-  public ValeurMarche getValeurMarche(LocalDate t) {
+  public ValeurMarchee getValeurMarche(LocalDate t) {
     return getValeurMarches().stream()
         .filter(v -> v.t().isBefore(t) || v.t().isEqual(t))
-        .sorted(Comparator.comparing(ValeurMarche::t))
+        .sorted(Comparator.comparing(ValeurMarchee::t))
         .findFirst()
-        .orElse(new ValeurMarche(t, Argent.euro(0)));
+        .orElse(new ValeurMarchee(t, Argent.euro(0)));
   }
 
   public boolean estVendue() {

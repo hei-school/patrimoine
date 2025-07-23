@@ -10,7 +10,7 @@ import school.hei.patrimoine.modele.Devise;
 import school.hei.patrimoine.modele.objectif.Objectif;
 import school.hei.patrimoine.modele.objectif.Objectivable;
 import school.hei.patrimoine.modele.vente.InformationDeVente;
-import school.hei.patrimoine.modele.vente.ValeurMarche;
+import school.hei.patrimoine.modele.vente.ValeurMarchee;
 import school.hei.patrimoine.modele.vente.Vendable;
 
 @ToString
@@ -84,20 +84,20 @@ public abstract sealed class Possession extends Objectivable
   }
 
   @Override
-  public Set<ValeurMarche> getValeurMarches() {
+  public Set<ValeurMarchee> getValeurMarches() {
     return this.informationDeVente.getValeurMarches();
   }
 
   @Override
-  public ValeurMarche getValeurMarche(LocalDate t) {
+  public ValeurMarchee getValeurMarche(LocalDate t) {
     if (typeAgregat() == TypeAgregat.IMMOBILISATION || typeAgregat() == TypeAgregat.ENTREPRISE) {
       return informationDeVente.getValeurMarche(t);
     }
-    return new ValeurMarche(t, valeurComptable());
+    return new ValeurMarchee(t, valeurComptable());
   }
 
   @Override
-  public void addValeurMarche(ValeurMarche v) {
+  public void addValeurMarche(ValeurMarchee v) {
     informationDeVente.addValeurMarche(v);
   }
 
