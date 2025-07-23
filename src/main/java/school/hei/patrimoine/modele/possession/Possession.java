@@ -19,17 +19,7 @@ import school.hei.patrimoine.modele.vente.Vendable;
 @EqualsAndHashCode(callSuper = false)
 public abstract sealed class Possession extends Objectivable
         implements Vendable, Serializable /*note(no-serializable)*/
-        permits AchatMaterielAuComptant,
-        Compte,
-        CompteCorrection,
-        Correction,
-        FluxArgent,
-        GroupePossession,
-        Materiel,
-        PatrimoinePersonnel,
-        PersonneMorale,
-        RemboursementDette,
-        TransfertArgent {
+        permits AchatMaterielAuComptant, Compte, CompteCorrection, Correction, FluxArgent, GroupePossession, Materiel, PatrimoinePersonnel, PersonneMorale, RemboursementDette, TransfertArgent, Vente {
 
   protected final String nom;
   protected final LocalDate t;
@@ -124,8 +114,9 @@ public abstract sealed class Possession extends Objectivable
   }
 
   public void ajouterValeurMarche(ValeurMarche valeurMarche) {
-    if (typeAgregat() != TypeAgregat.IMMOBILISATION &&
-        typeAgregat() != TypeAgregat.ENTREPRISE) {
+    TypeAgregat typeAgregat = typeAgregat();
+    if (typeAgregat != TypeAgregat.IMMOBILISATION &&
+        typeAgregat != TypeAgregat.ENTREPRISE) {
       throw new UnsupportedOperationException(
               "Seules les IMMOBILISATIONs et ENTREPRISEs peuvent avoir une valeur de marché"
       );
