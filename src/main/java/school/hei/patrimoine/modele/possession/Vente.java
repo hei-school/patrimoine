@@ -4,6 +4,8 @@ import school.hei.patrimoine.modele.Argent;
 
 import java.time.LocalDate;
 
+import static school.hei.patrimoine.modele.possession.TypeAgregat.FLUX;
+
 public final class Vente extends Possession {
     private final LocalDate tVente;
     private final Possession possession;
@@ -17,23 +19,32 @@ public final class Vente extends Possession {
         this.compteBeneficiaire = compteBeneficiaire;
         this.prixVente = prixVente;
     }
+    
+    private Vente(String nom, LocalDate t, Argent valeurComptable, LocalDate tVente, Possession possession, Argent prixVente, Compte compteBeneficiaire, boolean estProjete) {
+        super(nom, t, valeurComptable);
+        this.tVente = tVente;
+        this.possession = possession;
+        this.compteBeneficiaire = compteBeneficiaire;
+        this.prixVente = prixVente;
+    }
 
     @Override
     public Possession projectionFuture(LocalDate tFutur) {
         if (tFutur.isBefore(tVente)) {
             return new Vente(nom,
                     tFutur,
-                    possession.valeurComptableFuture(tFutur),
+                    valeurComptable,
                     tVente,
                     possession.projectionFuture(tFutur),
                     prixVente,
-                    compteBeneficiaire.projectionFuture(tFutur));
+                    compteBeneficiaire,
+                    true);
         }
         return null;
     }
 
     @Override
     public TypeAgregat typeAgregat() {
-        return possession.typeAgregat();
+        return FLUX;
     }
 }
