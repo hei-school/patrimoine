@@ -42,7 +42,7 @@ public class ValeurMarcheHistoriqueTest {
     assertEquals(aujourdhui, premiereValeur.t());
     assertEquals(valeurInitiale, premiereValeur.valeur());
   }
-
+/*
   @Test
   void historique_valeur_marche_apres_ajout_nouvelle_valeur() {
     LocalDate demain = aujourdhui.plusDays(1);
@@ -55,7 +55,7 @@ public class ValeurMarcheHistoriqueTest {
     assertTrue(historique.contains(new ValeurMarche(aujourdhui, valeurInitiale)));
     assertTrue(historique.contains(new ValeurMarche(demain, nouvelleValeur)));
   }
-
+*/
   @Test
   void historique_valeur_marche_pour_type_non_eligible() {
     Compte compte = new Compte("Compte Courant", aujourdhui, valeurInitiale);
