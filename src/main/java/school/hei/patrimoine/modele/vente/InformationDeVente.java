@@ -34,9 +34,10 @@ public class InformationDeVente {
   public ValeurMarche getValeurMarche(LocalDate t) {
     return getValeurMarches().stream()
         .filter(v -> v.t().isBefore(t) || v.t().isEqual(t))
-        .sorted(Comparator.comparing(ValeurMarche::t))
-        .toList()
-        .getFirst();
+        .sorted(Comparator.comparing(ValeurMarche::t)).findFirst().orElse(
+                new ValeurMarche(t , Argent.euro(0))
+            )
+        ;
   }
 
   public boolean estVendue() {
