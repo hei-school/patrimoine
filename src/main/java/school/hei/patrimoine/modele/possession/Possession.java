@@ -80,13 +80,6 @@ public abstract sealed class Possession extends Objectivable
     historiqueValeurMarche.put(date, valeur);
   }
 
-
-  /*
-   * new ValeurMarche(possession, date, valeur)
-   *   possession.enregistrerValeurMarche(date, valeur)
-   *
-   * */
-
   public Argent valeurMarcheALaDate(LocalDate date) {
     LocalDate key = historiqueValeurMarche.floorKey(date);
     if (key != null) {

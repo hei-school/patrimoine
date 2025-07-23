@@ -237,11 +237,9 @@ MOT_DEVISE_EN
 MOT_VALANT
     :   'valant'
     ;
-MOT_VALEUR_MARCHE
-    :   'valeur de marché'
-    |   'Valeur de marché'
-    |   'valeur marché'
-    |   'Valeur Marché'
+MOT_VALEUR_MARCHE_DE
+    :   'valeur marché de'
+    |   'Valeur Marché de'
     ;
 
 /* Opérateurs */
