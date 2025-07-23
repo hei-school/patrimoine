@@ -90,7 +90,7 @@ public abstract sealed class Possession extends Objectivable
 
   @Override
   public ValeurMarche getValeurMarche(LocalDate t) {
-    if (typeAgregat() == TypeAgregat.IMMOBILISATION || typeAgregat() == TypeAgregat.ENTREPRISE){
+    if (typeAgregat() == TypeAgregat.IMMOBILISATION || typeAgregat() == TypeAgregat.ENTREPRISE) {
       return informationDeVente.getValeurMarche(t);
     }
     return new ValeurMarche(t, valeurComptable());
