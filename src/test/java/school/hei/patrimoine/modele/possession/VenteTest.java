@@ -24,7 +24,7 @@ public class VenteTest {
     void valeur_marche_doit_stocker_correctement_les_valeurs() {
         var date = LocalDate.of(2025, 1, 1);
         var argent = new Argent(300_000, Devise.EUR);
-        var vm = new ValeurMarche(date, argent);
+        var vm = new ValeurMarche(date, argent,);
 
         assertEquals(date, vm.t());
         assertEquals(argent, vm.valeur());
