@@ -58,7 +58,7 @@ public abstract sealed class Possession extends Objectivable
   }
 
   public final Argent valeurComptableFuture(LocalDate tFutur) {
-    if (!tFutur.isBefore(getDateDeVente())) {
+    if (getDateDeVente() != null && !tFutur.isBefore(getDateDeVente())) {
       return valeurComptable.mult(0);
     }
     return projectionFuture(tFutur).valeurComptable();
