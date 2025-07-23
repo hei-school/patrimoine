@@ -9,8 +9,6 @@ import school.hei.patrimoine.modele.possession.Possession;
 import school.hei.patrimoine.modele.possession.Vente;
 
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
