@@ -101,10 +101,10 @@ public abstract sealed class Possession extends Objectivable
     this.prixVente = prixVente;
 
     new FluxArgent(
-            "Vente de " + nom,
-            compteBeneficiaire,
-            dateVente,
-            prixVente
+      "Vente de " + nom,
+      compteBeneficiaire,
+      dateVente,
+      prixVente
     );
   }
 
@@ -125,7 +125,7 @@ public abstract sealed class Possession extends Objectivable
 
   public void ajouterValeurMarche(ValeurMarche valeurMarche) {
     if (typeAgregat() != TypeAgregat.IMMOBILISATION &&
-            typeAgregat() != TypeAgregat.ENTREPRISE) {
+        typeAgregat() != TypeAgregat.ENTREPRISE) {
       throw new UnsupportedOperationException(
               "Seules les IMMOBILISATIONs et ENTREPRISEs peuvent avoir une valeur de marché"
       );
