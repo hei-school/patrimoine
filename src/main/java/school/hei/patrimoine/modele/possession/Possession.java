@@ -45,7 +45,7 @@ public abstract sealed class Possession extends Objectivable
     this.nom = nom;
     this.t = t;
     this.valeurComptable = valeurComptable;
-    this.valeursMarche = new HashSet<>(Set.of());
+    this.valeursMarche = new HashSet<>();
   }
 
   public CompteCorrection getCompteCorrection() {
