@@ -1,6 +1,5 @@
 package school.hei.patrimoine.modele.possession;
 
-
 import static school.hei.patrimoine.modele.possession.TypeAgregat.CORRECTION;
 
 import java.time.LocalDate;
