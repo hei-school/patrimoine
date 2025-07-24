@@ -101,6 +101,9 @@ public abstract sealed class Possession extends Objectivable
 
   @Override
   public void addValeurMarche(ValeurMarchee v) {
+    if ((typeAgregat() != TypeAgregat.IMMOBILISATION) || (typeAgregat() != TypeAgregat.ENTREPRISE))
+      throw new UnsupportedOperationException("Impossible d'ajouter une valeur de marché pour ce type d'agrégat");
+
     informationDeVente.addValeurMarche(v);
   }
 
@@ -126,6 +129,8 @@ public abstract sealed class Possession extends Objectivable
 
   @Override
   public void vendre(Argent valeurDeVente, LocalDate dateDeVente, Compte compteBeneficiaire) {
+    if ((typeAgregat() != TypeAgregat.IMMOBILISATION) || (typeAgregat() != TypeAgregat.ENTREPRISE))
+        throw new UnsupportedOperationException("Impossible de vendre ce type d'agrégat");
     informationDeVente.confirmeVente(this, valeurDeVente, dateDeVente, compteBeneficiaire);
   }
 }
