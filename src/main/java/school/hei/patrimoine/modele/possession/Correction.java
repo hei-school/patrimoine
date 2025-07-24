@@ -1,6 +1,5 @@
 package school.hei.patrimoine.modele.possession;
 
-import school.hei.patrimoine.modele.Argent;
 
 import static school.hei.patrimoine.modele.possession.TypeAgregat.CORRECTION;
 

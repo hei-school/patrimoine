@@ -6,7 +6,6 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
-
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import school.hei.patrimoine.modele.Argent;
@@ -18,8 +17,8 @@ import school.hei.patrimoine.modele.vente.Vendable;
 @ToString
 @EqualsAndHashCode(callSuper = false)
 public abstract sealed class Possession extends Objectivable
-        implements Vendable, Serializable /*note(no-serializable)*/
-        permits AchatMaterielAuComptant,
+    implements Vendable, Serializable /*note(no-serializable)*/
+    permits AchatMaterielAuComptant,
         Compte,
         CompteCorrection,
         Correction,
@@ -29,7 +28,8 @@ public abstract sealed class Possession extends Objectivable
         PatrimoinePersonnel,
         PersonneMorale,
         RemboursementDette,
-        TransfertArgent {
+        TransfertArgent,
+        Vente {
 
   protected final String nom;
   protected final LocalDate t;
@@ -45,7 +45,7 @@ public abstract sealed class Possession extends Objectivable
     this.nom = nom;
     this.t = t;
     this.valeurComptable = valeurComptable;
-    this.valeursMarche = new HashSet<>(Set.of(new ValeurMarche(t, valeurComptable)));
+    this.valeursMarche = new HashSet<>(Set.of(new ValeurMarche(this, t, valeurComptable)));
   }
 
   public CompteCorrection getCompteCorrection() {
@@ -84,11 +84,10 @@ public abstract sealed class Possession extends Objectivable
   @Override
   public Argent getValeurMarche(LocalDate t) {
     return valeursMarche.stream()
-            .filter(vm -> !vm.t().isAfter(t))
-            .max(Comparator.comparing(ValeurMarche::t))
-            .map(ValeurMarche::valeur)
-            .orElse(valeurComptable);
-
+        .filter(vm -> !vm.t().isAfter(t))
+        .max(Comparator.comparing(ValeurMarche::t))
+        .map(ValeurMarche::valeur)
+        .orElse(valeurComptable);
   }
 
   @Override
@@ -100,12 +99,7 @@ public abstract sealed class Possession extends Objectivable
     this.dateVente = dateVente;
     this.prixVente = prixVente;
 
-    new FluxArgent(
-      "Vente de " + nom,
-      compteBeneficiaire,
-      dateVente,
-      prixVente
-    );
+    new FluxArgent("Vente de " + nom, compteBeneficiaire, dateVente, prixVente);
   }
 
   @Override
@@ -125,11 +119,9 @@ public abstract sealed class Possession extends Objectivable
 
   public void ajouterValeurMarche(ValeurMarche valeurMarche) {
     TypeAgregat typeAgregat = typeAgregat();
-    if (typeAgregat != TypeAgregat.IMMOBILISATION &&
-        typeAgregat != TypeAgregat.ENTREPRISE) {
+    if (typeAgregat != TypeAgregat.IMMOBILISATION && typeAgregat != TypeAgregat.ENTREPRISE) {
       throw new UnsupportedOperationException(
-              "Seules les IMMOBILISATIONs et ENTREPRISEs peuvent avoir une valeur de marché"
-      );
+          "Seules les IMMOBILISATIONs et ENTREPRISEs peuvent avoir une valeur de marché");
     }
     valeursMarche.add(valeurMarche);
   }
