@@ -92,6 +92,15 @@ objectif
 correction
     :   MUL id COMMA? dateValue=variable COMMA? MOT_CORRIGER valeurComptable=variable MOT_DANS compteNom=variable
     ;
+
+ajoutValeurMarchee
+    :   MUL id COMMA? MOT_VALEUR_MARCHEE MOT_DE? possessionAffectee=variable COMMA? MOT_VALANT? prixDeVente=variable COMMA? MOT_LE dateDeVente=variable
+    ;
+
+ventePossession
+    :   MUL id COMMA? MOT_VENTE MOT_DE? possessionAVendre=variable MOT_POUR prixDeVente=variable MOT_VERS compteBeneficiaire=variable COMMA? MOT_LE dateDeVente=variable
+    ;
+
 /* -------------------- Possessions --------------------  */
 /* Trésorerie */
 sectionTresoreries
@@ -161,7 +170,8 @@ operation
     |   operationTemplateCall
     |   ligneVariableDeclaration
     |   ligneCasOperations
-
+    |   ajoutValeurMarchee
+    |   ventePossession
     ;
 
 ligneCasOperations

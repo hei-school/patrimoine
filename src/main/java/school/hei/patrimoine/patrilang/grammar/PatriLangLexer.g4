@@ -236,9 +236,20 @@ MOT_DEVISE_EN
     ;
 MOT_VALANT
     :   'valant'
+    |   'vaut'
     ;
 
 /* Opérateurs */
+MOT_VALEUR_MARCHEE
+    : 'valeur marchée'
+    | 'valeur marchee'
+    | 'Valeur marchée'
+    | 'Valeur marchee'
+    ;
+MOT_VENTE
+    : 'vente'
+    | 'Vente'
+    ;
 MOT_EVALUER
     :  'évalué'
     ;
