@@ -24,7 +24,7 @@ public final class Vente extends Possession {
   }
 
   @Override
-  public Possession projectionFuture(LocalDate tFutur) {
+  public Vente projectionFuture(LocalDate tFutur) {
     return new Vente(tFutur, getPossessionAVendre(), Argent.ariary(0));
   }
 

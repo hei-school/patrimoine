@@ -1,43 +1,40 @@
 package school.hei.patrimoine.modele.vente;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.LocalDate;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import school.hei.patrimoine.modele.Argent;
-import school.hei.patrimoine.modele.possession.Compte;
+import school.hei.patrimoine.modele.possession.Materiel;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class ValeurMarcheeTest {
 
-  LocalDate dateAcquisitionTypeDagregat;
-  Argent valeurTypeDagregatInitiale;
-  Compte type_dagregat_non_valide;
+  LocalDate dateAcquisitionPc;
+  Argent valeurPcInitiale;
+  Materiel pc;
   ValeurMarchee subject;
 
   @BeforeAll
   void setUp() {
     var now = LocalDate.now();
 
-    valeurTypeDagregatInitiale = Argent.ariary(300_000);
-    dateAcquisitionTypeDagregat = now.minusDays(7);
-    type_dagregat_non_valide =
-        new Compte("non valide", dateAcquisitionTypeDagregat, now, valeurTypeDagregatInitiale);
+    valeurPcInitiale = Argent.ariary(300_000);
+    dateAcquisitionPc = now.minusDays(7);
+    pc = new Materiel("Asus X555", dateAcquisitionPc, now, valeurPcInitiale, 10);
   }
 
   @Test
   void creer_valeur_marchee() {
-    var dateValeurMarchee = dateAcquisitionTypeDagregat.plusDays(3);
+    var dateValeurMarchee = dateAcquisitionPc.plusDays(3);
+    subject =
+        new ValeurMarchee(
+            pc,
+            dateValeurMarchee,
+            valeurPcInitiale.minus(Argent.ariary(20_000), dateValeurMarchee));
 
-    assertThrows(
-        UnsupportedOperationException.class,
-        () -> {
-          new ValeurMarchee(
-              type_dagregat_non_valide,
-              dateValeurMarchee,
-              valeurTypeDagregatInitiale.minus(Argent.ariary(20_000), dateValeurMarchee));
-        });
+    assertEquals(pc.getValeurMarche(dateValeurMarchee.plusDays(1)), subject);
   }
 }
