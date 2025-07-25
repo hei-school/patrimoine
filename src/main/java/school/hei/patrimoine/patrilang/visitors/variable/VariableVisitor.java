@@ -85,7 +85,8 @@ public class VariableVisitor implements SimpleVisitor<VariableContext, Variable<
   }
 
   public Possession asPossession(VariableContext ctx) {
-    return visitVariableAsExpectedType(Possession.class, ctx);
+    return visitVariableAsExpectedType(
+            List.of(Compte.class, Materiel.class, Entreprise.class, Dette.class, Creance.class), ctx);
   }
 
   public <T> void addToScope(String name, VariableType type, T value) {
