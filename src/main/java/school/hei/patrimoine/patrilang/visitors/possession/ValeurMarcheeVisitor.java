@@ -18,8 +18,8 @@ public class ValeurMarcheeVisitor implements SimpleVisitor<AjoutValeurMarcheeCon
       var possessionType = Arrays.stream(ctx.possessionAffectee.VARIABLE().toString().split(":")).toList().getFirst();
       var possessionAVendre = switch (possessionType){
         case  "Trésoreries" -> variableVisitor.asCompte(ctx.possessionAffectee);
-        case "Créances" -> variableVisitor.asCompte(ctx.possessionAffectee);
-        case "Dettes" -> variableVisitor.asCompte(ctx.possessionAffectee);
+        case "Créances" -> variableVisitor.asCreance(ctx.possessionAffectee);
+        case "Dettes" -> variableVisitor.asDette(ctx.possessionAffectee);
         default -> throw new IllegalStateException("Une erreur est survenue !" + possessionType);
       };
      var prixDeVente = this.variableVisitor.asArgent(ctx.prixDeVente);
