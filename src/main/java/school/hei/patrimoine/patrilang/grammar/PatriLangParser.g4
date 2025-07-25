@@ -94,11 +94,11 @@ correction
     ;
 
 ajoutValeurMarchee
-    :   MUL id COMMA? MOT_VALEUR_MARCHEE MOT_DE? possessionAffectee=variable COMMA? MOT_VALANT? prixDeVente=variable COMMA? MOT_LE dateDeVente=variable
+    :   MUL id COMMA? dateDeVente=variable COMMA? MOT_VALEUR_MARCHEE_DE prixDeVente=variable MOT_POUR possessionAffectee=variable
     ;
 
 ventePossession
-    :   MUL id COMMA? MOT_VENTE MOT_DE? possessionAVendre=variable MOT_POUR prixDeVente=variable MOT_VERS compteBeneficiaire=variable COMMA? MOT_LE dateDeVente=variable
+    :   MUL id COMMA? dateDeVente=variable COMMA? MOT_VENTE_DE possessionAVendre=variable MOT_POUR prixDeVente=variable MOT_VERS compteBeneficiaire=variable
     ;
 
 /* -------------------- Possessions --------------------  */
