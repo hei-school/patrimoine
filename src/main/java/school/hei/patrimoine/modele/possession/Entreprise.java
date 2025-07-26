@@ -2,7 +2,7 @@ package school.hei.patrimoine.modele.possession;
 
 import lombok.Getter;
 import school.hei.patrimoine.modele.Argent;
-import school.hei.patrimoine.modele.vendre.Vendable;
+import school.hei.patrimoine.modele.vente.Vendable;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -39,6 +39,22 @@ public final class Entreprise extends Possession implements Vendable {
 
     @Override
     public Entreprise projectionFuture(LocalDate tFutur) {
+        if (estVendue() && !tFutur.isBefore(dateVente)) {
+            // Après la vente, la valeur de marché reste constante
+            Entreprise vendue = new Entreprise(
+                    nom,
+                    tFutur,
+                    new Argent(0, devise()),
+                    valeurVente,
+                    tauxEvolutionMarcheAnnuelle
+            );
+            vendue.estVendue = true;
+            vendue.dateVente = dateVente;
+            vendue.valeurVente = valeurVente;
+            vendue.historiqueValeurMarche.putAll(historiqueValeurMarche);
+            vendue.historiqueValeurMarche.put(tFutur, valeurVente);
+            return vendue;
+        }
 
         if (tFutur.isBefore(t)) {
             Entreprise e = new Entreprise(
@@ -50,23 +66,6 @@ public final class Entreprise extends Possession implements Vendable {
             );
             e.historiqueValeurMarche.putAll(historiqueValeurMarche);
             return e;
-        }
-
-        if (estVendue && !tFutur.isBefore(dateVente)) {
-            // Après la vente, la valeur de marché reste constante
-            Entreprise vendue = new Entreprise(
-                    nom,
-                    tFutur,
-                    valeurComptable,
-                    valeurVente,
-                    tauxEvolutionMarcheAnnuelle
-            );
-            vendue.estVendue = true;
-            vendue.dateVente = dateVente;
-            vendue.valeurVente = valeurVente;
-            vendue.historiqueValeurMarche.putAll(historiqueValeurMarche);
-            vendue.historiqueValeurMarche.put(tFutur, valeurVente);
-            return vendue;
         }
 
         long joursEcoules = DAYS.between(t, tFutur);
