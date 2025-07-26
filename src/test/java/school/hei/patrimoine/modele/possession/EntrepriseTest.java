@@ -3,6 +3,7 @@ package school.hei.patrimoine.modele.possession;
 
 import org.junit.jupiter.api.Test;
 import school.hei.patrimoine.modele.Argent;
+import school.hei.patrimoine.modele.Devise;
 
 
 import java.time.LocalDate;
@@ -87,4 +88,43 @@ class EntrepriseTest {
         assertTrue(projetee.getHistoriqueValeurMarche().containsKey(dateInitiale));
         assertTrue(projetee.getHistoriqueValeurMarche().containsKey(dateFutur));
     }
+
+    @Test
+    void vente_entreprise_et_valeur_comptable_devient_nulle() {
+        // GIVEN
+        LocalDate dateInitiale = LocalDate.of(2024, 1, 1);
+        Argent valeurComptable = new Argent(100_000, Devise.EUR);
+        Argent valeurMarche = new Argent(120_000, Devise.EUR);
+        double tauxEvolution = 0.05; // 5%/an
+
+        Entreprise entreprise = new Entreprise(
+                "Ma startup",
+                dateInitiale,
+                valeurComptable,
+                valeurMarche,
+                tauxEvolution
+        );
+
+        LocalDate dateVente = LocalDate.of(2024, 6, 1);
+        Argent prixVente = new Argent(130_000, Devise.EUR);
+        Compte compteBeneficiaire = new Compte("Bénéficiaire", dateVente, new Argent(0, Devise.EUR));
+
+        // WHEN
+        entreprise.vendre(dateVente, prixVente, compteBeneficiaire);
+        Entreprise projectionApresVente = entreprise.projectionFuture(dateVente.plusDays(1));
+
+        // THEN
+        assertTrue(entreprise.estVendue(), "L'entreprise devrait être marquée comme vendue");
+        assertEquals(dateVente, entreprise.getDateVente(), "La date de vente devrait être correcte");
+        assertEquals(prixVente, entreprise.getPrixVente(), "Le prix de vente devrait être correct");
+
+        // La valeur comptable doit être devenue nulle après la vente
+        assertEquals(new Argent(0, Devise.EUR),
+                projectionApresVente.valeurComptable(),
+                "La valeur comptable après la vente devrait être nulle");
+
+    }
+
+
+
 }
