@@ -28,7 +28,6 @@ public final class Entreprise extends Possession  {
 
     @Override
     public Entreprise projectionFuture(LocalDate tFutur) {
-
         if (tFutur.isBefore(t)) {
             Entreprise e = new Entreprise(
                     nom,

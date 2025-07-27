@@ -7,7 +7,7 @@ import java.time.LocalDate;
 
 import lombok.Getter;
 import school.hei.patrimoine.modele.Argent;
-import school.hei.patrimoine.modele.vendre.Vendable;
+import school.hei.patrimoine.modele.vente.Vendable;
 
 @Getter
 public final class Materiel extends Possession implements Vendable {

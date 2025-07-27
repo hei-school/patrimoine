@@ -3,6 +3,7 @@ package school.hei.patrimoine.modele.possession;
 
 import org.junit.jupiter.api.Test;
 import school.hei.patrimoine.modele.Argent;
+import school.hei.patrimoine.modele.Devise;
 
 
 import java.time.LocalDate;
@@ -86,5 +87,24 @@ class EntrepriseTest {
 
         assertTrue(projetee.getHistoriqueValeurMarche().containsKey(dateInitiale));
         assertTrue(projetee.getHistoriqueValeurMarche().containsKey(dateFutur));
+    }
+
+    @Test
+    void vente_entreprise_et_valeur_comptable_devient_nulle() {
+        // GIVEN
+        LocalDate dateInitiale = LocalDate.of(2024, 1, 1);
+        Argent valeurComptable = new Argent(100_000, Devise.EUR);
+        Argent valeurMarche = new Argent(120_000, Devise.EUR);
+        double tauxEvolution = 0.05; // 5%/an
+
+        Entreprise entreprise = new Entreprise(
+                "Ma startup",
+                dateInitiale,
+                valeurComptable,
+                valeurMarche,
+                tauxEvolution
+        );
+
+
     }
 }
