@@ -13,7 +13,9 @@ public enum VariableType {
   TRESORERIES("Trésoreries"),
   CREANCE("Créances"),
   DETTE("Dettes"),
-  PERSONNE_MORALE("PersonnesMorales");
+  PERSONNE_MORALE("PersonnesMorales"),
+  IMMOBILISATION("Immobilisations");
+
 
   private final String value;
 

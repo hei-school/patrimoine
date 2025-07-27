@@ -12,7 +12,12 @@ public record VentePossession(Possession possession, LocalDate date, Argent prix
         this.date = date;
         this.prix = prix;
         this.compteBeneficiaire = compteBeneficiaire;
+    }
 
-        compteBeneficiaire.ajouter(prix);
+    public void execute() {
+        if (possession.estVendue()) {
+            throw new IllegalStateException("Déjà vendue");
+        }
+        possession.vendre(date, prix, compteBeneficiaire);
     }
 }

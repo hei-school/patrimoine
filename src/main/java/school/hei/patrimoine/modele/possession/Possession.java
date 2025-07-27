@@ -88,12 +88,16 @@ public abstract sealed class Possession extends Objectivable
   }
 
   public Argent valeurMarcheALaDate(LocalDate date) {
+    if (estVendue(date)) {
+      return new Argent(0, valeurComptable.devise());
+    }
     LocalDate key = historiqueValeurMarche.floorKey(date);
     if (key != null) {
       return historiqueValeurMarche.get(key);
     }
     return valeurComptable();
   }
+
 
   public final Devise devise() {
     return valeurComptable.devise();

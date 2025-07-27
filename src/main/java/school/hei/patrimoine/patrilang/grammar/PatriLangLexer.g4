@@ -175,7 +175,7 @@ MOT_DU
     ;
 MOT_A
     :   'à'
-        'a'
+    |   'a'
     ;
 
 MOIS

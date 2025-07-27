@@ -17,6 +17,9 @@ public class VenteVisitor implements SimpleVisitor<VentePossessionContext, Vente
 
     @Override
     public VentePossession apply(VentePossessionContext ctx) {
+        if (ctx == null) throw new IllegalArgumentException("ctx null");
+        if (ctx.prix == null) throw new IllegalArgumentException("ctx.prix null");
+
         LocalDate dateVente = variableVisitor.asDate(ctx.dateValue);
         Possession possession = variableVisitor.asPossession(ctx.possessionNom);
         Argent prixVente = variableVisitor.asArgent(ctx.prix);
@@ -24,4 +27,5 @@ public class VenteVisitor implements SimpleVisitor<VentePossessionContext, Vente
 
         return new VentePossession(possession, dateVente, prixVente, compteBeneficiaire);
     }
+
 }
