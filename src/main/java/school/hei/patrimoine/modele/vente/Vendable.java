@@ -10,7 +10,7 @@ public interface Vendable {
 
     boolean estVendue();
 
-    boolean estActiveALaDate(LocalDate date);
+    boolean estVendue(LocalDate date);
 
     LocalDate getDateVente();
 

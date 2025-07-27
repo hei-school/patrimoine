@@ -33,6 +33,7 @@ public class OperationVisitor
   private final GroupPossessionVisitor groupPossessionVisitor;
   private final OperationTemplateCallVisitor operationTemplateCallVisitor;
   private final ValeurMarcheVisitor valeurMarcheVisitor;
+  private final VenteVisitor venteVisitor;
 
   @Override
   public Set<Possession> apply(List<OperationsContext> contexts, VariableVisitor variableVisitor) {
@@ -110,6 +111,11 @@ public class OperationVisitor
     if (nonNull(ctx.valeurMarche())){
        this.valeurMarcheVisitor.apply(ctx.valeurMarche());
        return Set.of();
+    }
+
+    if (nonNull(ctx.ventePossession())){
+      this.venteVisitor.apply(ctx.ventePossession());
+      return Set.of();
     }
 
     throw new IllegalArgumentException("Opération inconnue");

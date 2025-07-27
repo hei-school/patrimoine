@@ -159,6 +159,7 @@ operation
     |   correction
     |   objectif
     |   valeurMarche
+    |   ventePossession
     |   operationTemplateCall
     |   ligneVariableDeclaration
     |   ligneCasOperations

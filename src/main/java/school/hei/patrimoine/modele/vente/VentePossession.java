@@ -13,5 +13,6 @@ public record VentePossession(Possession possession, LocalDate date, Argent prix
         this.prix = prix;
         this.compteBeneficiaire = compteBeneficiaire;
 
+        compteBeneficiaire.ajouter(prix);
     }
 }

@@ -11,6 +11,8 @@ import lombok.ToString;
 import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.Devise;
 import school.hei.patrimoine.modele.objectif.Objectivable;
+import school.hei.patrimoine.modele.vente.Vendable;
+
 import static school.hei.patrimoine.modele.possession.TypeAgregat.IMMOBILISATION;
 import static school.hei.patrimoine.modele.possession.TypeAgregat.ENTREPRISE;
 
@@ -19,7 +21,7 @@ import static school.hei.patrimoine.modele.possession.TypeAgregat.ENTREPRISE;
 @ToString
 @EqualsAndHashCode(callSuper = false)
 public abstract sealed class Possession extends Objectivable
-        implements Serializable/*note(no-serializable)*/
+        implements Serializable, Vendable/*note(no-serializable)*/
         permits
         AchatMaterielAuComptant,
         Compte,
@@ -37,6 +39,9 @@ public abstract sealed class Possession extends Objectivable
   protected final LocalDate t;
   protected final Argent valeurComptable;
   protected final NavigableMap<LocalDate, Argent> historiqueValeurMarche = new TreeMap<>();
+  protected  LocalDate dateVente;
+  protected  Argent prixVente;
+  protected  Compte compteBeneficiaire;
   @EqualsAndHashCode.Exclude @ToString.Exclude private CompteCorrection compteCorrection;
 
 
@@ -48,13 +53,15 @@ public abstract sealed class Possession extends Objectivable
     this.historiqueValeurMarche.put(t, valeurComptable);
   }
 
-  public Possession(String nom, LocalDate t, Argent valeurComptable,Argent valeurMarche) {
+  public Possession(String nom, LocalDate t, Argent valeurComptable, Argent valeurMarche, LocalDate dateVente, Argent prixVente, Compte compteBeneficiaire) {
     super();
     this.nom = nom;
     this.t = t;
     this.valeurComptable = valeurComptable;
     this.historiqueValeurMarche.put(t, valeurMarche);
   }
+
+
 
   public CompteCorrection getCompteCorrection() {
     if (compteCorrection == null) {
@@ -109,4 +116,47 @@ public abstract sealed class Possession extends Objectivable
   public Argent valeurAObjectifT(LocalDate t) {
     return projectionFuture(t).valeurComptable;
   }
+
+  public Argent valeurComptableEffective(LocalDate date) {
+    if (dateVente != null && (date.isEqual(dateVente) || date.isAfter(dateVente))) {
+      return new Argent(0, valeurComptable.devise());
+    }
+    return valeurComptable;
+  }
+
+  public Argent valeurComptableEffective() {
+    return valeurComptableEffective(LocalDate.now());
+  }
+
+  @Override
+  public void vendre(LocalDate date, Argent prix, Compte compteBeneficiaire) {
+    if (this.dateVente != null) {
+      throw new IllegalStateException("Déjà vendue");
+    }
+    this.dateVente = date;
+    this.prixVente = prix;
+    this.compteBeneficiaire = compteBeneficiaire;
+    compteBeneficiaire.ajouter(prix);
+  }
+
+  @Override
+  public boolean estVendue() {
+    return dateVente != null;
+  }
+
+  @Override
+  public boolean estVendue(LocalDate date) {
+    return dateVente != null && !date.isBefore(dateVente);
+  }
+
+  @Override
+  public LocalDate getDateVente() {
+    return dateVente;
+  }
+
+  @Override
+  public Argent getPrixVente() {
+    return prixVente;
+  }
+
 }

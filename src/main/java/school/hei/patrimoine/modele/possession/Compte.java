@@ -15,6 +15,7 @@ import school.hei.patrimoine.modele.Argent;
 public sealed class Compte extends Possession permits Dette, Creance {
   private final LocalDate dateOuverture;
   private final Set<FluxArgent> fluxArgents;
+  private Argent solde;
 
   public Compte(String nom, LocalDate t, Argent valeurComptable) {
     this(nom, t, t, valeurComptable);
@@ -29,6 +30,7 @@ public sealed class Compte extends Possession permits Dette, Creance {
     super(nom, t, valeurComptable);
     this.fluxArgents = fluxArgents;
     this.dateOuverture = dateOuverture;
+    this.solde = valeurComptable;
   }
 
   public Compte(String nom, LocalDate dateOuverture, LocalDate t, Argent valeurComptable) {
@@ -65,5 +67,12 @@ public sealed class Compte extends Possession permits Dette, Creance {
 
   void addFinancés(FluxArgent fluxArgent) {
     fluxArgents.add(fluxArgent);
+  }
+
+  public void ajouter(Argent montant) {
+    if (montant == null) {
+      throw new IllegalArgumentException("Le montant ne peut pas être nul.");
+    }
+    this.solde = this.solde.add(montant, LocalDate.now());
   }
 }
