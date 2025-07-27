@@ -22,18 +22,29 @@ public enum VariableType {
   }
 
   public static VariableType fromString(String value) {
-    return switch (value) {
-      case "Templates" -> OPERATION_TEMPLATE;
-      case "Dates" -> DATE;
-      case "Nombres" -> NOMBRE;
-      case "Argents" -> ARGENT;
-      case "Personnes" -> PERSONNE;
-      case "Cas" -> CAS;
-      case "Trésoreries" -> TRESORERIES;
-      case "Créances" -> CREANCE;
-      case "Dettes" -> DETTE;
-      case "PersonnesMorales" -> PERSONNE_MORALE;
-      default -> throw new IllegalArgumentException("Type de variable inconnu " + value);
-    };
+    for (VariableType type : values()) {
+      if (type.getValue().equalsIgnoreCase(value) || type.name().equalsIgnoreCase(value)) {
+        return type;
+      }
+    }
+    throw new IllegalArgumentException("Type de variable inconnu " + value);
   }
+
+//  public static VariableType fromString(String value) {
+//    return switch (value) {
+//      case "Templates" -> OPERATION_TEMPLATE;
+//      case "Dates" -> DATE;
+//      case "Nombres" -> NOMBRE;
+//      case "Argents" -> ARGENT;
+//      case "Personnes" -> PERSONNE;
+//      case "Cas" -> CAS;
+//      case "Trésoreries" -> TRESORERIES;
+//      case "Créances" -> CREANCE;
+//      case "Dettes" -> DETTE;
+//      case "PersonnesMorales" -> PERSONNE_MORALE;
+//      default -> throw new IllegalArgumentException("Type de variable inconnu " + value);
+//    };
+//  }
+
 }
+

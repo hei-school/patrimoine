@@ -15,7 +15,7 @@ import static school.hei.patrimoine.modele.possession.TypeAgregat.IMMOBILISATION
 import static school.hei.patrimoine.modele.possession.TypeAgregat.ENTREPRISE;
 
 
-
+@Getter
 @ToString
 @EqualsAndHashCode(callSuper = false)
 public abstract sealed class Possession extends Objectivable

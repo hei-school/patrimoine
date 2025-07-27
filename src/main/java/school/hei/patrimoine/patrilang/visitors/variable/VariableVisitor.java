@@ -7,6 +7,8 @@ import static school.hei.patrimoine.patrilang.modele.variable.VariableType.DATE;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+
 import lombok.Getter;
 import school.hei.patrimoine.cas.Cas;
 import school.hei.patrimoine.modele.Argent;
@@ -86,7 +88,7 @@ public class VariableVisitor implements SimpleVisitor<VariableContext, Variable<
 
   public Possession asPossession(VariableContext ctx) {
     return visitVariableAsExpectedType(
-            List.of(Compte.class, Materiel.class, Entreprise.class, Dette.class, Creance.class), ctx);
+            List.of(Possession.class), ctx);
   }
 
   public <T> void addToScope(String name, VariableType type, T value) {
@@ -119,14 +121,25 @@ public class VariableVisitor implements SimpleVisitor<VariableContext, Variable<
     return visitVariableAsExpectedType(List.of(expectedType), ctx);
   }
 
+
   private <T> T visitVariableAsExpectedType(List<Class<?>> expectedTypes, VariableContext ctx) {
-    var variable = (Variable) this.apply(ctx);
+    var variable = (Variable<?>) this.apply(ctx);
     var isExpectedType =
-        expectedTypes.stream().anyMatch(expectedType -> expectedType.isInstance(variable.value()));
+          expectedTypes.stream().anyMatch(expectedType -> expectedType.isInstance(variable.value()));
 
     if (!isExpectedType) {
       throw new IllegalArgumentException(
-          "La variable " + variable.name() + " n'est pas une des types: " + expectedTypes);
+              "La variable " + variable.name() + " n'est pas une des types: " + expectedTypes
+      );
+    }
+
+    if (expectedTypes.contains(Possession.class) && variable.value() instanceof Possession possession) {
+      var type = possession.typeAgregat();
+      if (type != TypeAgregat.IMMOBILISATION && type != TypeAgregat.ENTREPRISE) {
+        throw new UnsupportedOperationException(
+                "Seules les possessions de type IMMOBILISATION ou ENTREPRISE peuvent avoir une valeur de marché."
+        );
+      }
     }
 
     return (T) variable.value();
