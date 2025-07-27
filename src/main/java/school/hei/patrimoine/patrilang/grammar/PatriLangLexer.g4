@@ -154,6 +154,12 @@ MATERIEL_APPRECIATION
 MOT_ANNUELLEMENT_DE
     :   'annuellement de'
     ;
+MOT_VENTE_DE
+    : 'vente de'
+    ;
+MOT_POUR_COMPTE
+    : 'pour compte'
+    ;
 PERCENT
     :   '%'
     ;
@@ -166,6 +172,10 @@ MOT_LE
     ;
 MOT_DU
     :   'du'
+    ;
+MOT_A
+    :   'à'
+        'a'
     ;
 
 MOIS

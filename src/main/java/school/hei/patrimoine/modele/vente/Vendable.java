@@ -1,4 +1,4 @@
-package school.hei.patrimoine.modele.vendre;
+package school.hei.patrimoine.modele.vente;
 
 import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.possession.Compte;
