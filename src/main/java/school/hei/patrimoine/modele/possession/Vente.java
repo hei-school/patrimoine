@@ -28,30 +28,31 @@ public final class Vente extends Possession {
   }
 
   private Vente(
-          String nom,
-          LocalDate t,
-          Argent valeurComptable,
-          LocalDate tVente,
-          Possession possession,
-          Argent prixVente) {
+      String nom,
+      LocalDate t,
+      Argent valeurComptable,
+      LocalDate tVente,
+      Possession possession,
+      Compte compteBeneficiaire,
+      Argent prixVente) {
     super(nom, t, valeurComptable);
     this.tVente = tVente;
     this.possession = possession;
+    this.compteBeneficiaire = compteBeneficiaire;
     this.prixVente = prixVente;
-    this.compteBeneficiaire = null;
   }
 
   @Override
   public Vente projectionFuture(LocalDate tFutur) {
     if (tFutur.isBefore(tVente)) {
       return new Vente(
-              nom,
-              tFutur,
-              valeurComptable,
-              tVente,
-              possession.projectionFuture(tFutur),
-              prixVente
-      );
+          nom,
+          t,
+          valeurComptable,
+          tVente,
+          possession.projectionFuture(tFutur),
+          compteBeneficiaire,
+          prixVente);
     }
     return null;
   }
