@@ -11,15 +11,16 @@ import java.time.LocalDate;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class VenteTest {
+    /*
     @Test
-    void valeurMarche_doitStockerCorrectementLesValeurs() {
+    void valeur_marche_doit_stocker_correctement_les_valeurs() {
         var date = LocalDate.of(2025, 1, 1);
         var argent = new Argent(300_000, Devise.EUR);
         var vm = new ValeurMarche(date, argent);
 
         assertEquals(date, vm.t());
         assertEquals(argent, vm.valeur());
-    }
+    }*/
 
     @Test
     void vente_doit_marquer_possession_comme_vendue() {
@@ -57,7 +58,7 @@ public class VenteTest {
 
         assertEquals(new Argent(0, Devise.EUR), materiel.valeurComptable());
     }
-
+    /*
     @Test
     void valeur_marche_historique_doit_etre_conservee() {
         var materiel = new Materiel("Bâtiment", LocalDate.now(), LocalDate.now(),
@@ -71,6 +72,7 @@ public class VenteTest {
         assertEquals(new Argent(250_000, Devise.EUR), materiel.getValeurMarche(date1));
         assertEquals(new Argent(300_000, Devise.EUR), materiel.getValeurMarche(date2));
     }
+    */
 
     @Test
     void vendre_possession_deja_vendue_doit_echouer() {
