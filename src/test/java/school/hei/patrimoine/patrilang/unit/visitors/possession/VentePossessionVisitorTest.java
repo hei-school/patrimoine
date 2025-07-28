@@ -39,7 +39,7 @@ class VentePossessionVisitorTest {
     void parse_vente_possession_should_mark_possession_as_sold_and_credit_compte() {
         var input =
                 """
-                * Vente `vente1`, le ajd, vente de monOrdi à 250000 Ar pour compte monCompte
+                * Vente `vente1`, le Dates:ajd, vente de monOrdi à 250000Ar pour compte Trésoreries:monCompte
                 """;
 
         var vente = (VentePossession) visitor.visit(input, PatriLangParser::ventePossession);
@@ -58,7 +58,7 @@ class VentePossessionVisitorTest {
 
         var input =
                 """
-                * Vente `vente1`, le ajd, vente de monOrdi à 250000 Ar pour compte monCompte
+                * Vente `vente1`, le Dates:ajd, vente de monOrdi à 250000Ar pour compte Trésoreries:monCompte
                 """;
 
         var vente = (VentePossession) visitor.visit(input, PatriLangParser::ventePossession);

@@ -133,15 +133,6 @@ public class VariableVisitor implements SimpleVisitor<VariableContext, Variable<
       );
     }
 
-    if (expectedTypes.contains(Possession.class) && variable.value() instanceof Possession possession) {
-      var type = possession.typeAgregat();
-      if (type != TypeAgregat.IMMOBILISATION && type != TypeAgregat.ENTREPRISE) {
-        throw new UnsupportedOperationException(
-                "Seules les possessions de type IMMOBILISATION ou ENTREPRISE peuvent avoir une valeur de marché."
-        );
-      }
-    }
-
     return (T) variable.value();
   }
 

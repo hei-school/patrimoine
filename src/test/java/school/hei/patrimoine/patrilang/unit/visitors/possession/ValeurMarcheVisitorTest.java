@@ -40,7 +40,7 @@ public class ValeurMarcheVisitorTest {
     @Test
     void parse_valeur_marche_compte_should_throw_unsupported_operation() {
         var input = """
-        * `valeurMarche1`, ajd valeur marché de 600000Ar pour TRESORERIES:monCompte
+        * `valeurMarche1`, Dates:ajd valeur marché de 600000Ar pour Trésoreries:monCompte
     """;
 
         var exception = assertThrows(UnsupportedOperationException.class,
