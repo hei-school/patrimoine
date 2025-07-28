@@ -52,4 +52,3 @@ class FluxCompteTest {
         compteCourant.projectionFuture(aLaDiplomation.plusDays(100)).valeurComptable);
   }
 }
-

@@ -1,5 +1,6 @@
 package school.hei.patrimoine.patrilang.visitors.possession;
 
+import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.possession.Compte;
@@ -9,11 +10,9 @@ import school.hei.patrimoine.patrilang.antlr.PatriLangParser.VentePossessionCont
 import school.hei.patrimoine.patrilang.visitors.SimpleVisitor;
 import school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor;
 
-import java.time.LocalDate;
-
 @RequiredArgsConstructor
-public class VenteVisitor implements SimpleVisitor<VentePossessionContext, VentePossession> {
-    private final VariableVisitor variableVisitor;
+public class VentePossessionVisitor implements SimpleVisitor<VentePossessionContext, VentePossession> {
+  private final VariableVisitor variableVisitor;
 
     @Override
     public VentePossession apply(VentePossessionContext ctx) {

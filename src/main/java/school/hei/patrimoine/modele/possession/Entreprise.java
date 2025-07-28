@@ -1,65 +1,57 @@
 package school.hei.patrimoine.modele.possession;
 
-import lombok.Getter;
-import school.hei.patrimoine.modele.Argent;
-
-import java.time.LocalDate;
 import static java.time.temporal.ChronoUnit.DAYS;
 import static school.hei.patrimoine.modele.possession.TypeAgregat.ENTREPRISE;
 
+import java.time.LocalDate;
+import lombok.Getter;
+import school.hei.patrimoine.modele.Argent;
+
 @Getter
-public final class Entreprise extends Possession  {
+public final class Entreprise extends Possession {
 
-    private Argent valeurMarche;
-    private final double tauxEvolutionMarcheAnnuelle;
+  private Argent valeurMarche;
+  private final double tauxEvolutionMarcheAnnuelle;
 
-    public Entreprise(
-            String nom,
-            LocalDate t,
-            Argent valeurComptable,
-            Argent valeurMarche,
-            double tauxEvolutionMarcheAnnuelle
-    ) {
-        super(nom, t, valeurComptable);
-        this.valeurMarche = (valeurMarche != null) ? valeurMarche : valeurComptable;
-        this.tauxEvolutionMarcheAnnuelle = tauxEvolutionMarcheAnnuelle;
-        historiqueValeurMarche.put(t, this.valeurMarche);
+  public Entreprise(
+      String nom,
+      LocalDate t,
+      Argent valeurComptable,
+      Argent valeurMarche,
+      double tauxEvolutionMarcheAnnuelle) {
+    super(nom, t, valeurComptable);
+    this.valeurMarche = (valeurMarche != null) ? valeurMarche : valeurComptable;
+    this.tauxEvolutionMarcheAnnuelle = tauxEvolutionMarcheAnnuelle;
+    historiqueValeurMarche.put(t, this.valeurMarche);
+  }
+
+  @Override
+  public Entreprise projectionFuture(LocalDate tFutur) {
+    if (tFutur.isBefore(t)) {
+      Entreprise e =
+          new Entreprise(
+              nom, tFutur, valeurComptable, new Argent(0, devise()), tauxEvolutionMarcheAnnuelle);
+      e.historiqueValeurMarche.putAll(historiqueValeurMarche);
+      return e;
     }
 
-    @Override
-    public Entreprise projectionFuture(LocalDate tFutur) {
-        if (tFutur.isBefore(t)) {
-            Entreprise e = new Entreprise(
-                    nom,
-                    tFutur,
-                    valeurComptable,
-                    new Argent(0, devise()),
-                    tauxEvolutionMarcheAnnuelle
-            );
-            e.historiqueValeurMarche.putAll(historiqueValeurMarche);
-            return e;
-        }
+    long joursEcoules = DAYS.between(t, tFutur);
+    var valeurMarcheAjouteeJournaliere = valeurMarche.mult(tauxEvolutionMarcheAnnuelle / 365.);
+    var nouvelleValeurMarche =
+        valeurMarche.add(valeurMarcheAjouteeJournaliere.mult(joursEcoules), tFutur);
+    Argent valeurFinale =
+        nouvelleValeurMarche.lt(0) ? new Argent(0, devise()) : nouvelleValeurMarche;
 
-        long joursEcoules = DAYS.between(t, tFutur);
-        var valeurMarcheAjouteeJournaliere = valeurMarche.mult(tauxEvolutionMarcheAnnuelle / 365.);
-        var nouvelleValeurMarche = valeurMarche.add(valeurMarcheAjouteeJournaliere.mult(joursEcoules), tFutur);
-        Argent valeurFinale = nouvelleValeurMarche.lt(0) ? new Argent(0, devise()) : nouvelleValeurMarche;
+    Entreprise eFuture =
+        new Entreprise(nom, tFutur, valeurComptable, valeurFinale, tauxEvolutionMarcheAnnuelle);
+    eFuture.historiqueValeurMarche.putAll(historiqueValeurMarche);
+    eFuture.historiqueValeurMarche.put(tFutur, valeurFinale);
 
-        Entreprise eFuture = new Entreprise(
-                nom,
-                tFutur,
-                valeurComptable,
-                valeurFinale,
-                tauxEvolutionMarcheAnnuelle
-        );
-        eFuture.historiqueValeurMarche.putAll(historiqueValeurMarche);
-        eFuture.historiqueValeurMarche.put(tFutur, valeurFinale);
+    return eFuture;
+  }
 
-        return eFuture;
-    }
-
-    @Override
-    public TypeAgregat typeAgregat() {
-        return ENTREPRISE;
-    }
+  @Override
+  public TypeAgregat typeAgregat() {
+    return ENTREPRISE;
+  }
 }

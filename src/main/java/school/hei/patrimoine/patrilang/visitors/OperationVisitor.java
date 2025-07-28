@@ -1,6 +1,5 @@
 package school.hei.patrimoine.patrilang.visitors;
 
-import static com.google.common.base.Predicates.notNull;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toSet;
@@ -33,7 +32,7 @@ public class OperationVisitor
   private final GroupPossessionVisitor groupPossessionVisitor;
   private final OperationTemplateCallVisitor operationTemplateCallVisitor;
   private final ValeurMarcheVisitor valeurMarcheVisitor;
-  private final VenteVisitor venteVisitor;
+  private final VentePossessionVisitor venteVisitor;
 
   @Override
   public Set<Possession> apply(List<OperationsContext> contexts, VariableVisitor variableVisitor) {
@@ -108,12 +107,12 @@ public class OperationVisitor
       return Set.of();
     }
 
-    if (nonNull(ctx.valeurMarche())){
-       this.valeurMarcheVisitor.apply(ctx.valeurMarche());
-       return Set.of();
+    if (nonNull(ctx.valeurMarche())) {
+      this.valeurMarcheVisitor.apply(ctx.valeurMarche());
+      return Set.of();
     }
 
-    if (nonNull(ctx.ventePossession())){
+    if (nonNull(ctx.ventePossession())) {
       this.venteVisitor.apply(ctx.ventePossession());
       return Set.of();
     }

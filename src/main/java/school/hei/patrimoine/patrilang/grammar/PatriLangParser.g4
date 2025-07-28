@@ -208,11 +208,16 @@ valeurMarche
     ;
 
 ventePossession
+<<<<<<< HEAD
     : MUL id COMMA? MOT_LE dateValue=variable COMMA?
       MOT_VENTE_DE possessionNom=variable
       MOT_A montant=variable
       MOT_POUR_COMPTE compteBeneficiaire=variable
+=======
+    :   MUL id COMMA? MOT_LE dateValue=variable COMMA? MOT_VENTE_DE possessionNom=variable MOT_A prix=variable MOT_POUR_COMPTE compteBeneficiaire=variable
+>>>>>>> 9d1426637e2e6bb7b00c5e6cff2bd79eae9b90c7
     ;
+
 /* -------------------- Commun --------------------  */
 sousTitre
     :   HASHES HASHES HASHES? nom=text COMMA? dateValue=variable COMMA? MOT_DEVISE_EN devise
