@@ -12,6 +12,7 @@ import school.hei.patrimoine.patrilang.antlr.PatriLangParser;
 import school.hei.patrimoine.patrilang.utils.UnitTestVisitor;
 import school.hei.patrimoine.patrilang.visitors.possession.VenteVisitor;
 import school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor;
+import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.VentePossessionContext;
 import school.hei.patrimoine.modele.vente.VentePossession;
 
 class VentePossessionVisitorTest {
@@ -21,10 +22,10 @@ class VentePossessionVisitorTest {
     private static final Materiel MON_ORDI = new Materiel("monOrdi", AJD, AJD, ariary(200_000), 0.0);
     private final VenteVisitor subject = new VenteVisitor(variableVisitor);
 
-    private final UnitTestVisitor visitor =
-            new UnitTestVisitor() {
-                @Override
-                public VentePossession visitVentePossession(PatriLangParser.VentePossessionContext ctx) {
+    UnitTestVisitor visitor =
+        new UnitTestVisitor() {
+            @Override
+                public VentePossession visitVentePossession(VentePossessionContext ctx) {
                     return subject.apply(ctx);
                 }
             };

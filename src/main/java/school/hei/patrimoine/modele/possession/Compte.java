@@ -69,6 +69,11 @@ public sealed class Compte extends Possession permits Dette, Creance {
     fluxArgents.add(fluxArgent);
   }
 
+  @Override
+  public Argent valeurActuelle() {
+    return solde;
+  }
+
   public void ajouter(Argent montant) {
     if (montant == null) {
       throw new IllegalArgumentException("Le montant ne peut pas être nul.");

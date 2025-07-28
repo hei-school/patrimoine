@@ -121,15 +121,15 @@ public abstract sealed class Possession extends Objectivable
     return projectionFuture(t).valeurComptable;
   }
 
-  public Argent valeurComptableEffective(LocalDate date) {
+  public Argent valeurActuelle(LocalDate date) {
     if (dateVente != null && (date.isEqual(dateVente) || date.isAfter(dateVente))) {
       return new Argent(0, valeurComptable.devise());
     }
     return valeurComptable;
   }
 
-  public Argent valeurComptableEffective() {
-    return valeurComptableEffective(LocalDate.now());
+  public Argent valeurActuelle() {
+    return valeurActuelle(LocalDate.now());
   }
 
   @Override
@@ -141,6 +141,7 @@ public abstract sealed class Possession extends Objectivable
     this.prixVente = prix;
     this.compteBeneficiaire = compteBeneficiaire;
     compteBeneficiaire.ajouter(prix);
+    historiqueValeurMarche.put(date, new Argent(0, prix.devise()));
   }
 
   @Override

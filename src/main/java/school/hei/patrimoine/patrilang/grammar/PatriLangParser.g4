@@ -210,7 +210,7 @@ valeurMarche
 ventePossession
     : MUL id COMMA? MOT_LE dateValue=variable COMMA?
       MOT_VENTE_DE possessionNom=variable
-      MOT_A prix=variable
+      MOT_A montant=variable
       MOT_POUR_COMPTE compteBeneficiaire=variable
     ;
 /* -------------------- Commun --------------------  */
