@@ -16,7 +16,6 @@ public enum VariableType {
   PERSONNE_MORALE("PersonnesMorales"),
   IMMOBILISATION("Immobilisations");
 
-
   private final String value;
 
   VariableType(String value) {
@@ -32,21 +31,20 @@ public enum VariableType {
     throw new IllegalArgumentException("Type de variable inconnu " + value);
   }
 
-//  public static VariableType fromString(String value) {
-//    return switch (value) {
-//      case "Templates" -> OPERATION_TEMPLATE;
-//      case "Dates" -> DATE;
-//      case "Nombres" -> NOMBRE;
-//      case "Argents" -> ARGENT;
-//      case "Personnes" -> PERSONNE;
-//      case "Cas" -> CAS;
-//      case "Trésoreries" -> TRESORERIES;
-//      case "Créances" -> CREANCE;
-//      case "Dettes" -> DETTE;
-//      case "PersonnesMorales" -> PERSONNE_MORALE;
-//      default -> throw new IllegalArgumentException("Type de variable inconnu " + value);
-//    };
-//  }
+  //  public static VariableType fromString(String value) {
+  //    return switch (value) {
+  //      case "Templates" -> OPERATION_TEMPLATE;
+  //      case "Dates" -> DATE;
+  //      case "Nombres" -> NOMBRE;
+  //      case "Argents" -> ARGENT;
+  //      case "Personnes" -> PERSONNE;
+  //      case "Cas" -> CAS;
+  //      case "Trésoreries" -> TRESORERIES;
+  //      case "Créances" -> CREANCE;
+  //      case "Dettes" -> DETTE;
+  //      case "PersonnesMorales" -> PERSONNE_MORALE;
+  //      default -> throw new IllegalArgumentException("Type de variable inconnu " + value);
+  //    };
+  //  }
 
 }
-

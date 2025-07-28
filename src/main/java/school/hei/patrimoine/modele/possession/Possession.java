@@ -1,10 +1,12 @@
 package school.hei.patrimoine.modele.possession;
 
+import static school.hei.patrimoine.modele.possession.TypeAgregat.ENTREPRISE;
+import static school.hei.patrimoine.modele.possession.TypeAgregat.IMMOBILISATION;
+
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.NavigableMap;
 import java.util.TreeMap;
-
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
@@ -13,17 +15,12 @@ import school.hei.patrimoine.modele.Devise;
 import school.hei.patrimoine.modele.objectif.Objectivable;
 import school.hei.patrimoine.modele.vente.Vendable;
 
-import static school.hei.patrimoine.modele.possession.TypeAgregat.IMMOBILISATION;
-import static school.hei.patrimoine.modele.possession.TypeAgregat.ENTREPRISE;
-
-
 @Getter
 @ToString
 @EqualsAndHashCode(callSuper = false)
 public abstract sealed class Possession extends Objectivable
-        implements Serializable, Vendable/*note(no-serializable)*/
-        permits
-        AchatMaterielAuComptant,
+    implements Serializable, Vendable /*note(no-serializable)*/
+    permits AchatMaterielAuComptant,
         Compte,
         CompteCorrection,
         Correction,
@@ -39,11 +36,10 @@ public abstract sealed class Possession extends Objectivable
   protected final LocalDate t;
   protected final Argent valeurComptable;
   protected final NavigableMap<LocalDate, Argent> historiqueValeurMarche = new TreeMap<>();
-  protected  LocalDate dateVente;
-  protected  Argent prixVente;
-  protected  Compte compteBeneficiaire;
+  protected LocalDate dateVente;
+  protected Argent prixVente;
+  protected Compte compteBeneficiaire;
   @EqualsAndHashCode.Exclude @ToString.Exclude private CompteCorrection compteCorrection;
-
 
   public Possession(String nom, LocalDate t, Argent valeurComptable) {
     super();
@@ -53,15 +49,20 @@ public abstract sealed class Possession extends Objectivable
     this.historiqueValeurMarche.put(t, valeurComptable);
   }
 
-  public Possession(String nom, LocalDate t, Argent valeurComptable, Argent valeurMarche, LocalDate dateVente, Argent prixVente, Compte compteBeneficiaire) {
+  public Possession(
+      String nom,
+      LocalDate t,
+      Argent valeurComptable,
+      Argent valeurMarche,
+      LocalDate dateVente,
+      Argent prixVente,
+      Compte compteBeneficiaire) {
     super();
     this.nom = nom;
     this.t = t;
     this.valeurComptable = valeurComptable;
     this.historiqueValeurMarche.put(t, valeurMarche);
   }
-
-
 
   public CompteCorrection getCompteCorrection() {
     if (compteCorrection == null) {
@@ -81,8 +82,8 @@ public abstract sealed class Possession extends Objectivable
   public void addValeurMarche(LocalDate date, Argent valeur) {
     if (typeAgregat() != IMMOBILISATION && typeAgregat() != ENTREPRISE) {
       throw new UnsupportedOperationException(
-              "Seules les possessions de type IMMOBILISATION ou ENTREPRISE peuvent avoir une valeur de marché."
-      );
+          "Seules les possessions de type IMMOBILISATION ou ENTREPRISE peuvent avoir une valeur de"
+              + " marché.");
     }
     historiqueValeurMarche.put(date, valeur);
   }
@@ -97,7 +98,6 @@ public abstract sealed class Possession extends Objectivable
     }
     return valeurComptable();
   }
-
 
   public final Devise devise() {
     return valeurComptable.devise();
@@ -162,5 +162,4 @@ public abstract sealed class Possession extends Objectivable
   public Argent getPrixVente() {
     return prixVente;
   }
-
 }

@@ -83,6 +83,7 @@ public class Argent implements Serializable {
     return that.convertir(devise, t).equals(this);
   }
 
-  public Argent negate() {return new Argent(-montant, devise);}
-
+  public Argent negate() {
+    return new Argent(-montant, devise);
+  }
 }
