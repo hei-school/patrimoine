@@ -141,6 +141,10 @@ MOT_ENTRER
 MOT_TRANSFERER
     :   'transférer'
     ;
+MOT_VENDRE
+    :   'vendre'
+    |   'Vendre'
+    ;
 MOT_DEPUIS
     :   'depuis'
     ;
