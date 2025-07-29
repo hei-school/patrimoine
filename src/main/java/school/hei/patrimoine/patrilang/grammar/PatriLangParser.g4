@@ -201,10 +201,6 @@ rembourserDette
     :   MUL id COMMA? dateValue=variable COMMA? MOT_REMBOURSER dette=variable MOT_DE rembourseur=variable MOT_AVEC creance=variable MOT_DE rembourse=variable MOT_VALANT valeurComptable=variable
     ;
 
-evaluation
-    :   MUL id COMMA? dateValue=variable COMMA? MOT_EVALUER valeurComptable=variable MOT_DANS compteNom=variable
-    ;
-
 /* -------------------- Commun --------------------  */
 sousTitre
     :   HASHES HASHES HASHES? nom=text COMMA? dateValue=variable COMMA? MOT_DEVISE_EN devise
