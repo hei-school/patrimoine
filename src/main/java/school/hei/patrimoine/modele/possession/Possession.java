@@ -15,7 +15,7 @@ import school.hei.patrimoine.modele.vente.ValeurMarche;
 import school.hei.patrimoine.modele.vente.Vendable;
 
 @ToString
-@EqualsAndHashCode(callSuper = false)
+@EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
 public abstract sealed class Possession extends Objectivable
     implements Vendable, Serializable /*note(no-serializable)*/
     permits AchatMaterielAuComptant,

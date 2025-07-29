@@ -21,6 +21,17 @@ public class ValeurMarcheHistoriqueTest {
     aujourdhui = LocalDate.now();
     valeurInitiale = new Argent(1000, Devise.EUR);
     materiel = new Materiel("Ordinateur", aujourdhui, aujourdhui, valeurInitiale, 0.05);
+    new ValeurMarche(materiel, aujourdhui, valeurInitiale);
+  }
+
+  @Test
+  void historique_valeur_marche_contient_valeur_initiale() {
+    Set<ValeurMarche> historique = materiel.historiqueValeurMarche();
+    assertEquals(1, historique.size());
+    ValeurMarche premiereValeur = historique.iterator().next();
+    assertEquals(materiel, premiereValeur.possession());
+    assertEquals(aujourdhui, premiereValeur.t());
+    assertEquals(valeurInitiale, premiereValeur.valeur());
   }
 
   @Test
@@ -30,17 +41,6 @@ public class ValeurMarcheHistoriqueTest {
 
     assertEquals(1, materiel.historiqueValeurMarche().size());
     assertTrue(copie.isEmpty());
-  }
-
-  @Test
-  void historique_valeur_marche_contient_valeur_initiale() {
-    Set<ValeurMarche> historique = materiel.historiqueValeurMarche();
-
-    assertEquals(1, historique.size());
-    ValeurMarche premiereValeur = historique.iterator().next();
-    assertEquals(materiel, premiereValeur.possession());
-    assertEquals(aujourdhui, premiereValeur.t());
-    assertEquals(valeurInitiale, premiereValeur.valeur());
   }
 
   @Test
