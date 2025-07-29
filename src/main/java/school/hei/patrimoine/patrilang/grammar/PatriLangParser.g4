@@ -93,12 +93,6 @@ correction
     :   MUL id COMMA? dateValue=variable COMMA? MOT_CORRIGER valeurComptable=variable MOT_DANS compteNom=variable
     ;
 /* -------------------- Possessions --------------------  */
-/* Types pour valeurs marché */
-typePossessionAcceptee
-    :   MOT_IMMOBILISATION
-    |   MOT_ENTREPRISE
-    ;
-
 /* Trésorerie */
 sectionTresoreries
     :   HASHES ENTETE_TRESORERIES compteElement*
@@ -118,23 +112,15 @@ compteElement
     :   compte
     |   MUL variable
     ;
+
+valeurMarche
+    :   MUL id COMMA? dateValue=variable COMMA? possession=variable MOT_VALANT valeur=variable
+    ;
+
 /* Opérations */
 sectionOperationTemplateDeclaration
     :   HASHES ENTETE_CONTSTRUCTEUR_D_OPERATIONS operationTemplate*
     ;
-
-declarationValeurMarche
-    :   MUL id COMMA? dateEvaluation=variable COMMA?
-    MOT_VALEUR_MARCHE possession=text MOT_ESTIMEE MOT_A valeur=argent
-    ;
-    * `ìd`,
-
-declarationVente :
-    MUL id COMMA? dateVente=variable COMMA?
-    MOT_VENDRE possession=text
-    MOT_A acheteur=text
-    MOT_PRIX valeur=argent
-    MOT_DEPUIS compteSource=text;
 
 operationTemplate
     :   HASHES HASHES name=text LPAREN operationTemplateParam? RPAREN operations*
@@ -180,6 +166,8 @@ operation
     |   operationTemplateCall
     |   ligneVariableDeclaration
     |   ligneCasOperations
+    |   valeurMarche
+
     ;
 
 ligneCasOperations

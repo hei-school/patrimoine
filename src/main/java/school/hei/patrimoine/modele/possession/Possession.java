@@ -28,12 +28,12 @@ public abstract sealed class Possession extends Objectivable
         PatrimoinePersonnel,
         PersonneMorale,
         RemboursementDette,
-        TransfertArgent {
+        TransfertArgent{
 
   protected final String nom;
   protected final LocalDate t;
   protected final Argent valeurComptable;
-  protected final Set<ValeurMarche> valeursMarche;
+  @EqualsAndHashCode.Exclude protected final Set<ValeurMarche> valeursMarche;
 
   @EqualsAndHashCode.Exclude @ToString.Exclude private CompteCorrection compteCorrection;
   @EqualsAndHashCode.Exclude @ToString.Exclude private boolean estVendu = false;
