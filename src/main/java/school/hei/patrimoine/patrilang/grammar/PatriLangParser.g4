@@ -126,8 +126,8 @@ sectionOperationTemplateDeclaration
 declarationValeurMarche
     :   MUL id COMMA? dateEvaluation=variable COMMA?
     MOT_VALEUR_MARCHE possession=text MOT_ESTIMEE MOT_A valeur=argent
-    (MOT_POUR possessionType=typePossessionAcceptee)?
     ;
+    * `ìd`,
 
 declarationVente :
     MUL id COMMA? dateVente=variable COMMA?
@@ -180,7 +180,6 @@ operation
     |   operationTemplateCall
     |   ligneVariableDeclaration
     |   ligneCasOperations
-
     ;
 
 ligneCasOperations

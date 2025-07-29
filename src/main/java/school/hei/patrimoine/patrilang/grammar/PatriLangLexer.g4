@@ -174,14 +174,6 @@ MOT_A
 MOT_EVALUATION
     :   'évaluation'
     ;
-MOT_IMMOBILISATION
-    :   'immobilisation'
-    |   'Immobilisation'
-    ;
-MOT_ENTREPRISE
-    :   'entreprise'
-    |   'Entreprise'
-    ;
 MOT_VENDRE
     :   'vendre'
     |   'Vendre'

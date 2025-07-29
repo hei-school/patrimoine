@@ -28,8 +28,7 @@ public abstract sealed class Possession extends Objectivable
         PatrimoinePersonnel,
         PersonneMorale,
         RemboursementDette,
-        TransfertArgent,
-        Vente {
+        TransfertArgent {
 
   protected final String nom;
   protected final LocalDate t;
