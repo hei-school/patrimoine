@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static school.hei.patrimoine.modele.Argent.ariary;
 import static school.hei.patrimoine.patrilang.modele.variable.VariableType.DATE;
 import static school.hei.patrimoine.patrilang.modele.variable.VariableType.TRESORERIES;
+import school.hei.patrimoine.modele.ValeurMarche.ValeurMarche;
 
 import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
@@ -24,7 +25,7 @@ public class ValeurMarcheVisitorTest {
   UnitTestVisitor visitor =
       new UnitTestVisitor() {
         @Override
-        public school.hei.patrimoine.modele.ValeurMarche.ValeurMarche visitValeurMarche(
+        public ValeurMarche visitValeurMarche(
             PatriLangParser.ValeurMarcheContext ctx) {
           return subject.apply(ctx);
         }

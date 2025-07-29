@@ -88,6 +88,10 @@ public class VariableVisitor implements SimpleVisitor<VariableContext, Variable<
     return visitVariableAsExpectedType(List.of(Possession.class), ctx);
   }
 
+  public Materiel asMateriel(VariableContext ctx) {
+    return visitVariableAsExpectedType(List.of(Materiel.class), ctx);
+  }
+
   public <T> void addToScope(String name, VariableType type, T value) {
     this.variableScope.add(name, type, value);
   }

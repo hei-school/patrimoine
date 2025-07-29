@@ -163,7 +163,14 @@ MOT_POUR_COMPTE
 PERCENT
     :   '%'
     ;
-
+MOT_VENDRE
+    :   'Vendre'
+    |   'vendre'
+    ;
+MOT_VERSER_DANS
+    :   'verser dans'
+    |   'Verser dans'
+    ;
 /* -------------------- Commun --------------------  */
 /* Date */
 MOT_LE
