@@ -15,7 +15,7 @@ import school.hei.patrimoine.modele.vente.ValeurMarche;
 import school.hei.patrimoine.modele.vente.Vendable;
 
 @ToString
-@EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(callSuper = false)
 public abstract sealed class Possession extends Objectivable
     implements Vendable, Serializable /*note(no-serializable)*/
     permits AchatMaterielAuComptant,
@@ -33,7 +33,7 @@ public abstract sealed class Possession extends Objectivable
   protected final String nom;
   protected final LocalDate t;
   protected final Argent valeurComptable;
-  protected final Set<ValeurMarche> valeursMarche;
+  @EqualsAndHashCode.Exclude protected final Set<ValeurMarche> valeursMarche;
 
   @EqualsAndHashCode.Exclude @ToString.Exclude private CompteCorrection compteCorrection;
   @EqualsAndHashCode.Exclude @ToString.Exclude private boolean estVendu = false;
