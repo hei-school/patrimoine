@@ -143,7 +143,6 @@ MOT_TRANSFERER
     ;
 MOT_VENDRE
     :   'vendre'
-    |   'Vendre'
     ;
 MOT_DEPUIS
     :   'depuis'
