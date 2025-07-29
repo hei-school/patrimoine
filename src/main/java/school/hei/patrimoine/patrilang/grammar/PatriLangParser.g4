@@ -112,6 +112,11 @@ compteElement
     :   compte
     |   MUL variable
     ;
+
+valeurMarche
+    :   MUL id COMMA? dateValue=variable COMMA? possession=variable MOT_VALANT valeur=variable
+    ;
+
 /* Opérations */
 sectionOperationTemplateDeclaration
     :   HASHES ENTETE_CONTSTRUCTEUR_D_OPERATIONS operationTemplate*
@@ -161,6 +166,7 @@ operation
     |   operationTemplateCall
     |   ligneVariableDeclaration
     |   ligneCasOperations
+    |   valeurMarche
 
     ;
 
