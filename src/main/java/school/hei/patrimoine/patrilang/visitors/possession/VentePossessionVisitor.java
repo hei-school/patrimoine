@@ -12,18 +12,17 @@ import school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor;
 
 @RequiredArgsConstructor
 public class VentePossessionVisitor
-        implements SimpleVisitor<VentePossessionContext, VentePossession> {
+    implements SimpleVisitor<VentePossessionContext, VentePossession> {
   private final VariableVisitor variableVisitor;
 
-    @Override
-    public VentePossession apply(VentePossessionContext ctx) {
+  @Override
+  public VentePossession apply(VentePossessionContext ctx) {
 
-        LocalDate dateVente = variableVisitor.asDate(ctx.dateValue);
-        Possession possession = variableVisitor.asPossession(ctx.possessionNom);
-        Argent prixVente = variableVisitor.asArgent(ctx.montant);
-        Compte compteBeneficiaire = variableVisitor.asCompte(ctx.compteBeneficiaire);
+    LocalDate dateVente = variableVisitor.asDate(ctx.dateValue);
+    Possession possession = variableVisitor.asPossession(ctx.possessionNom);
+    Argent prixVente = variableVisitor.asArgent(ctx.montant);
+    Compte compteBeneficiaire = variableVisitor.asCompte(ctx.compteBeneficiaire);
 
-        return new VentePossession(possession, dateVente, prixVente, compteBeneficiaire);
-    }
-
+    return new VentePossession(possession, dateVente, prixVente, compteBeneficiaire);
+  }
 }

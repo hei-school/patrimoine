@@ -2,10 +2,10 @@ package school.hei.patrimoine.patrilang.unit.visitors.possession;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static school.hei.patrimoine.modele.Argent.ariary;
+import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.VentePossessionContext;
 import static school.hei.patrimoine.patrilang.modele.variable.VariableType.*;
 
 import java.time.LocalDate;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import school.hei.patrimoine.modele.possession.Compte;
@@ -15,8 +15,6 @@ import school.hei.patrimoine.patrilang.antlr.PatriLangParser;
 import school.hei.patrimoine.patrilang.utils.UnitTestVisitor;
 import school.hei.patrimoine.patrilang.visitors.possession.VentePossessionVisitor;
 import school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor;
-
-import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.VentePossessionContext;
 
 class VentePossessionVisitorTest {
 
@@ -34,12 +32,12 @@ class VentePossessionVisitorTest {
     variableVisitor = new VariableVisitor();
     subject = new VentePossessionVisitor(variableVisitor);
     visitor =
-            new UnitTestVisitor() {
-              @Override
-              public VentePossession visitVentePossession(VentePossessionContext ctx) {
-                return subject.apply(ctx);
-              }
-            };
+        new UnitTestVisitor() {
+          @Override
+          public VentePossession visitVentePossession(VentePossessionContext ctx) {
+            return subject.apply(ctx);
+          }
+        };
 
     monCompte = new Compte("monCompte", AJD, ariary(500_000));
     monOrdi = new Materiel("monOrdi", AJD, AJD, ariary(200_000), 0.5);
@@ -52,9 +50,9 @@ class VentePossessionVisitorTest {
   @Test
   void parse_vente_possession_should_mark_possession_as_sold_and_credit_compte() {
     var input =
-            """
-            * `vente1`, vendre Immobilisations:monOrdi à 250000Ar le Dates:ajd verser dans Trésoreries:monCompte
-            """;
+        """
+* `vente1`, vendre Immobilisations:monOrdi à 250000Ar le Dates:ajd verser dans Trésoreries:monCompte
+""";
 
     var vente = (VentePossession) visitor.visit(input, PatriLangParser::ventePossession);
     vente.execute();
@@ -71,9 +69,9 @@ class VentePossessionVisitorTest {
     monOrdi.vendre(AJD, ariary(100_000), monCompte);
 
     var input =
-            """
-            * `vente2`, vendre Immobilisations:monOrdi à 250000Ar le Dates:ajd verser dans Trésoreries:monCompte
-            """;
+        """
+* `vente2`, vendre Immobilisations:monOrdi à 250000Ar le Dates:ajd verser dans Trésoreries:monCompte
+""";
 
     var vente = (VentePossession) visitor.visit(input, PatriLangParser::ventePossession);
 

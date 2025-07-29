@@ -38,5 +38,4 @@ public enum VariableType {
       default -> throw new IllegalArgumentException("Type de variable inconnu " + value);
     };
   }
-
 }

@@ -208,7 +208,7 @@ valeurMarche
     ;
 
 ventePossession
-    : MUL id COMMA? MOT_VENDRE possessionNom=variable MOT_A montant=variable COMA? MOT_LE dateValue=variable COMMA? MOT_VERSER_DANS compteBeneficiaire=variable
+    :   MUL id COMMA? MOT_VENDRE possessionNom=variable MOT_A montant=variable COMMA? MOT_LE dateValue=variable COMMA? MOT_VERSER_DANS compteBeneficiaire=variable
     ;
 
 /* -------------------- Commun --------------------  */
