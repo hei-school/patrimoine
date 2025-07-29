@@ -5,6 +5,7 @@ import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.possession.Compte;
 import school.hei.patrimoine.modele.possession.Possession;
 import school.hei.patrimoine.modele.possession.Vente;
+import school.hei.patrimoine.patrilang.antlr.PatriLangParser.VenteContext;
 import school.hei.patrimoine.patrilang.visitors.SimpleVisitor;
 import school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor;
 
@@ -16,10 +17,10 @@ public class VenteVisitor implements SimpleVisitor<VenteContext, Vente> {
 
     @Override
     public Vente apply(VenteContext ctx) {
-        LocalDate tVente = variableVisitor.asVente(ctx.dateValue);
-        Possession possession = variableVisitor.asVente(ctx.possession);
-        Compte compteBeneficiaire = variableVisitor.asVente(ctx.compteBeneficiaire);
-        Argent prixVente = variableVisitor.asVente(ctx.prixVente);
+        LocalDate tVente = this.variableVisitor.asDate(ctx.dateValue);
+        Possession possession = this.variableVisitor.asPossession(ctx.possession);
+        Compte compteBeneficiaire = this.variableVisitor.asCompte(ctx.compteBeneficiaire);
+        Argent prixVente = this.variableVisitor.asArgent(ctx.prixVente);
         return new Vente(tVente, possession, compteBeneficiaire, prixVente);
     }
 }

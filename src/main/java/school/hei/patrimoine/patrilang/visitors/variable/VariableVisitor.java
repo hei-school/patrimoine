@@ -74,10 +74,6 @@ public class VariableVisitor implements SimpleVisitor<VariableContext, Variable<
     return visitVariableAsExpectedType(Possession.class, ctx);
   }
 
-  public Vente asVente(VariableContext ctx) {
-    return visitVariableAsExpectedType(Vente.class, ctx);
-  }
-
   public Personne asPersonne(VariableContext ctx) {
     var value = visitVariableAsExpectedType(List.of(Personne.class, PersonneMorale.class), ctx);
 
