@@ -112,12 +112,6 @@ compteElement
     :   compte
     |   MUL variable
     ;
-
-/* Valeurs de marché */
-sectionValeursMarche
-    :   HASHES ENTETE_VALEURS_MARCHE
-    ;
-
 /* Opérations */
 sectionOperationTemplateDeclaration
     :   HASHES ENTETE_CONTSTRUCTEUR_D_OPERATIONS operationTemplate*
