@@ -7,7 +7,6 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.Devise;
-import school.hei.patrimoine.modele.objectif.Objectif;
 import school.hei.patrimoine.modele.objectif.Objectivable;
 import school.hei.patrimoine.modele.vente.InformationDeVente;
 import school.hei.patrimoine.modele.vente.ValeurMarchee;
@@ -80,11 +79,6 @@ public abstract sealed class Possession extends Objectivable
   @Override
   public Argent valeurAObjectifT(LocalDate t) {
     return projectionFuture(t).valeurComptable;
-  }
-
-  @Override
-  public Set<Objectif> getObjectifs() {
-    throw new UnsupportedOperationException("Not yet implemented");
   }
 
   @Override
