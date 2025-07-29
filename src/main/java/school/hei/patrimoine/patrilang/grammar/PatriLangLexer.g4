@@ -110,6 +110,13 @@ ENTETE_DETTES
     :   'Dettes'
     ;
 
+/* Valeurs de marché */
+ENTETE_VALEURS_MARCHE
+    :   'Valeurs de marché'
+    |   'Valeurs de Marché'
+    |   'Valeurs de marché'
+    ;
+
 /* Opérations */
 ENTETE_CONTSTRUCTEUR_D_OPERATIONS
     :   'Constructeurs'

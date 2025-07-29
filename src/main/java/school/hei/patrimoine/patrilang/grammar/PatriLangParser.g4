@@ -112,6 +112,12 @@ compteElement
     :   compte
     |   MUL variable
     ;
+
+/* Valeurs de marché */
+sectionValeursMarche
+    :   HASHES ENTETE_VALEURS_MARCHE
+    ;
+
 /* Opérations */
 sectionOperationTemplateDeclaration
     :   HASHES ENTETE_CONTSTRUCTEUR_D_OPERATIONS operationTemplate*
@@ -199,6 +205,10 @@ possedeMateriel
 
 rembourserDette
     :   MUL id COMMA? dateValue=variable COMMA? MOT_REMBOURSER dette=variable MOT_DE rembourseur=variable MOT_AVEC creance=variable MOT_DE rembourse=variable MOT_VALANT valeurComptable=variable
+    ;
+
+evaluation
+    :   MUL id COMMA? dateValue=variable COMMA? MOT_EVALUER valeurComptable=variable MOT_DANS compteNom=variable
     ;
 
 /* -------------------- Commun --------------------  */

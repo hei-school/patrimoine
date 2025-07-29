@@ -17,6 +17,9 @@
 # Dettes
 * Dettes:zetyDette
 
+# Valeurs de Marché
+* 
+
 # Initialisation
 * `objectifInitZetyPersonnel` Dates:ajd, objectif de 1000000Ar pour Trésoreries:zetyPersonnel
 * `initComptePersonnel` Dates:ajd, entrer 1000000Ar vers Trésoreries:zetyPersonnel
