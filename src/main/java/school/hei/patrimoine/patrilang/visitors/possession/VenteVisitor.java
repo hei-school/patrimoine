@@ -14,14 +14,7 @@ public class VenteVisitor implements SimpleVisitor<VentePossessionContext, Vente
 
   @Override
   public Vente apply(VentePossessionContext ctx) {
-    var possessionTypeStr = Arrays.stream(ctx.possessionAVendre.VARIABLE().toString().split(":")).toList().getFirst();
-    var possessionAVendre = switch (possessionTypeStr) {
-      case "Trésoreries" -> variableVisitor.asCompte(ctx.possessionAVendre);
-      case "Créances" -> variableVisitor.asCreance(ctx.possessionAVendre);
-      case "Dettes" -> variableVisitor.asDette(ctx.possessionAVendre);
-      default -> throw new UnsupportedOperationException("Can't sell: " + possessionTypeStr);
-    };
-
+    var possessionAVendre = variableVisitor.asPossession(ctx.possessionAVendre);
     var t = variableVisitor.asDate(ctx.dateDeVente);
     var valeurDeVente = variableVisitor.asArgent(ctx.prixDeVente);
     var dateDeVente = variableVisitor.asDate(ctx.dateDeVente);
