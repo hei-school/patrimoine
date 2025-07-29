@@ -6,8 +6,6 @@ import school.hei.patrimoine.patrilang.antlr.PatriLangParser.VentePossessionCont
 import school.hei.patrimoine.patrilang.visitors.SimpleVisitor;
 import school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor;
 
-import java.util.Arrays;
-
 @RequiredArgsConstructor
 public class VenteVisitor implements SimpleVisitor<VentePossessionContext, Vente> {
   private final VariableVisitor variableVisitor;

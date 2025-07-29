@@ -5,8 +5,6 @@ import school.hei.patrimoine.modele.vente.ValeurMarchee;
 import school.hei.patrimoine.patrilang.visitors.SimpleVisitor;
 import school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor;
 
-import java.util.Arrays;
-
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.AjoutValeurMarcheeContext;
 
 @RequiredArgsConstructor
