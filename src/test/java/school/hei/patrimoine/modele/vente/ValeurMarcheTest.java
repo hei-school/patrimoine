@@ -2,9 +2,12 @@ package school.hei.patrimoine.modele.vente;
 
 import org.junit.jupiter.api.Test;
 import school.hei.patrimoine.modele.Argent;
+import school.hei.patrimoine.modele.Devise;
+import school.hei.patrimoine.modele.possession.Materiel;
 import school.hei.patrimoine.modele.possession.Possession;
 import school.hei.patrimoine.modele.vente.ValeurMarche;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Set;
 
@@ -16,8 +19,8 @@ public class ValeurMarcheTest {
     public void valeurMarche_is_added_to_possession() {
         // GIVEN
         LocalDate date = LocalDate.of(2024, 1, 1);
-        Argent valeurComptable = new Argent(1000);
-        Possession possession = new Possession("ordi", valeurComptable, date);
+        Argent valeurComptable = new Argent(new BigDecimal("1000"), Devise.MGA);
+        Possession possession = new Materiel("ordi",valeurComptable, date);
 
         // WHEN : on crée une nouvelle valeur de marché liée à la possession
         Argent valeurMarche = new Argent(1200);
@@ -33,3 +36,4 @@ public class ValeurMarcheTest {
         ));
     }
 }
+
