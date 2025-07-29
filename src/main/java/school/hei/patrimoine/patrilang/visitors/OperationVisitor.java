@@ -32,7 +32,7 @@ public class OperationVisitor
   private final GroupPossessionVisitor groupPossessionVisitor;
   private final OperationTemplateCallVisitor operationTemplateCallVisitor;
   private final ValeurMarcheVisitor valeurMarcheVisitor;
-  private final VentePossessionVisitor venteVisitor;
+  private final VenteVisitor venteVisitor;
 
   @Override
   public Set<Possession> apply(List<OperationsContext> contexts, VariableVisitor variableVisitor) {
@@ -112,8 +112,8 @@ public class OperationVisitor
       return Set.of();
     }
 
-    if (nonNull(ctx.ventePossession())) {
-      this.venteVisitor.apply(ctx.ventePossession());
+    if (nonNull(ctx.vente())) {
+      this.venteVisitor.apply(ctx.vente());
       return Set.of();
     }
 
