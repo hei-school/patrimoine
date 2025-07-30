@@ -31,6 +31,8 @@ public class OperationVisitor
   private final RemboursementDetteVisitor remboursementDetteVisitor;
   private final GroupPossessionVisitor groupPossessionVisitor;
   private final OperationTemplateCallVisitor operationTemplateCallVisitor;
+  private final ValeurMarcheVisitor valeurMarcheVisitor;
+  private final VenteVisitor venteVisitor;
 
   @Override
   public Set<Possession> apply(List<OperationsContext> contexts, VariableVisitor variableVisitor) {
@@ -102,6 +104,16 @@ public class OperationVisitor
 
       variableVisitor.addToScope(
           nom, type, variableVisitor.apply(ctx.ligneVariableDeclaration().valeur).value());
+      return Set.of();
+    }
+
+    if (nonNull(ctx.valeurMarche())) {
+      this.valeurMarcheVisitor.apply(ctx.valeurMarche());
+      return Set.of();
+    }
+
+    if (nonNull(ctx.vente())) {
+      this.venteVisitor.apply(ctx.vente());
       return Set.of();
     }
 
