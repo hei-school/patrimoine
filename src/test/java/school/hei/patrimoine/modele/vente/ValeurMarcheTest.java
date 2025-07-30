@@ -23,6 +23,7 @@ public class ValeurMarcheTest {
     assertEquals(argent, vm.valeur());
   }
 
+  // Not necessary
   @Test
   void vente_doit_marquer_possession_comme_vendue() {
     var dateVente = LocalDate.now();
@@ -52,6 +53,7 @@ public class ValeurMarcheTest {
     assertFalse(compte.getFluxArgents().isEmpty());
   }
 
+  // Not necessary
   @Test
   void valeur_comptable_apres_vente_doit_etre_nulle() {
     var materiel =
@@ -64,6 +66,7 @@ public class ValeurMarcheTest {
     assertEquals(new Argent(0, Devise.EUR), materiel.valeurComptable());
   }
 
+  // Not necessary
   @Test
   void valeur_marche_historique_doit_etre_conservee() {
     var materiel =
