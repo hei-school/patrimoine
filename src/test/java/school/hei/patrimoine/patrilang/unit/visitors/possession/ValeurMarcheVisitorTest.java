@@ -1,5 +1,12 @@
 package school.hei.patrimoine.patrilang.unit.visitors.possession;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static school.hei.patrimoine.modele.Argent.ariary;
+import static school.hei.patrimoine.patrilang.modele.variable.VariableType.DATE;
+import static school.hei.patrimoine.patrilang.modele.variable.VariableType.TRESORERIES;
+
+import java.time.LocalDate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import school.hei.patrimoine.modele.Argent;
@@ -10,14 +17,6 @@ import school.hei.patrimoine.patrilang.antlr.PatriLangParser;
 import school.hei.patrimoine.patrilang.utils.UnitTestVisitor;
 import school.hei.patrimoine.patrilang.visitors.possession.ValeurMarcheVisitor;
 import school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor;
-
-import java.time.LocalDate;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static school.hei.patrimoine.modele.Argent.ariary;
-import static school.hei.patrimoine.patrilang.modele.variable.VariableType.DATE;
-import static school.hei.patrimoine.patrilang.modele.variable.VariableType.TRESORERIES;
 
 public class ValeurMarcheVisitorTest {
   private static final LocalDate AJD = LocalDate.now();
@@ -32,17 +31,19 @@ public class ValeurMarcheVisitorTest {
   void setUp() {
     variableVisitor = new VariableVisitor();
     subject = new ValeurMarcheVisitor(variableVisitor);
-    visitor = new UnitTestVisitor() {
-      @Override
-      public ValeurMarche visitValeurMarche(PatriLangParser.ValeurMarcheContext ctx) {
-        return subject.apply(ctx);
-      }
-    };
+    visitor =
+        new UnitTestVisitor() {
+          @Override
+          public ValeurMarche visitValeurMarche(PatriLangParser.ValeurMarcheContext ctx) {
+            return subject.apply(ctx);
+          }
+        };
   }
 
   @Test
   void parse_valeur_marche_materiel() {
-    Materiel possession = new Materiel("maisonTest", AJD, AJD, new Argent(1_000_000, Devise.MGA), 2.0);
+    Materiel possession =
+        new Materiel("maisonTest", AJD, AJD, new Argent(1_000_000, Devise.MGA), 2.0);
     variableVisitor.addToScope("possessionTest", TRESORERIES, possession);
     variableVisitor.addToScope("ajd", DATE, AJD);
 
@@ -58,7 +59,8 @@ public class ValeurMarcheVisitorTest {
 
   @Test
   void parse_valeur_marche_date_passee() {
-    Materiel possession = new Materiel("voiture", DATE_PASSEE, DATE_PASSEE, ariary(10_000_000), 10.0);
+    Materiel possession =
+        new Materiel("voiture", DATE_PASSEE, DATE_PASSEE, ariary(10_000_000), 10.0);
     variableVisitor.addToScope("voitureTest", TRESORERIES, possession);
     variableVisitor.addToScope("datePassee", DATE, DATE_PASSEE);
 
@@ -92,7 +94,7 @@ public class ValeurMarcheVisitorTest {
 
     var input = "* `valeurMarche` Dates:ajd, Trésoreries:inexistante valant 1000Ar";
 
-    assertThrows(IllegalArgumentException.class, () ->
-            visitor.visit(input, PatriLangParser::valeurMarche));
+    assertThrows(
+        IllegalArgumentException.class, () -> visitor.visit(input, PatriLangParser::valeurMarche));
   }
 }
