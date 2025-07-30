@@ -9,7 +9,6 @@ import java.nio.file.Paths;
 import org.antlr.v4.runtime.CommonTokenStream;
 import school.hei.patrimoine.cas.Cas;
 import school.hei.patrimoine.cas.CasSet;
-import school.hei.patrimoine.patrilang.antlr.PatriLangLexer;
 import school.hei.patrimoine.patrilang.antlr.PatriLangParser;
 import school.hei.patrimoine.patrilang.factory.SectionVisitorFactory;
 import school.hei.patrimoine.patrilang.visitors.PatriLangCasVisitor;

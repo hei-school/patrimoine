@@ -5,7 +5,6 @@ import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.DiagnosticErrorListener;
 import org.antlr.v4.runtime.ParserRuleContext;
-import school.hei.patrimoine.patrilang.antlr.PatriLangLexer;
 import school.hei.patrimoine.patrilang.antlr.PatriLangParser;
 import school.hei.patrimoine.patrilang.antlr.PatriLangParserBaseVisitor;
 

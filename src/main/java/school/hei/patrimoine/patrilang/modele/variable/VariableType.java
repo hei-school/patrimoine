@@ -13,8 +13,8 @@ public enum VariableType {
   TRESORERIES("Trésoreries"),
   CREANCE("Créances"),
   DETTE("Dettes"),
-  PERSONNE_MORALE("PersonnesMorales"),
-  COMPTES("Comptes");
+  PERSONNE_MORALE("PersonnesMorales");
+
 
   private final String value;
 
@@ -34,7 +34,6 @@ public enum VariableType {
       case "Créances" -> CREANCE;
       case "Dettes" -> DETTE;
       case "PersonnesMorales" -> PERSONNE_MORALE;
-      case "Comptes" -> COMPTES;
       default -> throw new IllegalArgumentException("Type de variable inconnu " + value);
     };
   }
