@@ -1,5 +1,7 @@
 package school.hei.patrimoine.modele.vente;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.time.LocalDate;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
@@ -8,8 +10,6 @@ import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.Devise;
 import school.hei.patrimoine.modele.possession.Compte;
 import school.hei.patrimoine.modele.possession.Materiel;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 public class ValeurMarcheHistoriqueTest {
   private Materiel materiel;
@@ -60,9 +60,11 @@ public class ValeurMarcheHistoriqueTest {
   void historique_valeur_marche_pour_type_non_eligible() {
     Compte compte = new Compte("Compte Courant", aujourdhui, valeurInitiale);
 
-    assertThrows(UnsupportedOperationException.class, () -> {
-      compte.ajouterValeurMarche(new ValeurMarche(compte, aujourdhui, valeurInitiale));
-    });
+    assertThrows(
+        UnsupportedOperationException.class,
+        () -> {
+          compte.ajouterValeurMarche(new ValeurMarche(compte, aujourdhui, valeurInitiale));
+        });
 
     assertEquals(0, compte.historiqueValeurMarche().size());
   }
