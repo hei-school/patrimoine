@@ -8,8 +8,4 @@ public enum TypeAgregat {
   FLUX,
   CORRECTION,
   ENTREPRISE;
-
-  public boolean valeurMarcheVariable() {
-    return this == IMMOBILISATION || this == ENTREPRISE;
-  }
 }
