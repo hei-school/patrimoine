@@ -10,9 +10,9 @@ import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class VenteTest {
+public class ValeurMarcheTest {
     @Test
-    void valeurMarche_doitStockerCorrectementLesValeurs() {
+    void valeurMarche_doit_stocker_correctement_les_valeurs() {
         var materiel = new Materiel("Test", LocalDate.now(), LocalDate.now(),
                 new Argent(1000, Devise.EUR), 0.0);
         var date = LocalDate.of(2025, 1, 1);
