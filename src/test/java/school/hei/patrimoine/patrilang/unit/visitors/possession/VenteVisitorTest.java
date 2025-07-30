@@ -1,8 +1,12 @@
 package school.hei.patrimoine.patrilang.unit.visitors.possession;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static school.hei.patrimoine.modele.Argent.ariary;
-import static school.hei.patrimoine.patrilang.modele.variable.VariableType.*;
+import static school.hei.patrimoine.patrilang.modele.variable.VariableType.DATE;
+import static school.hei.patrimoine.patrilang.modele.variable.VariableType.NOMBRE;
+import static school.hei.patrimoine.patrilang.modele.variable.VariableType.TRESORERIES;
 
 import java.time.LocalDate;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,12 +33,12 @@ public class VenteVisitorTest {
     variableVisitor = new VariableVisitor();
     subject = new VenteVisitor(variableVisitor);
     visitor =
-        new UnitTestVisitor() {
-          @Override
-          public Vente visitVente(PatriLangParser.VenteContext ctx) {
-            return subject.apply(ctx);
-          }
-        };
+            new UnitTestVisitor() {
+              @Override
+              public Vente visitVente(PatriLangParser.VenteContext ctx) {
+                return subject.apply(ctx);
+              }
+            };
   }
 
   @Test
@@ -43,11 +47,11 @@ public class VenteVisitorTest {
     Compte compteBeneficiaire = new Compte("comptePrincipal", AJD, ariary(5_000_000));
 
     variableVisitor.addToScope("voiture", TRESORERIES, materiel);
-    variableVisitor.addToScope("compte", COMPTES, compteBeneficiaire);
+    variableVisitor.addToScope("compte", TRESORERIES, compteBeneficiaire);
     variableVisitor.addToScope("ajd", DATE, AJD);
 
     var input =
-        "* `vente` Dates:ajd, vendre Trésoreries:voiture pour 8000000Ar vers Comptes:compte";
+            "* `vente` Dates:ajd, vendre Trésoreries:voiture pour 8000000Ar vers Trésoreries:compte";
 
     Vente actual = visitor.visit(input, PatriLangParser::vente);
 
@@ -63,11 +67,11 @@ public class VenteVisitorTest {
     Compte compteBeneficiaire = new Compte("comptePrincipal", AJD, ariary(5_000_000));
 
     variableVisitor.addToScope("voiture", TRESORERIES, materiel);
-    variableVisitor.addToScope("compte", COMPTES, compteBeneficiaire);
+    variableVisitor.addToScope("compte", TRESORERIES, compteBeneficiaire);
     variableVisitor.addToScope("dateFuture", DATE, DATE_FUTURE);
 
     var input =
-        "* `vente` Dates:dateFuture, vendre Trésoreries:voiture pour 8000000Ar vers Comptes:compte";
+            "* `vente` Dates:dateFuture, vendre Trésoreries:voiture pour 8000000Ar vers Trésoreries:compte";
 
     Vente actual = visitor.visit(input, PatriLangParser::vente);
 
@@ -83,11 +87,11 @@ public class VenteVisitorTest {
     Compte compteBeneficiaire = new Compte("comptePrincipal", AJD, ariary(5_000_000));
 
     variableVisitor.addToScope("voiture", TRESORERIES, materiel);
-    variableVisitor.addToScope("compte", COMPTES, compteBeneficiaire);
+    variableVisitor.addToScope("compte", TRESORERIES, compteBeneficiaire);
     variableVisitor.addToScope("datePassee", DATE, DATE_PASSEE);
 
     var input =
-        "* `vente` Dates:datePassee, vendre Trésoreries:voiture pour 8000000Ar vers Comptes:compte";
+            "* `vente` Dates:datePassee, vendre Trésoreries:voiture pour 8000000Ar vers Trésoreries:compte";
 
     Vente actual = visitor.visit(input, PatriLangParser::vente);
 
@@ -102,14 +106,14 @@ public class VenteVisitorTest {
     Materiel materiel = new Materiel("voiture", AJD, AJD, ariary(10_000_000), 10.0);
     Compte compteBeneficiaire = new Compte("comptePrincipal", AJD, ariary(5_000_000));
     variableVisitor.addToScope("voiture", TRESORERIES, materiel);
-    variableVisitor.addToScope("compte", COMPTES, compteBeneficiaire);
+    variableVisitor.addToScope("compte", TRESORERIES, compteBeneficiaire);
     variableVisitor.addToScope("ajd", DATE, AJD);
     variableVisitor.addToScope("prixBase", NOMBRE, 7_000_000d);
     variableVisitor.addToScope("rabais", NOMBRE, 1_000_000d);
 
     var input =
-        "* `vente` Dates:ajd, vendre Trésoreries:voiture pour (Nombres:prixBase - Nombres:rabais)Ar"
-            + " vers Comptes:compte";
+            "* `vente` Dates:ajd, vendre Trésoreries:voiture pour (Nombres:prixBase - Nombres:rabais)Ar"
+                    + " vers Trésoreries:compte"; // CORRIGÉ ICI
 
     Vente actual = visitor.visit(input, PatriLangParser::vente);
 
@@ -123,15 +127,15 @@ public class VenteVisitorTest {
   void parse_vente_possession_inconnue() {
     Compte compte = new Compte("compte", AJD, ariary(0));
 
-    variableVisitor.addToScope("compte", COMPTES, compte);
+    variableVisitor.addToScope("compte", TRESORERIES, compte);
     variableVisitor.addToScope("ajd", DATE, AJD);
 
     var input =
-        "* `vente` Dates:ajd, vendre Trésoreries:inexistante pour 1000Ar vers Comptes:compte";
+            "* `vente` Dates:ajd, vendre Trésoreries:inexistante pour 1000Ar vers Trésoreries:compte";
 
     IllegalArgumentException exception =
-        assertThrows(
-            IllegalArgumentException.class, () -> visitor.visit(input, PatriLangParser::vente));
+            assertThrows(
+                    IllegalArgumentException.class, () -> visitor.visit(input, PatriLangParser::vente));
 
     assertTrue(exception.getMessage().contains("inexistante"));
   }
@@ -143,11 +147,11 @@ public class VenteVisitorTest {
     variableVisitor.addToScope("objet", TRESORERIES, materiel);
     variableVisitor.addToScope("ajd", DATE, AJD);
 
-    var input = "* `vente` Dates:ajd, vendre Trésoreries:objet pour 1000Ar vers Comptes:inexistant";
+    var input = "* `vente` Dates:ajd, vendre Trésoreries:objet pour 1000Ar vers Trésoreries:inexistant";
 
     IllegalArgumentException exception =
-        assertThrows(
-            IllegalArgumentException.class, () -> visitor.visit(input, PatriLangParser::vente));
+            assertThrows(
+                    IllegalArgumentException.class, () -> visitor.visit(input, PatriLangParser::vente));
 
     assertTrue(exception.getMessage().contains("inexistant"));
   }
@@ -158,14 +162,14 @@ public class VenteVisitorTest {
     Compte compte = new Compte("compte", AJD, ariary(0));
 
     variableVisitor.addToScope("objet", TRESORERIES, materiel);
-    variableVisitor.addToScope("compte", COMPTES, compte);
+    variableVisitor.addToScope("compte", TRESORERIES, compte);
 
     var input =
-        "* `vente` Dates:inexistante, vendre Trésoreries:objet pour 1000Ar vers Comptes:compte";
+            "* `vente` Dates:inexistante, vendre Trésoreries:objet pour 1000Ar vers Trésoreries:compte";
 
     IllegalArgumentException exception =
-        assertThrows(
-            IllegalArgumentException.class, () -> visitor.visit(input, PatriLangParser::vente));
+            assertThrows(
+                    IllegalArgumentException.class, () -> visitor.visit(input, PatriLangParser::vente));
 
     assertTrue(exception.getMessage().contains("inexistante"));
   }
