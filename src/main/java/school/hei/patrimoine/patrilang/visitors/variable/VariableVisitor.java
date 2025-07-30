@@ -11,10 +11,7 @@ import lombok.Getter;
 import school.hei.patrimoine.cas.Cas;
 import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.Personne;
-import school.hei.patrimoine.modele.possession.Compte;
-import school.hei.patrimoine.modele.possession.Creance;
-import school.hei.patrimoine.modele.possession.Dette;
-import school.hei.patrimoine.modele.possession.PersonneMorale;
+import school.hei.patrimoine.modele.possession.*;
 import school.hei.patrimoine.patrilang.modele.variable.Variable;
 import school.hei.patrimoine.patrilang.modele.variable.VariableScope;
 import school.hei.patrimoine.patrilang.modele.variable.VariableType;
@@ -71,6 +68,10 @@ public class VariableVisitor implements SimpleVisitor<VariableContext, Variable<
 
   public Creance asCreance(VariableContext ctx) {
     return visitVariableAsExpectedType(Creance.class, ctx);
+  }
+
+  public Possession asPossession(VariableContext ctx) {
+    return visitVariableAsExpectedType(Possession.class, ctx);
   }
 
   public Personne asPersonne(VariableContext ctx) {
