@@ -40,9 +40,18 @@ class ValeurMarcheTest {
                 new Argent(2_500, Devise.MGA));
 
     IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, executable);
-    assertEquals(
-        "Seules les possessions de type IMMOBILISATION ou ENTREPRISE peuvent avoir une valeur de"
-            + " marché.",
-        exception.getMessage());
+    Materiel materiel =
+        new Materiel(
+            "Ordinateur",
+            LocalDate.of(2023, 1, 1),
+            LocalDate.of(2023, 1, 1),
+            new Argent(1_000, Devise.MGA),
+            0.05);
+    LocalDate dateValeur = LocalDate.of(2023, 6, 1);
+    Argent valeur = new Argent(1_200, Devise.MGA);
+
+    assertDoesNotThrow(() -> new ValeurMarche(materiel, dateValeur, valeur));
+
+    assertEquals(valeur, materiel.valeurMarcheALaDate(dateValeur));
   }
 }
