@@ -1,8 +1,11 @@
 package school.hei.patrimoine.modele.possession;
 
 import java.time.LocalDate;
+
+import lombok.Getter;
 import school.hei.patrimoine.modele.Argent;
 
+@Getter
 public final class Vente {
   private final LocalDate tVente;
   private final Possession possession;
