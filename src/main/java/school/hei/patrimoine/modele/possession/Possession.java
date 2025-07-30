@@ -83,7 +83,7 @@ public abstract sealed class Possession extends Objectivable
   @Override
   public Argent getValeurMarche(LocalDate t) {
     return valeursMarche.stream()
-        .filter(vm -> !vm.t().isAfter(t))
+        .filter(vm -> !vm.t().isBefore(t))
         .max(Comparator.comparing(ValeurMarche::t))
         .map(ValeurMarche::valeur)
         .orElse(valeurComptable);
@@ -91,13 +91,9 @@ public abstract sealed class Possession extends Objectivable
 
   @Override
   public void vendre(LocalDate dateVente, Argent prixVente, Compte compteBeneficiaire) {
-    if (estVendu) {
-      throw new IllegalStateException("Possession déjà vendue");
-    }
-    this.estVendu = true;
+    // Method simplified without checking estVendu which is useless
     this.dateVente = dateVente;
     this.prixVente = prixVente;
-
     new FluxArgent("Vente de " + nom, compteBeneficiaire, dateVente, prixVente);
   }
 
@@ -126,6 +122,6 @@ public abstract sealed class Possession extends Objectivable
   }
 
   public Set<ValeurMarche> historiqueValeurMarche() {
-    return new HashSet<>(valeursMarche);
+    return valeursMarche;
   }
 }
