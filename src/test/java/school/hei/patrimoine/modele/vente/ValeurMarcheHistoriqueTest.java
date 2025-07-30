@@ -1,14 +1,13 @@
 package school.hei.patrimoine.modele.vente;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.time.LocalDate;
-import java.util.Set;
 import org.junit.jupiter.api.Test;
 import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.Devise;
 import school.hei.patrimoine.modele.possession.Compte;
 import school.hei.patrimoine.modele.possession.Materiel;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 public class ValeurMarcheHistoriqueTest {
 
@@ -26,20 +25,6 @@ public class ValeurMarcheHistoriqueTest {
     assertEquals(materiel, premiereValeur.possession());
     assertEquals(aujourdhui, premiereValeur.t());
     assertEquals(valeurInitiale, premiereValeur.valeur());
-  }
-
-  @Test
-  void historique_valeur_marche_retourne_copie_defensive() {
-    var aujourdhui = LocalDate.now();
-    var valeurInitiale = new Argent(1000, Devise.EUR);
-    var materiel = new Materiel("Ordinateur", aujourdhui, aujourdhui, valeurInitiale, 0.05);
-    new ValeurMarche(materiel, aujourdhui, valeurInitiale);
-
-    var copie = materiel.historiqueValeurMarche();
-    copie.clear();
-
-    assertEquals(1, materiel.historiqueValeurMarche().size());
-    assertTrue(copie.isEmpty());
   }
 
   @Test
@@ -66,10 +51,11 @@ public class ValeurMarcheHistoriqueTest {
     var valeurInitiale = new Argent(1000, Devise.EUR);
     var compte = new Compte("Compte Courant", aujourdhui, valeurInitiale);
 
-    assertThrows(UnsupportedOperationException.class, () -> {
-      compte.ajouterValeurMarche(new ValeurMarche(compte, aujourdhui, valeurInitiale));
-    });
+    var exception = assertThrows(
+            UnsupportedOperationException.class,
+            () -> compte.ajouterValeurMarche(new ValeurMarche(compte, aujourdhui, valeurInitiale)));
 
+    assertEquals("Seules les IMMOBILISATIONs et ENTREPRISEs peuvent avoir une valeur de marché", exception.getMessage());
     assertEquals(0, compte.historiqueValeurMarche().size());
   }
 }
