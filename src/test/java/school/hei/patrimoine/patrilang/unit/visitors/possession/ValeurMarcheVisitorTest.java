@@ -83,7 +83,10 @@ public class ValeurMarcheVisitorTest {
 
   @Test
   void parse_valeur_marche_date_future() {
-    var input = "* `valeurMarche` Dates:dateFuture, Matériel:objetAvecDateFuture valant 1500000Ar";
+    var input =
+        """
+        * `valeurMarche` Dates:dateFuture, Matériel:objetAvecDateFuture valant 1500000Ar
+        """;
 
     var expected = new ValeurMarche(POSSESSION3, DATE_FUTURE, ariary(1_500_000));
 
@@ -95,7 +98,10 @@ public class ValeurMarcheVisitorTest {
 
   @Test
   void parse_valeur_marche_possession_inconnue() {
-    var input = "* `valeurMarche` Dates:ajd, Matériel:inexistante valant 1000Ar";
+    var input =
+        """
+        * `valeurMarche` Dates:ajd, Matériel:inexistante valant 1000Ar
+        """;
 
     assertThrows(
         IllegalArgumentException.class, () -> visitor.visit(input, PatriLangParser::valeurMarche));
