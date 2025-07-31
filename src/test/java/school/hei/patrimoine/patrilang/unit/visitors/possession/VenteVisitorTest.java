@@ -42,12 +42,12 @@ public class VenteVisitorTest {
     Materiel materiel = new Materiel("voiture", AJD, AJD, ariary(10_000_000), 10.0);
     Compte compteBeneficiaire = new Compte("comptePrincipal", AJD, ariary(5_000_000));
 
-    variableVisitor.addToScope("voiture", TRESORERIES, materiel);
-    variableVisitor.addToScope("compte", COMPTES, compteBeneficiaire);
+    variableVisitor.addToScope("voiture", MATERIEL, materiel);
+    variableVisitor.addToScope("compte", TRESORERIES, compteBeneficiaire);
     variableVisitor.addToScope("ajd", DATE, AJD);
 
     var input =
-        "* `vente` Dates:ajd, vendre Trésoreries:voiture pour 8000000Ar vers Comptes:compte";
+        "* `vente` Dates:ajd, vendre Matériel:voiture pour 8000000Ar vers Trésoreries:compte";
 
     Vente actual = visitor.visit(input, PatriLangParser::vente);
 
@@ -62,12 +62,12 @@ public class VenteVisitorTest {
     Materiel materiel = new Materiel("voiture", AJD, AJD, ariary(10_000_000), 10.0);
     Compte compteBeneficiaire = new Compte("comptePrincipal", AJD, ariary(5_000_000));
 
-    variableVisitor.addToScope("voiture", TRESORERIES, materiel);
-    variableVisitor.addToScope("compte", COMPTES, compteBeneficiaire);
+    variableVisitor.addToScope("voiture", MATERIEL, materiel);
+    variableVisitor.addToScope("compte", TRESORERIES, compteBeneficiaire);
     variableVisitor.addToScope("dateFuture", DATE, DATE_FUTURE);
 
     var input =
-        "* `vente` Dates:dateFuture, vendre Trésoreries:voiture pour 8000000Ar vers Comptes:compte";
+        "* `vente` Dates:dateFuture, vendre Matériel:voiture pour 8000000Ar vers Trésoreries:compte";
 
     Vente actual = visitor.visit(input, PatriLangParser::vente);
 
@@ -82,12 +82,12 @@ public class VenteVisitorTest {
     Materiel materiel = new Materiel("voiture", DATE_PASSEE, DATE_PASSEE, ariary(10_000_000), 10.0);
     Compte compteBeneficiaire = new Compte("comptePrincipal", AJD, ariary(5_000_000));
 
-    variableVisitor.addToScope("voiture", TRESORERIES, materiel);
-    variableVisitor.addToScope("compte", COMPTES, compteBeneficiaire);
+    variableVisitor.addToScope("voiture", MATERIEL, materiel);
+    variableVisitor.addToScope("compte", TRESORERIES, compteBeneficiaire);
     variableVisitor.addToScope("datePassee", DATE, DATE_PASSEE);
 
     var input =
-        "* `vente` Dates:datePassee, vendre Trésoreries:voiture pour 8000000Ar vers Comptes:compte";
+        "* `vente` Dates:datePassee, vendre Matériel:voiture pour 8000000Ar vers Trésoreries:compte";
 
     Vente actual = visitor.visit(input, PatriLangParser::vente);
 
@@ -101,15 +101,15 @@ public class VenteVisitorTest {
   void parse_vente_avec_expression_complexe_prix() {
     Materiel materiel = new Materiel("voiture", AJD, AJD, ariary(10_000_000), 10.0);
     Compte compteBeneficiaire = new Compte("comptePrincipal", AJD, ariary(5_000_000));
-    variableVisitor.addToScope("voiture", TRESORERIES, materiel);
-    variableVisitor.addToScope("compte", COMPTES, compteBeneficiaire);
+    variableVisitor.addToScope("voiture", MATERIEL, materiel);
+    variableVisitor.addToScope("compte", TRESORERIES, compteBeneficiaire);
     variableVisitor.addToScope("ajd", DATE, AJD);
     variableVisitor.addToScope("prixBase", NOMBRE, 7_000_000d);
     variableVisitor.addToScope("rabais", NOMBRE, 1_000_000d);
 
     var input =
-        "* `vente` Dates:ajd, vendre Trésoreries:voiture pour (Nombres:prixBase - Nombres:rabais)Ar"
-            + " vers Comptes:compte";
+        "* `vente` Dates:ajd, vendre Matériel:voiture pour (Nombres:prixBase - Nombres:rabais)Ar"
+            + " vers Trésoreries:compte";
 
     Vente actual = visitor.visit(input, PatriLangParser::vente);
 
@@ -123,11 +123,11 @@ public class VenteVisitorTest {
   void parse_vente_possession_inconnue() {
     Compte compte = new Compte("compte", AJD, ariary(0));
 
-    variableVisitor.addToScope("compte", COMPTES, compte);
+    variableVisitor.addToScope("compte", TRESORERIES, compte);
     variableVisitor.addToScope("ajd", DATE, AJD);
 
     var input =
-        "* `vente` Dates:ajd, vendre Trésoreries:inexistante pour 1000Ar vers Comptes:compte";
+        "* `vente` Dates:ajd, vendre Matériel:inexistante pour 1000Ar vers Trésoreries:compte";
 
     IllegalArgumentException exception =
         assertThrows(
@@ -140,10 +140,10 @@ public class VenteVisitorTest {
   void parse_vente_compte_beneficiaire_inconnu() {
     Materiel materiel = new Materiel("objet", AJD, AJD, ariary(1000), 1.0);
 
-    variableVisitor.addToScope("objet", TRESORERIES, materiel);
+    variableVisitor.addToScope("objet", MATERIEL, materiel);
     variableVisitor.addToScope("ajd", DATE, AJD);
 
-    var input = "* `vente` Dates:ajd, vendre Trésoreries:objet pour 1000Ar vers Comptes:inexistant";
+    var input = "* `vente` Dates:ajd, vendre Matériel:objet pour 1000Ar vers Trésoreries:inexistant";
 
     IllegalArgumentException exception =
         assertThrows(
@@ -157,11 +157,11 @@ public class VenteVisitorTest {
     Materiel materiel = new Materiel("objet", AJD, AJD, ariary(1000), 1.0);
     Compte compte = new Compte("compte", AJD, ariary(0));
 
-    variableVisitor.addToScope("objet", TRESORERIES, materiel);
-    variableVisitor.addToScope("compte", COMPTES, compte);
+    variableVisitor.addToScope("objet", MATERIEL, materiel);
+    variableVisitor.addToScope("compte", TRESORERIES, compte);
 
     var input =
-        "* `vente` Dates:inexistante, vendre Trésoreries:objet pour 1000Ar vers Comptes:compte";
+        "* `vente` Dates:inexistante, vendre Matériel:objet pour 1000Ar vers Trésoreries:compte";
 
     IllegalArgumentException exception =
         assertThrows(
