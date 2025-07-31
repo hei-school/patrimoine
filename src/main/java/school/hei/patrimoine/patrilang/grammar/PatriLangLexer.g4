@@ -157,23 +157,6 @@ MOT_ANNUELLEMENT_DE
 PERCENT
     :   '%'
     ;
-MOT_VALEUR_MARCHE
-    :   'valeur marché'
-    | 'Valeur marché'
-    | 'valeur marché de'
-    | 'Valeur marché de'
-    ;
-MOT_ESTIMEE
-    : 'estimée'
-    | 'estimé'
-    ;
-MOT_A
-    :   'à'
-    |   'À'
-    ;
-MOT_EVALUATION
-    :   'évaluation'
-    ;
 MOT_VENDRE
     :   'vendre'
     |   'Vendre'
@@ -181,10 +164,6 @@ MOT_VENDRE
 MOT_VENDU
     :   'vendu'
     |   'Vendu'
-    ;
-MOT_PRIX
-    :   'prix'
-    |   'Prix'
     ;
 
 /* -------------------- Commun --------------------  */
