@@ -1,5 +1,12 @@
 package school.hei.patrimoine.patrilang.unit.visitors.possession;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static school.hei.patrimoine.modele.Argent.ariary;
+import static school.hei.patrimoine.patrilang.modele.variable.VariableType.DATE;
+import static school.hei.patrimoine.patrilang.modele.variable.VariableType.TRESORERIES;
+
+import java.time.LocalDate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import school.hei.patrimoine.modele.Argent;
@@ -10,14 +17,6 @@ import school.hei.patrimoine.patrilang.antlr.PatriLangParser;
 import school.hei.patrimoine.patrilang.utils.UnitTestVisitor;
 import school.hei.patrimoine.patrilang.visitors.possession.ValeurMarcheVisitor;
 import school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor;
-
-import java.time.LocalDate;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static school.hei.patrimoine.modele.Argent.ariary;
-import static school.hei.patrimoine.patrilang.modele.variable.VariableType.DATE;
-import static school.hei.patrimoine.patrilang.modele.variable.VariableType.TRESORERIES;
 
 public class ValeurMarcheVisitorTest {
   private static final LocalDate AJD = LocalDate.now();
@@ -32,12 +31,13 @@ public class ValeurMarcheVisitorTest {
   void setUp() {
     variableVisitor = new VariableVisitor();
     subject = new ValeurMarcheVisitor(variableVisitor);
-    visitor = new UnitTestVisitor() {
-      @Override
-      public ValeurMarche visitValeurMarche(PatriLangParser.ValeurMarcheContext ctx) {
-        return subject.apply(ctx);
-      }
-    };
+    visitor =
+        new UnitTestVisitor() {
+          @Override
+          public ValeurMarche visitValeurMarche(PatriLangParser.ValeurMarcheContext ctx) {
+            return subject.apply(ctx);
+          }
+        };
   }
 
   @Test
@@ -92,7 +92,7 @@ public class ValeurMarcheVisitorTest {
 
     var input = "* `valeurMarche` Dates:ajd, Trésoreries:inexistante valant 1000Ar";
 
-    assertThrows(IllegalArgumentException.class, () ->
-            visitor.visit(input, PatriLangParser::valeurMarche));
+    assertThrows(
+        IllegalArgumentException.class, () -> visitor.visit(input, PatriLangParser::valeurMarche));
   }
 }

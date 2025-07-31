@@ -67,7 +67,8 @@ public class VenteVisitorTest {
     variableVisitor.addToScope("dateFuture", DATE, DATE_FUTURE);
 
     var input =
-        "* `vente` Dates:dateFuture, vendre Matériel:voiture pour 8000000Ar vers Trésoreries:compte";
+        "* `vente` Dates:dateFuture, vendre Matériel:voiture pour 8000000Ar vers"
+            + " Trésoreries:compte";
 
     Vente actual = visitor.visit(input, PatriLangParser::vente);
 
@@ -87,7 +88,8 @@ public class VenteVisitorTest {
     variableVisitor.addToScope("datePassee", DATE, DATE_PASSEE);
 
     var input =
-        "* `vente` Dates:datePassee, vendre Matériel:voiture pour 8000000Ar vers Trésoreries:compte";
+        "* `vente` Dates:datePassee, vendre Matériel:voiture pour 8000000Ar vers"
+            + " Trésoreries:compte";
 
     Vente actual = visitor.visit(input, PatriLangParser::vente);
 
@@ -143,7 +145,8 @@ public class VenteVisitorTest {
     variableVisitor.addToScope("objet", MATERIEL, materiel);
     variableVisitor.addToScope("ajd", DATE, AJD);
 
-    var input = "* `vente` Dates:ajd, vendre Matériel:objet pour 1000Ar vers Trésoreries:inexistant";
+    var input =
+        "* `vente` Dates:ajd, vendre Matériel:objet pour 1000Ar vers Trésoreries:inexistant";
 
     IllegalArgumentException exception =
         assertThrows(

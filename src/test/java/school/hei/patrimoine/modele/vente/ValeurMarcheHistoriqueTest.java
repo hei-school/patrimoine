@@ -51,11 +51,14 @@ public class ValeurMarcheHistoriqueTest {
     var valeurInitiale = new Argent(1000, Devise.EUR);
     var compte = new Compte("Compte Courant", aujourdhui, valeurInitiale);
 
-    var exception = assertThrows(
+    var exception =
+        assertThrows(
             UnsupportedOperationException.class,
             () -> compte.ajouterValeurMarche(new ValeurMarche(compte, aujourdhui, valeurInitiale)));
 
-    assertEquals("Seules les IMMOBILISATIONs et ENTREPRISEs peuvent avoir une valeur de marché", exception.getMessage());
+    assertEquals(
+        "Seules les IMMOBILISATIONs et ENTREPRISEs peuvent avoir une valeur de marché",
+        exception.getMessage());
     assertEquals(0, compte.historiqueValeurMarche().size());
   }
 }
