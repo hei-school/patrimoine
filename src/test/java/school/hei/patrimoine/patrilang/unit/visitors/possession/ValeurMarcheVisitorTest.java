@@ -52,7 +52,7 @@ public class ValeurMarcheVisitorTest {
     ValeurMarche actual = visitor.visit(input, PatriLangParser::valeurMarche);
 
     assertEquals(expected.t(), actual.t());
-    assertEquals(expected.valeur().getMontant(), actual.valeur().getMontant());
+    assertEquals(expected.valeur(), actual.valeur());
     assertEquals(expected.possession().nom(), actual.possession().nom());
   }
 
@@ -68,7 +68,7 @@ public class ValeurMarcheVisitorTest {
     ValeurMarche actual = visitor.visit(input, PatriLangParser::valeurMarche);
 
     assertEquals(expected.t(), actual.t());
-    assertEquals(expected.valeur().getMontant(), actual.valeur().getMontant());
+    assertEquals(expected.valeur(), actual.valeur());
   }
 
   @Test
@@ -83,7 +83,7 @@ public class ValeurMarcheVisitorTest {
     ValeurMarche actual = visitor.visit(input, PatriLangParser::valeurMarche);
 
     assertEquals(expected.t(), actual.t());
-    assertEquals(expected.valeur().getMontant(), actual.valeur().getMontant());
+    assertEquals(expected.valeur(), actual.valeur());
   }
 
   @Test
