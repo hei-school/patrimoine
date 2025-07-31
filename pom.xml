@@ -217,7 +217,6 @@
                 <artifactId>
                     spring-boot-maven-plugin
                 </artifactId>
-                <version>3.3.0-SNAPSHOT</version>
             </plugin>
             <!--
             Takes care of synchronizing java
