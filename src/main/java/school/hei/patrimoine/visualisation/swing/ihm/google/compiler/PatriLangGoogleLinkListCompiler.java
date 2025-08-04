@@ -1,4 +1,4 @@
-package school.hei.patrimoine.visualisation.swing.ihm.google;
+package school.hei.patrimoine.visualisation.swing.ihm.google.compiler;
 
 import static java.nio.file.StandardOpenOption.CREATE;
 import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;

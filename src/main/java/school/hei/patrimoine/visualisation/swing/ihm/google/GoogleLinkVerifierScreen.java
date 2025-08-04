@@ -24,9 +24,9 @@ import school.hei.patrimoine.google.GoogleDocsLinkIdParser;
 import school.hei.patrimoine.google.GoogleDriveLinkIdParser;
 import school.hei.patrimoine.modele.Patrimoine;
 import school.hei.patrimoine.visualisation.swing.ihm.MainIHM;
-import school.hei.patrimoine.visualisation.swing.ihm.google.modele.GoogleLinkList;
-import school.hei.patrimoine.visualisation.swing.ihm.google.modele.NamedID;
-import school.hei.patrimoine.visualisation.swing.ihm.google.modele.NamedString;
+import school.hei.patrimoine.visualisation.swing.ihm.google.compiler.GoogleLinkListCompiler;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.*;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.Dialog;
 
 @Slf4j
 public class GoogleLinkVerifierScreen {
@@ -211,12 +211,7 @@ public class GoogleLinkVerifierScreen {
   }
 
   private void loadDataInBackground() {
-    var loadingDialog = new JDialog(inputFrame, "Traitement", true);
-    var loadingLabel = new JLabel("Traitement en cours ...");
-    loadingLabel.setHorizontalAlignment(SwingConstants.CENTER);
-    loadingDialog.getContentPane().add(loadingLabel, CENTER);
-    loadingDialog.setSize(300, 100);
-    loadingDialog.setLocationRelativeTo(inputFrame);
+    var loadingDialog = new Dialog(inputFrame, "Traitement", 300, 100);
 
     SwingWorker<List<Patrimoine>, Void> worker =
         new SwingWorker<>() {

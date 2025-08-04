@@ -1,19 +1,17 @@
-package school.hei.patrimoine.visualisation.swing.ihm.google;
+package school.hei.patrimoine.visualisation.swing.ihm.google.modele;
 
 import static java.awt.Color.GREEN;
 import static java.awt.Color.RED;
-import static school.hei.patrimoine.google.GoogleDocsLinkIdParser.GOOGLE_DOCS_ID_PATTERN;
+import static school.hei.patrimoine.google.GoogleDriveLinkIdParser.GOOGLE_DRIVE_ID_PATTERN;
 
-import javax.swing.InputVerifier;
-import javax.swing.JComponent;
-import javax.swing.JTextField;
+import javax.swing.*;
 
-public class GoogleDocsLinkIdInputVerifier extends InputVerifier {
+public class GoogleDriveLinkIdInputVerifier extends InputVerifier {
   @Override
   public boolean verify(JComponent input) {
     if (input instanceof JTextField textField) {
       String text = textField.getText();
-      if (GOOGLE_DOCS_ID_PATTERN.matcher(text).find()) {
+      if (GOOGLE_DRIVE_ID_PATTERN.matcher(text).find()) {
         textField.setBackground(GREEN);
         return true;
       } else {

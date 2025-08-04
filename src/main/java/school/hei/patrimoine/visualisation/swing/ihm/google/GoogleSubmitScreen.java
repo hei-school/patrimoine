@@ -1,9 +1,7 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google;
 
-import static java.awt.BorderLayout.CENTER;
 import static java.awt.Font.*;
 import static javax.swing.SwingUtilities.invokeLater;
-import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 import static school.hei.patrimoine.google.GoogleApi.DOWNLOADS_DIRECTORY_PATH;
 import static school.hei.patrimoine.google.GoogleDocsLinkIdParser.GOOGLE_DOCS_ID_PATTERN;
 import static school.hei.patrimoine.google.GoogleDriveLinkIdParser.GOOGLE_DRIVE_ID_PATTERN;
@@ -18,136 +16,108 @@ import javax.swing.*;
 import lombok.extern.slf4j.Slf4j;
 import school.hei.patrimoine.google.GoogleApi;
 import school.hei.patrimoine.google.GoogleApi.GoogleAuthenticationDetails;
+import school.hei.patrimoine.visualisation.swing.ihm.google.compiler.GoogleLinkListCompiler;
+import school.hei.patrimoine.visualisation.swing.ihm.google.compiler.PatriLangGoogleLinkListCompiler;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.Screen;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.Button;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.Dialog;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.GoogleDocsLinkIdInputVerifier;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.GoogleLinkList;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.NamedString;
 
 @Slf4j
-public class GoogleSubmitScreen {
-  private final JFrame inputFrame;
-  private final JPanel inputPanel;
-  private final JTextArea inputField;
-  private final GoogleDocsLinkIdInputVerifier linkIdInputVerifier =
-      new GoogleDocsLinkIdInputVerifier();
+public class GoogleSubmitScreen extends Screen {
   private final GoogleApi googleApi;
   private final GoogleAuthenticationDetails authDetails;
+  private final GoogleDocsLinkIdInputVerifier linkIdInputVerifier;
+
+  private final JPanel inputPanel;
+  private final JTextArea inputField;
 
   public GoogleSubmitScreen(GoogleApi googleApi, GoogleAuthenticationDetails authDetails) {
+    super("Soumission des liens Google", 1200, 1000);
+    setResizable(true);
+
     this.googleApi = googleApi;
     this.authDetails = authDetails;
-    inputFrame = newInputFrame();
-    inputPanel = new JPanel();
-    inputPanel.setLayout(new GridBagLayout());
+    this.linkIdInputVerifier = new GoogleDocsLinkIdInputVerifier();
 
-    inputField = createInputField();
+    this.inputField = new JTextArea();
+    this.inputPanel = new JPanel(new BorderLayout());
 
-    addButtons();
-    addInitialInput();
+    addTitle();
+    addInputField();
+    addSubmitButton();
 
-    configureInputFrame();
+    getContentPane().add(inputPanel);
+    pack();
   }
 
-  private JTextArea createInputField() {
-    return new JTextArea(5, 70);
+  private void addTitle() {
+    var title = new JLabel("Saisir les liens Google :");
+    title.setFont(new Font("Arial", BOLD, 24));
+    title.setHorizontalAlignment(SwingConstants.CENTER);
+    title.setBorder(BorderFactory.createEmptyBorder(30, 0, 20, 0));
+    inputPanel.add(title, BorderLayout.NORTH);
   }
 
-  private void configureInputFrame() {
-    inputFrame.getContentPane().add(inputPanel);
-    inputFrame.setDefaultCloseOperation(EXIT_ON_CLOSE);
-    inputFrame.pack();
-    inputFrame.setLocationRelativeTo(null);
-  }
-
-  private JFrame newInputFrame() {
-    var inputFrame = new JFrame("Soumission des liens Google");
-    inputFrame.setSize(1200, 1000);
-    inputFrame.setResizable(true);
-    inputFrame.setVisible(true);
-    return inputFrame;
-  }
-
-  private void addButtons() {
-    JButton submitButton = newSubmitButton();
-
-    JLabel buttonTitle = new JLabel("Saisir les liens Google :");
-    buttonTitle.setFont(new Font("Arial", BOLD, 24));
-    buttonTitle.setHorizontalAlignment(SwingConstants.CENTER);
-
-    JPanel buttonPanel = new JPanel();
-    buttonPanel.add(submitButton);
-    buttonPanel.setOpaque(false);
-
-    var gbc = new GridBagConstraints();
-    gbc.gridx = 0;
-    gbc.gridy = 0;
-    gbc.insets = new Insets(10, 0, 10, 0);
-    gbc.anchor = GridBagConstraints.CENTER;
-    inputPanel.add(buttonTitle, gbc);
-
-    gbc.gridy = 1;
-    inputPanel.add(buttonPanel, gbc);
-  }
-
-  private JButton newSubmitButton() {
-    var submitButton = new JButton("Vérifier");
-    submitButton.setPreferredSize(new Dimension(200, 50));
-    submitButton.setFont(new Font("Arial", BOLD, 18));
-    submitButton.setFocusPainted(false);
-    submitButton.addActionListener(e -> loadDataInBackground());
-    return submitButton;
-  }
-
-  private void addInitialInput() {
-    JLabel inputLabel = new JLabel("Liens Google");
-    inputLabel.setFont(new Font("Arial", CENTER_BASELINE, 14));
-
-    var gbc = new GridBagConstraints();
-    gbc.gridx = 0;
-    gbc.fill = GridBagConstraints.HORIZONTAL;
-    gbc.insets = new Insets(10, 50, 5, 50);
-
-    inputPanel.add(inputLabel, gbc);
-
+  private void addInputField() {
     inputField.setLineWrap(true);
     inputField.setWrapStyleWord(true);
     inputField.setInputVerifier(linkIdInputVerifier);
     inputField.setFont(new Font("Arial", PLAIN, 16));
 
-    gbc.insets = new Insets(5, 50, 10, 50);
-    JScrollPane scrollPane = new JScrollPane(inputField);
-    inputPanel.add(scrollPane, gbc);
+    var scrollPane = new JScrollPane(inputField);
+    scrollPane.setPreferredSize(new Dimension(1000, 250));
+
+    var centerWrapper = new JPanel(new BorderLayout());
+    centerWrapper.setBorder(BorderFactory.createEmptyBorder(0, 50, 0, 50));
+    centerWrapper.add(scrollPane, BorderLayout.CENTER);
+
+    inputPanel.add(centerWrapper, BorderLayout.CENTER);
+  }
+
+  private void addSubmitButton() {
+    var submitButton = new Button("Envoyer");
+    submitButton.setFont(new Font("Arial", BOLD, 18));
+    submitButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
+    submitButton.setPreferredSize(new Dimension(200, 50));
+    submitButton.addActionListener(e -> loadDataInBackground());
+
+    var wrapper = new JPanel();
+    wrapper.setLayout(new BoxLayout(wrapper, BoxLayout.X_AXIS));
+    wrapper.setBorder(BorderFactory.createEmptyBorder(20, 50, 30, 50));
+    wrapper.add(submitButton);
+
+    inputPanel.add(wrapper, BorderLayout.SOUTH);
   }
 
   private void loadDataInBackground() {
-    var loadingDialog = new JDialog(inputFrame, "Traitement", true);
-    var loadingLabel = new JLabel("Traitement en cours ...");
-    loadingLabel.setHorizontalAlignment(SwingConstants.CENTER);
-    loadingDialog.getContentPane().add(loadingLabel, CENTER);
-    loadingDialog.setSize(300, 100);
-    loadingDialog.setLocationRelativeTo(inputFrame);
+    var loadingDialog = new Dialog(this, "Traitement", 300, 100);
 
     SwingWorker<GoogleLinkList<NamedString>, Void> worker =
-        new SwingWorker<>() {
-          @Override
-          protected GoogleLinkList<NamedString> doInBackground() {
-            return extractGoogleLinks();
-          }
+            new SwingWorker<>() {
+              @Override
+              protected GoogleLinkList<NamedString> doInBackground() {
+                return extractGoogleLinks();
+              }
 
-          @Override
-          protected void done() {
-            loadingDialog.dispose();
-            try {
-              final GoogleLinkList<NamedString> inputData = get();
+              @Override
+              protected void done() {
+                loadingDialog.dispose();
+                try {
+                  final GoogleLinkList<NamedString> inputData = get();
 
-              GoogleLinkListCompiler googleLinkListCompiler =
-                  new PatriLangGoogleLinkListCompiler(
-                      new File(DOWNLOADS_DIRECTORY_PATH), googleApi, authDetails);
+                  GoogleLinkListCompiler googleLinkListCompiler =
+                          new PatriLangGoogleLinkListCompiler(
+                                  new File(DOWNLOADS_DIRECTORY_PATH), googleApi, authDetails);
 
-              openResultFrame(inputData, googleApi, authDetails, googleLinkListCompiler);
-            } catch (InterruptedException | ExecutionException e) {
-              throw new RuntimeException(e);
-            }
-          }
-        };
+                  openResultFrame(inputData, googleApi, authDetails, googleLinkListCompiler);
+                } catch (InterruptedException | ExecutionException e) {
+                  throw new RuntimeException(e);
+                }
+              }
+            };
 
     worker.execute();
     loadingDialog.setVisible(true);
@@ -179,13 +149,13 @@ public class GoogleSubmitScreen {
     List<String> lines = Arrays.asList(rawText.split("\n"));
 
     lines.forEach(
-        line -> {
-          if (GOOGLE_DOCS_ID_PATTERN.matcher(line).find()) {
-            docsLines.add(line);
-          } else if (GOOGLE_DRIVE_ID_PATTERN.matcher(line).find()) {
-            driveLines.add(line);
-          }
-        });
+            line -> {
+              if (GOOGLE_DOCS_ID_PATTERN.matcher(line).find()) {
+                docsLines.add(line);
+              } else if (GOOGLE_DRIVE_ID_PATTERN.matcher(line).find()) {
+                driveLines.add(line);
+              }
+            });
 
     List<NamedString> docsLink = extractInputData(docsLines);
     List<NamedString> driveLink = extractInputData(driveLines);
@@ -194,14 +164,14 @@ public class GoogleSubmitScreen {
   }
 
   private void openResultFrame(
-      GoogleLinkList<NamedString> googleLinkList,
-      GoogleApi googleApi,
-      GoogleAuthenticationDetails authReqRes,
-      GoogleLinkListCompiler googleLinkListCompiler) {
+          GoogleLinkList<NamedString> googleLinkList,
+          GoogleApi googleApi,
+          GoogleAuthenticationDetails authReqRes,
+          GoogleLinkListCompiler googleLinkListCompiler) {
     invokeLater(
-        () ->
-            new GoogleLinkVerifierScreen(
-                googleApi, authReqRes, googleLinkListCompiler, googleLinkList, inputFrame));
-    inputFrame.setVisible(false);
+            () ->
+                    new GoogleLinkVerifierScreen(
+                            googleApi, authReqRes, googleLinkListCompiler, googleLinkList, this));
+    setVisible(false);
   }
 }
