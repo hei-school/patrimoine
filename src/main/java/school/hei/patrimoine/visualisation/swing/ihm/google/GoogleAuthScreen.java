@@ -4,7 +4,6 @@ import static javax.swing.SwingUtilities.invokeLater;
 
 import java.awt.*;
 import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Objects;
 import javax.imageio.ImageIO;
@@ -12,11 +11,10 @@ import javax.swing.*;
 import lombok.SneakyThrows;
 import school.hei.patrimoine.google.GoogleApi;
 import school.hei.patrimoine.google.GoogleApi.GoogleAuthenticationDetails;
-import school.hei.patrimoine.visualisation.swing.ihm.component.RoundedBorder;
-import school.hei.patrimoine.visualisation.swing.ihm.component.RoundedButton;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.ButtonWithIcon;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.Screen;
 
-public class GoogleAuthScreen extends JFrame {
-
+public class GoogleAuthScreen extends Screen {
   private final GoogleApi googleApi;
 
   /**
@@ -24,31 +22,32 @@ public class GoogleAuthScreen extends JFrame {
    * your previously saved tokens/ folder.
    */
   public GoogleAuthScreen() {
-    RoundedButton signInButton = new RoundedButton("Se connecter avec Google", loadGoogleLogo());
-    signInButton.setBackground(new Color(100, 175, 255));
-    signInButton.setForeground(Color.WHITE);
-    signInButton.setFocusPainted(false);
-    signInButton.setFont(new Font("Arial", Font.BOLD, 16));
-    signInButton.setPreferredSize(new Dimension(300, 50));
-    signInButton.setBorder(new RoundedBorder(50));
+    super("Authentification Google", 700, 400);
+    googleApi = new GoogleApi();
 
+    setLayout(new BorderLayout());
+
+    var title = new JLabel("Patrimoine");
+    title.setFont(new Font("Arial", Font.BOLD, 32));
+    title.setForeground(new Color(66, 66, 66)); // Gris foncé
+
+    var signInButton = new ButtonWithIcon("Se connecter avec Google", loadGoogleLogo());
     signInButton.addActionListener(onSignin());
 
-    JPanel buttonPanel = new JPanel();
-    buttonPanel.setLayout(new GridBagLayout());
-    buttonPanel.add(signInButton);
+    var centerPanel = new JPanel(new GridBagLayout());
+    GridBagConstraints gbc = new GridBagConstraints();
+    gbc.gridx = 0;
+    gbc.anchor = GridBagConstraints.CENTER;
+    gbc.fill = GridBagConstraints.NONE;
+    gbc.insets = new Insets(4, 0, 4, 0);
 
-    setTitle("Authentification Google");
-    setLayout(new BorderLayout());
-    add(buttonPanel, BorderLayout.CENTER);
-    getContentPane().setBackground(Color.WHITE);
+    gbc.gridy = 0;
+    centerPanel.add(title, gbc);
 
-    setSize(700, 400);
-    setDefaultCloseOperation(EXIT_ON_CLOSE);
-    setLocationRelativeTo(null);
-    setVisible(true);
+    gbc.gridy = 1;
+    centerPanel.add(signInButton, gbc);
 
-    googleApi = new GoogleApi();
+    add(centerPanel, BorderLayout.CENTER);
   }
 
   private ActionListener onSignin() {
@@ -61,12 +60,10 @@ public class GoogleAuthScreen extends JFrame {
 
   private Image loadGoogleLogo() {
     try {
-      BufferedImage googleLogo =
-          ImageIO.read(Objects.requireNonNull(getClass().getResource("/google_logo.png")));
+       var googleLogo = ImageIO.read(Objects.requireNonNull(getClass().getResource("/google_logo.png")));
       return googleLogo.getScaledInstance(30, 30, Image.SCALE_SMOOTH);
     } catch (IOException e) {
-      e.printStackTrace();
-      return null;
+      throw new RuntimeException(e);
     }
   }
 
@@ -76,6 +73,8 @@ public class GoogleAuthScreen extends JFrame {
   }
 
   public static void main(String[] args) {
+    System.setProperty("awt.useSystemAAFontSettings", "on");
+    System.setProperty("swing.aatext", "true");
     SwingUtilities.invokeLater(GoogleAuthScreen::new);
   }
 }
