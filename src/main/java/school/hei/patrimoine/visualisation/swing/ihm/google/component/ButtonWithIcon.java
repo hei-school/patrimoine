@@ -1,7 +1,7 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.component;
 
-import javax.swing.*;
 import java.awt.*;
+import javax.swing.*;
 
 public class ButtonWithIcon extends JButton {
   private final Image icon;
@@ -13,7 +13,8 @@ public class ButtonWithIcon extends JButton {
   private final int iconSize = 25;
   private final int spacing = 10;
 
-  public ButtonWithIcon(String text, Image icon, Color backgroundColor, Color textColor, int borderRadius) {
+  public ButtonWithIcon(
+      String text, Image icon, Color backgroundColor, Color textColor, int borderRadius) {
     super(text);
     this.icon = icon;
     this.backgroundColor = backgroundColor;

@@ -1,14 +1,10 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google;
 
-import static java.awt.BorderLayout.CENTER;
 import static java.awt.Color.RED;
 import static java.awt.Font.BOLD;
 import static java.awt.Font.PLAIN;
 import static java.awt.GridBagConstraints.HORIZONTAL;
 import static javax.swing.SwingConstants.LEFT;
-import static javax.swing.SwingUtilities.invokeLater;
-import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
-import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 import static school.hei.patrimoine.google.GoogleApi.*;
 
 import java.awt.*;
@@ -22,15 +18,14 @@ import school.hei.patrimoine.google.GoogleApi;
 import school.hei.patrimoine.google.GoogleApi.GoogleAuthenticationDetails;
 import school.hei.patrimoine.google.GoogleDocsLinkIdParser;
 import school.hei.patrimoine.google.GoogleDriveLinkIdParser;
-import school.hei.patrimoine.modele.Patrimoine;
-import school.hei.patrimoine.visualisation.swing.ihm.MainIHM;
-import school.hei.patrimoine.visualisation.swing.ihm.google.compiler.GoogleLinkListCompiler;
-import school.hei.patrimoine.visualisation.swing.ihm.google.modele.*;
+import school.hei.patrimoine.visualisation.swing.ihm.google.compiler.GoogleLinkListDownloader;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.Button;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.Dialog;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.Screen;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.*;
 
 @Slf4j
-public class GoogleLinkVerifierScreen {
-  private final JFrame inputFrame;
+public class GoogleLinkVerifierScreen extends Screen {
   private final JFrame previousScreenFrame;
   private final JPanel inputPanel;
   private final List<JTextField> inputFields;
@@ -43,83 +38,67 @@ public class GoogleLinkVerifierScreen {
   private final GoogleApi googleApi;
   private final GoogleAuthenticationDetails authDetails;
   private final GoogleLinkList<NamedString> linksData;
-  private final GoogleLinkListCompiler googleLinkListCompiler;
+  private final GoogleLinkListDownloader googleLinkListDownloader;
   private int inputYPosition;
 
   public GoogleLinkVerifierScreen(
       GoogleApi googleApi,
       GoogleAuthenticationDetails authDetails,
-      GoogleLinkListCompiler googleLinkListCompiler,
+      GoogleLinkListDownloader googleLinkListDownloader,
       GoogleLinkList<NamedString> linksData,
       JFrame jFrame) {
+
+    super("Liens Google", 1200, 1000);
+
+    this.inputYPosition = 0;
     this.googleApi = googleApi;
-    this.authDetails = authDetails;
     this.linksData = linksData;
-    inputFrame = newInputFrame();
-    previousScreenFrame = jFrame;
-    inputPanel = new JPanel(new GridBagLayout());
-    inputFields = new ArrayList<>();
-    inputYPosition = 2;
-    this.googleLinkListCompiler = googleLinkListCompiler;
+    this.authDetails = authDetails;
+    this.previousScreenFrame = jFrame;
+    this.googleLinkListDownloader = googleLinkListDownloader;
 
-    addButtons();
+    this.inputFields = new ArrayList<>();
+    this.inputPanel = new JPanel(new GridBagLayout());
+
     addInputFieldsFromData();
-    configureInputFrame();
+    buildMainLayout();
   }
 
-  private void configureInputFrame() {
-    inputFrame.getContentPane().add(inputPanel);
-    inputFrame.setDefaultCloseOperation(EXIT_ON_CLOSE);
-    inputFrame.pack();
-    inputFrame.setLocationRelativeTo(null);
+  private void buildMainLayout() {
+    var mainPanel = new JPanel(new BorderLayout());
+
+    var titleLabel = new JLabel("Soumettre vos liens Google");
+    titleLabel.setFont(new Font("Arial", BOLD, 24));
+    titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
+    titleLabel.setBorder(BorderFactory.createEmptyBorder(20, 0, 10, 0));
+    mainPanel.add(titleLabel, BorderLayout.NORTH);
+
+    var scrollPane = new JScrollPane(inputPanel);
+    scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+    scrollPane.setBorder(BorderFactory.createEmptyBorder(10, 50, 10, 50));
+    mainPanel.add(scrollPane, BorderLayout.CENTER);
+
+    var buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 30, 20));
+    buttonPanel.add(newReturnButton());
+    buttonPanel.add(newSubmitButton());
+    mainPanel.add(buttonPanel, BorderLayout.SOUTH);
+
+    getContentPane().add(mainPanel);
+    pack();
   }
 
-  private JFrame newInputFrame() {
-    var inputFrame = new JFrame("Liens Google");
-    inputFrame.setSize(1200, 1000);
-    inputFrame.setResizable(true);
-    inputFrame.setVisible(true);
-    return inputFrame;
-  }
-
-  private void addButtons() {
-    var submitButton = newSubmitButton();
-    var returnButton = newReturnButton();
-
-    var buttonTitle = new JLabel("Soumettre vos liens Google");
-    buttonTitle.setFont(new Font("Arial", BOLD, 24));
-    buttonTitle.setHorizontalAlignment(SwingConstants.CENTER);
-
-    var buttonPanel = new JPanel();
-    buttonPanel.add(returnButton);
-    buttonPanel.add(submitButton);
-    buttonPanel.setOpaque(false);
-
-    GridBagConstraints gbc = new GridBagConstraints();
-    gbc.gridx = 0;
-    gbc.gridy = 0;
-    gbc.insets = new Insets(10, 0, 10, 0);
-    gbc.anchor = GridBagConstraints.CENTER;
-    inputPanel.add(buttonTitle, gbc);
-
-    gbc.gridy = 1;
-    inputPanel.add(buttonPanel, gbc);
-  }
-
-  private JButton newSubmitButton() {
-    var submitButton = new JButton("Envoyer");
+  private Button newSubmitButton() {
+    var submitButton = new Button("Envoyer");
     submitButton.setPreferredSize(new Dimension(200, 50));
     submitButton.setFont(new Font("Arial", BOLD, 18));
-    submitButton.setFocusPainted(false);
     submitButton.addActionListener(e -> loadDataInBackground());
     return submitButton;
   }
 
-  private JButton newReturnButton() {
-    var returnButton = new JButton("Retour");
+  private Button newReturnButton() {
+    var returnButton = new Button("Retour");
     returnButton.setPreferredSize(new Dimension(200, 50));
     returnButton.setFont(new Font("Arial", BOLD, 18));
-    returnButton.setFocusPainted(false);
     returnButton.addActionListener(returnToPreviousScreen());
     return returnButton;
   }
@@ -141,7 +120,7 @@ public class GoogleLinkVerifierScreen {
     GridBagConstraints gbc = new GridBagConstraints();
     gbc.gridx = 0;
     gbc.fill = HORIZONTAL;
-    gbc.insets = new Insets(0, 50, 0, 50);
+    gbc.insets = new Insets(10, 0, 0, 0);
     return gbc;
   }
 
@@ -151,16 +130,14 @@ public class GoogleLinkVerifierScreen {
     JLabel nameLabel = new JLabel(linkData.name());
     nameLabel.setFont(new Font("Arial", BOLD, 18));
     nameLabel.setHorizontalAlignment(LEFT);
-
     gbc.gridy = nextYPosition();
     inputPanel.add(nameLabel, gbc);
 
     JTextField newField = newGoogleDocsLinkTextField(linkData.value());
     inputFields.add(newField);
 
-    JScrollPane scrollPane = new JScrollPane(newField);
     gbc.gridy = nextYPosition();
-    inputPanel.add(scrollPane, gbc);
+    inputPanel.add(new JScrollPane(newField), gbc);
   }
 
   private void addDriveLinkTextField(NamedString linkData) {
@@ -169,16 +146,14 @@ public class GoogleLinkVerifierScreen {
     JLabel nameLabel = new JLabel(linkData.name());
     nameLabel.setFont(new Font("Arial", BOLD, 18));
     nameLabel.setHorizontalAlignment(LEFT);
-
     gbc.gridy = nextYPosition();
     inputPanel.add(nameLabel, gbc);
 
     JTextField newField = newGoogleDriveLinkTextField(linkData.value());
     inputFields.add(newField);
 
-    JScrollPane scrollPane = new JScrollPane(newField);
     gbc.gridy = nextYPosition();
-    inputPanel.add(scrollPane, gbc);
+    inputPanel.add(new JScrollPane(newField), gbc);
   }
 
   private int nextYPosition() {
@@ -206,32 +181,31 @@ public class GoogleLinkVerifierScreen {
   private ActionListener returnToPreviousScreen() {
     return e -> {
       previousScreenFrame.setVisible(true);
-      inputFrame.setVisible(false);
+      setVisible(false);
     };
   }
 
   private void loadDataInBackground() {
-    var loadingDialog = new Dialog(inputFrame, "Traitement", 300, 100);
+    var loadingDialog = new Dialog(this, "Traitement", 300, 100);
 
-    SwingWorker<List<Patrimoine>, Void> worker =
+    SwingWorker<GoogleLinkList<NamedID>, Void> worker =
         new SwingWorker<>() {
           @Override
-          protected List<Patrimoine> doInBackground() {
+          protected GoogleLinkList<NamedID> doInBackground() {
             var ids = extractInputIds();
 
             resetIfExist(DOWNLOADS_DIRECTORY_PATH);
             var patrimoineJarId = driveLinkIdParser.apply(PATRIMOINE_JAR_URL);
 
             googleApi.downloadJarDependencyFile(authDetails, patrimoineJarId);
-            return googleLinkListCompiler.apply(ids);
+            return googleLinkListDownloader.apply(ids);
           }
 
           @Override
           protected void done() {
             loadingDialog.dispose();
             try {
-              final List<Patrimoine> patrimoinesVisualisables = get();
-              openResultFrame(patrimoinesVisualisables);
+              openResultFrame(get());
             } catch (InterruptedException | ExecutionException e) {
               Throwable cause = e.getCause();
               if (cause instanceof RuntimeException
@@ -256,18 +230,14 @@ public class GoogleLinkVerifierScreen {
     for (JTextField field : inputFields) {
       var rawText = field.getText();
 
-      if (rawText.startsWith(
-          """
-          https://drive.google.com/""")) {
+      if (rawText.startsWith("https://drive.google.com/")) {
         var parsedId = driveLinkIdParser.apply(rawText.trim());
         String urlName = linksData.driveLinkList().get(inputFields.indexOf(field)).name();
-        NamedID namedURL = new NamedID(urlName, parsedId);
-        driveIds.add(namedURL);
+        driveIds.add(new NamedID(urlName, parsedId));
       } else {
         var parsedId = docsLinkIdParser.apply(rawText.trim());
         String urlName = linksData.docsLinkList().get(inputFields.indexOf(field)).name();
-        NamedID namedURL = new NamedID(urlName, parsedId);
-        docsIds.add(namedURL);
+        docsIds.add(new NamedID(urlName, parsedId));
       }
     }
 
@@ -275,32 +245,22 @@ public class GoogleLinkVerifierScreen {
   }
 
   private void showErrorPage(String errorMessage) {
-    JFrame errorFrame = new JFrame("Erreur");
+    var errorFrame = new JFrame("Erreur");
     errorFrame.setSize(400, 200);
     errorFrame.setLocationRelativeTo(null);
     errorFrame.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
-    JPanel panel = new JPanel();
-    panel.setLayout(new BorderLayout());
-
-    JLabel errorLabel = new JLabel(errorMessage, SwingConstants.CENTER);
+    var panel = new JPanel(new BorderLayout());
+    var errorLabel = new JLabel(errorMessage, SwingConstants.CENTER);
     errorLabel.setFont(new Font("Arial", BOLD, 16));
     errorLabel.setForeground(RED);
-
     panel.add(errorLabel, BorderLayout.CENTER);
 
     errorFrame.getContentPane().add(panel);
     errorFrame.setVisible(true);
   }
 
-  private void openResultFrame(List<Patrimoine> patrimoinesVisualisables) {
-    try {
-      invokeLater(() -> new MainIHM(patrimoinesVisualisables));
-    } catch (Exception e) {
-      log.warn(
-          "Probably a non-patrimoine object compiled, "
-              + "not a problem if it's something like ToutObjectifSupplier",
-          e);
-    }
+  private void openResultFrame(GoogleLinkList<NamedID> ids) {
+    // TODO: show patrilang viewer
   }
 }

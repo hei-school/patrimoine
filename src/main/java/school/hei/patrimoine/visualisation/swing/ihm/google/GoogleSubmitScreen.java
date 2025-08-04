@@ -16,11 +16,10 @@ import javax.swing.*;
 import lombok.extern.slf4j.Slf4j;
 import school.hei.patrimoine.google.GoogleApi;
 import school.hei.patrimoine.google.GoogleApi.GoogleAuthenticationDetails;
-import school.hei.patrimoine.visualisation.swing.ihm.google.compiler.GoogleLinkListCompiler;
-import school.hei.patrimoine.visualisation.swing.ihm.google.compiler.PatriLangGoogleLinkListCompiler;
-import school.hei.patrimoine.visualisation.swing.ihm.google.component.Screen;
+import school.hei.patrimoine.visualisation.swing.ihm.google.compiler.PatriLangGoogleLinkListDownloader;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.Button;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.Dialog;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.Screen;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.GoogleDocsLinkIdInputVerifier;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.GoogleLinkList;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.NamedString;
@@ -94,30 +93,33 @@ public class GoogleSubmitScreen extends Screen {
 
   private void loadDataInBackground() {
     var loadingDialog = new Dialog(this, "Traitement", 300, 100);
+    var owner = this;
 
     SwingWorker<GoogleLinkList<NamedString>, Void> worker =
-            new SwingWorker<>() {
-              @Override
-              protected GoogleLinkList<NamedString> doInBackground() {
-                return extractGoogleLinks();
-              }
+        new SwingWorker<>() {
+          @Override
+          protected GoogleLinkList<NamedString> doInBackground() {
+            return extractGoogleLinks();
+          }
 
-              @Override
-              protected void done() {
-                loadingDialog.dispose();
-                try {
-                  final GoogleLinkList<NamedString> inputData = get();
+          @Override
+          protected void done() {
+            loadingDialog.dispose();
+            try {
+              var ids = get();
+              var downloader =
+                  new PatriLangGoogleLinkListDownloader(
+                      new File(DOWNLOADS_DIRECTORY_PATH), googleApi, authDetails);
 
-                  GoogleLinkListCompiler googleLinkListCompiler =
-                          new PatriLangGoogleLinkListCompiler(
-                                  new File(DOWNLOADS_DIRECTORY_PATH), googleApi, authDetails);
-
-                  openResultFrame(inputData, googleApi, authDetails, googleLinkListCompiler);
-                } catch (InterruptedException | ExecutionException e) {
-                  throw new RuntimeException(e);
-                }
-              }
-            };
+              invokeLater(
+                  () ->
+                      new GoogleLinkVerifierScreen(googleApi, authDetails, downloader, ids, owner));
+              setVisible(false);
+            } catch (InterruptedException | ExecutionException e) {
+              throw new RuntimeException(e);
+            }
+          }
+        };
 
     worker.execute();
     loadingDialog.setVisible(true);
@@ -149,29 +151,17 @@ public class GoogleSubmitScreen extends Screen {
     List<String> lines = Arrays.asList(rawText.split("\n"));
 
     lines.forEach(
-            line -> {
-              if (GOOGLE_DOCS_ID_PATTERN.matcher(line).find()) {
-                docsLines.add(line);
-              } else if (GOOGLE_DRIVE_ID_PATTERN.matcher(line).find()) {
-                driveLines.add(line);
-              }
-            });
+        line -> {
+          if (GOOGLE_DOCS_ID_PATTERN.matcher(line).find()) {
+            docsLines.add(line);
+          } else if (GOOGLE_DRIVE_ID_PATTERN.matcher(line).find()) {
+            driveLines.add(line);
+          }
+        });
 
     List<NamedString> docsLink = extractInputData(docsLines);
     List<NamedString> driveLink = extractInputData(driveLines);
 
     return new GoogleLinkList<>(docsLink, driveLink);
-  }
-
-  private void openResultFrame(
-          GoogleLinkList<NamedString> googleLinkList,
-          GoogleApi googleApi,
-          GoogleAuthenticationDetails authReqRes,
-          GoogleLinkListCompiler googleLinkListCompiler) {
-    invokeLater(
-            () ->
-                    new GoogleLinkVerifierScreen(
-                            googleApi, authReqRes, googleLinkListCompiler, googleLinkList, this));
-    setVisible(false);
   }
 }

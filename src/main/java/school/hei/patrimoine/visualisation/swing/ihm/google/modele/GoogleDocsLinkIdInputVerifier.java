@@ -1,8 +1,8 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.modele;
 
-import static java.awt.Color.GREEN;
 import static java.awt.Color.RED;
 import static school.hei.patrimoine.google.GoogleDocsLinkIdParser.GOOGLE_DOCS_ID_PATTERN;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.component.Theme.MAIN_COLOR;
 
 import javax.swing.InputVerifier;
 import javax.swing.JComponent;
@@ -14,7 +14,7 @@ public class GoogleDocsLinkIdInputVerifier extends InputVerifier {
     if (input instanceof JTextField textField) {
       String text = textField.getText();
       if (GOOGLE_DOCS_ID_PATTERN.matcher(text).find()) {
-        textField.setBackground(GREEN);
+        textField.setBackground(MAIN_COLOR);
         return true;
       } else {
         textField.setBackground(RED);

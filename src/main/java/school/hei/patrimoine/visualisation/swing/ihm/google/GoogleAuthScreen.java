@@ -60,7 +60,8 @@ public class GoogleAuthScreen extends Screen {
 
   private Image loadGoogleLogo() {
     try {
-       var googleLogo = ImageIO.read(Objects.requireNonNull(getClass().getResource("/google_logo.png")));
+      var googleLogo =
+          ImageIO.read(Objects.requireNonNull(getClass().getResource("/google_logo.png")));
       return googleLogo.getScaledInstance(30, 30, Image.SCALE_SMOOTH);
     } catch (IOException e) {
       throw new RuntimeException(e);
