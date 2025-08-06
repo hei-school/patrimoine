@@ -39,7 +39,7 @@ public class VariableVisitor implements SimpleVisitor<VariableContext, Variable<
     this.variableDateVisitor =
         new VariableDateVisitor(variableScope, this::getVariableExpressionVisitor);
     this.variableArgentVisitor =
-        new VariableArgentVisitor(variableScope, variableExpressionVisitor, variableDateVisitor);
+        new VariableArgentVisitor(variableScope, this::getVariableExpressionVisitor, this::getVariableDateVisitor);
   }
 
   public Cas asCas(VariableContext ctx) {

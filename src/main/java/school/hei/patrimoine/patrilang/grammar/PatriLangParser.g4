@@ -235,13 +235,23 @@ variable
     |   VARIABLE
     ;
 
+//argent
+//    :   argentMultiplicationExpr ((PLUS | MOINS) argentMultiplicationExpr (MOT_EVALUER dateValue=variable)?)*
+//    ;
 argent
-    :   lhs=argentValue  ((PLUS | MOINS) rhs=argentValue MOT_EVALUER date)?
+    :   argentMultiplicationExpr ((PLUS | MOINS) argentMultiplicationExpr)*
+        (MOT_EVALUER dateValue=date)?
     ;
 
-argentValue
-    :   expression devise
-    |   ARGENTS_VARIABLE
+
+argentMultiplicationExpr
+    :   atomArgent( (MUL | DIV) expression )*
+    ;
+
+atomArgent
+    :   LPAREN argent RPAREN                        # ParenArgentExpr
+    |   expression devise                           # MontantArgentExpr
+    |   ARGENTS_VARIABLE                            # VariableArgentExpr
     ;
 
 dateDelta

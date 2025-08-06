@@ -1,12 +1,16 @@
 package school.hei.patrimoine.patrilang.visitors.variable;
 
 import static java.util.Objects.nonNull;
-import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.ArgentContext;
-import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.ArgentValueContext;
+import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.*;
 import static school.hei.patrimoine.patrilang.modele.variable.VariableType.ARGENT;
 import static school.hei.patrimoine.patrilang.visitors.BaseVisitor.visitDevise;
 import static school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor.extractVariableName;
 
+import java.time.LocalDate;
+import java.util.List;
+import java.util.function.Supplier;
+
+import com.google.gson.JsonArray;
 import lombok.RequiredArgsConstructor;
 import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.patrilang.modele.variable.VariableScope;
@@ -16,40 +20,67 @@ import school.hei.patrimoine.patrilang.visitors.SimpleVisitor;
 @SuppressWarnings("all")
 public class VariableArgentVisitor implements SimpleVisitor<ArgentContext, Argent> {
   private final VariableScope variableScope;
-  private final VariableExpressionVisitor variableExpressionVisitor;
-  private final VariableDateVisitor variableDateVisitor;
+  private final Supplier<VariableExpressionVisitor> variableExpressionVisitor;
+  private final Supplier<VariableDateVisitor> variableDateVisitor;
 
   @Override
   public Argent apply(ArgentContext ctx) {
-    var lhs = this.visitArgentValue(ctx.lhs);
+    List<ArgentMultiplicationExprContext> terms = ctx.argentMultiplicationExpr();
+    Argent result = visitArgentMultiplicationExpr(terms.get(0));
 
-    if (nonNull(ctx.rhs)) {
-      return applyDelta(lhs, ctx);
+    for (int i = 1; i < terms.size(); i++) {
+      Argent next = visitArgentMultiplicationExpr(terms.get(i));
+
+      if (nonNull(ctx.PLUS(i - 1))) {
+        result = result.add(next, null);
+      } else if (nonNull(ctx.MOINS(i - 1))) {
+        result = result.minus(next, null);
+      }
     }
 
-    return lhs;
+    if (nonNull(ctx.dateValue)) {
+      LocalDate evaluationDate = variableDateVisitor.get().apply(ctx.dateValue);
+      result = result.convertir(result.devise(), evaluationDate);
+    }
+
+    return result;
   }
 
-  private Argent visitArgentValue(ArgentValueContext ctx) {
-    if (nonNull(ctx.ARGENTS_VARIABLE())) {
-      var name = extractVariableName(ctx.ARGENTS_VARIABLE().getText());
-      var variable = (Argent) this.variableScope.get(name, ARGENT).value();
-      return variable;
+
+
+  private Argent visitArgentMultiplicationExpr(ArgentMultiplicationExprContext ctx) {
+    var base = visitAtomArgent(ctx.atomArgent());
+
+    for (int i = 0; i < ctx.expression().size(); i++) {
+      var operand = variableExpressionVisitor.get().apply(ctx.expression(i));
+
+      if (nonNull(ctx.MUL(i))) {
+        base = base.mult(operand);
+      } else if (nonNull(ctx.DIV(i))) {
+        base = base.div(operand);
+      }
     }
 
-    var valeurComptable = this.variableExpressionVisitor.apply(ctx.expression());
-    var devise = visitDevise(ctx.devise());
-    return new Argent(valeurComptable, devise);
+    return base;
   }
 
-  private Argent applyDelta(Argent lhs, ArgentContext ctx) {
-    var rhs = this.visitArgentValue(ctx.rhs);
-    var date = this.variableDateVisitor.apply(ctx.date());
-
-    if (nonNull(ctx.MOINS())) {
-      return lhs.minus(rhs, date);
+  private Argent visitAtomArgent(AtomArgentContext ctx) {
+    if (ctx instanceof VariableArgentExprContext) {
+      var name = extractVariableName(ctx.getText());
+      return (Argent) variableScope.get(name, ARGENT).value();
     }
 
-    return lhs.add(rhs, date);
+    if (ctx instanceof MontantArgentExprContext montantCtx) {
+      var valeur = variableExpressionVisitor.get().apply(montantCtx.expression());
+      var devise = visitDevise(montantCtx.devise());
+      return new Argent(valeur, devise);
+    }
+
+    if (ctx instanceof ParenArgentExprContext parenCtx) {
+      return apply(parenCtx.argent());
+    }
+
+    throw new UnsupportedOperationException("Type d'atomArgent non supporté : " + ctx.getText());
   }
 }
+

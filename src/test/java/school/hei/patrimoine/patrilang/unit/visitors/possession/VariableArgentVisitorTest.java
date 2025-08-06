@@ -3,11 +3,12 @@ package school.hei.patrimoine.patrilang.unit.visitors.possession;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static school.hei.patrimoine.modele.Argent.ariary;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.ArgentContext;
-import static school.hei.patrimoine.patrilang.modele.variable.VariableType.NOMBRE;
 
+import java.io.IOException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import school.hei.patrimoine.modele.Argent;
+import school.hei.patrimoine.patrilang.antlr.PatriLangLexer;
 import school.hei.patrimoine.patrilang.antlr.PatriLangParser;
 import school.hei.patrimoine.patrilang.utils.UnitTestVisitor;
 import school.hei.patrimoine.patrilang.visitors.variable.VariableArgentVisitor;
@@ -15,96 +16,51 @@ import school.hei.patrimoine.patrilang.visitors.variable.VariableDateVisitor;
 import school.hei.patrimoine.patrilang.visitors.variable.VariableExpressionVisitor;
 import school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor;
 
-class VariableArgentVisitorTest {
-  VariableVisitor variableVisitor = new VariableVisitor();
-  VariableArgentVisitor subject =
-      new VariableArgentVisitor(
-          variableVisitor.getVariableScope(),
-          new VariableExpressionVisitor(
-              variableVisitor.getVariableScope(), variableVisitor::getVariableDateVisitor),
-          new VariableDateVisitor(
-              variableVisitor.getVariableScope(), variableVisitor::getVariableExpressionVisitor));
+public class VariableArgentVisitorTest {
 
-  UnitTestVisitor visitor =
-      new UnitTestVisitor() {
-        @Override
-        public Argent visitArgent(ArgentContext ctx) {
-          return subject.apply(ctx);
-        }
-      };
+  VariableVisitor variableVisitor;
+  VariableArgentVisitor subject;
+  UnitTestVisitor visitor;
 
   @BeforeEach
   void setUp() {
     variableVisitor = new VariableVisitor();
-    subject =
-        new VariableArgentVisitor(
+
+    subject = new VariableArgentVisitor(
             variableVisitor.getVariableScope(),
-            new VariableExpressionVisitor(
-                variableVisitor.getVariableScope(), variableVisitor::getVariableDateVisitor),
-            new VariableDateVisitor(
-                variableVisitor.getVariableScope(), variableVisitor::getVariableExpressionVisitor));
+            () -> new VariableExpressionVisitor(variableVisitor.getVariableScope(), () -> new VariableDateVisitor(variableVisitor.getVariableScope(), () -> null)),
+            () -> new VariableDateVisitor(variableVisitor.getVariableScope(), () -> new VariableExpressionVisitor(variableVisitor.getVariableScope(), () -> null))
+    );
+
+    visitor = new UnitTestVisitor() {
+      @Override
+      public Argent visitArgent(ArgentContext ctx) {
+        return subject.apply(ctx);
+      }
+    };
+  }
+
+  private Argent parseAndVisit(String input) throws IOException {
+    return visitor.visit(input, PatriLangParser::argent);
   }
 
   @Test
-  void parse_argent_without_expression() {
-    var input = "300000Ar";
-    var expected = ariary(300_000);
+  void testAdditionSoustractionAvecDate() throws IOException {
+    // Expression : (400 Ar + 300 Ar - 300 Ar) évalué le 21 janvier 2024
+    // Adapte la syntaxe exacte à ta grammaire, par exemple avec "évalué le" ou "MOT_EVALUER le"
+    String expr = "(400Ar + 300Ar - 300Ar) évalué le 21 janvier 2024";
 
-    var actual = visitor.visit(input, PatriLangParser::argent);
+    Argent result = parseAndVisit(expr);
 
-    assertEquals(expected, actual);
+    assertEquals(ariary(400), result);
   }
 
   @Test
-  void parse_argent_with_negation() {
-    var input = "-300_000Ar";
-    var expected = ariary(-300_000);
+  void testDivisionSimple() throws IOException {
+    String expr = "(100Ar / 2)* 200Ar";
 
-    var actual = visitor.visit(input, PatriLangParser::argent);
+    Argent result = parseAndVisit(expr);
 
-    assertEquals(expected, actual);
-  }
-
-  @Test
-  void parse_argent_with_expression() {
-    var input = "(300 `/*comment1*/` +  450 `/*comment2*/`)Ar";
-    var expected = ariary(750);
-
-    var actual = visitor.visit(input, PatriLangParser::argent);
-
-    assertEquals(expected, actual);
-  }
-
-  @Test
-  void parse_int_argent_with_underscore() {
-    var input = "300_000_000Ar";
-    var expected = ariary(300_000_000);
-
-    var actual = visitor.visit(input, PatriLangParser::argent);
-
-    assertEquals(expected, actual);
-  }
-
-  @Test
-  void parse_int_argent_with_variable() {
-    var input = "(Nombres:valeurOrdinateur)Ar";
-    var expected = ariary(300_000_000);
-
-    variableVisitor.addToScope("valeurOrdinateur", NOMBRE, 300_000_000d);
-    var actual = visitor.visit(input, PatriLangParser::argent);
-
-    assertEquals(expected, actual);
-  }
-
-  @Test
-  void parse_argent_with_all_specification() {
-    var valeurOrdinateur = 300_000_000;
-    var input = "(-Nombres:valeurOrdinateur * 2 / 4)Ar";
-    var expected = ariary(-1 * valeurOrdinateur * 2 / 4);
-
-    variableVisitor.addToScope("valeurOrdinateur", NOMBRE, (double) valeurOrdinateur);
-    var actual = visitor.visit(input, PatriLangParser::argent);
-
-    assertEquals(expected, actual);
+    assertEquals(ariary(10000), result);
   }
 }

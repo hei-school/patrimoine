@@ -12,6 +12,7 @@ import lombok.Getter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
 
+@Getter
 @ToString
 @AllArgsConstructor
 public class Argent implements Serializable {
@@ -55,6 +56,10 @@ public class Argent implements Serializable {
     return new Argent(montant * d, devise);
   }
 
+  public Argent div(double d) {
+    return new Argent(montant / d, devise);
+  }
+
   public Argent minus(Argent that, LocalDate t) {
     return new Argent(montant - that.convertir(devise, t).montant, devise);
   }
@@ -81,9 +86,5 @@ public class Argent implements Serializable {
 
   public boolean hasSameValeurComptable(Argent that, LocalDate t) {
     return that.convertir(devise, t).equals(this);
-  }
-
-  public Argent negate() {
-    return new Argent(-montant, devise);
   }
 }
