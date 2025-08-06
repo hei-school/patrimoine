@@ -10,15 +10,16 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.function.Supplier;
 
-import com.google.gson.JsonArray;
 import lombok.RequiredArgsConstructor;
 import school.hei.patrimoine.modele.Argent;
+import school.hei.patrimoine.patrilang.antlr.PatriLangParser;
 import school.hei.patrimoine.patrilang.modele.variable.VariableScope;
 import school.hei.patrimoine.patrilang.visitors.SimpleVisitor;
 
 @RequiredArgsConstructor
 @SuppressWarnings("all")
 public class VariableArgentVisitor implements SimpleVisitor<ArgentContext, Argent> {
+
   private final VariableScope variableScope;
   private final Supplier<VariableExpressionVisitor> variableExpressionVisitor;
   private final Supplier<VariableDateVisitor> variableDateVisitor;
@@ -26,30 +27,33 @@ public class VariableArgentVisitor implements SimpleVisitor<ArgentContext, Argen
   @Override
   public Argent apply(ArgentContext ctx) {
     List<ArgentMultiplicationExprContext> terms = ctx.argentMultiplicationExpr();
+
+    LocalDate evaluationDate = null;
+    if (nonNull(ctx.dateValue)) {
+      evaluationDate = variableDateVisitor.get().apply(ctx.dateValue);
+    }
+
     Argent result = visitArgentMultiplicationExpr(terms.get(0));
 
     for (int i = 1; i < terms.size(); i++) {
       Argent next = visitArgentMultiplicationExpr(terms.get(i));
 
       if (nonNull(ctx.PLUS(i - 1))) {
-        result = result.add(next, null);
+        result = result.add(next, evaluationDate);
       } else if (nonNull(ctx.MOINS(i - 1))) {
-        result = result.minus(next, null);
+        result = result.minus(next, evaluationDate);
       }
     }
 
-    if (nonNull(ctx.dateValue)) {
-      LocalDate evaluationDate = variableDateVisitor.get().apply(ctx.dateValue);
+    if (nonNull(evaluationDate)) {
       result = result.convertir(result.devise(), evaluationDate);
     }
 
     return result;
   }
 
-
-
   private Argent visitArgentMultiplicationExpr(ArgentMultiplicationExprContext ctx) {
-    var base = visitAtomArgent(ctx.atomArgent());
+    Argent base = visitAtomArgent(ctx.atomArgent());
 
     for (int i = 0; i < ctx.expression().size(); i++) {
       var operand = variableExpressionVisitor.get().apply(ctx.expression(i));
@@ -64,23 +68,19 @@ public class VariableArgentVisitor implements SimpleVisitor<ArgentContext, Argen
     return base;
   }
 
-  private Argent visitAtomArgent(AtomArgentContext ctx) {
-    if (ctx instanceof VariableArgentExprContext) {
-      var name = extractVariableName(ctx.getText());
-      return (Argent) variableScope.get(name, ARGENT).value();
-    }
-
-    if (ctx instanceof MontantArgentExprContext montantCtx) {
-      var valeur = variableExpressionVisitor.get().apply(montantCtx.expression());
-      var devise = visitDevise(montantCtx.devise());
-      return new Argent(valeur, devise);
-    }
-
-    if (ctx instanceof ParenArgentExprContext parenCtx) {
-      return apply(parenCtx.argent());
-    }
-
-    throw new UnsupportedOperationException("Type d'atomArgent non supporté : " + ctx.getText());
+  private Argent visitAtomArgent(PatriLangParser.AtomArgentContext ctx) {
+    return switch (ctx) {
+      case PatriLangParser.VariableArgentExprContext varCtx -> {
+        String name = extractVariableName(varCtx.getText());
+        yield (Argent) variableScope.get(name, ARGENT).value();
+      }
+      case PatriLangParser.MontantArgentExprContext montantCtx -> {
+        var valeur = variableExpressionVisitor.get().apply(montantCtx.expression());
+        var devise = visitDevise(montantCtx.devise());
+        yield new Argent(valeur, devise);
+      }
+      case PatriLangParser.ParenArgentExprContext parenCtx -> apply(parenCtx.argent());
+      default -> throw new UnsupportedOperationException("Type d'atomArgent non supporté : " + ctx.getText());
+    };
   }
 }
-
