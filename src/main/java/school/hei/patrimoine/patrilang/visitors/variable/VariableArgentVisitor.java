@@ -7,10 +7,13 @@ import static school.hei.patrimoine.patrilang.visitors.BaseVisitor.visitDevise;
 import static school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor.extractVariableName;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
 import lombok.RequiredArgsConstructor;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.TerminalNode;
 import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.patrilang.antlr.PatriLangParser;
 import school.hei.patrimoine.patrilang.modele.variable.VariableScope;
@@ -28,25 +31,33 @@ public class VariableArgentVisitor implements SimpleVisitor<ArgentContext, Argen
   public Argent apply(ArgentContext ctx) {
     List<ArgentMultiplicationExprContext> terms = ctx.argentMultiplicationExpr();
 
-    LocalDate evaluationDate = null;
-    if (nonNull(ctx.dateValue)) {
-      evaluationDate = variableDateVisitor.get().apply(ctx.dateValue);
-    }
+    LocalDate evaluationDate = nonNull(ctx.dateValue)
+            ? variableDateVisitor.get().apply(ctx.dateValue)
+            : LocalDate.now();
 
     Argent result = visitArgentMultiplicationExpr(terms.get(0));
 
-    for (int i = 1; i < terms.size(); i++) {
-      Argent next = visitArgentMultiplicationExpr(terms.get(i));
+    List<? extends ParseTree> children = ctx.children;
+    List<TerminalNode> operators = new ArrayList<>();
 
-      if (nonNull(ctx.PLUS(i - 1))) {
-        result = result.add(next, evaluationDate);
-      } else if (nonNull(ctx.MOINS(i - 1))) {
-        result = result.minus(next, evaluationDate);
+    for (ParseTree child : children) {
+      if (child instanceof TerminalNode terminal) {
+        if (terminal.getSymbol().getType() == PatriLangParser.PLUS ||
+                terminal.getSymbol().getType() == PatriLangParser.MOINS) {
+          operators.add(terminal);
+        }
       }
     }
 
-    if (nonNull(evaluationDate)) {
-      result = result.convertir(result.devise(), evaluationDate);
+    for (int i = 1; i < terms.size(); i++) {
+      Argent next = visitArgentMultiplicationExpr(terms.get(i));
+      TerminalNode operator = operators.get(i - 1);
+
+      if (operator.getSymbol().getType() == PatriLangParser.PLUS) {
+        result = result.add(next, evaluationDate);
+      } else if (operator.getSymbol().getType() == PatriLangParser.MOINS) {
+        result = result.minus(next, evaluationDate);
+      }
     }
 
     return result;
