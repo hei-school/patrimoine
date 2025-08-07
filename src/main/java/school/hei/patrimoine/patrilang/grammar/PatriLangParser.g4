@@ -236,8 +236,8 @@ variable
     ;
 
 argent
-    :   argentSimple (MOT_EVALUER date)?               # ArgentSimpleExpr
-    |   expressionArithmetique (MOT_EVALUER date)?      # ArgentComplexExpr
+    :   LPAREN? argentSimple (MOT_EVALUER date)? RPAREN?
+    |   LPAREN? expressionArithmetique (MOT_EVALUER date)? RPAREN?
     ;
 argentSimple
     :   lhs=argentValue  ((PLUS | MOINS) rhs=argentValue)?
@@ -246,15 +246,19 @@ expressionArithmetique
     :   terme ( (PLUS | MOINS) terme )*
     ;
 terme
-    :   facteur ( (MUL | DIV) facteur )*
+    :   facteur ( (MUL | DIV) scalar )*
     ;
 facteur
     :   argentValue
     |   LPAREN expressionArithmetique RPAREN
     ;
+scalar
+    :   nombre
+    |   LPAREN expressionArithmetique RPAREN
+    ;
 argentValue
-    :   expression devise
-    |   ARGENTS_VARIABLE
+    :   ARGENTS_VARIABLE
+    |   expression devise
     ;
 dateDelta
     :   (PLUS | MOINS) anneePart moisPart jourPart

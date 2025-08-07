@@ -268,7 +268,7 @@ MOT_VALANT
     ;
 
 /* Opérateurs */
-MOT_EVALUER
+    MOT_EVALUER
     :  'évalué'
     ;
 UNITE_DATE_DE
