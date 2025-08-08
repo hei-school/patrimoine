@@ -1,5 +1,7 @@
 package school.hei.patrimoine.patrilang.visitors.variable;
 
+import static java.util.Objects.nonNull;
+import static org.reflections.Reflections.log;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.ArgentContext;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.ArgentValueContext;
 import static school.hei.patrimoine.patrilang.modele.variable.VariableType.ARGENT;
@@ -8,6 +10,7 @@ import static school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor.
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.antlr.v4.runtime.ParserRuleContext;
 import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.Devise;
 import school.hei.patrimoine.patrilang.antlr.PatriLangParser.*;
@@ -27,13 +30,11 @@ public class VariableArgentVisitor implements SimpleVisitor<ArgentContext, Argen
   @Override
   public Argent apply(ArgentContext ctx) {
     try {
-      if (ctx.expressionArithmetique() != null && ctx.date() == null) {
-        throw new IllegalArgumentException("Une date d'évaluation est requise pour les conversions de devise");
-      }
-
       if (ctx.expressionArithmetique() != null) {
+        if (ctx.date() == null) {
+          throw new IllegalArgumentException("Une date d'évaluation est requise pour les expressions arithmétiques");
+        }
         Argent result = evaluateExpression(ctx.expressionArithmetique());
-        requireEvaluationDateIfNeeded(result, ctx.date());
         return applyTemporalEvaluation(result, ctx.date());
       }
       else if (ctx.argentSimple() != null) {
@@ -65,9 +66,12 @@ public class VariableArgentVisitor implements SimpleVisitor<ArgentContext, Argen
       LocalDate evaluationDate = ctx.getParent() instanceof ArgentContext ?
               variableDateVisitor.apply(((ArgentContext)ctx.getParent()).date()) :
               null;
-      return ctx.PLUS() != null ?
-              lhs.add(rhs, evaluationDate) :
-              lhs.minus(rhs, evaluationDate);
+
+      if (ctx.PLUS() != null) {
+        return lhs.add(rhs, evaluationDate);
+      } else if (ctx.MOINS() != null) {
+        return lhs.minus(rhs, evaluationDate);
+      }
     }
     return lhs;
   }
@@ -81,52 +85,65 @@ public class VariableArgentVisitor implements SimpleVisitor<ArgentContext, Argen
   }
 
   private Argent evaluateExpression(ExpressionArithmetiqueContext expr) {
-    log.info("evaluateExpression: {}", expr.getText());
     Argent current = evaluateTerme(expr.terme(0));
+    LocalDate evaluationDate = getEvaluationDate(expr);
 
     for (int i = 1; i < expr.terme().size(); i++) {
-      TermeContext terme = expr.terme(i);
-      Argent next = evaluateTerme(terme);
+      Argent next = evaluateTerme(expr.terme(i));
 
       if (expr.PLUS(i-1) != null) {
-        current = current.add(next, null);
+        current = current.add(next, evaluationDate);
       } else if (expr.MOINS(i-1) != null) {
-        current = current.minus(next, null);
-      } else {
-        throw new IllegalArgumentException("Seules les opérations d'addition et soustraction sont autorisées entre valeurs d'argent");
+        current = current.minus(next, evaluationDate);
       }
     }
     return current;
   }
 
-  private Argent evaluateTerme(TermeContext terme) {
-    log.info("evaluateTerme: {}", terme.getText());
+  private LocalDate getEvaluationDate(ParserRuleContext ctx) {
+    while (ctx != null && !(ctx instanceof ArgentContext)) {
+      ctx = ctx.getParent();
+    }
 
+    if (ctx != null) {
+      ArgentContext argentCtx = (ArgentContext) ctx;
+      if (argentCtx.date() != null) {
+        return variableDateVisitor.apply(argentCtx.date());
+      }
+    }
+    return null;
+  }
+
+  private Argent applyConversion(Argent amount, LocalDate evaluationDate) {
+    if (evaluationDate == null || amount == null || amount.devise() == null) {
+      return amount;
+    }
+    return amount.devise().equals(Devise.MGA) ? amount : amount.convertir(amount.devise(), evaluationDate);
+  }
+
+  private Argent evaluateTerme(TermeContext terme) {
     Argent result = evaluateFacteur(terme.facteur());
+    LocalDate evaluationDate = getEvaluationDate(terme);
 
     for (int i = 0; i < terme.scalar().size(); i++) {
       ScalarContext scalar = terme.scalar(i);
       double valeur;
 
       if (scalar.nombre() != null) {
-        valeur = Double.parseDouble(scalar.nombre().getText());
-      } else if (scalar.expressionArithmetique() != null) {
-        valeur = variableExpressionVisitor.apply(scalar.expressionArithmetique());
+        valeur = Double.parseDouble(scalar.nombre().getText().replace("_", ""));
       } else {
-        throw new IllegalArgumentException("Opération invalide : facteur non numérique.");
+        valeur = variableExpressionVisitor.apply(scalar.expressionArithmetique());
       }
 
       if (terme.MUL(i) != null) {
-        result = result.mult(valeur);
+        result = applyConversion(result.mult(valeur), evaluationDate);
       } else if (terme.DIV(i) != null) {
         if (valeur == 0) throw new ArithmeticException("Division par zéro");
-        result = result.div(valeur);
+        result = applyConversion(result.div(valeur), evaluationDate);
       }
     }
-
     return result;
   }
-
 
   private Argent handleLegacyFormat(ArgentContext ctx) {
     for (int i = 0; i < ctx.getChildCount(); i++) {
@@ -138,15 +155,12 @@ public class VariableArgentVisitor implements SimpleVisitor<ArgentContext, Argen
   }
 
   private Argent evaluateFacteur(FacteurContext facteur) {
-    log.info("evaluateFacteur: {}", facteur.getText());
     if (facteur.argentValue() != null) {
       return visitArgentValue(facteur.argentValue());
     }
-
     if (facteur.expressionArithmetique() != null) {
       return evaluateExpression(facteur.expressionArithmetique());
     }
-
     throw new IllegalArgumentException("Facteur non reconnu: " + facteur.getText());
   }
 

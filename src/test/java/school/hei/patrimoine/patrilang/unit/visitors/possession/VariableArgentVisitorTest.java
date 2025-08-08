@@ -128,7 +128,7 @@ class VariableArgentVisitorTest {
 
   @Test
   void parse_argent_with_multiplication_by_number() {
-    var input = "(300000Ar * 2) évalué le 01 Mai 2025";
+    var input = "(300000Ar * 2) évalué le 01 Juin 2025";
     var expected = ariary(600_000);
 
     var actual = visitor.visit(input, PatriLangParser::argent);

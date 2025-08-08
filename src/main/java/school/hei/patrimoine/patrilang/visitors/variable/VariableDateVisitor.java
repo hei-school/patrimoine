@@ -31,29 +31,30 @@ public class VariableDateVisitor {
     if (nonNull(ctx.MOT_DATE_INDETERMINER())) {
       return LocalDate.MAX;
     }
-
     if (nonNull(ctx.MOT_DATE_MAXIMUM())) {
       return LocalDate.MAX;
     }
-
     if (nonNull(ctx.MOT_DATE_MINIMUM())) {
       return LocalDate.MIN;
     }
-
     if (nonNull(ctx.DATE_VARIABLE())) {
       var name = extractVariableName(ctx.DATE_VARIABLE().getText());
       return (LocalDate) this.variableScope.get(name, DATE).value();
     }
 
-    var jour = this.variableExpressionVisitorSupplier.get().apply(ctx.jour.expression());
-    var annee = this.variableExpressionVisitorSupplier.get().apply(ctx.annee.expression());
-    if (nonNull(ctx.moisEntier)) {
-      var mois = this.variableExpressionVisitorSupplier.get().apply(ctx.moisEntier.expression());
-      return LocalDate.of(annee.intValue(), mois.intValue(), jour.intValue());
+    if (ctx.jour != null && ctx.annee != null) {
+      var jour = this.variableExpressionVisitorSupplier.get().apply(ctx.jour.expression());
+      var annee = this.variableExpressionVisitorSupplier.get().apply(ctx.annee.expression());
+
+      if (ctx.moisEntier != null) {
+        var mois = this.variableExpressionVisitorSupplier.get().apply(ctx.moisEntier.expression());
+        return LocalDate.of(annee.intValue(), mois.intValue(), jour.intValue());
+      } else if (ctx.moisTextuel != null) {
+        return LocalDate.of(annee.intValue(), stringToMonth(ctx.moisTextuel.getText()), jour.intValue());
+      }
     }
 
-    return LocalDate.of(
-        annee.intValue(), stringToMonth(ctx.moisTextuel.getText()), jour.intValue());
+    throw new IllegalArgumentException("Format de date non supporté: " + ctx.getText());
   }
 
   private LocalDate applyDelta(LocalDate baseValue, DateDeltaContext ctx) {
