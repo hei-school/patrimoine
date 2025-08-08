@@ -1,7 +1,5 @@
 package school.hei.patrimoine.patrilang.visitors.variable;
 
-import static java.util.Objects.nonNull;
-import static org.reflections.Reflections.log;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.ArgentContext;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.ArgentValueContext;
 import static school.hei.patrimoine.patrilang.modele.variable.VariableType.ARGENT;
@@ -113,7 +111,7 @@ public class VariableArgentVisitor implements SimpleVisitor<ArgentContext, Argen
       if (scalar.nombre() != null) {
         valeur = Double.parseDouble(scalar.nombre().getText());
       } else if (scalar.expressionArithmetique() != null) {
-        throw new IllegalArgumentException("Multiplication ou division entre montants d'argent interdite.");
+        valeur = variableExpressionVisitor.apply(scalar.expressionArithmetique());
       } else {
         throw new IllegalArgumentException("Opération invalide : facteur non numérique.");
       }
@@ -146,12 +144,10 @@ public class VariableArgentVisitor implements SimpleVisitor<ArgentContext, Argen
     }
 
     if (facteur.expressionArithmetique() != null) {
-      throw new IllegalArgumentException(
-              "Multiplication ou division entre montants d'argent interdite");
+      return evaluateExpression(facteur.expressionArithmetique());
     }
 
     throw new IllegalArgumentException("Facteur non reconnu: " + facteur.getText());
-
   }
 
   private Argent visitArgentValue(ArgentValueContext ctx) {

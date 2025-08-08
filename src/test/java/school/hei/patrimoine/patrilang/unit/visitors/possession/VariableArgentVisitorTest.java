@@ -110,7 +110,7 @@ class VariableArgentVisitorTest {
 
   @Test
   void parse_argent_with_addition() {
-    var input = "(300000Ar + 450000Ar) évalué le 01-06-2025";
+    var input = "(300000Ar + 450000Ar) évalué le 01 Juin 2025";
     var expected = ariary(750_000);
 
     var actual = visitor.visit(input, PatriLangParser::argent);
@@ -119,7 +119,7 @@ class VariableArgentVisitorTest {
 
   @Test
   void parse_argent_with_subtraction() {
-    var input = "(500000Ar - 200000Ar) évalué le 2025-05-01";
+    var input = "(500000Ar - 200000Ar) évalué le 01 Mai 2025";
     var expected = ariary(300_000);
 
     var actual = visitor.visit(input, PatriLangParser::argent);
@@ -128,7 +128,7 @@ class VariableArgentVisitorTest {
 
   @Test
   void parse_argent_with_multiplication_by_number() {
-    var input = "(300000Ar * 2) évalué le 2025-05-01";
+    var input = "(300000Ar * 2) évalué le 01 Mai 2025";
     var expected = ariary(600_000);
 
     var actual = visitor.visit(input, PatriLangParser::argent);
@@ -137,7 +137,7 @@ class VariableArgentVisitorTest {
 
   @Test
   void parse_argent_with_division_by_number() {
-    var input = "(600000Ar / 2) évalué le 2025-05-01";
+    var input = "(600000Ar / 2) évalué le 01 Mai 2025";
     var expected = ariary(300_000);
 
     var actual = visitor.visit(input, PatriLangParser::argent);
