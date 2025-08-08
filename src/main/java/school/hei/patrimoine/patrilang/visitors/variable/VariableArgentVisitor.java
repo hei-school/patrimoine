@@ -64,7 +64,12 @@ public class VariableArgentVisitor implements SimpleVisitor<ArgentContext, Argen
     Argent lhs = visitArgentValue(ctx.lhs);
     if (ctx.rhs != null) {
       Argent rhs = visitArgentValue(ctx.rhs);
-      return ctx.PLUS() != null ? lhs.add(rhs, null) : lhs.minus(rhs, null);
+      LocalDate evaluationDate = ctx.getParent() instanceof ArgentContext ?
+              variableDateVisitor.apply(((ArgentContext)ctx.getParent()).date()) :
+              null;
+      return ctx.PLUS() != null ?
+              lhs.add(rhs, evaluationDate) :
+              lhs.minus(rhs, evaluationDate);
     }
     return lhs;
   }
