@@ -27,35 +27,49 @@ public class VariableArgentVisitor implements SimpleVisitor<ArgentContext, Argen
   private final Supplier<VariableExpressionVisitor> variableExpressionVisitor;
   private final Supplier<VariableDateVisitor> variableDateVisitor;
 
-  @Override
   public Argent apply(ArgentContext ctx) {
-    List<ArgentMultiplicationExprContext> terms = ctx.argentMultiplicationExpr();
+    LocalDate defaultDate = getDefaultDateFromArgent(ctx);
+    return apply(ctx, defaultDate);
+  }
 
-    LocalDate evaluationDate = nonNull(ctx.dateValue)
-            ? variableDateVisitor.get().apply(ctx.dateValue)
-            : LocalDate.now();
+  public Argent apply(ArgentContext ctx, LocalDate evaluationDate) {
+    if (nonNull(ctx.dateValue)) {
+      evaluationDate = variableDateVisitor.get().apply(ctx.dateValue);
+    } else if (evaluationDate == null) {
+      evaluationDate = getDefaultDateFromArgent(ctx);
+    }
 
-    Argent result = visitArgentMultiplicationExpr(terms.get(0));
+    if (evaluationDate == null) {
+      boolean hasPlusOrMinus = ctx.children.stream()
+              .filter(child -> child instanceof TerminalNode)
+              .map(child -> (TerminalNode) child)
+              .anyMatch(t -> t.getSymbol().getType() == PatriLangParser.PLUS
+                      || t.getSymbol().getType() == PatriLangParser.MOINS);
+      if (hasPlusOrMinus) {
+        throw new IllegalArgumentException("Une date d'évaluation est obligatoire lorsqu'il y a un '+' ou '-'.");
+      }
+      evaluationDate = LocalDate.now();
+    }
 
-    List<? extends ParseTree> children = ctx.children;
-    List<TerminalNode> operators = new ArrayList<>();
+    var terms = ctx.argentMultiplicationExpr();
+    Argent result = visitArgentMultiplicationExpr(terms.get(0), evaluationDate);
 
-    for (ParseTree child : children) {
+    var operators = new ArrayList<TerminalNode>();
+    for (ParseTree child : ctx.children) {
       if (child instanceof TerminalNode terminal) {
-        if (terminal.getSymbol().getType() == PatriLangParser.PLUS ||
-                terminal.getSymbol().getType() == PatriLangParser.MOINS) {
+        int type = terminal.getSymbol().getType();
+        if (type == PatriLangParser.PLUS || type == PatriLangParser.MOINS) {
           operators.add(terminal);
         }
       }
     }
 
     for (int i = 1; i < terms.size(); i++) {
-      Argent next = visitArgentMultiplicationExpr(terms.get(i));
-      TerminalNode operator = operators.get(i - 1);
-
-      if (operator.getSymbol().getType() == PatriLangParser.PLUS) {
+      Argent next = visitArgentMultiplicationExpr(terms.get(i), evaluationDate);
+      TerminalNode op = operators.get(i - 1);
+      if (op.getSymbol().getType() == PatriLangParser.PLUS) {
         result = result.add(next, evaluationDate);
-      } else if (operator.getSymbol().getType() == PatriLangParser.MOINS) {
+      } else {
         result = result.minus(next, evaluationDate);
       }
     }
@@ -63,8 +77,31 @@ public class VariableArgentVisitor implements SimpleVisitor<ArgentContext, Argen
     return result;
   }
 
-  private Argent visitArgentMultiplicationExpr(ArgentMultiplicationExprContext ctx) {
-    Argent base = visitAtomArgent(ctx.atomArgent());
+  private LocalDate getDefaultDateFromArgent(ArgentContext ctx) {
+    for (var term : ctx.argentMultiplicationExpr()) {
+      var atom = term.atomArgent();
+      if (atom != null) {
+        DateContext dateCtx = findDateContext(atom);
+        if (dateCtx != null) {
+          return variableDateVisitor.get().apply(dateCtx);
+        }
+      }
+    }
+    return null;
+  }
+
+  private DateContext findDateContext(ParseTree node) {
+    if (node == null) return null;
+    if (node instanceof DateContext dc) return dc;
+    for (int i = 0; i < node.getChildCount(); i++) {
+      DateContext found = findDateContext(node.getChild(i));
+      if (found != null) return found;
+    }
+    return null;
+  }
+
+  private Argent visitArgentMultiplicationExpr(ArgentMultiplicationExprContext ctx, LocalDate evaluationDate) {
+    Argent base = visitAtomArgent(ctx.atomArgent(), evaluationDate);
 
     for (int i = 0; i < ctx.expression().size(); i++) {
       var operand = variableExpressionVisitor.get().apply(ctx.expression(i));
@@ -79,7 +116,8 @@ public class VariableArgentVisitor implements SimpleVisitor<ArgentContext, Argen
     return base;
   }
 
-  private Argent visitAtomArgent(PatriLangParser.AtomArgentContext ctx) {
+
+  private Argent visitAtomArgent(PatriLangParser.AtomArgentContext ctx, LocalDate evaluationDate) {
     return switch (ctx) {
       case PatriLangParser.VariableArgentExprContext varCtx -> {
         String name = extractVariableName(varCtx.getText());
@@ -90,7 +128,7 @@ public class VariableArgentVisitor implements SimpleVisitor<ArgentContext, Argen
         var devise = visitDevise(montantCtx.devise());
         yield new Argent(valeur, devise);
       }
-      case PatriLangParser.ParenArgentExprContext parenCtx -> apply(parenCtx.argent());
+      case PatriLangParser.ParenArgentExprContext parenCtx -> apply(parenCtx.argent(), evaluationDate);
       default -> throw new UnsupportedOperationException("Type d'atomArgent non supporté : " + ctx.getText());
     };
   }

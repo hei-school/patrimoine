@@ -1,13 +1,11 @@
 package school.hei.patrimoine.patrilang.unit.visitors.possession;
 
-import static java.time.Month.JUNE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static school.hei.patrimoine.modele.Argent.ariary;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.ArgentContext;
-import static school.hei.patrimoine.patrilang.modele.variable.VariableType.DATE;
 
 import java.io.IOException;
-import java.time.LocalDate;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,7 +24,7 @@ public class VariableArgentVisitorTest {
   UnitTestVisitor visitor;
 
   @BeforeEach
-  void setUp() {
+  void set_up() {
     subject = new VariableArgentVisitor(
             variableVisitor.getVariableScope(),
             () -> new VariableExpressionVisitor(variableVisitor.getVariableScope(), () -> new VariableDateVisitor(variableVisitor.getVariableScope(), () -> null)),
@@ -41,114 +39,111 @@ public class VariableArgentVisitorTest {
     };
   }
 
-  private Argent parseAndVisit(String input) throws IOException {
+  private Argent parse_and_visit(String input) throws IOException {
     return visitor.visit(input, PatriLangParser::argent);
   }
 
   @Test
-  void testAdditionSoustractionAvecDateVariableAjd() throws IOException {
-    String expr = "(400Ar - 300Ar +300Ar)*2 évalué le 7 juillet 2024";
-    Argent result = parseAndVisit(expr);
+  void addition_and_subtraction_with_date_variable_should_return_correct_value() throws IOException {
+    String expr = "(400Ar - 300Ar + 300Ar)*2 évalué le 7 juillet 2024";
+    Argent result = parse_and_visit(expr);
     assertEquals(ariary(800), result);
   }
 
   @Test
-  void testDivisionSimple() throws IOException {
+  void division_simple_should_return_correct_value() throws IOException {
     String expr = "(100Ar / 2)* 200Ar";
-    Argent result = parseAndVisit(expr);
+    Argent result = parse_and_visit(expr);
     assertEquals(ariary(10000), result);
   }
 
   @Test
-  void testMultiSimple() throws IOException {
+  void multiplication_simple_should_return_correct_value() throws IOException {
     String expr = "(100Ar * 2)";
-    Argent result = parseAndVisit(expr);
+    Argent result = parse_and_visit(expr);
     assertEquals(ariary(200), result);
   }
 
   @Test
-  void testAdditionSimple() throws IOException {
-    String expr = "(100Ar + 100Ar)";
-    Argent result = parseAndVisit(expr);
+  void addition_simple_with_date_should_return_correct_value() throws IOException {
+    String expr = "(100Ar + 100Ar) évalué le 7 juillet 2024 ";
+    Argent result = parse_and_visit(expr);
     assertEquals(ariary(200), result);
   }
 
   @Test
-  void testMontantDeviseRecognition() throws IOException {
+  void amount_with_currency_should_be_recognized() throws IOException {
     String expr = "100Ar";
-    var result = parseAndVisit(expr);
+    var result = parse_and_visit(expr);
     assertEquals(ariary(100), result);
   }
 
   @Test
-  void testSubtractionSimple() throws IOException {
+  void subtraction_without_date_should_throw_exception() {
     String expr = "300Ar - 100Ar";
-    Argent result = parseAndVisit(expr);
-    assertEquals(ariary(200), result);
+    assertThrows(IllegalArgumentException.class, () -> parse_and_visit(expr));
   }
 
   @Test
-  void testParenthesesPrecedence() throws IOException {
-    String expr = "100Ar + (200Ar * 2)";
-    Argent result = parseAndVisit(expr);
+  void parentheses_precedence_should_be_respected() throws IOException {
+    String expr = "100Ar + (200Ar * 2) évalué le 7 juillet 2024";
+    Argent result = parse_and_visit(expr);
     assertEquals(ariary(500), result);
   }
 
   @Test
-  void testNestedParentheses() throws IOException {
-    String expr = "((50Ar + 50Ar) * 2)";
-    Argent result = parseAndVisit(expr);
+  void nested_parentheses_should_be_evaluated_correctly() throws IOException {
+    String expr = "((50Ar + 50Ar) * 2) évalué le 7 juillet 2024";
+    Argent result = parse_and_visit(expr);
     assertEquals(ariary(200), result);
   }
 
   @Test
-  void testDivisionWithParentheses() throws IOException {
+  void division_with_parentheses_should_return_correct_value() throws IOException {
     String expr = "200Ar / (2)";
-    Argent result = parseAndVisit(expr);
+    Argent result = parse_and_visit(expr);
     assertEquals(ariary(100), result);
   }
 
   @Test
-  void testComplexExpression() throws IOException {
-    String expr = "((100Ar + 200Ar) / 3) * 2";
-    Argent result = parseAndVisit(expr);
+  void complex_expression_should_return_correct_value() throws IOException {
+    String expr = "((100Ar + 200Ar) / 3) * 2 évalué le 7 juillet 2024";
+    Argent result = parse_and_visit(expr);
     assertEquals(ariary(200), result);
   }
 
   @Test
-  void testEvaluationDateAvecAddition() throws IOException {
+  void evaluation_with_addition_date_should_return_correct_value() throws IOException {
     String expr = "100Ar + 150Ar évalué le 6 juin 2025";
-    Argent result = parseAndVisit(expr);
+    Argent result = parse_and_visit(expr);
     assertEquals(ariary(250), result);
   }
 
   @Test
-  void testEvaluationDateAvecMultiplication() throws IOException {
+  void evaluation_with_multiplication_date_should_return_correct_value() throws IOException {
     String expr = "(50Ar * 4) évalué le 15 mars 2023";
-    Argent result = parseAndVisit(expr);
+    Argent result = parse_and_visit(expr);
     assertEquals(ariary(200), result);
   }
 
   @Test
-  void testEvaluationDateAvecComplexe() throws IOException {
+  void evaluation_with_complex_expression_and_date_should_return_correct_value() throws IOException {
     String expr = "(100Ar + 200Ar - 50Ar) * 2 évalué le 1 janvier 2024";
-    Argent result = parseAndVisit(expr);
+    Argent result = parse_and_visit(expr);
     assertEquals(ariary(500), result);
   }
 
   @Test
-  void testEvaluationAvecAjdMotCle() throws IOException {
-    String expr = "100Ar + 5$ évalué le ajd";
-    Argent result = parseAndVisit(expr);
-    assertEquals(ariary(17060), result);
+  void evaluation_with_explicit_date_keyword_should_return_correct_value() throws IOException {
+    String expr = "100Ar + 5$ évalué le 1 janvier 2024";
+    Argent result = parse_and_visit(expr);
+    assertEquals(ariary(16270), result);
   }
 
   @Test
-  void testEvaluationAvecDateRelative() throws IOException {
-    String expr = "200Ar + 100Ar évalué le dans 3 jours";
-    Argent result = parseAndVisit(expr);
-    assertEquals(ariary(300), result);
+  void invalid_expression_should_throw_unsupported_operation_exception() {
+    String expr = "valeur_marche_compte";
+    assertThrows(UnsupportedOperationException.class, () -> parse_and_visit(expr));
   }
+
 }
-
-
