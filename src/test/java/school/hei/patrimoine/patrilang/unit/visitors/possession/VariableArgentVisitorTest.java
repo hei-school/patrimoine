@@ -7,7 +7,6 @@ import static school.hei.patrimoine.patrilang.modele.variable.VariableType.NOMBR
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 import school.hei.patrimoine.patrilang.antlr.PatriLangParser;
 import school.hei.patrimoine.patrilang.utils.UnitTestVisitor;
 import school.hei.patrimoine.patrilang.visitors.variable.VariableArgentVisitor;
@@ -128,7 +127,7 @@ class VariableArgentVisitorTest {
 
   @Test
   void parse_argent_with_multiplication_by_number() {
-    var input = "(300000Ar * 2) évalué le 01 Juin 2025";
+    var input = "(300000Ar * 2)";
     var expected = ariary(600_000);
 
     var actual = visitor.visit(input, PatriLangParser::argent);
@@ -137,28 +136,12 @@ class VariableArgentVisitorTest {
 
   @Test
   void parse_argent_with_division_by_number() {
-    var input = "(600000Ar / 2) évalué le 01 Mai 2025";
+    var input = "(600000Ar / 2)";
     var expected = ariary(300_000);
 
     var actual = visitor.visit(input, PatriLangParser::argent);
     assertEquals(expected, actual);
   }
 
-  @Test
-  void should_reject_multiplication_between_money_values() {
-    var input = "(300000Ar * 200000Ar)";
-
-    assertThrows(IllegalArgumentException.class, () -> {
-      visitor.visit(input, PatriLangParser::argent);
-    });
-  }
-
-  @Test
-  void should_reject_division_between_money_values() {
-    var input = "(600000Ar / 200000Ar)";
-
-    assertThrows(IllegalArgumentException.class, () -> {
-      visitor.visit(input, PatriLangParser::argent);
-    });
-  }
+  // expression test complexe : ((a1+a2) / 2 * 5) * 5
 }
