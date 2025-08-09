@@ -55,6 +55,10 @@ public class Argent implements Serializable {
     return new Argent(montant * d, devise);
   }
 
+  public Argent div(double d) {
+    return new Argent(montant / d, devise);
+  }
+
   public Argent minus(Argent that, LocalDate t) {
     return new Argent(montant - that.convertir(devise, t).montant, devise);
   }

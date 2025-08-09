@@ -24,6 +24,20 @@ public class VariableExpressionVisitor extends PatriLangParserBaseVisitor<Double
     return visit(ctx.additionExpr());
   }
 
+  public Double apply(ExpressionArithmetiqueContext ctx) {
+    Double current = visit(ctx.terme(0));
+
+    for (int i = 1; i < ctx.terme().size(); i++) {
+      Double next = visit(ctx.terme(i));
+      if (ctx.PLUS(i - 1) != null) {
+        current += next;
+      } else if (ctx.MOINS(i - 1) != null) {
+        current -= next;
+      }
+    }
+    return current;
+  }
+
   @Override
   public Double visitAdditionExpr(AdditionExprContext ctx) {
     // Visit the first operand
