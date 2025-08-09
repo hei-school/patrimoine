@@ -193,27 +193,22 @@ public class VariableArgentVisitor implements SimpleVisitor<ArgentContext, Argen
   }
 
   private Argent evaluateTerme(TermeContext terme) {
-    int argentCount = countArgentValues(terme);
-    boolean hasMulOrDiv = !terme.MUL().isEmpty() || !terme.DIV().isEmpty();
-
-    log.info(
-        "Terme: {} | argentCount={} | hasMulOrDiv={}", terme.getText(), argentCount, hasMulOrDiv);
-
-    if (argentCount >= 2 && hasMulOrDiv) {
-      throw new IllegalArgumentException(
-          "Multiplication/division entre valeurs d'argent non autorisée");
-    }
-
     Argent result = evaluateFacteur(terme.facteur());
     LocalDate evaluationDate = getEvaluationDate(terme);
 
     for (int i = 0; i < terme.scalar().size(); i++) {
       ScalarContext scalar = terme.scalar(i);
 
+      boolean rhsIsArgent = containsArgentInExpression(scalar.expressionArithmetique());
       double valeur;
+
       if (scalar.nombre() != null) {
         valeur = Double.parseDouble(scalar.nombre().getText().replace("_", ""));
+        rhsIsArgent = false;
       } else if (scalar.expressionArithmetique() != null) {
+        if (rhsIsArgent) {
+          throw new IllegalArgumentException("Multiplication/division entre valeurs d'argent non autorisée");
+        }
         valeur = variableExpressionVisitor.apply(scalar.expressionArithmetique());
       } else {
         throw new IllegalArgumentException("Scalaire non reconnu: " + scalar.getText());
@@ -228,6 +223,7 @@ public class VariableArgentVisitor implements SimpleVisitor<ArgentContext, Argen
     }
     return result;
   }
+
 
   private Argent handleLegacyFormat(ArgentContext ctx) {
     for (int i = 0; i < ctx.getChildCount(); i++) {

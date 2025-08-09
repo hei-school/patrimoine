@@ -29,9 +29,9 @@ public class VariableExpressionVisitor extends PatriLangParserBaseVisitor<Double
 
     for (int i = 1; i < ctx.terme().size(); i++) {
       Double next = visit(ctx.terme(i));
-      if (ctx.PLUS(i-1) != null) {
+      if (ctx.PLUS(i - 1) != null) {
         current += next;
-      } else if (ctx.MOINS(i-1) != null) {
+      } else if (ctx.MOINS(i - 1) != null) {
         current -= next;
       }
     }

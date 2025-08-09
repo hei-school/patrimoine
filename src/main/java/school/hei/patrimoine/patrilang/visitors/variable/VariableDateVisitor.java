@@ -50,7 +50,8 @@ public class VariableDateVisitor {
         var mois = this.variableExpressionVisitorSupplier.get().apply(ctx.moisEntier.expression());
         return LocalDate.of(annee.intValue(), mois.intValue(), jour.intValue());
       } else if (ctx.moisTextuel != null) {
-        return LocalDate.of(annee.intValue(), stringToMonth(ctx.moisTextuel.getText()), jour.intValue());
+        return LocalDate.of(
+            annee.intValue(), stringToMonth(ctx.moisTextuel.getText()), jour.intValue());
       }
     }
 
