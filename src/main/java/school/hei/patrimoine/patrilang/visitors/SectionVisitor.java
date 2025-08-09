@@ -17,6 +17,7 @@ import lombok.Getter;
 import school.hei.patrimoine.cas.Cas;
 import school.hei.patrimoine.modele.Personne;
 import school.hei.patrimoine.modele.possession.*;
+import school.hei.patrimoine.patrilang.factory.OperationVisitorFactory;
 import school.hei.patrimoine.patrilang.factory.SectionVisitorFactory;
 import school.hei.patrimoine.patrilang.modele.variable.VariableType;
 import school.hei.patrimoine.patrilang.visitors.possession.*;
@@ -119,7 +120,14 @@ public class SectionVisitor {
   }
 
   public Set<Possession> visitSectionOperations(SectionOperationsContext ctx) {
-    return this.operationVisitor.apply(ctx.operations(), variableVisitor);
+    VariableVisitor childVariableVisitor =
+        new VariableVisitor(Optional.of(this.variableVisitor.getVariableScope()));
+    OperationVisitor childOperationVisitor = createChildOperationVisitor(childVariableVisitor);
+    return childOperationVisitor.apply(ctx.operations(), childVariableVisitor);
+  }
+
+  private OperationVisitor createChildOperationVisitor(VariableVisitor variableVisitor) {
+    return OperationVisitorFactory.make(variableVisitor, new IdVisitor(variableVisitor));
   }
 
   private <T extends Possession> Set<T> visitCompteElements(
