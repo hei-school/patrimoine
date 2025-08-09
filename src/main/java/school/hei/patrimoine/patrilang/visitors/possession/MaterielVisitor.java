@@ -2,6 +2,7 @@ package school.hei.patrimoine.patrilang.visitors.possession;
 
 import static java.util.Objects.nonNull;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.PossedeMaterielContext;
+import static school.hei.patrimoine.patrilang.modele.variable.VariableType.MATERIEL;
 import static school.hei.patrimoine.patrilang.visitors.BaseVisitor.*;
 
 import java.time.LocalDate;
@@ -25,11 +26,18 @@ public class MaterielVisitor implements SimpleVisitor<PossedeMaterielContext, Ma
     LocalDate dateAcquisition =
         nonNull(ctx.dateObtention) ? this.variableVisitor.asDate(ctx.dateObtention) : t;
 
-    return new Materiel(
-        nom,
-        dateAcquisition,
-        t,
-        valeurComptable,
-        tauxDAppreciation / 100 * facteurTauxDAppreciation);
+    Materiel materiel =
+        new Materiel(
+            nom,
+            dateAcquisition,
+            t,
+            valeurComptable,
+            tauxDAppreciation / 100 * facteurTauxDAppreciation);
+    variableVisitor.addToScope(nom, MATERIEL, materiel);
+    variableVisitor
+        .getVariableScope()
+        .parentScope()
+        .ifPresent(parent -> parent.add(materiel.nom(), MATERIEL, materiel));
+    return materiel;
   }
 }
