@@ -36,18 +36,20 @@ public class ValeurMarcheTest {
     assertFalse(compte.getFluxArgents().isEmpty());
   }
 
-    @Test
-    void vendre_possession_deja_vendue_doit_echouer() {
-        var materiel = new Materiel(
-                "Voiture", LocalDate.now(), LocalDate.now(), new Argent(20_000, Devise.EUR), 0.0);
-        var compte = new Compte("Compte courant", LocalDate.now(), new Argent(0, Devise.EUR));
+  @Test
+  void vendre_possession_deja_vendue_doit_echouer() {
+    var materiel =
+        new Materiel(
+            "Voiture", LocalDate.now(), LocalDate.now(), new Argent(20_000, Devise.EUR), 0.0);
+    var compte = new Compte("Compte courant", LocalDate.now(), new Argent(0, Devise.EUR));
 
-        materiel.vendre(LocalDate.now(), new Argent(25_000, Devise.EUR), compte);
+    materiel.vendre(LocalDate.now(), new Argent(25_000, Devise.EUR), compte);
 
-        var exception = assertThrows(
-                IllegalStateException.class,
-                () -> materiel.vendre(LocalDate.now(), new Argent(30_000, Devise.EUR), compte));
+    var exception =
+        assertThrows(
+            IllegalStateException.class,
+            () -> materiel.vendre(LocalDate.now(), new Argent(30_000, Devise.EUR), compte));
 
-        assertEquals("Possession déjà vendue", exception.getMessage());
-    }
+    assertEquals("Possession déjà vendue", exception.getMessage());
+  }
 }
