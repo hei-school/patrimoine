@@ -143,5 +143,12 @@ class VariableArgentVisitorTest {
     assertEquals(expected, actual);
   }
 
-  // expression test complexe : ((a1+a2) / 2 * 5) * 5
+  @Test
+  void parse_argent_all_complexe_operation() {
+    var input = "((((50000Ar + 50000Ar) / 2) * 5) * 5) évalué le 01 Juin 2025";
+    var expected = ariary(1_250_000);
+
+    var actual = visitor.visit(input, PatriLangParser::argent);
+    assertEquals(expected, actual);
+  }
 }
