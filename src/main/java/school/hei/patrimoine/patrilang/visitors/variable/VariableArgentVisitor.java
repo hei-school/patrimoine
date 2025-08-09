@@ -207,7 +207,8 @@ public class VariableArgentVisitor implements SimpleVisitor<ArgentContext, Argen
         rhsIsArgent = false;
       } else if (scalar.expressionArithmetique() != null) {
         if (rhsIsArgent) {
-          throw new IllegalArgumentException("Multiplication/division entre valeurs d'argent non autorisée");
+          throw new IllegalArgumentException(
+              "Multiplication/division entre valeurs d'argent non autorisée");
         }
         valeur = variableExpressionVisitor.apply(scalar.expressionArithmetique());
       } else {
@@ -223,7 +224,6 @@ public class VariableArgentVisitor implements SimpleVisitor<ArgentContext, Argen
     }
     return result;
   }
-
 
   private Argent handleLegacyFormat(ArgentContext ctx) {
     for (int i = 0; i < ctx.getChildCount(); i++) {
