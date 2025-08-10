@@ -44,7 +44,7 @@ public class ValeurMarcheVisitorTest {
 
     var exception =
         assertThrows(
-            UnsupportedOperationException.class,
+            IllegalArgumentException.class,
             () -> visitor.visit(input, PatriLangParser::valeurMarche));
 
     String expectedMessage =

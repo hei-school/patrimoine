@@ -159,7 +159,7 @@ operation
     |   correction
     |   objectif
     |   valeurMarche
-    |   ventePossession
+    |   vente
     |   operationTemplateCall
     |   ligneVariableDeclaration
     |   ligneCasOperations
@@ -207,7 +207,7 @@ valeurMarche
     :   MUL id COMMA? dateValue=variable COMMA? MOT_VALEUR_MARCHE_DE montant=variable MOT_POUR possessionNom=variable
     ;
 
-ventePossession
+vente
     :   MUL id COMMA? MOT_VENDRE possessionNom=variable MOT_A montant=variable COMMA? MOT_LE dateValue=variable COMMA? MOT_VERSER_DANS compteBeneficiaire=variable
     ;
 

@@ -124,7 +124,7 @@ public class VariableVisitor implements SimpleVisitor<VariableContext, Variable<
   }
 
   private <T> T visitVariableAsExpectedType(List<Class<?>> expectedTypes, VariableContext ctx) {
-    var variable = (Variable<?>) this.apply(ctx);
+    var variable = (Variable) this.apply(ctx);
     var isExpectedType =
         expectedTypes.stream().anyMatch(expectedType -> expectedType.isInstance(variable.value()));
 

@@ -29,7 +29,6 @@ public abstract sealed class Possession extends Objectivable
         PatrimoinePersonnel,
         PersonneMorale,
         RemboursementDette,
-        Entreprise,
         Materiel,
         TransfertArgent {
   protected final String nom;
@@ -81,7 +80,7 @@ public abstract sealed class Possession extends Objectivable
 
   public void addValeurMarche(LocalDate date, Argent valeur) {
     if (typeAgregat() != IMMOBILISATION && typeAgregat() != ENTREPRISE) {
-      throw new UnsupportedOperationException(
+      throw new IllegalArgumentException(
           "Seules les possessions de type IMMOBILISATION ou ENTREPRISE peuvent avoir une valeur de"
               + " marché.");
     }
@@ -135,12 +134,19 @@ public abstract sealed class Possession extends Objectivable
   @Override
   public void vendre(LocalDate date, Argent prix, Compte compteBeneficiaire) {
     if (this.dateVente != null) {
-      throw new IllegalStateException("Déjà vendue");
+      throw new IllegalStateException(
+          "La possession '" + nom + "' est déjà vendue le " + dateVente);
+    }
+    if (date.isBefore(t)) {
+      throw new IllegalArgumentException(
+          "La date de vente ne peut pas être antérieure à l'acquisition (" + t + ")");
     }
     this.dateVente = date;
     this.prixVente = prix;
     this.compteBeneficiaire = compteBeneficiaire;
-    compteBeneficiaire.ajouter(prix);
+    var flux = new FluxArgent("Produit de vente de '" + nom + "'", compteBeneficiaire, date, prix);
+
+    compteBeneficiaire.addFinancés(flux);
     historiqueValeurMarche.put(date, new Argent(0, prix.devise()));
   }
 

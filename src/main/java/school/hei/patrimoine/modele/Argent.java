@@ -12,7 +12,6 @@ import lombok.Getter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
 
-@Getter
 @ToString
 @AllArgsConstructor
 public class Argent implements Serializable {
