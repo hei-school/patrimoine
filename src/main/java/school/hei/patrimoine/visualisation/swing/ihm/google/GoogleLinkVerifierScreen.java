@@ -5,10 +5,12 @@ import static java.awt.Font.BOLD;
 import static java.awt.Font.PLAIN;
 import static java.awt.GridBagConstraints.HORIZONTAL;
 import static javax.swing.SwingConstants.LEFT;
+import static javax.swing.SwingUtilities.invokeLater;
 import static school.hei.patrimoine.google.GoogleApi.*;
 
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -205,16 +207,12 @@ public class GoogleLinkVerifierScreen extends Screen {
           protected void done() {
             loadingDialog.dispose();
             try {
-              openResultFrame(get());
+                var ids = get();
+                invokeLater(() -> new PatriLangViewerScreen(ids, new File(DOWNLOADS_DIRECTORY_PATH)));
+                dispose();
             } catch (InterruptedException | ExecutionException e) {
-              Throwable cause = e.getCause();
-              if (cause instanceof RuntimeException
-                  && cause.getMessage().contains("Objectifs non atteints")) {
-                showErrorPage("Objectifs non atteints");
-              } else {
                 showErrorPage("Veuillez vérifier le contenu de vos documents");
-              }
-              throw new RuntimeException(e);
+                throw new RuntimeException(e);
             }
           }
         };
@@ -258,9 +256,5 @@ public class GoogleLinkVerifierScreen extends Screen {
 
     errorFrame.getContentPane().add(panel);
     errorFrame.setVisible(true);
-  }
-
-  private void openResultFrame(GoogleLinkList<NamedID> ids) {
-    // TODO: show patrilang viewer
   }
 }
