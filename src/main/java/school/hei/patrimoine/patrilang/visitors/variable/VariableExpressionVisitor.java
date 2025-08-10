@@ -111,4 +111,3 @@ public class VariableExpressionVisitor extends PatriLangParserBaseVisitor<Double
     return (Double) variableScope.get(name, NOMBRE).value();
   }
 }
-

@@ -235,9 +235,6 @@ variable
     |   VARIABLE
     ;
 
-//argent
-//    :   argentMultiplicationExpr ((PLUS | MOINS) argentMultiplicationExpr (MOT_EVALUER dateValue=variable)?)*
-//    ;
 argent
     :   argentMultiplicationExpr ((PLUS | MOINS) argentMultiplicationExpr)*
         (MOT_EVALUER dateValue=date)?
