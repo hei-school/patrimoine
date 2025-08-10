@@ -8,7 +8,6 @@ import static school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor.
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Supplier;
 
 import lombok.RequiredArgsConstructor;
@@ -28,11 +27,11 @@ public class VariableArgentVisitor implements SimpleVisitor<ArgentContext, Argen
   private final Supplier<VariableDateVisitor> variableDateVisitor;
 
   public Argent apply(ArgentContext ctx) {
-    LocalDate defaultDate = getDefaultDateFromArgent(ctx);
+    var defaultDate = getDefaultDateFromArgent(ctx);
     return apply(ctx, defaultDate);
   }
 
-  public Argent apply(ArgentContext ctx, LocalDate evaluationDate) {
+  private Argent apply(ArgentContext ctx, LocalDate evaluationDate) {
     if (nonNull(ctx.dateValue)) {
       evaluationDate = variableDateVisitor.get().apply(ctx.dateValue);
     } else if (evaluationDate == null) {

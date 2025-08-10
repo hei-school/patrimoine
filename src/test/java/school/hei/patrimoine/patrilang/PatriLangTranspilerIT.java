@@ -16,7 +16,7 @@ import school.hei.patrimoine.modele.Personne;
 import school.hei.patrimoine.modele.possession.Possession;
 import school.hei.patrimoine.patrilang.famille_rakoto_cas.FamilleRakotoCasSet;
 
-class PatriLangTranspilerIT {
+class   PatriLangTranspilerIT {
 
   private static final String RESOURCE_PATH = "/famille_rakoto_cas/FamilleRakoto.patri.md";
   private static final Path RESOURCE_FILE_PATH;

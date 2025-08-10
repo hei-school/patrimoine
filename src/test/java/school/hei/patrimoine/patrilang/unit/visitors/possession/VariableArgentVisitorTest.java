@@ -1,11 +1,15 @@
 package school.hei.patrimoine.patrilang.unit.visitors.possession;
 
+import static java.time.Month.JANUARY;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static school.hei.patrimoine.modele.Argent.ariary;
+import static school.hei.patrimoine.modele.Argent.euro;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.ArgentContext;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.Month;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -39,7 +43,7 @@ public class VariableArgentVisitorTest {
     };
   }
 
-  private Argent parse_and_visit(String input) throws IOException {
+  private Argent parse_and_visit(String input) {
     return visitor.visit(input, PatriLangParser::argent);
   }
 
@@ -52,7 +56,7 @@ public class VariableArgentVisitorTest {
 
   @Test
   void division_simple_should_return_correct_value() throws IOException {
-    String expr = "(100Ar / 2)* 200Ar";
+    String expr = "(100Ar / 2)* 200";
     Argent result = parse_and_visit(expr);
     assertEquals(ariary(10000), result);
   }
@@ -145,5 +149,51 @@ public class VariableArgentVisitorTest {
     String expr = "valeur_marche_compte";
     assertThrows(UnsupportedOperationException.class, () -> parse_and_visit(expr));
   }
+
+  @Test
+  void mixed_currency_with_parentheses_and_date_should_return_correct_value() throws IOException {
+    String expr = "100Ar + (5$ * 2) évalué le 10 octobre 2024";
+    Argent result = parse_and_visit(expr);
+    assertEquals(ariary(33210), result);
+  }
+
+  @Test
+  void complex_nested_operations_with_multiple_parentheses_and_date() throws IOException {
+    String expr = "((50Ar + (25Ar * 3)) / 5) - (10Ar + 5Ar) évalué le 12 décembre 2024";
+    Argent result = parse_and_visit(expr);
+    assertEquals(ariary(10), result);
+  }
+
+  @Test
+  void division_resulting_in_decimal_should_truncate_or_round_correctly() {
+    String expr = "(100Ar / 4) * 3 évalué le 5 mai 2024";
+    Argent result = parse_and_visit(expr);
+    assertEquals(ariary(75), result);
+  }
+
+  @Test
+  void chained_multiplication_and_division_with_currency_and_date_should_return_correct_value() throws IOException {
+    String expr = "2€ + 3€ - 3€ + 4€/ 2 évalué le 8 août 2024";
+    Argent result = parse_and_visit(expr);
+    assertEquals(euro(4), result);
+  }
+
+  @Test
+  void undefined_variable_in_expression_should_throw_exception() {
+    String expr = "inconnu + 100Ar évalué le 1 janvier 2024";
+    assertThrows(UnsupportedOperationException.class, () -> parse_and_visit(expr));
+  }
+
+  @Test
+  void very_complex_long_expression_with_argent() throws IOException {
+    var input = "(4000Ar + 8000Ar - 4000Ar * 2 + 4000Ar) * 3 / 3 * 2 / 2 évalué le 12 Janvier 2025";
+    var actual = parse_and_visit(input);
+
+    var dateEvaluation = LocalDate.of(2025, JANUARY, 12);
+    var expected = ariary(4_000).add(ariary(8000), dateEvaluation).minus(ariary(4000), dateEvaluation);
+    assertEquals(expected, actual);
+  }
+
+
 
 }
