@@ -1,7 +1,7 @@
 package school.hei.patrimoine.compiler;
 
 import static javax.tools.ToolProvider.getSystemJavaCompiler;
-import static school.hei.patrimoine.google.GoogleApi.COMPILE_DIR_NAME;
+import static school.hei.patrimoine.compiler.CompilerUtilities.COMPILE_DIR_NAME;
 
 import java.io.File;
 import java.net.URL;
@@ -10,21 +10,23 @@ import java.nio.file.Path;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import school.hei.patrimoine.modele.Patrimoine;
 
+@Slf4j
 public class PatrimoineFileCompiler implements Function<String, Patrimoine> {
-
   private static final PackageNameExtractor packageNameExtractor = new PackageNameExtractor();
 
   static {
-    File tokensDirectory = new File(COMPILE_DIR_NAME);
-    if (!tokensDirectory.exists()) {
-      tokensDirectory.mkdirs();
+    var compileDirectory = new File(COMPILE_DIR_NAME);
+    if (!compileDirectory.exists() && !compileDirectory.mkdirs()) {
+      log.warn("Failed to create directory {}", compileDirectory.getAbsolutePath());
     }
   }
 
-  @SneakyThrows
   @Override
+  @SneakyThrows
+  @SuppressWarnings("unchecked")
   public Patrimoine apply(String filePath) {
     var ioDirPath = Path.of(COMPILE_DIR_NAME);
     var sourcePath = Path.of(filePath);

@@ -1,9 +1,9 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google;
 
 import static java.util.Objects.requireNonNull;
+import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.showMessageDialog;
-import static javax.swing.SwingUtilities.invokeLater;
-import static school.hei.patrimoine.google.GoogleApi.DOWNLOADS_DIRECTORY_PATH;
+import static school.hei.patrimoine.compiler.CompilerUtilities.DOWNLOADS_DIRECTORY_PATH;
 import static school.hei.patrimoine.patrilang.PatriLangTranspiler.CAS_FILE_EXTENSION;
 import static school.hei.patrimoine.patrilang.PatriLangTranspiler.TOUT_CAS_FILE_EXTENSION;
 
@@ -16,14 +16,20 @@ import java.util.Arrays;
 import java.util.List;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
+import school.hei.patrimoine.google.DriveApi;
+import school.hei.patrimoine.google.exception.GoogleIntegrationException;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.*;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.Button;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.Dialog;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.GoogleLinkList;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.NamedID;
 import school.hei.patrimoine.visualisation.swing.ihm.google.utils.MarkdownToHtmlConverter;
 
 public class PatriLangViewerScreen extends Screen {
   private static final int DEFAULT_FONT_SIZE = 14;
+
+  private final DriveApi driveApi;
+  private final GoogleLinkList<NamedID> ids;
 
   private final List<File> files;
   private final MarkdownToHtmlConverter markdownToHtmlConverter;
@@ -33,11 +39,13 @@ public class PatriLangViewerScreen extends Screen {
   private ViewMode currentMode;
   private JEditorPane htmlViewer;
 
-  public PatriLangViewerScreen(GoogleLinkList<NamedID> ids, File directory) {
+  public PatriLangViewerScreen(GoogleLinkList<NamedID> ids, DriveApi driveApi) {
     super("PatriLang Viewer", 1_300, 800);
 
-    System.out.println(ids);
-    this.files = getPatriLangFiles(directory);
+    this.ids = ids;
+    this.driveApi = driveApi;
+
+    this.files = getPatriLangFiles();
     this.markdownToHtmlConverter = new MarkdownToHtmlConverter();
 
     this.fontSize = DEFAULT_FONT_SIZE;
@@ -59,16 +67,14 @@ public class PatriLangViewerScreen extends Screen {
     modeSelect.setForeground(Color.WHITE);
     modeSelect.setBorder(
         BorderFactory.createCompoundBorder(
-            modeSelect.getBorder(),
-            BorderFactory.createEmptyBorder(6, 8, 6, 8) // top, left, bottom, right
-            ));
+            modeSelect.getBorder(), BorderFactory.createEmptyBorder(6, 8, 6, 8)));
 
     modeSelect.addActionListener(e -> toggleMode((ViewMode) modeSelect.getSelectedItem()));
     saveButton.addActionListener(e -> saveToFile());
+    syncButton.addActionListener(e -> syncCurrentFile());
     saveButton.setEnabled(currentMode == ViewMode.EDIT);
 
     var topPanel = new JPanel(new BorderLayout());
-
     var leftControls = new JPanel(new FlowLayout(FlowLayout.LEFT));
     leftControls.add(modeSelect);
     leftControls.add(saveButton);
@@ -90,15 +96,71 @@ public class PatriLangViewerScreen extends Screen {
     return topPanel;
   }
 
+  private String getCurrentFileDriveId() {
+    if (currentFile == null || !currentFile.exists()) {
+      return "";
+    }
+
+    return ids.driveLinkList().stream()
+        .filter(
+            driveNamedId -> {
+              var filename =
+                  currentFile
+                      .getName()
+                      .replace(TOUT_CAS_FILE_EXTENSION, "")
+                      .replace(CAS_FILE_EXTENSION, "");
+              return driveNamedId.name().equals(filename);
+            })
+        .findFirst()
+        .map(NamedID::id)
+        .orElse("");
+  }
+
+  private void syncCurrentFile() {
+    var driveFileId = getCurrentFileDriveId();
+    if (driveFileId.isEmpty()) {
+      showMessageDialog(
+          this, "Aucun fichier sélectionné ou fichier inexistant.", "Erreur", ERROR_MESSAGE);
+      return;
+    }
+
+    var loadingDialog = new Dialog(this, "Synchronisation en cours...", 300, 100);
+
+    SwingWorker<Void, Void> worker =
+        new SwingWorker<>() {
+          protected Void doInBackground() {
+            try {
+              driveApi.update(driveFileId, "text/plain", currentFile);
+            } catch (GoogleIntegrationException e) {
+              throw new RuntimeException(e);
+            }
+            return null;
+          }
+
+          @Override
+          protected void done() {
+            loadingDialog.dispose();
+            try {
+              get();
+              showMessageDialog(PatriLangViewerScreen.this, "Synchronisation réussie !");
+            } catch (Exception e) {
+              showMessageDialog(
+                  PatriLangViewerScreen.this, e.getCause().getMessage(), "Erreur", ERROR_MESSAGE);
+            }
+          }
+        };
+
+    worker.execute();
+    loadingDialog.setVisible(true);
+  }
+
   private JPanel getRightJPanel() {
     var increaseFontButton = new Button("+");
     var decreaseFontButton = new Button("-");
     var fontSizeField = new JTextField(String.valueOf(fontSize), 3);
     fontSizeField.setBorder(
         BorderFactory.createCompoundBorder(
-            fontSizeField.getBorder(),
-            BorderFactory.createEmptyBorder(8, 6, 8, 6) // top, left, bottom, right
-            ));
+            fontSizeField.getBorder(), BorderFactory.createEmptyBorder(8, 6, 8, 6)));
 
     increaseFontButton.addActionListener(e -> adjustFontSize(1, fontSizeField));
     decreaseFontButton.addActionListener(e -> adjustFontSize(-1, fontSizeField));
@@ -210,12 +272,12 @@ public class PatriLangViewerScreen extends Screen {
           this,
           "Erreur lors de la sauvegarde du fichier: " + e.getMessage(),
           "Erreur",
-          JOptionPane.ERROR_MESSAGE);
+          ERROR_MESSAGE);
     }
   }
 
-  private static List<File> getPatriLangFiles(File directory) {
-    return Arrays.stream(requireNonNull(directory.listFiles()))
+  private static List<File> getPatriLangFiles() {
+    return Arrays.stream(requireNonNull(new File(DOWNLOADS_DIRECTORY_PATH).listFiles()))
         .filter(
             file ->
                 file.getName().endsWith(TOUT_CAS_FILE_EXTENSION)
@@ -226,11 +288,5 @@ public class PatriLangViewerScreen extends Screen {
   private enum ViewMode {
     VIEW,
     EDIT
-  }
-
-  public static void main(String[] args) {
-    System.setProperty("awt.useSystemAAFontSettings", "on");
-    System.setProperty("swing.aatext", "true");
-    invokeLater(() -> new PatriLangViewerScreen(null, new File(DOWNLOADS_DIRECTORY_PATH)));
   }
 }

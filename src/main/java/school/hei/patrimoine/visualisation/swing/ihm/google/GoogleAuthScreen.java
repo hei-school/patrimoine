@@ -1,6 +1,7 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google;
 
 import static javax.swing.SwingUtilities.invokeLater;
+import static school.hei.patrimoine.google.GoogleApi.AuthDetails;
 
 import java.awt.*;
 import java.awt.event.ActionListener;
@@ -10,7 +11,6 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import lombok.SneakyThrows;
 import school.hei.patrimoine.google.GoogleApi;
-import school.hei.patrimoine.google.GoogleApi.GoogleAuthenticationDetails;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.ButtonWithIcon;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.Screen;
 
@@ -32,7 +32,7 @@ public class GoogleAuthScreen extends Screen {
     title.setForeground(new Color(66, 66, 66)); // Gris foncé
 
     var signInButton = new ButtonWithIcon("Se connecter avec Google", loadGoogleLogo());
-    signInButton.addActionListener(onSignin());
+    signInButton.addActionListener(onSigning());
 
     var centerPanel = new JPanel(new GridBagLayout());
     GridBagConstraints gbc = new GridBagConstraints();
@@ -50,10 +50,10 @@ public class GoogleAuthScreen extends Screen {
     add(centerPanel, BorderLayout.CENTER);
   }
 
-  private ActionListener onSignin() {
+  private ActionListener onSigning() {
     return e -> {
-      var authReqRes = handleGoogleSignIn();
-      invokeLater(() -> new GoogleSubmitScreen(googleApi, authReqRes));
+      var authDetails = handleGoogleSignIn();
+      invokeLater(() -> new GoogleSubmitScreen(authDetails));
       dispose();
     };
   }
@@ -69,7 +69,7 @@ public class GoogleAuthScreen extends Screen {
   }
 
   @SneakyThrows
-  private GoogleAuthenticationDetails handleGoogleSignIn() {
+  private AuthDetails handleGoogleSignIn() {
     return googleApi.requestAuthentication();
   }
 

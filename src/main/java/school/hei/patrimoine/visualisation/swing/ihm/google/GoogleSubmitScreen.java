@@ -2,21 +2,17 @@ package school.hei.patrimoine.visualisation.swing.ihm.google;
 
 import static java.awt.Font.*;
 import static javax.swing.SwingUtilities.invokeLater;
-import static school.hei.patrimoine.google.GoogleApi.DOWNLOADS_DIRECTORY_PATH;
+import static school.hei.patrimoine.google.GoogleApi.AuthDetails;
 import static school.hei.patrimoine.google.GoogleDocsLinkIdParser.GOOGLE_DOCS_ID_PATTERN;
 import static school.hei.patrimoine.google.GoogleDriveLinkIdParser.GOOGLE_DRIVE_ID_PATTERN;
 
 import java.awt.*;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import javax.swing.*;
 import lombok.extern.slf4j.Slf4j;
-import school.hei.patrimoine.google.GoogleApi;
-import school.hei.patrimoine.google.GoogleApi.GoogleAuthenticationDetails;
-import school.hei.patrimoine.visualisation.swing.ihm.google.compiler.PatriLangGoogleLinkListDownloader;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.Button;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.Dialog;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.Screen;
@@ -26,24 +22,20 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.modele.NamedString;
 
 @Slf4j
 public class GoogleSubmitScreen extends Screen {
-  private final GoogleApi googleApi;
-  private final GoogleAuthenticationDetails authDetails;
-  private final GoogleDocsLinkIdInputVerifier linkIdInputVerifier;
-
+  private final AuthDetails authDetails;
   private final JPanel inputPanel;
   private final JTextArea inputField;
+  private final GoogleDocsLinkIdInputVerifier linkIdInputVerifier;
 
-  public GoogleSubmitScreen(GoogleApi googleApi, GoogleAuthenticationDetails authDetails) {
+  public GoogleSubmitScreen(AuthDetails authDetails) {
     super("Soumission des liens Google", 1200, 1000);
-    setResizable(true);
 
-    this.googleApi = googleApi;
     this.authDetails = authDetails;
-    this.linkIdInputVerifier = new GoogleDocsLinkIdInputVerifier();
-
     this.inputField = new JTextArea();
     this.inputPanel = new JPanel(new BorderLayout());
+    this.linkIdInputVerifier = new GoogleDocsLinkIdInputVerifier();
 
+    setResizable(true);
     addTitle();
     addInputField();
     addSubmitButton();
@@ -107,13 +99,7 @@ public class GoogleSubmitScreen extends Screen {
             loadingDialog.dispose();
             try {
               var ids = get();
-              var downloader =
-                  new PatriLangGoogleLinkListDownloader(
-                      new File(DOWNLOADS_DIRECTORY_PATH), googleApi, authDetails);
-
-              invokeLater(
-                  () ->
-                      new GoogleLinkVerifierScreen(googleApi, authDetails, downloader, ids, owner));
+              invokeLater(() -> new GoogleLinkVerifierScreen(authDetails, ids, owner));
               setVisible(false);
             } catch (InterruptedException | ExecutionException e) {
               throw new RuntimeException(e);

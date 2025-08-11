@@ -13,6 +13,7 @@ public class Dialog extends JDialog {
     label.setHorizontalAlignment(CENTER);
     getContentPane().add(label, CENTER);
     setLocationRelativeTo(this);
+    setDefaultCloseOperation(DISPOSE_ON_CLOSE);
     setSize(width, height);
   }
 }
