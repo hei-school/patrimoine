@@ -1,4 +1,4 @@
-package school.hei.patrimoine.visualisation.swing.ihm.google.compiler;
+package school.hei.patrimoine.visualisation.swing.ihm.google.downloader;
 
 import school.hei.patrimoine.compiler.FileNameExtractor;
 import school.hei.patrimoine.compiler.PatriLangFileNameExtractor;

@@ -18,6 +18,8 @@ import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import school.hei.patrimoine.google.DriveApi;
 import school.hei.patrimoine.google.exception.GoogleIntegrationException;
+import school.hei.patrimoine.google.model.Comment;
+import school.hei.patrimoine.google.provider.CommentProvider;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.*;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.Button;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.Dialog;
@@ -29,10 +31,14 @@ public class PatriLangViewerScreen extends Screen {
   private static final int DEFAULT_FONT_SIZE = 14;
 
   private final DriveApi driveApi;
+  private final CommentProvider commentProvider;
   private final GoogleLinkList<NamedID> ids;
 
   private final List<File> files;
   private final MarkdownToHtmlConverter markdownToHtmlConverter;
+
+  private JList<String> commentList;
+  private DefaultListModel<String> commentListModel;
 
   private int fontSize;
   private File currentFile;
@@ -44,10 +50,11 @@ public class PatriLangViewerScreen extends Screen {
 
     this.ids = ids;
     this.driveApi = driveApi;
-
-    this.files = getPatriLangFiles();
+    this.commentProvider = new CommentProvider(driveApi);
     this.markdownToHtmlConverter = new MarkdownToHtmlConverter();
 
+
+    this.files = getPatriLangFiles();
     this.fontSize = DEFAULT_FONT_SIZE;
     this.currentMode = ViewMode.VIEW;
 
@@ -200,7 +207,14 @@ public class PatriLangViewerScreen extends Screen {
     var centerScrollPane = new JScrollPane(htmlViewer);
 
     var rightPanel = new JPanel(new BorderLayout());
-    rightPanel.add(new JLabel(""), BorderLayout.CENTER);
+
+    commentListModel = new DefaultListModel<>();
+    commentList = new JList<>(commentListModel);
+    commentList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    var commentScrollPane = new JScrollPane(commentList);
+    commentScrollPane.setBorder(BorderFactory.createTitledBorder("Commentaires"));
+    rightPanel.add(commentScrollPane, BorderLayout.CENTER);
+
     fileList.addListSelectionListener(e -> onFileSelected(e, fileList));
 
     var horizontalSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
@@ -225,6 +239,41 @@ public class PatriLangViewerScreen extends Screen {
 
     currentFile = fileList.getSelectedValue();
     updateViewerText();
+
+    if (currentFile != null && currentFile.exists()) {
+      String driveFileId = getCurrentFileDriveId();
+      if (!driveFileId.isEmpty()) {
+        SwingWorker<List<String>, Void> commentWorker =
+            new SwingWorker<>() {
+              @Override
+              protected List<String> doInBackground() throws GoogleIntegrationException {
+                return commentProvider.getByFileId(driveFileId).stream().map(Comment::content).toList();
+              }
+
+              @Override
+              protected void done() {
+                try {
+                  var comments = get();
+                  commentListModel.clear();
+
+                  for (var comment : comments) {
+                    commentListModel.addElement(comment);
+                  }
+                } catch (Exception ex) {
+                  commentListModel.clear();
+                  commentListModel.addElement("Erreur lors du chargement des commentaires.");
+                  throw new RuntimeException(ex);
+                }
+              }
+            };
+        commentWorker.execute();
+      } else {
+        commentListModel.clear();
+        commentListModel.addElement("Pas d'ID Google Drive pour ce fichier.");
+      }
+    } else {
+      commentListModel.clear();
+    }
   }
 
   private void updateViewerText() {

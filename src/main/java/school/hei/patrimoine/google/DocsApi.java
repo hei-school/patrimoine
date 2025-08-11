@@ -13,9 +13,11 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import school.hei.patrimoine.compiler.FileNameExtractor;
 import school.hei.patrimoine.google.exception.GoogleIntegrationException;
 
+@Slf4j
 public record DocsApi(Docs docsService) {
   public DocsApi(AuthDetails authDetails) {
     this(
@@ -60,7 +62,7 @@ public record DocsApi(Docs docsService) {
     try {
       Files.write(path, code.getBytes(), CREATE, TRUNCATE_EXISTING, WRITE);
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      throw new GoogleIntegrationException("Failed to download document from Google Docs", e);
     }
   }
 }

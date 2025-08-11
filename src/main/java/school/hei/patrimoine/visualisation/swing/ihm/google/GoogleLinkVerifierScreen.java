@@ -14,16 +14,15 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.util.*;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import javax.swing.*;
 import lombok.extern.slf4j.Slf4j;
 import school.hei.patrimoine.google.*;
 import school.hei.patrimoine.google.exception.GoogleIntegrationException;
-import school.hei.patrimoine.visualisation.swing.ihm.google.compiler.GoogleLinkListDownloader;
-import school.hei.patrimoine.visualisation.swing.ihm.google.compiler.PatriLangGoogleLinkListDownloader;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.Button;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.Dialog;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.Screen;
+import school.hei.patrimoine.visualisation.swing.ihm.google.downloader.GoogleLinkListDownloader;
+import school.hei.patrimoine.visualisation.swing.ihm.google.downloader.PatriLangGoogleLinkListDownloader;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.*;
 
 @Slf4j
@@ -34,8 +33,8 @@ public class GoogleLinkVerifierScreen extends Screen {
   private final GoogleDocsLinkIdParser docsLinkIdParser;
   private final GoogleDriveLinkIdParser driveLinkIdParser;
   private final GoogleLinkListDownloader googleLinkListDownloader;
-  private final GoogleDocsLinkIdInputVerifier docslinkIdInputVerifier;
-  private final GoogleDriveLinkIdInputVerifier drivelinkIdInputVerifier;
+  private final GoogleDocsLinkIdInputVerifier docsLinkIdInputVerifier;
+  private final GoogleDriveLinkIdInputVerifier driveLinkIdInputVerifier;
 
   private int inputYPosition;
   private final JPanel inputPanel;
@@ -50,8 +49,8 @@ public class GoogleLinkVerifierScreen extends Screen {
     this.driveApi = new DriveApi(authDetails);
     this.docsLinkIdParser = new GoogleDocsLinkIdParser();
     this.driveLinkIdParser = new GoogleDriveLinkIdParser();
-    this.docslinkIdInputVerifier = new GoogleDocsLinkIdInputVerifier();
-    this.drivelinkIdInputVerifier = new GoogleDriveLinkIdInputVerifier();
+    this.docsLinkIdInputVerifier = new GoogleDocsLinkIdInputVerifier();
+    this.driveLinkIdInputVerifier = new GoogleDriveLinkIdInputVerifier();
     this.googleLinkListDownloader =
         new PatriLangGoogleLinkListDownloader(driveApi, new DocsApi(authDetails));
 
@@ -155,19 +154,19 @@ public class GoogleLinkVerifierScreen extends Screen {
 
   private JTextField newGoogleDocsLinkTextField(String initialValue) {
     var textField = new JTextField(70);
-    textField.setInputVerifier(docslinkIdInputVerifier);
+    textField.setInputVerifier(docsLinkIdInputVerifier);
     textField.setFont(new Font("Arial", PLAIN, 16));
     textField.setText(initialValue);
-    docslinkIdInputVerifier.verify(textField);
+    docsLinkIdInputVerifier.verify(textField);
     return textField;
   }
 
   private JTextField newGoogleDriveLinkTextField(String initialValue) {
     var textField = new JTextField(70);
-    textField.setInputVerifier(drivelinkIdInputVerifier);
+    textField.setInputVerifier(driveLinkIdInputVerifier);
     textField.setFont(new Font("Arial", PLAIN, 16));
     textField.setText(initialValue);
-    drivelinkIdInputVerifier.verify(textField);
+    driveLinkIdInputVerifier.verify(textField);
     return textField;
   }
 
@@ -184,16 +183,11 @@ public class GoogleLinkVerifierScreen extends Screen {
     SwingWorker<GoogleLinkList<NamedID>, Void> worker =
         new SwingWorker<>() {
           @Override
-          protected GoogleLinkList<NamedID> doInBackground() {
+          protected GoogleLinkList<NamedID> doInBackground() throws GoogleIntegrationException {
             var ids = extractInputIds();
             resetIfExist(DOWNLOADS_DIRECTORY_PATH);
 
-            try {
-              return googleLinkListDownloader.apply(ids);
-            } catch (GoogleIntegrationException e) {
-              showErrorPage(e.getMessage());
-              throw new RuntimeException(e);
-            }
+            return googleLinkListDownloader.apply(ids);
           }
 
           @Override
@@ -203,8 +197,8 @@ public class GoogleLinkVerifierScreen extends Screen {
               var ids = get();
               invokeLater(() -> new PatriLangViewerScreen(ids, driveApi));
               dispose();
-            } catch (InterruptedException | ExecutionException e) {
-              showErrorPage("Veuillez vérifier le contenu de vos documents");
+            } catch (Exception e) {
+              showErrorPage(e.getMessage());
             }
           }
         };
