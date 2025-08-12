@@ -8,8 +8,6 @@ public class ButtonWithIcon extends JButton {
   private final Color backgroundColor;
   private final Color textColor;
   private final int borderRadius;
-  private final int paddingX = 16;
-  private final int paddingY = 10;
   private final int iconSize = 25;
   private final int spacing = 10;
 
@@ -40,7 +38,7 @@ public class ButtonWithIcon extends JButton {
     int width = getWidth();
     int height = getHeight();
 
-    // Draw rounded background
+    // Draw a rounded background
     g2.setColor(backgroundColor != null ? backgroundColor : getBackground());
     g2.fillRoundRect(0, 0, width, height, borderRadius, borderRadius);
 
@@ -64,8 +62,8 @@ public class ButtonWithIcon extends JButton {
       contentX += iconW + spacing;
     }
 
-    // Draw text
-    int textY = centerY + (textHeight / 2) - fm.getDescent();
+    // Draw text with +4px vertical margin
+    int textY = centerY + (textHeight / 2) - fm.getDescent() + 2; // <— extra margin here
     g2.setColor(textColor != null ? textColor : getForeground());
     g2.drawString(text, contentX, textY);
 
@@ -79,7 +77,9 @@ public class ButtonWithIcon extends JButton {
     int textHeight = fm.getAscent() + fm.getDescent();
     int iconW = icon != null ? iconSize : 0;
 
+    int paddingX = 16;
     int width = iconW + (icon != null ? spacing : 0) + textWidth + paddingX * 2;
+    int paddingY = 10;
     int height = Math.max(iconSize, textHeight) + paddingY * 2;
 
     return new Dimension(width, height);

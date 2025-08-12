@@ -3,9 +3,9 @@ package school.hei.patrimoine.visualisation.swing.ihm.google.modele;
 import static java.awt.Color.RED;
 import static java.awt.Color.WHITE;
 import static school.hei.patrimoine.google.GoogleDriveLinkIdParser.GOOGLE_DRIVE_ID_PATTERN;
-import static school.hei.patrimoine.visualisation.swing.ihm.google.component.Theme.MAIN_COLOR;
 
 import javax.swing.*;
+import java.awt.*;
 
 public class GoogleDriveLinkIdInputVerifier extends InputVerifier {
   @Override
@@ -13,7 +13,7 @@ public class GoogleDriveLinkIdInputVerifier extends InputVerifier {
     if (input instanceof JTextField textField) {
       String text = textField.getText();
       if (GOOGLE_DRIVE_ID_PATTERN.matcher(text).find()) {
-        textField.setBackground(MAIN_COLOR);
+        textField.setBackground(new Color(92, 145, 101));
         textField.setForeground(WHITE);
         return true;
       } else {

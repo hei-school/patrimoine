@@ -35,8 +35,8 @@ public class GoogleSubmitScreen extends Screen {
     this.inputPanel = new JPanel(new BorderLayout());
     this.linkIdInputVerifier = new GoogleDocsLinkIdInputVerifier();
 
-    setResizable(true);
     addTitle();
+    setResizable(true);
     addInputField();
     addSubmitButton();
 
@@ -84,7 +84,7 @@ public class GoogleSubmitScreen extends Screen {
   }
 
   private void loadDataInBackground() {
-    var loadingDialog = new Dialog(this, "Traitement", 300, 100);
+    var loadingDialog = new Dialog(this, "Traitement...", 300, 100);
     var owner = this;
 
     SwingWorker<GoogleLinkList<NamedString>, Void> worker =

@@ -4,4 +4,5 @@ import java.time.Instant;
 import lombok.Builder;
 
 @Builder
-public record Comment(String id, String content, Instant createdAt, User author, boolean resolved) {}
+public record Comment(
+    String id, String content, Instant createdAt, User author, boolean resolved) {}

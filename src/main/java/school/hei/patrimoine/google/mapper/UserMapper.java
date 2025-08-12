@@ -3,7 +3,7 @@ package school.hei.patrimoine.google.mapper;
 import school.hei.patrimoine.google.model.User;
 
 public class UserMapper {
-  public static final UserMapper INSTANCE = new UserMapper();
+  private static final UserMapper INSTANCE = new UserMapper();
 
   private UserMapper() {}
 
@@ -14,5 +14,9 @@ public class UserMapper {
         .email(user.getEmailAddress())
         .avatarUrl(user.getPhotoLink())
         .build();
+  }
+
+  public static UserMapper getInstance() {
+    return INSTANCE;
   }
 }

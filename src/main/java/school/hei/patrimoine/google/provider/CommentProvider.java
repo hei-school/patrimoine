@@ -11,7 +11,15 @@ import school.hei.patrimoine.google.exception.GoogleIntegrationException;
 import school.hei.patrimoine.google.mapper.CommentMapper;
 import school.hei.patrimoine.google.model.Comment;
 
-public record CommentProvider(DriveApi driveApi) {
+public class CommentProvider {
+  private final DriveApi driveApi;
+  private final CommentMapper commentMapper;
+
+  public CommentProvider(DriveApi driveApi) {
+    this.driveApi = driveApi;
+    this.commentMapper = CommentMapper.getInstance();
+  }
+
   public List<Comment> getByFileId(String fileId) throws GoogleIntegrationException {
     try {
       var commentList =
@@ -31,7 +39,7 @@ public record CommentProvider(DriveApi driveApi) {
 
       return comments.stream()
           .filter(not(com.google.api.services.drive.model.Comment::getResolved))
-          .map(CommentMapper.INSTANCE::toDomain)
+          .map(commentMapper::toDomain)
           .sorted(Comparator.comparing(Comment::createdAt))
           .toList();
 
@@ -47,7 +55,7 @@ public record CommentProvider(DriveApi driveApi) {
       driveApi
           .driveService()
           .comments()
-          .create(fileId, CommentMapper.INSTANCE.toGoogle(newComment))
+          .create(fileId, commentMapper.toGoogle(newComment))
           .execute();
     } catch (IOException e) {
       throw new GoogleIntegrationException("Failed to add comment to fileId=" + fileId, e);
@@ -62,7 +70,7 @@ public record CommentProvider(DriveApi driveApi) {
       driveApi
           .driveService()
           .replies()
-          .create(fileId, commentId, CommentMapper.INSTANCE.toGoogleReply(reply))
+          .create(fileId, commentId, commentMapper.toGoogleReply(reply))
           .execute();
     } catch (IOException e) {
       throw new GoogleIntegrationException("Failed to reply to comment " + commentId, e);
@@ -76,7 +84,7 @@ public record CommentProvider(DriveApi driveApi) {
       driveApi
           .driveService()
           .comments()
-          .update(fileId, commentId, CommentMapper.INSTANCE.toGoogle(updatedComment))
+          .update(fileId, commentId, commentMapper.toGoogle(updatedComment))
           .execute();
     } catch (IOException e) {
       throw new GoogleIntegrationException("Failed to resolve comment " + commentId, e);

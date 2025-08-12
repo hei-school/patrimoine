@@ -30,6 +30,7 @@ public class GoogleLinkVerifierScreen extends Screen {
   private static final String DRIVE_URL_PREFIX = "https://drive.google.com/";
 
   private final DriveApi driveApi;
+  private final AuthDetails authDetails;
   private final GoogleDocsLinkIdParser docsLinkIdParser;
   private final GoogleDriveLinkIdParser driveLinkIdParser;
   private final GoogleLinkListDownloader googleLinkListDownloader;
@@ -46,6 +47,7 @@ public class GoogleLinkVerifierScreen extends Screen {
       AuthDetails authDetails, GoogleLinkList<NamedString> linksData, JFrame jFrame) {
     super("Liens Google", 1200, 1000);
 
+    this.authDetails = authDetails;
     this.driveApi = new DriveApi(authDetails);
     this.docsLinkIdParser = new GoogleDocsLinkIdParser();
     this.driveLinkIdParser = new GoogleDriveLinkIdParser();
@@ -117,15 +119,17 @@ public class GoogleLinkVerifierScreen extends Screen {
   }
 
   private void addDocsLinkTextField(NamedString linkData) {
-    GridBagConstraints gbc = createGridBagConstraints();
+    var gbc = createGridBagConstraints();
 
-    JLabel nameLabel = new JLabel(linkData.name());
+    var nameLabel = new JLabel(linkData.name());
     nameLabel.setFont(new Font("Arial", BOLD, 18));
     nameLabel.setHorizontalAlignment(LEFT);
     gbc.gridy = nextYPosition();
     inputPanel.add(nameLabel, gbc);
 
-    JTextField newField = newGoogleDocsLinkTextField(linkData.value());
+    var newField = newGoogleDocsLinkTextField(linkData.value());
+    newField.setMargin(new Insets(6, 2, 2, 2));
+
     inputFields.add(newField);
 
     gbc.gridy = nextYPosition();
@@ -141,7 +145,8 @@ public class GoogleLinkVerifierScreen extends Screen {
     gbc.gridy = nextYPosition();
     inputPanel.add(nameLabel, gbc);
 
-    JTextField newField = newGoogleDriveLinkTextField(linkData.value());
+    var newField = newGoogleDriveLinkTextField(linkData.value());
+    newField.setMargin(new Insets(6, 2, 2, 2));
     inputFields.add(newField);
 
     gbc.gridy = nextYPosition();
@@ -195,7 +200,7 @@ public class GoogleLinkVerifierScreen extends Screen {
             loadingDialog.dispose();
             try {
               var ids = get();
-              invokeLater(() -> new PatriLangViewerScreen(ids, driveApi));
+              invokeLater(() -> new PatriLangViewerScreen(ids, driveApi, authDetails.user()));
               dispose();
             } catch (Exception e) {
               showErrorPage(e.getMessage());

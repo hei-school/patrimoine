@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.util.Objects;
 import javax.imageio.ImageIO;
 import javax.swing.*;
+
+import com.formdev.flatlaf.FlatLightLaf;
 import lombok.SneakyThrows;
 import school.hei.patrimoine.google.GoogleApi;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.ButtonWithIcon;
@@ -29,7 +31,6 @@ public class GoogleAuthScreen extends Screen {
 
     var title = new JLabel("Patrimoine");
     title.setFont(new Font("Arial", Font.BOLD, 32));
-    title.setForeground(new Color(66, 66, 66)); // Gris foncé
 
     var signInButton = new ButtonWithIcon("Se connecter avec Google", loadGoogleLogo());
     signInButton.addActionListener(onSigning());
@@ -74,6 +75,7 @@ public class GoogleAuthScreen extends Screen {
   }
 
   public static void main(String[] args) {
+    FlatLightLaf.setup();
     System.setProperty("awt.useSystemAAFontSettings", "on");
     System.setProperty("swing.aatext", "true");
     SwingUtilities.invokeLater(GoogleAuthScreen::new);
