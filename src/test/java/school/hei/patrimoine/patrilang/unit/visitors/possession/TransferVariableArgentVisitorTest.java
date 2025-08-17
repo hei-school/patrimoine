@@ -1,3 +1,4 @@
+
 package school.hei.patrimoine.patrilang.unit.visitors.possession;
 
 import static school.hei.patrimoine.modele.Argent.ariary;
@@ -24,15 +25,15 @@ class TransferVariableArgentVisitorTest {
   private static final Compte COMPTE_CRÉDITEUR = new Compte("créditeur", AJD, ariary(1_600_000));
 
   TransferArgentVisitor subject =
-      new TransferArgentVisitor(variableVisitor, new IdVisitor(variableVisitor));
+          new TransferArgentVisitor(variableVisitor, new IdVisitor(variableVisitor));
 
   UnitTestVisitor visitor =
-      new UnitTestVisitor() {
-        @Override
-        public TransfertArgent visitFluxArgentTransferer(FluxArgentTransfererContext ctx) {
-          return subject.apply(ctx);
-        }
-      };
+          new UnitTestVisitor() {
+            @Override
+            public TransfertArgent visitFluxArgentTransferer(FluxArgentTransfererContext ctx) {
+              return subject.apply(ctx);
+            }
+          };
 
   static {
     variableVisitor.addToScope("ajd", DATE, AJD);
@@ -46,26 +47,25 @@ class TransferVariableArgentVisitorTest {
     var fluxSortirName = "Flux TransfertArgent sortant: transférerArgent";
 
     var input =
-        """
-    * `transférerArgent`, Dates:ajd transférer 200000Ar depuis Trésoreries:créditeur vers Trésoreries:débiteur
-""";
+            """  
+        * `transférerArgent`, Dates:ajd transférer 200000Ar depuis Trésoreries:créditeur vers Trésoreries:débiteur""";
 
     visitor.visit(input, PatriLangParser::fluxArgentTransferer);
 
     var expectedFluxEntrer = new FluxArgent(fluxEntrerName, COMPTE_DÉBITEUR, AJD, ariary(200_000));
     var expectedFluxSortir =
-        new FluxArgent(fluxSortirName, COMPTE_CRÉDITEUR, AJD, ariary(-200_000));
+            new FluxArgent(fluxSortirName, COMPTE_CRÉDITEUR, AJD, ariary(-200_000));
 
     var actualFluxEntrer =
-        COMPTE_DÉBITEUR.getFluxArgents().stream()
-            .filter(flux -> flux.nom().equals(fluxEntrerName))
-            .findFirst()
-            .orElseThrow();
+            COMPTE_DÉBITEUR.getFluxArgents().stream()
+                    .filter(flux -> flux.nom().equals(fluxEntrerName))
+                    .findFirst()
+                    .orElseThrow();
     var actualFluxSortir =
-        COMPTE_CRÉDITEUR.getFluxArgents().stream()
-            .filter(flux -> flux.nom().equals(fluxSortirName))
-            .findFirst()
-            .orElseThrow();
+            COMPTE_CRÉDITEUR.getFluxArgents().stream()
+                    .filter(flux -> flux.nom().equals(fluxSortirName))
+                    .findFirst()
+                    .orElseThrow();
 
     assertFluxArgentEquals(expectedFluxEntrer, actualFluxEntrer);
     assertFluxArgentEquals(expectedFluxSortir, actualFluxSortir);
@@ -77,29 +77,89 @@ class TransferVariableArgentVisitorTest {
     var fluxSortirName = "Flux TransfertArgent sortant: transférerArgentWithDateFin";
 
     var input =
-        """
-    * `transférerArgentWithDateFin`, Dates:ajd transférer 200000Ar depuis Trésoreries:créditeur vers Trésoreries:débiteur, jusqu'à DATE_MAX tous les 1 du mois
-""";
+            """  
+        * `transférerArgentWithDateFin`, Dates:ajd transférer 200000Ar depuis Trésoreries:créditeur vers Trésoreries:débiteur, jusqu'à DATE_MAX tous les 1 du mois""";
 
     visitor.visit(input, PatriLangParser::fluxArgentTransferer);
 
     var expectedFluxEntrer =
-        new FluxArgent(fluxEntrerName, COMPTE_DÉBITEUR, AJD, LocalDate.MAX, 1, ariary(200_000));
+            new FluxArgent(fluxEntrerName, COMPTE_DÉBITEUR, AJD, LocalDate.MAX, 1, ariary(200_000));
     var expectedFluxSortir =
-        new FluxArgent(fluxSortirName, COMPTE_CRÉDITEUR, AJD, LocalDate.MAX, 1, ariary(-200_000));
+            new FluxArgent(fluxSortirName, COMPTE_CRÉDITEUR, AJD, LocalDate.MAX, 1, ariary(-200_000));
 
     var actualFluxEntrer =
-        COMPTE_DÉBITEUR.getFluxArgents().stream()
-            .filter(flux -> flux.nom().equals(fluxEntrerName))
-            .findFirst()
-            .orElseThrow();
+            COMPTE_DÉBITEUR.getFluxArgents().stream()
+                    .filter(flux -> flux.nom().equals(fluxEntrerName))
+                    .findFirst()
+                    .orElseThrow();
     var actualFluxSortir =
-        COMPTE_CRÉDITEUR.getFluxArgents().stream()
-            .filter(flux -> flux.nom().equals(fluxSortirName))
-            .findFirst()
-            .orElseThrow();
+            COMPTE_CRÉDITEUR.getFluxArgents().stream()
+                    .filter(flux -> flux.nom().equals(fluxSortirName))
+                    .findFirst()
+                    .orElseThrow();
+
+    assertFluxArgentEquals(expectedFluxEntrer, actualFluxEntrer);
+    assertFluxArgentEquals(expectedFluxSortir, actualFluxSortir);
+  }
+  @Test
+  void parse_transfert_different_amount() {
+    var fluxEntrerName = "Flux Entrant: transférerArgentDiff";
+    var fluxSortirName = "Flux Sortant: transférerArgentDiff";
+
+    var input =
+            """  
+        * `transférerArgentDiff`, Dates:ajd transférer 50_000Ar depuis Trésoreries:créditeur vers Trésoreries:débiteur    """;
+
+    visitor.visit(input, PatriLangParser::fluxArgentTransferer);
+
+    var expectedFluxEntrer = new FluxArgent(fluxEntrerName, COMPTE_DÉBITEUR, AJD, ariary(50_000));
+    var expectedFluxSortir = new FluxArgent(fluxSortirName, COMPTE_CRÉDITEUR, AJD, ariary(-50_000));
+
+    var actualFluxEntrer =
+            COMPTE_DÉBITEUR.getFluxArgents().stream()
+                    .filter(flux -> flux.nom().equals(fluxEntrerName))
+                    .findFirst()
+                    .orElseThrow();
+    var actualFluxSortir =
+            COMPTE_CRÉDITEUR.getFluxArgents().stream()
+                    .filter(flux -> flux.nom().equals(fluxSortirName))
+                    .findFirst()
+                    .orElseThrow();
+
+    assertFluxArgentEquals(expectedFluxEntrer, actualFluxEntrer);
+    assertFluxArgentEquals(expectedFluxSortir, actualFluxSortir);
+  }
+  @Test
+  void parse_transfert_with_specific_date() {
+    var specificDate = LocalDate.of(2025, 12, 31);
+    variableVisitor.addToScope("dateSpecifique", DATE, specificDate);
+
+    var fluxEntrerName = "Flux Entrant: transférerArgentDateSpec";
+    var fluxSortirName = "Flux Sortant: transférerArgentDateSpec";
+
+    var input =
+            """  
+        * `transférerArgentDateSpec` Dates:dateSpecifique transférer 120000Ar depuis Trésoreries:créditeur vers Trésoreries:débiteur    """;
+
+    visitor.visit(input, PatriLangParser::fluxArgentTransferer);
+
+    var expectedFluxEntrer = new FluxArgent(fluxEntrerName, COMPTE_DÉBITEUR, specificDate, ariary(120_000));
+    var expectedFluxSortir = new FluxArgent(fluxSortirName, COMPTE_CRÉDITEUR, specificDate, ariary(-120_000));
+
+    var actualFluxEntrer =
+            COMPTE_DÉBITEUR.getFluxArgents().stream()
+                    .filter(flux -> flux.nom().equals(fluxEntrerName))
+                    .findFirst()
+                    .orElseThrow();
+    var actualFluxSortir =
+            COMPTE_CRÉDITEUR.getFluxArgents().stream()
+                    .filter(flux -> flux.nom().equals(fluxSortirName))
+                    .findFirst()
+                    .orElseThrow();
 
     assertFluxArgentEquals(expectedFluxEntrer, actualFluxEntrer);
     assertFluxArgentEquals(expectedFluxSortir, actualFluxSortir);
   }
 }
+
+

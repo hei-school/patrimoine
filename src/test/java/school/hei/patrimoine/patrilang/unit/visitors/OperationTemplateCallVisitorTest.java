@@ -2,7 +2,6 @@ package school.hei.patrimoine.patrilang.unit.visitors;
 
 import static school.hei.patrimoine.modele.Argent.ariary;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.OperationTemplateCallContext;
-import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.OperationsContext;
 import static school.hei.patrimoine.patrilang.modele.variable.VariableType.*;
 import static school.hei.patrimoine.patrilang.utils.Comparator.assertFluxArgentEquals;
 import static school.hei.patrimoine.patrilang.utils.UnitTestVisitor.createParser;
@@ -22,6 +21,7 @@ import school.hei.patrimoine.patrilang.visitors.OperationTemplateCallVisitor;
 import school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor;
 
 class OperationTemplateCallVisitorTest {
+
   private static final VariableVisitor variableVisitor = new VariableVisitor();
   private static final LocalDate AJD = LocalDate.of(2025, 6, 23);
   private static final LocalDate DATE_FIN = LocalDate.of(2025, 12, 23);
@@ -30,12 +30,12 @@ class OperationTemplateCallVisitorTest {
   OperationTemplateCallVisitor subject = new OperationTemplateCallVisitor(variableVisitor);
 
   UnitTestVisitor visitor =
-      new UnitTestVisitor() {
-        @Override
-        public Set<Possession> visitOperationTemplateCall(OperationTemplateCallContext ctx) {
-          return subject.apply(ctx);
-        }
-      };
+          new UnitTestVisitor() {
+            @Override
+            public Set<Possession> visitOperationTemplateCall(OperationTemplateCallContext ctx) {
+              return subject.apply(ctx);
+            }
+          };
 
   static {
     variableVisitor.addToScope("ajd", DATE, AJD);
@@ -45,16 +45,16 @@ class OperationTemplateCallVisitorTest {
   @Test
   void parse_call_without_args() {
     var templateContent =
-        createContent(
-            """
-    * `salaireMensuel` Dates:ajd, entrer 4000Ar vers Trésoreries:comptePersonnel, jusqu'à date indéterminée tous les 31 du mois
-""");
+            createContent(
+                    """
+            * `salaireMensuel` Dates:ajd, entrer 4000Ar vers Trésoreries:comptePersonnel, jusqu'à date indéterminée tous les 31 du mois
+        """);
     var operationTemplate = new OperationTemplate("myTemplate", List.of(), templateContent);
     variableVisitor.addToScope("myTemplate", OPERATION_TEMPLATE, operationTemplate);
 
     var input = "* `myTemplate()`";
     var expected =
-        new FluxArgent("salaireMensuel", COMPTE_PERSONNEL, AJD, LocalDate.MAX, 31, ariary(4_000));
+            new FluxArgent("salaireMensuel", COMPTE_PERSONNEL, AJD, LocalDate.MAX, 31, ariary(4_000));
     Set<FluxArgent> operations = visitor.visit(input, PatriLangParser::operationTemplateCall);
 
     var actual = operations.iterator().next();
@@ -64,27 +64,49 @@ class OperationTemplateCallVisitorTest {
   @Test
   void parse_call_with_args() {
     var templateContent =
-        createContent(
-            """
-    * `salaireMensuel` Dates:ajd, entrer 4000Ar vers Trésoreries:compte, jusqu'à Dates:dateFin tous les 31 du mois
-""");
+            createContent(
+                    """
+            * `salaireMensuel` Dates:ajd, entrer 4000Ar vers Trésoreries:compte, jusqu'à Dates:dateFin tous les 31 du mois
+        """);
     var params =
-        List.of(
-            new OperationTemplateParam("compte", TRESORERIES),
-            new OperationTemplateParam("dateFin", DATE));
+            List.of(
+                    new OperationTemplateParam("compte", TRESORERIES),
+                    new OperationTemplateParam("dateFin", DATE));
     var operationTemplate = new OperationTemplate("charges", params, templateContent);
     variableVisitor.addToScope("charges", OPERATION_TEMPLATE, operationTemplate);
 
     var input = "* `charges(Trésoreries:comptePersonnel, le 23 du 12-2025)`";
     var expected =
-        new FluxArgent("salaireMensuel", COMPTE_PERSONNEL, AJD, DATE_FIN, 31, ariary(4_000));
+            new FluxArgent("salaireMensuel", COMPTE_PERSONNEL, AJD, DATE_FIN, 31, ariary(4_000));
     Set<FluxArgent> operations = visitor.visit(input, PatriLangParser::operationTemplateCall);
 
     var actual = operations.iterator().next();
     assertFluxArgentEquals(expected, actual);
   }
 
-  private static List<OperationsContext> createContent(String input) {
+
+
+  @Test
+  void call_template_with_missing_params_should_throw() {
+    var templateContent =
+            createContent(
+                    """
+            * `bonus` Dates:ajd, entrer 1000Ar vers Trésoreries:compte, jusqu'à Dates:dateFin tous les 15 du mois
+        """);
+    var params =
+            List.of(
+                    new OperationTemplateParam("compte", TRESORERIES),
+                    new OperationTemplateParam("dateFin", DATE));
+    var operationTemplate = new OperationTemplate("bonus", params, templateContent);
+    variableVisitor.addToScope("bonus", OPERATION_TEMPLATE, operationTemplate);
+
+    var input = "* `bonus(Trésoreries:comptePersonnel)`"; // dateFin missing
+    org.junit.jupiter.api.Assertions.assertThrows(
+            IllegalArgumentException.class,
+            () -> visitor.visit(input, PatriLangParser::operationTemplateCall));
+  }
+
+  private static List<PatriLangParser.OperationsContext> createContent(String input) {
     var parser = createParser(input);
     return List.of(parser.operations());
   }

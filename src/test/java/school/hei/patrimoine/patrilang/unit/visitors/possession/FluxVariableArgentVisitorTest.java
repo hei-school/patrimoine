@@ -1,3 +1,5 @@
+
+
 package school.hei.patrimoine.patrilang.unit.visitors.possession;
 
 import static java.time.Month.JUNE;
@@ -22,7 +24,7 @@ class FluxVariableArgentVisitorTest {
   private static final VariableVisitor variableVisitor = new VariableVisitor();
   private static final LocalDate AJD = LocalDate.of(2025, JUNE, 23);
   private static final Compte COMPTE_PERSONNEL =
-      new Compte("comptePersonnel", AJD, ariary(500_000));
+          new Compte("comptePersonnel", AJD, ariary(500_000));
 
   static {
     variableVisitor.addToScope("ajd", DATE, AJD);
@@ -30,27 +32,26 @@ class FluxVariableArgentVisitorTest {
   }
 
   FluxArgentVisitor subject =
-      new FluxArgentVisitor(variableVisitor, new IdVisitor(variableVisitor));
+          new FluxArgentVisitor(variableVisitor, new IdVisitor(variableVisitor));
 
   UnitTestVisitor visitor =
-      new UnitTestVisitor() {
-        @Override
-        public FluxArgent visitFluxArgentEntrer(FluxArgentEntrerContext ctx) {
-          return subject.apply(ctx);
-        }
+          new UnitTestVisitor() {
+            @Override
+            public FluxArgent visitFluxArgentEntrer(FluxArgentEntrerContext ctx) {
+              return subject.apply(ctx);
+            }
 
-        @Override
-        public FluxArgent visitFluxArgentSortir(FluxArgentSortirContext ctx) {
-          return subject.apply(ctx);
-        }
-      };
+            @Override
+            public FluxArgent visitFluxArgentSortir(FluxArgentSortirContext ctx) {
+              return subject.apply(ctx);
+            }
+          };
 
   @Test
   void parse_entrer_flux_argent_without_date_fin() {
     var input =
-        """
-            * `fluxArgentEntrer` Dates:ajd, entrer 500000Ar vers Trésoreries:comptePersonnel
-        """;
+            """  
+                * `fluxArgentEntrer` Dates:ajd, entrer 500000Ar vers Trésoreries:comptePersonnel        """;
     var expected = new FluxArgent("fluxArgentEntrer", COMPTE_PERSONNEL, AJD, ariary(500_000));
 
     FluxArgent actual = visitor.visit(input, PatriLangParser::fluxArgentEntrer);
@@ -61,11 +62,10 @@ class FluxVariableArgentVisitorTest {
   @Test
   void parse_sortir_flux_argent_without_date_fin() {
     var input =
-        """
-    * `fluxArgentSortir + Dates:ajd` Dates:ajd, sortir 500000Ar depuis Trésoreries:comptePersonnel
-""";
+            """  
+        * `fluxArgentSortir + Dates:ajd` Dates:ajd, sortir 500000Ar depuis Trésoreries:comptePersonnel""";
     var expected =
-        new FluxArgent("fluxArgentSortir" + AJD, COMPTE_PERSONNEL, AJD, ariary(-500_000));
+            new FluxArgent("fluxArgentSortir" + AJD, COMPTE_PERSONNEL, AJD, ariary(-500_000));
 
     FluxArgent actual = visitor.visit(input, PatriLangParser::fluxArgentSortir);
 
@@ -75,12 +75,11 @@ class FluxVariableArgentVisitorTest {
   @Test
   void parse_entrer_flux_argent_with_date_fin() {
     var input =
-        """
-    * `fluxArgentEntrer + Dates:ajd` Dates:ajd, entrer 500000Ar vers Trésoreries:comptePersonnel, jusqu'à DATE_MAX tous les 2 du mois
-""";
+            """  
+        * `fluxArgentEntrer + Dates:ajd` Dates:ajd, entrer 500000Ar vers Trésoreries:comptePersonnel, jusqu'à DATE_MAX tous les 2 du mois""";
     var expected =
-        new FluxArgent(
-            "fluxArgentEntrer" + AJD, COMPTE_PERSONNEL, AJD, LocalDate.MAX, 2, ariary(500_000));
+            new FluxArgent(
+                    "fluxArgentEntrer" + AJD, COMPTE_PERSONNEL, AJD, LocalDate.MAX, 2, ariary(500_000));
 
     FluxArgent actual = visitor.visit(input, PatriLangParser::fluxArgentEntrer);
 
@@ -90,15 +89,46 @@ class FluxVariableArgentVisitorTest {
   @Test
   void parse_sortir_flux_argent_with_date_fin() {
     var input =
-        """
-    * `fluxArgentSortir + Dates:ajd` Dates:ajd, sortir 500000Ar depuis Trésoreries:comptePersonnel, jusqu'à DATE_MAX tous les 2 du mois
-""";
+            """  
+        * `fluxArgentSortir + Dates:ajd` Dates:ajd, sortir 500000Ar depuis Trésoreries:comptePersonnel, jusqu'à DATE_MAX tous les 2 du mois""";
     var expected =
-        new FluxArgent(
-            "fluxArgentSortir" + AJD, COMPTE_PERSONNEL, AJD, LocalDate.MAX, 2, ariary(-500_000));
+            new FluxArgent(
+                    "fluxArgentSortir" + AJD, COMPTE_PERSONNEL, AJD, LocalDate.MAX, 2, ariary(-500_000));
 
     FluxArgent actual = visitor.visit(input, PatriLangParser::fluxArgentSortir);
 
     assertFluxArgentEquals(expected, actual);
   }
+  @Test
+  void parse_entrer_flux_argent_with_partial_name() {
+    var input = "* `fluxEntrerSpecial` Dates:ajd, entrer 75000Ar vers Trésoreries:comptePersonnel";
+    var expected = new FluxArgent("fluxEntrerSpecial", COMPTE_PERSONNEL, AJD, ariary(75_000));
+
+    FluxArgent actual = visitor.visit(input, PatriLangParser::fluxArgentEntrer);
+    assertFluxArgentEquals(expected, actual);
+  }
+
+  @Test
+  void parse_sortir_flux_argent_with_date_fin_partial() {
+    var input =
+            "* `fluxSortirSpecial + Dates:ajd` Dates:ajd, sortir 25000Ar depuis Trésoreries:comptePersonnel, jusqu'à DATE_MAX tous les 15 du mois";
+    var expected =
+            new FluxArgent("fluxSortirSpecial" + AJD, COMPTE_PERSONNEL, AJD, LocalDate.MAX, 15, ariary(-25_000));
+
+    FluxArgent actual = visitor.visit(input, PatriLangParser::fluxArgentSortir);
+    assertFluxArgentEquals(expected, actual);
+  }
+
+  @Test
+  void parse_flux_argent_zero_montant() {
+    var input = "* `fluxZero` Dates:ajd, entrer 0Ar vers Trésoreries:comptePersonnel";
+    var expected = new FluxArgent("fluxZero", COMPTE_PERSONNEL, AJD, ariary(0));
+
+    FluxArgent actual = visitor.visit(input, PatriLangParser::fluxArgentEntrer);
+    assertFluxArgentEquals(expected, actual);
+  }
 }
+
+
+
+
