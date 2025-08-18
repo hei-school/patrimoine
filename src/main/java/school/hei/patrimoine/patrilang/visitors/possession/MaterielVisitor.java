@@ -10,6 +10,7 @@ import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.possession.Materiel;
 import school.hei.patrimoine.patrilang.visitors.SimpleVisitor;
 import school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor;
+import school.hei.patrimoine.patrilang.modele.variable.VariableType;
 
 @RequiredArgsConstructor
 public class MaterielVisitor implements SimpleVisitor<PossedeMaterielContext, Materiel> {
@@ -23,13 +24,18 @@ public class MaterielVisitor implements SimpleVisitor<PossedeMaterielContext, Ma
     Argent valeurComptable = this.variableVisitor.asArgent(ctx.valeurComptable);
     LocalDate t = this.variableVisitor.asDate(ctx.dateValue);
     LocalDate dateAcquisition =
-        nonNull(ctx.dateObtention) ? this.variableVisitor.asDate(ctx.dateObtention) : t;
+            nonNull(ctx.dateObtention) ? this.variableVisitor.asDate(ctx.dateObtention) : t;
 
-    return new Materiel(
-        nom,
-        dateAcquisition,
-        t,
-        valeurComptable,
-        tauxDAppreciation / 100 * facteurTauxDAppreciation);
+    Materiel materiel = new Materiel(
+            nom,
+            dateAcquisition,
+            t,
+            valeurComptable,
+            tauxDAppreciation / 100 * facteurTauxDAppreciation
+    );
+
+    variableVisitor.addToScope(nom, VariableType.MATERIEL, materiel);
+
+    return materiel;
   }
 }
