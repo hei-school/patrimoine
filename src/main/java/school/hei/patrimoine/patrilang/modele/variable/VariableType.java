@@ -17,7 +17,6 @@ public enum VariableType {
   IMMOBILISATION("Immobilisations"),
   MATERIEL("Matériels");
 
-
   private final String value;
 
   VariableType(String value) {
