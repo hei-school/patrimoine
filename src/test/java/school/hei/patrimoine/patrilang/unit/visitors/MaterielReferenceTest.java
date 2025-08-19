@@ -16,34 +16,29 @@ import school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor;
 
 class MaterielReferenceTest {
 
-//    private VariableVisitor variableVisitor;
-//    private Materiel monOrdi;
-//    private static final LocalDate AJD = LocalDate.of(2025, 7, 29);
-//
-//    @BeforeEach
-//    void setUp() {
-//        variableVisitor = new VariableVisitor();
-//        monOrdi = new Materiel("ordinateur", AJD, AJD,
-//                ariary(200_000), 0.5);
-//        // On met l'objet dans le scope AVANT le parsing
-//        variableVisitor.addToScope("ordinateur", MATERIEL, monOrdi);
-//    }
-//
-//    @Test
-//    void should_parse_and_return_existing_materiel_from_scope() {
-//        String input = "Materiel:ordinateur";
-//
-//        UnitTestVisitor visitor = new UnitTestVisitor() {
-//            @Override
-//            public Materiel visitMaterielReference(PatriLangParser.MaterielReferenceContext ctx) {
-//                return variableVisitor.asMateriel(ctx);
-//            }
-//        };
-//
-//        Materiel actual = visitor.visit(input, PatriLangParser::materielReference);
-//
-//        assertNotNull(actual, "Le matériel référencé ne doit pas être null.");
-//        assertSame(monOrdi, actual,
-//                "On doit récupérer exactement le même objet que celui présent dans le scope.");
-//    }
+    private VariableVisitor variableVisitor;
+    private Materiel monOrdi;
+    private static final LocalDate AJD = LocalDate.of(2025, 7, 29);
+
+    @BeforeEach
+    void setUp() {
+        variableVisitor = new VariableVisitor();
+        monOrdi = new Materiel("ordinateur", AJD, AJD,
+                ariary(200_000), 0.5);
+        variableVisitor.addToScope("ordinateur", MATERIEL, monOrdi);
+    }
+
+    @Test
+    void should_return_existing_materiel_from_scope() {
+        Materiel actual = (Materiel) variableVisitor
+                .getVariableScope()
+                .get("ordinateur", MATERIEL)
+                .value();
+
+
+        assertNotNull(actual, "Le matériel référencé ne doit pas être null.");
+        assertSame(monOrdi, actual,
+                "On doit récupérer exactement le même objet que celui présent dans le scope.");
+    }
+
 }
