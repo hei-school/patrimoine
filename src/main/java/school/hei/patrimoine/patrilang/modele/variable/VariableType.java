@@ -11,6 +11,7 @@ public enum VariableType {
   ARGENT("Argents"),
   PERSONNE("Personnes"),
   TRESORERIES("Trésoreries"),
+
   CREANCE("Créances"),
   DETTE("Dettes"),
   PERSONNE_MORALE("PersonnesMorales"),

@@ -84,10 +84,6 @@ public class VariableVisitor implements SimpleVisitor<VariableContext, Variable<
     return visitVariableAsExpectedType(LocalDate.class, ctx);
   }
 
-  public Materiel asMateriel(VariableContext ctx) {
-    return visitVariableAsExpectedType(Materiel.class, ctx);
-  }
-
   public <T> void addToScope(String name, VariableType type, T value) {
     this.variableScope.add(name, type, value);
   }
