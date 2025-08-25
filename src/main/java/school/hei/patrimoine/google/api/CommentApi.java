@@ -48,7 +48,7 @@ public class CommentApi {
                 return comments.stream()
                     .filter(not(c -> c.getResolved() != null && c.getResolved()))
                     .map(commentMapper::toDomain)
-                    .sorted(Comparator.comparing(Comment::createdAt))
+                    .sorted(Comparator.comparing(Comment::createdAt).reversed())
                     .toList();
               } catch (IOException e) {
                 throw new GoogleIntegrationException(

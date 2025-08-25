@@ -37,7 +37,7 @@ public class HtmlViewer extends JEditorPane {
       var content = Files.readString(currentFile.toPath());
       setFont(new Font(Font.MONOSPACED, Font.PLAIN, fontSize));
 
-      if (currentMode == ViewMode.EDIT) {
+      if (ViewMode.EDIT.equals(currentMode)) {
         setContentType("text/plain");
         setEditable(true);
         setBackground(new Color(255, 248, 220));
