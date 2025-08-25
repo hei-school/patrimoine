@@ -14,8 +14,8 @@ import java.util.*;
 import java.util.List;
 import javax.swing.*;
 import lombok.extern.slf4j.Slf4j;
-import school.hei.patrimoine.google.api.*;
 import school.hei.patrimoine.google.*;
+import school.hei.patrimoine.google.api.*;
 import school.hei.patrimoine.google.exception.GoogleIntegrationException;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.Button;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.Dialog;
@@ -189,10 +189,10 @@ public class GoogleLinkVerifierScreen extends Screen {
           @Override
           protected GoogleLinkList<NamedID> doInBackground() throws GoogleIntegrationException {
             var ids = extractInputIds();
-            //resetIfExist(DOWNLOADS_DIRECTORY_PATH);
+            // resetIfExist(DOWNLOADS_DIRECTORY_PATH);
 
-            //googleLinkListDownloader.apply(ids);
-              return ids;
+            // googleLinkListDownloader.apply(ids);
+            return ids;
           }
 
           @Override

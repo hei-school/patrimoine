@@ -4,8 +4,8 @@ import static java.awt.Color.RED;
 import static java.awt.Color.WHITE;
 import static school.hei.patrimoine.google.GoogleDriveLinkIdParser.GOOGLE_DRIVE_ID_PATTERN;
 
-import javax.swing.*;
 import java.awt.*;
+import javax.swing.*;
 
 public class GoogleDriveLinkIdInputVerifier extends InputVerifier {
   @Override

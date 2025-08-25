@@ -4,5 +4,5 @@ import school.hei.patrimoine.google.exception.GoogleIntegrationException;
 
 @FunctionalInterface
 public interface ThrowingSupplier<R> {
-    R get() throws GoogleIntegrationException;
+  R get() throws GoogleIntegrationException;
 }

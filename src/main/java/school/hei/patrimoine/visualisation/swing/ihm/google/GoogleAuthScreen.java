@@ -3,14 +3,13 @@ package school.hei.patrimoine.visualisation.swing.ihm.google;
 import static javax.swing.SwingUtilities.invokeLater;
 import static school.hei.patrimoine.google.api.GoogleApi.AuthDetails;
 
+import com.formdev.flatlaf.FlatLightLaf;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.Objects;
 import javax.imageio.ImageIO;
 import javax.swing.*;
-
-import com.formdev.flatlaf.FlatLightLaf;
 import lombok.SneakyThrows;
 import school.hei.patrimoine.google.api.GoogleApi;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.ButtonWithIcon;

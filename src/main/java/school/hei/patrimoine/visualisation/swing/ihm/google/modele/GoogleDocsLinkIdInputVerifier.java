@@ -3,10 +3,10 @@ package school.hei.patrimoine.visualisation.swing.ihm.google.modele;
 import static java.awt.Color.RED;
 import static school.hei.patrimoine.google.GoogleDocsLinkIdParser.GOOGLE_DOCS_ID_PATTERN;
 
+import java.awt.*;
 import javax.swing.InputVerifier;
 import javax.swing.JComponent;
 import javax.swing.JTextField;
-import java.awt.*;
 
 public class GoogleDocsLinkIdInputVerifier extends InputVerifier {
   @Override

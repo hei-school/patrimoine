@@ -8,7 +8,6 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import lombok.RequiredArgsConstructor;
 import school.hei.patrimoine.modele.Patrimoine;
 import school.hei.patrimoine.modele.objectif.ObjectifNonAtteint;
@@ -16,17 +15,17 @@ import school.hei.patrimoine.visualisation.swing.ihm.MainIHM;
 
 @RequiredArgsConstructor
 public class CasSetAnalyzer implements Consumer<CasSet> {
-    private final int closeOperation;
+  private final int closeOperation;
 
   public static void main(String[] args) {
     new CasSetAnalyzer().accept(new CasSetSupplier().get());
   }
 
-    public CasSetAnalyzer() {
-      this(EXIT_ON_CLOSE);
-    }
+  public CasSetAnalyzer() {
+    this(EXIT_ON_CLOSE);
+  }
 
-    @Override
+  @Override
   public void accept(CasSet casSet) {
     var aCas = casSet.set().stream().toList().getFirst();
     var patrimoineTout = new ToutCas(aCas.getAjd(), aCas.getFinSimulation(), casSet);
@@ -59,7 +58,7 @@ public class CasSetAnalyzer implements Consumer<CasSet> {
                 Stream.concat(casSet.stream(), Set.of(patrimoineTout).stream())
                     .map(Cas::patrimoine)
                     .sorted(comparing(Patrimoine::nom))
-                    .toList(), closeOperation)
-            );
+                    .toList(),
+                closeOperation));
   }
 }

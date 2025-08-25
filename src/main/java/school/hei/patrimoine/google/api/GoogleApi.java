@@ -32,8 +32,10 @@ public class GoogleApi {
   static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
 
   private static final List<String> SCOPES = List.of(DOCUMENTS_READONLY, DRIVE);
-  private static final String TOKENS_DIRECTORY_PATH = USER_HOME + "/.patrimoine-ricka/google/tokens";
-  private static final String CREDENTIALS_FILE_PATH = USER_HOME + "/.patrimoine-ricka/google/client.json";
+  private static final String TOKENS_DIRECTORY_PATH =
+      USER_HOME + "/.patrimoine-ricka/google/tokens";
+  private static final String CREDENTIALS_FILE_PATH =
+      USER_HOME + "/.patrimoine-ricka/google/client.json";
 
   public GoogleApi() {
     this.userMapper = UserMapper.getInstance();

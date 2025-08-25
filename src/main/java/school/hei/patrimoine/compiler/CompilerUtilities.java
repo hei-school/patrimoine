@@ -26,7 +26,7 @@ public class CompilerUtilities {
       String.valueOf(Path.of(DOWNLOADS_DIRECTORY_PATH).resolve(PATRIMOINE_JAR_NAME));
 
   static {
-    //resetIfExist(DOWNLOADS_DIRECTORY_PATH);
+    // resetIfExist(DOWNLOADS_DIRECTORY_PATH);
     resetIfExist(COMPILE_DIR_NAME);
   }
 

@@ -2,9 +2,9 @@ package school.hei.patrimoine.visualisation.swing.ihm.google;
 
 import static java.awt.Font.*;
 import static javax.swing.SwingUtilities.invokeLater;
-import static school.hei.patrimoine.google.api.GoogleApi.AuthDetails;
 import static school.hei.patrimoine.google.GoogleDocsLinkIdParser.GOOGLE_DOCS_ID_PATTERN;
 import static school.hei.patrimoine.google.GoogleDriveLinkIdParser.GOOGLE_DRIVE_ID_PATTERN;
+import static school.hei.patrimoine.google.api.GoogleApi.AuthDetails;
 
 import java.awt.*;
 import java.util.ArrayList;
