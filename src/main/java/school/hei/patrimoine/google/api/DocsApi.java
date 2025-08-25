@@ -1,8 +1,8 @@
-package school.hei.patrimoine.google;
+package school.hei.patrimoine.google.api;
 
 import static java.nio.file.StandardOpenOption.*;
 import static school.hei.patrimoine.compiler.CompilerUtilities.DOWNLOADS_DIRECTORY_PATH;
-import static school.hei.patrimoine.google.GoogleApi.*;
+import static school.hei.patrimoine.google.api.GoogleApi.*;
 
 import com.google.api.services.docs.v1.Docs;
 import com.google.api.services.docs.v1.model.Document;

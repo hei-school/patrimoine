@@ -2,8 +2,8 @@ package school.hei.patrimoine.visualisation.swing.ihm.google.downloader;
 
 import school.hei.patrimoine.compiler.FileNameExtractor;
 import school.hei.patrimoine.compiler.PatriLangFileNameExtractor;
-import school.hei.patrimoine.google.DocsApi;
-import school.hei.patrimoine.google.DriveApi;
+import school.hei.patrimoine.google.api.DocsApi;
+import school.hei.patrimoine.google.api.DriveApi;
 import school.hei.patrimoine.google.exception.GoogleIntegrationException;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.GoogleLinkList;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.NamedID;

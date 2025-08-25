@@ -1,8 +1,8 @@
-package school.hei.patrimoine.google;
+package school.hei.patrimoine.google.api;
 
 import static java.util.UUID.randomUUID;
 import static school.hei.patrimoine.compiler.CompilerUtilities.*;
-import static school.hei.patrimoine.google.GoogleApi.*;
+import static school.hei.patrimoine.google.api.GoogleApi.*;
 
 import com.google.api.client.http.FileContent;
 import com.google.api.services.drive.Drive;

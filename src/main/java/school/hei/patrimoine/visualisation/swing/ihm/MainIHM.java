@@ -43,26 +43,30 @@ public class MainIHM extends JFrame implements Observer {
   private final EvolutionPatrimoineSelectionnéIHM evolutionPatrimoineSelectionnéIHM;
   private final SelecteurGrapheConfIHM selecteurGrapheConfIHM;
 
+    public MainIHM(List<Patrimoine> patrimoines, int closeOperation) {
+        List<Patrimoine> patrimoinesAvecPersonnes = new ArrayList<>();
+        patrimoinesAvecPersonnes.addAll(patrimoines);
+        patrimoinesAvecPersonnes.addAll(patrimoinesPersonnels(patrimoines));
+        this.patrimoinesVisualisables = new PatrimoinesVisualisables(patrimoinesAvecPersonnes);
+        this.patrimoinesVisualisables.addObserver(this);
+
+        this.selecteurPatrimoineIHM =
+                new SelecteurPatrimoineIHM(patrimoinesVisualisables, grapheConfObservable);
+
+        this.fluxImpossiblesIHM = new FluxImpossiblesIHM(patrimoinesVisualisables);
+        this.fluxJournaliersIHM = new FluxJournaliersIHM(patrimoinesVisualisables);
+
+        this.selecteurPeriodeIHM = new SelecteurPeriodeIHM(patrimoinesVisualisables);
+        this.evolutionPatrimoineSelectionnéIHM =
+                new EvolutionPatrimoineSelectionnéIHM(patrimoinesVisualisables, grapheConfObservable);
+        this.selecteurGrapheConfIHM = new SelecteurGrapheConfIHM(grapheConfObservable);
+
+        configureFrame(closeOperation);
+        configureContentPane();
+    }
+
   public MainIHM(List<Patrimoine> patrimoines) {
-    List<Patrimoine> patrimoinesAvecPersonnes = new ArrayList<>();
-    patrimoinesAvecPersonnes.addAll(patrimoines);
-    patrimoinesAvecPersonnes.addAll(patrimoinesPersonnels(patrimoines));
-    this.patrimoinesVisualisables = new PatrimoinesVisualisables(patrimoinesAvecPersonnes);
-    this.patrimoinesVisualisables.addObserver(this);
-
-    this.selecteurPatrimoineIHM =
-        new SelecteurPatrimoineIHM(patrimoinesVisualisables, grapheConfObservable);
-
-    this.fluxImpossiblesIHM = new FluxImpossiblesIHM(patrimoinesVisualisables);
-    this.fluxJournaliersIHM = new FluxJournaliersIHM(patrimoinesVisualisables);
-
-    this.selecteurPeriodeIHM = new SelecteurPeriodeIHM(patrimoinesVisualisables);
-    this.evolutionPatrimoineSelectionnéIHM =
-        new EvolutionPatrimoineSelectionnéIHM(patrimoinesVisualisables, grapheConfObservable);
-    this.selecteurGrapheConfIHM = new SelecteurGrapheConfIHM(grapheConfObservable);
-
-    configureFrame();
-    configureContentPane();
+        this(patrimoines, EXIT_ON_CLOSE);
   }
 
   private static Set<Patrimoine> patrimoinesPersonnels(List<Patrimoine> patrimoines) {
@@ -74,9 +78,10 @@ public class MainIHM extends JFrame implements Observer {
   }
 
   @SneakyThrows
-  private void configureFrame() {
+  @SuppressWarnings("all")
+  private void configureFrame(int closeOperation) {
     setTitle();
-    setDefaultCloseOperation(EXIT_ON_CLOSE);
+    setDefaultCloseOperation(closeOperation);
     pack();
     setSize(getDefaultToolkit().getScreenSize());
     setResizable(true);

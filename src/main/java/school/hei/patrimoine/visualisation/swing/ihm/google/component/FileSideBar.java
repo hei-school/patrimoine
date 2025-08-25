@@ -76,4 +76,10 @@ public class FileSideBar extends JList<File> {
                     || file.getName().endsWith(CAS_FILE_EXTENSION))
         .toList();
   }
+
+    public static File getCasSetFile() {
+        return Arrays.stream(requireNonNull(new File(DOWNLOADS_DIRECTORY_PATH).listFiles()))
+                .filter(file -> file.getName().endsWith(TOUT_CAS_FILE_EXTENSION))
+                .findFirst().orElseThrow();
+    }
 }

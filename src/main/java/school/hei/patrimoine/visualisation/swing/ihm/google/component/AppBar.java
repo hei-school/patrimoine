@@ -1,6 +1,9 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.component;
 
 import static javax.swing.JOptionPane.showMessageDialog;
+import static javax.swing.SwingUtilities.invokeLater;
+import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
+import static school.hei.patrimoine.patrilang.PatriLangTranspiler.transpileToutCas;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.PatriLangViewerScreen.ViewMode;
 
 import javax.swing.*;
@@ -8,7 +11,8 @@ import java.awt.*;
 import java.nio.file.Files;
 
 import lombok.Getter;
-import school.hei.patrimoine.google.DriveApi;
+import school.hei.patrimoine.cas.CasSetAnalyzer;
+import school.hei.patrimoine.google.api.DriveApi;
 import school.hei.patrimoine.google.model.User;
 
 @Getter
@@ -47,18 +51,29 @@ public class AppBar extends JPanel {
     leftControls.add(graphicButton);
     leftControls.add(syncButton);
 
+    graphicButton.addActionListener(e -> {
+        invokeLater(() -> new CasSetAnalyzer(DISPOSE_ON_CLOSE).accept(transpileToutCas(FileSideBar.getCasSetFile().getAbsolutePath())));
+    });
+
     modeSelect.addActionListener(
         e -> {
           currentMode = (ViewMode) modeSelect.getSelectedItem();
           updateUICallback.run();
         });
+    modeSelect.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
+    modeSelect.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
-  saveButton.addActionListener(e -> saveSelectedFile(owner));
+      saveButton.addActionListener(e -> saveSelectedFile(owner));
   syncButton.addActionListener(e -> syncSelectedFileWithDrive(owner));
     return leftControls;
   }
 
     private void saveSelectedFile(JFrame owner) {
+        if (currentMode != ViewMode.EDIT) {
+            showMessageDialog(this, "Vous devez être en mode édition pour sauvegarder.", "Erreur", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
         var optFile = fileSideBar.getSelectedFile();
         if (optFile.isEmpty()) {
             showMessageDialog(this, "Aucun fichier sélectionné.", "Erreur", JOptionPane.ERROR_MESSAGE);
@@ -73,7 +88,6 @@ public class AppBar extends JPanel {
                     protected Void doInBackground() throws Exception {
                         var currentFile = optFile.get();
                         Files.writeString(currentFile.toPath(), htmlViewer.getText());
-
                         return null;
                     }
 
@@ -89,11 +103,9 @@ public class AppBar extends JPanel {
                         }
                     }
                 };
-
         worker.execute();
         dialog.setVisible(true);
     }
-
 
     private void syncSelectedFileWithDrive(JFrame owner) {
         var optFile = fileSideBar.getSelectedFile();
@@ -134,6 +146,7 @@ public class AppBar extends JPanel {
         worker.execute();
         dialog.setVisible(true);
     }
+
     private JPanel rightControls() {
     var increaseFontButton = new Button("+");
     var decreaseFontButton = new Button("-");
@@ -168,30 +181,38 @@ public class AppBar extends JPanel {
     return rightControls;
   }
 
-  private JPanel createUserInfoPanel(User user) {
-    var panel = new JPanel(new BorderLayout());
-    panel.setOpaque(false);
+    private JPanel createUserInfoPanel(User user) {
+        var panel = new JPanel(new BorderLayout());
+        panel.setOpaque(false);
+        panel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
 
-    var avatarLabel = new ImageComponent(user.avatarUrl(), user.displayName(), 40, true);
+        var avatarLabel = new ImageComponent(user.avatarUrl(), user.displayName(), 40, true);
+        var avatarPanel = new JPanel(new BorderLayout());
+        avatarPanel.setOpaque(false);
+        avatarPanel.add(avatarLabel, BorderLayout.CENTER);
+        avatarPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 10)); // espace à droite
 
-    var nameLabel = new JLabel(user.displayName());
-    nameLabel.setFont(nameLabel.getFont().deriveFont(Font.BOLD, 14f));
+        var nameLabel = new JLabel(user.displayName());
+        nameLabel.setFont(nameLabel.getFont().deriveFont(Font.BOLD, 14f));
 
-    var emailLabel = new JLabel(user.email());
-    emailLabel.setFont(emailLabel.getFont().deriveFont(Font.PLAIN, 12f));
-    emailLabel.setForeground(Color.GRAY);
+        var emailLabel = new JLabel(user.email());
+        emailLabel.setFont(emailLabel.getFont().deriveFont(Font.PLAIN, 12f));
+        emailLabel.setForeground(Color.GRAY);
 
-    var textPanel = new JPanel(new GridLayout(0, 1));
-    textPanel.setOpaque(false);
-    textPanel.add(nameLabel);
-    textPanel.add(emailLabel);
+        var textPanel = new JPanel();
+        textPanel.setLayout(new BoxLayout(textPanel, BoxLayout.Y_AXIS));
+        textPanel.setOpaque(false);
+        textPanel.add(nameLabel);
+        textPanel.add(Box.createRigidArea(new Dimension(0, 2)));
+        textPanel.add(emailLabel);
 
-    panel.add(avatarLabel, BorderLayout.WEST);
-    panel.add(textPanel, BorderLayout.CENTER);
-    return panel;
-  }
+        panel.add(avatarPanel, BorderLayout.WEST); // on ajoute le panel avec padding
+        panel.add(textPanel, BorderLayout.CENTER);
 
-  private void adjustControlledFontSize(int delta, JTextField fontSizeField) {
+        return panel;
+    }
+
+    private void adjustControlledFontSize(int delta, JTextField fontSizeField) {
     controlledFontSize += delta;
 
     if (controlledFontSize < 1) {

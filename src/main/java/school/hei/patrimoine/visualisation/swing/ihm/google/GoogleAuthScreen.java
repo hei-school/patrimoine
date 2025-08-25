@@ -1,7 +1,7 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google;
 
 import static javax.swing.SwingUtilities.invokeLater;
-import static school.hei.patrimoine.google.GoogleApi.AuthDetails;
+import static school.hei.patrimoine.google.api.GoogleApi.AuthDetails;
 
 import java.awt.*;
 import java.awt.event.ActionListener;
@@ -12,7 +12,7 @@ import javax.swing.*;
 
 import com.formdev.flatlaf.FlatLightLaf;
 import lombok.SneakyThrows;
-import school.hei.patrimoine.google.GoogleApi;
+import school.hei.patrimoine.google.api.GoogleApi;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.ButtonWithIcon;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.Screen;
 

@@ -6,9 +6,7 @@ import static java.awt.Font.PLAIN;
 import static java.awt.GridBagConstraints.HORIZONTAL;
 import static javax.swing.SwingConstants.LEFT;
 import static javax.swing.SwingUtilities.invokeLater;
-import static school.hei.patrimoine.compiler.CompilerUtilities.DOWNLOADS_DIRECTORY_PATH;
-import static school.hei.patrimoine.compiler.CompilerUtilities.resetIfExist;
-import static school.hei.patrimoine.google.GoogleApi.*;
+import static school.hei.patrimoine.google.api.GoogleApi.*;
 
 import java.awt.*;
 import java.awt.event.ActionListener;
@@ -16,6 +14,7 @@ import java.util.*;
 import java.util.List;
 import javax.swing.*;
 import lombok.extern.slf4j.Slf4j;
+import school.hei.patrimoine.google.api.*;
 import school.hei.patrimoine.google.*;
 import school.hei.patrimoine.google.exception.GoogleIntegrationException;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.Button;
@@ -190,9 +189,10 @@ public class GoogleLinkVerifierScreen extends Screen {
           @Override
           protected GoogleLinkList<NamedID> doInBackground() throws GoogleIntegrationException {
             var ids = extractInputIds();
-            resetIfExist(DOWNLOADS_DIRECTORY_PATH);
+            //resetIfExist(DOWNLOADS_DIRECTORY_PATH);
 
-            return googleLinkListDownloader.apply(ids);
+            //googleLinkListDownloader.apply(ids);
+              return ids;
           }
 
           @Override
