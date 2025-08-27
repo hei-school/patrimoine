@@ -25,7 +25,7 @@ class RecoupeurDePossessionsTest {
     var au02Mars2025 = LocalDate.of(2025, MARCH, 2);
 
     var comptePersonnelPrévu = new Compte("comptePersonnel", au01Janvier2025, ariary(0));
-    var comptePersonnelRéel = new Compte("comptePersonnel", au01Janvier2025, ariary(0));
+    var comptePersonnelRéalité = new Compte("comptePersonnel", au01Janvier2025, ariary(0));
 
     var prévu =
         Patrimoine.of(
@@ -44,8 +44,8 @@ class RecoupeurDePossessionsTest {
             au01Janvier2025,
             Map.of(),
             Set.of(
-                comptePersonnelRéel,
-                new FluxArgent("salaire", comptePersonnelRéel, au02Mars2025, ariary(200))));
+                comptePersonnelRéalité,
+                new FluxArgent("salaire", comptePersonnelRéalité, au02Mars2025, ariary(200))));
 
     var subject = RecoupeurDePossessions.of(prévu, réalité);
 
@@ -53,11 +53,11 @@ class RecoupeurDePossessionsTest {
     assertTrue(subject.getPossessionsNonPrévus().isEmpty());
     assertTrue(subject.getPossessionsNonExecutés().isEmpty());
     assertEquals(
-        sortedPossession(prévu.getPossessions()),
-        sortedPossession(subject.getPossessionsExecutés()));
+        sortedPossessions(prévu.getPossessions()),
+        sortedPossessions(subject.getPossessionsExecutés()));
   }
 
-  private static List<Possession> sortedPossession(Set<Possession> possessions) {
+  private static List<Possession> sortedPossessions(Set<Possession> possessions) {
     return possessions.stream().sorted(Comparator.comparing(Possession::nom)).toList();
   }
 }
