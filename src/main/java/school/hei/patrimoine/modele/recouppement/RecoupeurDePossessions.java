@@ -3,12 +3,14 @@ package school.hei.patrimoine.modele.recouppement;
 import static java.util.function.Predicate.not;
 import static java.util.stream.Collectors.toSet;
 
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import school.hei.patrimoine.modele.Patrimoine;
 import school.hei.patrimoine.modele.possession.Correction;
 import school.hei.patrimoine.modele.possession.FluxArgent;
 import school.hei.patrimoine.modele.possession.Possession;
+import school.hei.patrimoine.modele.recouppement.possession.CorrectionGenerateurBase;
 
 public record RecoupeurDePossessions(Set<Possession> prévus, Set<Possession> réalités) {
   public static RecoupeurDePossessions of(Patrimoine prévu, Patrimoine réalité) {
@@ -28,8 +30,23 @@ public record RecoupeurDePossessions(Set<Possession> prévus, Set<Possession> r�
   }
 
   public Set<Correction> getCorrections() {
-    // TODO: implement
-    return Set.of();
+      Set<Correction> corrections = new HashSet<>();
+      var possessionExecutés = getPossessionsExecutés();
+
+      //TODO: handle non prévus
+      //TODO: handle non éxecutés
+
+      for(var prévu: possessionExecutés){
+        var réalité = getPossessionExecuté(prévu).get();
+        corrections.addAll(genererCorrections(prévu, réalité));
+      }
+
+      return corrections;
+  }
+
+  private Set<Correction> genererCorrections(Possession prévu, Possession réalité){
+    var generateurDeCorrection = new CorrectionGenerateurBase<>(prévu, réalité);
+    return generateurDeCorrection.get();
   }
 
   @SuppressWarnings("unchecked")

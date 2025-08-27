@@ -46,6 +46,10 @@ public abstract sealed class Possession extends Objectivable
     return valeurComptable;
   }
 
+    public LocalDate t() {
+        return t;
+    }
+
   public final Devise devise() {
     return valeurComptable.devise();
   }
