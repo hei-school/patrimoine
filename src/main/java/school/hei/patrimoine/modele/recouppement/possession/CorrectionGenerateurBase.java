@@ -1,43 +1,48 @@
 package school.hei.patrimoine.modele.recouppement.possession;
 
-import lombok.RequiredArgsConstructor;
 import school.hei.patrimoine.modele.possession.Correction;
 import school.hei.patrimoine.modele.possession.FluxArgent;
 import school.hei.patrimoine.modele.possession.Possession;
 
 import java.util.Set;
 
-@RequiredArgsConstructor
-public class CorrectionGenerateurBase<T extends Possession> implements CorrectionGenerateur {
-    private final T prévu;
-    private final T réalité;
-
+public class CorrectionGenerateurBase<T extends Possession> implements CorrectionGenerateur<T>{
     @Override
-    public Set<Correction> get() {
-        var t = prévu.t();
-        var nom = prévu.nom();
-        //TODO: check account
-        var compteCorrection = prévu.getCompteCorrection().getCompte();
-        var diffEntreValeurComptable = prévu.valeurComptable().minus(réalité.valeurComptable(), t);
-
+    public Set<Correction> comparer(T prévu, T réalité) {
+        var compte = prévu.getCompteCorrection().getCompte();
         if(memeDate(prévu, réalité)){
-           if(memeValeurComptable(prévu, réalité)) {
-               return Set.of();
-           }
+            if(memeValeurComptable(prévu, réalité)){
+                return Set.of();
+            }
 
-           return Set.of(
-                new Correction(new FluxArgent("Correction_de_valeur_pour_" + nom, compteCorrection, t, diffEntreValeurComptable))
-           );
+            var valeurComptableDiff = réalité.valeurComptable().minus(prévu.valeurComptable(), prévu.t());
+            return Set.of(new Correction(
+                    new FluxArgent(prévu.nom(), compte, prévu.t(), valeurComptableDiff)
+            ));
         }
 
-        throw new RuntimeException("Not Implemented");
+        return Set.of(
+            new Correction(new FluxArgent("retard" + prévu.nom(), compte, prévu.t(), prévu.valeurComptable())),
+            new Correction(new FluxArgent("retard_pair" + prévu.nom(), compte, prévu.t(), réalité.valeurComptable().mult(-1)))
+        );
     }
 
-    protected static boolean memeDate(Possession prévu, Possession réalité){
-       return prévu.t().equals(réalité.t());
+    @Override
+    public Set<Correction> nonExecuté(T nonExecuté) {
+        var compte = nonExecuté.getCompteCorrection().getCompte();
+        return Set.of(new Correction(new FluxArgent("non_execute_", compte, nonExecuté.t(), nonExecuté.valeurComptable())));
     }
 
-    protected static boolean memeValeurComptable(Possession prévu, Possession réalité){
+    @Override
+    public Set<Correction> nonPrévu(T nonPrévu) {
+        return Set.of();
+    }
+
+    public boolean memeDate(Possession prévu, Possession réalité){
+        return prévu.t().equals(réalité.t());
+    }
+
+    public boolean memeValeurComptable(Possession prévu, Possession réalité){
         return prévu.valeurComptable().equals(réalité.valeurComptable());
     }
 }

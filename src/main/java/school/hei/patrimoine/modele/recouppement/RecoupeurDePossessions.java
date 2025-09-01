@@ -10,7 +10,7 @@ import school.hei.patrimoine.modele.Patrimoine;
 import school.hei.patrimoine.modele.possession.Correction;
 import school.hei.patrimoine.modele.possession.FluxArgent;
 import school.hei.patrimoine.modele.possession.Possession;
-import school.hei.patrimoine.modele.recouppement.possession.CorrectionGenerateurBase;
+import school.hei.patrimoine.modele.recouppement.possession.CorrectionGenerateurFactory;
 
 public record RecoupeurDePossessions(Set<Possession> prévus, Set<Possession> réalités) {
   public static RecoupeurDePossessions of(Patrimoine prévu, Patrimoine réalité) {
@@ -31,28 +31,31 @@ public record RecoupeurDePossessions(Set<Possession> prévus, Set<Possession> r�
 
   public Set<Correction> getCorrections() {
       Set<Correction> corrections = new HashSet<>();
-      var possessionExecutés = getPossessionsExecutés();
 
-      //TODO: handle non prévus
-      //TODO: handle non éxecutés
+      getPossessionsNonExecutés().forEach(p -> {
+          var correctionGenerateur = CorrectionGenerateurFactory.make(p);
+          corrections.addAll(correctionGenerateur.nonExecuté(p));
+      });
 
-      for(var prévu: possessionExecutés){
+      getPossessionsNonPrévus().forEach(p -> {
+          var correctionGenerateur = CorrectionGenerateurFactory.make(p);
+          corrections.addAll(correctionGenerateur.nonPrévu(p));
+      });
+
+      for(var prévu: getPossessionsExecutés()){
         var réalité = getPossessionExecuté(prévu).get();
-        corrections.addAll(genererCorrections(prévu, réalité));
+        var correctionGenerateur = CorrectionGenerateurFactory.make(prévu);
+        corrections.addAll(correctionGenerateur.comparer(prévu, réalité));
       }
 
       return corrections;
   }
 
-  private Set<Correction> genererCorrections(Possession prévu, Possession réalité){
-    var generateurDeCorrection = new CorrectionGenerateurBase<>(prévu, réalité);
-    return generateurDeCorrection.get();
-  }
 
   @SuppressWarnings("unchecked")
   private <T extends Possession> Optional<T> getPossessionPrévu(T réalité) {
     if (réalité instanceof FluxArgent) {
-      // TODO: handle
+        //TOOD: handle
     }
 
     var prévu = prévus.stream().filter(p -> p.nom().equals(réalité.nom())).findFirst();
@@ -66,7 +69,7 @@ public record RecoupeurDePossessions(Set<Possession> prévus, Set<Possession> r�
   @SuppressWarnings("unchecked")
   private <T extends Possession> Optional<T> getPossessionExecuté(T prévu) {
     if (prévu instanceof FluxArgent) {
-      // TODO: handle
+        //TOOD: handle
     }
 
     var réalité = réalités.stream().filter(p -> p.nom().equals(prévu.nom())).findFirst();
