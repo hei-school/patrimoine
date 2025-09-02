@@ -265,8 +265,8 @@ date
     ;
 
 dateAtom
-    :   MOT_LE jour=variable MOT_DU moisEntier=variable MOINS annee=variable
-    |   MOT_LE jour=variable moisTextuel=MOIS annee=variable
+    :   MOT_LE? jour=variable MOT_DU moisEntier=variable MOINS annee=variable
+    |   MOT_LE? jour=variable moisTextuel=MOIS annee=variable
     |   MOT_DATE_INDETERMINER
     |   MOT_DATE_MINIMUM
     |   MOT_DATE_MAXIMUM

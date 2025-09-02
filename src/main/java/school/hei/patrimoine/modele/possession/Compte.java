@@ -50,7 +50,7 @@ public sealed class Compte extends Possession permits Dette, Creance {
   }
 
   @Override
-  public TypeAgregat typeAgregat() {
+  public TypeAgregat typeAgregat(){
     return TRESORERIE;
   }
 

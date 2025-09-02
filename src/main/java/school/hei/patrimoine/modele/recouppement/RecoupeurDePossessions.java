@@ -3,80 +3,78 @@ package school.hei.patrimoine.modele.recouppement;
 import static java.util.function.Predicate.not;
 import static java.util.stream.Collectors.toSet;
 
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+
 import school.hei.patrimoine.modele.Patrimoine;
+import school.hei.patrimoine.modele.possession.CompteCorrection;
 import school.hei.patrimoine.modele.possession.Correction;
-import school.hei.patrimoine.modele.possession.FluxArgent;
 import school.hei.patrimoine.modele.possession.Possession;
-import school.hei.patrimoine.modele.recouppement.possession.CorrectionGenerateurFactory;
+import school.hei.patrimoine.modele.recouppement.decomposeur.PossessionDecomposeurFactory;
+import school.hei.patrimoine.modele.recouppement.generateur.CorrectionGenerateurFactory;
 
 public record RecoupeurDePossessions(Set<Possession> prévus, Set<Possession> réalités) {
-  public static RecoupeurDePossessions of(Patrimoine prévu, Patrimoine réalité) {
-    return new RecoupeurDePossessions(prévu.getPossessions(), réalité.getPossessions());
-  }
-
-  public Set<Possession> getPossessionsExecutés() {
-    return prévus.stream().filter(p -> getPossessionExecuté(p).isPresent()).collect(toSet());
-  }
-
-  public Set<Possession> getPossessionsNonExecutés() {
-    return prévus.stream().filter(not(p -> getPossessionExecuté(p).isPresent())).collect(toSet());
-  }
-
-  public Set<Possession> getPossessionsNonPrévus() {
-    return réalités.stream().filter(p -> getPossessionPrévu(p).isEmpty()).collect(toSet());
-  }
-
-  public Set<Correction> getCorrections() {
-      Set<Correction> corrections = new HashSet<>();
-
-      getPossessionsNonExecutés().forEach(p -> {
-          var correctionGenerateur = CorrectionGenerateurFactory.make(p);
-          corrections.addAll(correctionGenerateur.nonExecuté(p));
-      });
-
-      getPossessionsNonPrévus().forEach(p -> {
-          var correctionGenerateur = CorrectionGenerateurFactory.make(p);
-          corrections.addAll(correctionGenerateur.nonPrévu(p));
-      });
-
-      for(var prévu: getPossessionsExecutés()){
-        var réalité = getPossessionExecuté(prévu).get();
-        var correctionGenerateur = CorrectionGenerateurFactory.make(prévu);
-        corrections.addAll(correctionGenerateur.comparer(prévu, réalité));
-      }
-
-      return corrections;
-  }
-
-
-  @SuppressWarnings("unchecked")
-  private <T extends Possession> Optional<T> getPossessionPrévu(T réalité) {
-    if (réalité instanceof FluxArgent) {
-        //TOOD: handle
+    public static RecoupeurDePossessions of(Patrimoine prévu, Patrimoine réalité) {
+        return new RecoupeurDePossessions(prévu.getPossessions(), réalité.getPossessions());
     }
 
-    var prévu = prévus.stream().filter(p -> p.nom().equals(réalité.nom())).findFirst();
-    if (!(prévu.isPresent() && prévu.get().getClass().equals(réalité.getClass()))) {
-      throw new IllegalArgumentException("TODO: handle message");
+    public RecoupeurDePossessions(Set<Possession> prévus, Set<Possession> réalités) {
+        this.prévus = withoutCompteCorrections(prévus).stream().map(p -> {
+            var decomposeur = PossessionDecomposeurFactory.make(p);
+            return decomposeur.apply(p);
+        }).flatMap(Collection::stream).collect(toSet());
+
+        this.réalités = withoutCompteCorrections(réalités).stream().map(p -> {
+            var decomposeur = PossessionDecomposeurFactory.make(p);
+            return decomposeur.apply(p);
+        }).flatMap(Collection::stream).collect(toSet());
     }
 
-    return (Optional<T>) prévu;
-  }
-
-  @SuppressWarnings("unchecked")
-  private <T extends Possession> Optional<T> getPossessionExecuté(T prévu) {
-    if (prévu instanceof FluxArgent) {
-        //TOOD: handle
+    public Set<Possession> getPossessionsExecutés() {
+        return prévus.stream().filter(p -> getEquivalent(réalités, p).isPresent()).collect(toSet());
     }
 
-    var réalité = réalités.stream().filter(p -> p.nom().equals(prévu.nom())).findFirst();
-    if (!(réalité.isPresent() && réalité.get().getClass().equals(prévu.getClass()))) {
-      throw new IllegalArgumentException("TODO: handle message");
+    public Set<Possession> getPossessionsNonExecutés() {
+        return prévus.stream().filter(p -> getEquivalent(réalités, p).isEmpty()).collect(toSet());
     }
 
-    return (Optional<T>) réalité;
-  }
+    public Set<Possession> getPossessionsNonPrévus() {
+        return réalités.stream().filter(p -> getEquivalent(prévus, p).isEmpty()).collect(toSet());
+    }
+
+    public Set<Correction> getCorrections() {
+        Set<Correction> corrections = new HashSet<>();
+
+        getPossessionsNonExecutés().forEach(p -> {
+            var correctionGenerateur = CorrectionGenerateurFactory.make(p);
+            corrections.addAll(correctionGenerateur.nonÉxecuté(p));
+        });
+
+        getPossessionsNonPrévus().forEach(p -> {
+            var correctionGenerateur = CorrectionGenerateurFactory.make(p);
+            corrections.addAll(correctionGenerateur.nonPrévu(p));
+        });
+
+        for (var prévu : getPossessionsExecutés()) {
+            var réalité = getEquivalent(réalités, prévu).get();
+            var correctionGenerateur = CorrectionGenerateurFactory.make(prévu);
+            corrections.addAll(correctionGenerateur.comparer(prévu, réalité));
+        }
+
+        return corrections;
+    }
+
+    private static Optional<Possession> getEquivalent(Collection<Possession> possessions, Possession possession) {
+        var equivalent = possessions.stream().filter(p -> p.nom().equals(possession.nom())).findFirst();
+
+        if (equivalent.isPresent() && !equivalent.get().getClass().equals(possession.getClass())) {
+            throw new IllegalArgumentException("TODO: handle message");
+        }
+
+        return equivalent;
+    }
+
+    private static Set<Possession> withoutCompteCorrections(Set<Possession> possessions)  {
+        return possessions.stream().filter(not(p -> p instanceof CompteCorrection)).collect(toSet());
+    }
+
 }
