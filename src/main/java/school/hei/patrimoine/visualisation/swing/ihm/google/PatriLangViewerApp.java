@@ -6,16 +6,17 @@ import lombok.Getter;
 import school.hei.patrimoine.google.api.DriveApi;
 import school.hei.patrimoine.google.model.User;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.*;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.Screen;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.GoogleLinkList;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.NamedID;
 
-public class PatriLangViewerScreen extends Screen {
+public class PatriLangViewerApp extends Screen {
   private final AppBar appBar;
   private final HtmlViewer htmlViewer;
   private final FileSideBar fileSideBar;
   private final CommentSideBar commentSideBar;
 
-  public PatriLangViewerScreen(GoogleLinkList<NamedID> ids, DriveApi driveApi, User currentUser) {
+  public PatriLangViewerApp(GoogleLinkList<NamedID> ids, DriveApi driveApi, User currentUser) {
     super("PatriLang Viewer", 1_300, 800);
 
     this.htmlViewer = new HtmlViewer();

@@ -12,17 +12,18 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import lombok.SneakyThrows;
 import school.hei.patrimoine.google.api.GoogleApi;
-import school.hei.patrimoine.visualisation.swing.ihm.google.component.ButtonWithIcon;
-import school.hei.patrimoine.visualisation.swing.ihm.google.component.Screen;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.App;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.Screen;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.ButtonWithIcon;
 
-public class GoogleAuthScreen extends Screen {
+public class GoogleAuthApp extends Screen {
   private final GoogleApi googleApi;
 
   /**
    * Global instance of the scopes required by this quickstart. If modifying these scopes, delete
    * your previously saved tokens/ folder.
    */
-  public GoogleAuthScreen() {
+  public GoogleAuthApp() {
     super("Authentification Google", 700, 400);
     googleApi = new GoogleApi();
 
@@ -53,7 +54,7 @@ public class GoogleAuthScreen extends Screen {
   private ActionListener onSigning() {
     return e -> {
       var authDetails = handleGoogleSignIn();
-      invokeLater(() -> new GoogleSubmitScreen(authDetails));
+      invokeLater(() -> new GoogleSubmitApp(authDetails));
       dispose();
     };
   }
@@ -74,9 +75,8 @@ public class GoogleAuthScreen extends Screen {
   }
 
   public static void main(String[] args) {
+    App.setup();
     FlatLightLaf.setup();
-    System.setProperty("awt.useSystemAAFontSettings", "on");
-    System.setProperty("swing.aatext", "true");
-    SwingUtilities.invokeLater(GoogleAuthScreen::new);
+    SwingUtilities.invokeLater(GoogleAuthApp::new);
   }
 }

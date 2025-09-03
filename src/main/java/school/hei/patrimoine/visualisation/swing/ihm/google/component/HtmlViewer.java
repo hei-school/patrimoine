@@ -1,6 +1,6 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.component;
 
-import static school.hei.patrimoine.visualisation.swing.ihm.google.PatriLangViewerScreen.ViewMode;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.PatriLangViewerApp.ViewMode;
 
 import java.awt.*;
 import java.io.File;

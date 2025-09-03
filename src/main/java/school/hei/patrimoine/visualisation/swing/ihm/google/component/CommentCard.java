@@ -6,6 +6,7 @@ import java.time.format.DateTimeFormatter;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import school.hei.patrimoine.google.model.Comment;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
 
 public class CommentCard extends JPanel {
   private final JFrame owner;
@@ -86,20 +87,20 @@ public class CommentCard extends JPanel {
     return buttons;
   }
 
-  private Button replyBtn() {
-    var replyBtn = new Button("Répondre");
+  private school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button replyBtn() {
+    var replyBtn = new school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button("Répondre");
     replyBtn.addActionListener(e -> System.out.println("temp"));
     return replyBtn;
   }
 
-  private Button resolveBtn() {
-    var resolveBtn = new Button("Résoudre");
+  private school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button resolveBtn() {
+    var resolveBtn = new school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button("Résoudre");
     resolveBtn.addActionListener(e -> System.out.println("temp"));
     return resolveBtn;
   }
 
-  private Button showRepliesBtn() {
-    var showRepliesBtn = new Button("Réponses (" + comment.replies().size() + ")");
+  private school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button showRepliesBtn() {
+    var showRepliesBtn = new school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button("Réponses (" + comment.replies().size() + ")");
     showRepliesBtn.addActionListener(e -> showRepliesDialog(comment));
     return showRepliesBtn;
   }

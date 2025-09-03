@@ -17,15 +17,15 @@ import lombok.extern.slf4j.Slf4j;
 import school.hei.patrimoine.google.*;
 import school.hei.patrimoine.google.api.*;
 import school.hei.patrimoine.google.exception.GoogleIntegrationException;
-import school.hei.patrimoine.visualisation.swing.ihm.google.component.Button;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.Dialog;
-import school.hei.patrimoine.visualisation.swing.ihm.google.component.Screen;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.Screen;
 import school.hei.patrimoine.visualisation.swing.ihm.google.downloader.GoogleLinkListDownloader;
 import school.hei.patrimoine.visualisation.swing.ihm.google.downloader.PatriLangGoogleLinkListDownloader;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.*;
 
 @Slf4j
-public class GoogleLinkVerifierScreen extends Screen {
+public class GoogleLinkVerifierApp extends Screen {
   private static final String DRIVE_URL_PREFIX = "https://drive.google.com/";
 
   private final DriveApi driveApi;
@@ -42,7 +42,7 @@ public class GoogleLinkVerifierScreen extends Screen {
   private final List<JTextField> inputFields;
   private final GoogleLinkList<NamedString> linksData;
 
-  public GoogleLinkVerifierScreen(
+  public GoogleLinkVerifierApp(
       AuthDetails authDetails, GoogleLinkList<NamedString> linksData, JFrame jFrame) {
     super("Liens Google", 1200, 1000);
 
@@ -200,7 +200,7 @@ public class GoogleLinkVerifierScreen extends Screen {
             loadingDialog.dispose();
             try {
               var ids = get();
-              invokeLater(() -> new PatriLangViewerScreen(ids, driveApi, authDetails.user()));
+              invokeLater(() -> new PatriLangViewerApp(ids, driveApi, authDetails.user()));
               dispose();
             } catch (Exception e) {
               showErrorPage(e.getMessage());

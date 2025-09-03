@@ -4,7 +4,7 @@ import static javax.swing.JOptionPane.showMessageDialog;
 import static javax.swing.SwingUtilities.invokeLater;
 import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
 import static school.hei.patrimoine.patrilang.PatriLangTranspiler.transpileToutCas;
-import static school.hei.patrimoine.visualisation.swing.ihm.google.PatriLangViewerScreen.ViewMode;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.PatriLangViewerApp.ViewMode;
 
 import java.awt.*;
 import java.nio.file.Files;
@@ -13,6 +13,7 @@ import lombok.Getter;
 import school.hei.patrimoine.cas.CasSetAnalyzer;
 import school.hei.patrimoine.google.api.DriveApi;
 import school.hei.patrimoine.google.model.User;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
 
 @Getter
 public class AppBar extends JPanel {
@@ -46,9 +47,9 @@ public class AppBar extends JPanel {
 
   private JPanel leftControls(JFrame owner) {
     var modeSelect = new JComboBox<>(ViewMode.values());
-    var saveButton = new Button("Enregistrer");
-    var graphicButton = new Button("Graphiques");
-    var syncButton = new Button("Synchroniser avec Drive");
+    var saveButton = new school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button("Enregistrer");
+    var graphicButton = new school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button("Graphiques");
+    var syncButton = new school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button("Synchroniser avec Drive");
 
     var leftControls = new JPanel(new FlowLayout(FlowLayout.LEFT));
     leftControls.add(modeSelect);
@@ -174,7 +175,7 @@ public class AppBar extends JPanel {
   }
 
   private JPanel rightControls() {
-    var increaseFontButton = new Button("+");
+    var increaseFontButton = new school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button("+");
     var decreaseFontButton = new Button("-");
 
     var fontSizeField = new JTextField(String.valueOf(controlledFontSize), 3);

@@ -11,6 +11,7 @@ import school.hei.patrimoine.google.api.CommentApi;
 import school.hei.patrimoine.google.api.DriveApi;
 import school.hei.patrimoine.google.cache.ApiCache;
 import school.hei.patrimoine.google.model.Comment;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
 
 public class CommentSideBar extends JPanel {
   private String currentFileId;

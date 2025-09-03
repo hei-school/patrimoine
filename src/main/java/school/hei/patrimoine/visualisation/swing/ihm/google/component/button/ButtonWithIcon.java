@@ -1,4 +1,4 @@
-package school.hei.patrimoine.visualisation.swing.ihm.google.component;
+package school.hei.patrimoine.visualisation.swing.ihm.google.component.button;
 
 import java.awt.*;
 import javax.swing.*;

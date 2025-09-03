@@ -13,21 +13,21 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import javax.swing.*;
 import lombok.extern.slf4j.Slf4j;
-import school.hei.patrimoine.visualisation.swing.ihm.google.component.Button;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.Dialog;
-import school.hei.patrimoine.visualisation.swing.ihm.google.component.Screen;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.Screen;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.GoogleDocsLinkIdInputVerifier;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.GoogleLinkList;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.NamedString;
 
 @Slf4j
-public class GoogleSubmitScreen extends Screen {
+public class GoogleSubmitApp extends Screen {
   private final AuthDetails authDetails;
   private final JPanel inputPanel;
   private final JTextArea inputField;
   private final GoogleDocsLinkIdInputVerifier linkIdInputVerifier;
 
-  public GoogleSubmitScreen(AuthDetails authDetails) {
+  public GoogleSubmitApp(AuthDetails authDetails) {
     super("Soumission des liens Google", 1200, 1000);
 
     this.authDetails = authDetails;
@@ -99,7 +99,7 @@ public class GoogleSubmitScreen extends Screen {
             loadingDialog.dispose();
             try {
               var ids = get();
-              invokeLater(() -> new GoogleLinkVerifierScreen(authDetails, ids, owner));
+              invokeLater(() -> new GoogleLinkVerifierApp(authDetails, ids, owner));
               setVisible(false);
             } catch (InterruptedException | ExecutionException e) {
               throw new RuntimeException(e);
