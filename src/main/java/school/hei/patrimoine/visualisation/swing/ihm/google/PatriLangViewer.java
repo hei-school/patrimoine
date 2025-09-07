@@ -8,6 +8,7 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.App;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.Page;
 import school.hei.patrimoine.visualisation.swing.ihm.google.pages.LinkValidityPage;
 import school.hei.patrimoine.visualisation.swing.ihm.google.pages.LoginPage;
+import school.hei.patrimoine.visualisation.swing.ihm.google.pages.PatriLangFilesPage;
 import school.hei.patrimoine.visualisation.swing.ihm.google.pages.SubmitLinkPage;
 
 public class PatriLangViewer extends App {
@@ -22,7 +23,8 @@ public class PatriLangViewer extends App {
 
   @Override
   protected Set<Page> pages() {
-    return Set.of(new LoginPage(), new SubmitLinkPage(), new LinkValidityPage());
+    return Set.of(
+        new LoginPage(), new SubmitLinkPage(), new LinkValidityPage(), new PatriLangFilesPage());
   }
 
   public static void main(String[] args) {

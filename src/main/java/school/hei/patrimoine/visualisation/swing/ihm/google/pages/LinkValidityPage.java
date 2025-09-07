@@ -115,7 +115,7 @@ public class LinkValidityPage extends Page {
             DriveApi driveApi = AppContext.getDefault().getData("drive-api");
             var downloader = new DriveNamedIdDownloader(driveApi);
 
-            downloader.apply(namedIds);
+            // downloader.apply(namedIds);
             AppContext.getDefault().setData("named-ids", namedIds);
 
             return null;
@@ -125,7 +125,7 @@ public class LinkValidityPage extends Page {
           protected void done() {
             loadingDialog.dispose();
             try {
-              PageManager.navigateTo(LinkValidityPage.PAGE_NAME);
+              PageManager.navigateTo(PatriLangFilesPage.PAGE_NAME);
             } catch (Exception e) {
               log.info(e.getMessage());
 
