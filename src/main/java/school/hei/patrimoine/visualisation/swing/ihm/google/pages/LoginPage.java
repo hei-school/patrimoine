@@ -1,9 +1,5 @@
-package school.hei.patrimoine.visualisation.swing.ihm.google;
+package school.hei.patrimoine.visualisation.swing.ihm.google.pages;
 
-import static javax.swing.SwingUtilities.invokeLater;
-import static school.hei.patrimoine.google.api.GoogleApi.AuthDetails;
-
-import com.formdev.flatlaf.FlatLightLaf;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.io.IOException;
@@ -11,20 +7,19 @@ import java.util.Objects;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import lombok.SneakyThrows;
+import school.hei.patrimoine.google.api.DriveApi;
 import school.hei.patrimoine.google.api.GoogleApi;
-import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.App;
-import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.Screen;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.AppContext;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.Page;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.PageManager;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.ButtonWithIcon;
 
-public class GoogleAuthApp extends Screen {
+public class LoginPage extends Page {
   private final GoogleApi googleApi;
+  public static final String PAGE_NAME = "login";
 
-  /**
-   * Global instance of the scopes required by this quickstart. If modifying these scopes, delete
-   * your previously saved tokens/ folder.
-   */
-  public GoogleAuthApp() {
-    super("Authentification Google", 700, 400);
+  public LoginPage() {
+    super(PAGE_NAME);
     googleApi = new GoogleApi();
 
     setLayout(new BorderLayout());
@@ -51,11 +46,14 @@ public class GoogleAuthApp extends Screen {
     add(centerPanel, BorderLayout.CENTER);
   }
 
+  @SneakyThrows
   private ActionListener onSigning() {
     return e -> {
-      var authDetails = handleGoogleSignIn();
-      invokeLater(() -> new GoogleSubmitApp(authDetails));
-      dispose();
+      var authDetails = googleApi.requestAuthentication();
+      AppContext.getDefault().setData("auth-details", authDetails);
+      AppContext.getDefault().setData("connected-user", authDetails.user());
+      AppContext.getDefault().setData("drive-api", new DriveApi(authDetails));
+      PageManager.navigateTo(SubmitLinkPage.PAGE_NAME);
     };
   }
 
@@ -67,16 +65,5 @@ public class GoogleAuthApp extends Screen {
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
-  }
-
-  @SneakyThrows
-  private AuthDetails handleGoogleSignIn() {
-    return googleApi.requestAuthentication();
-  }
-
-  public static void main(String[] args) {
-    App.setup();
-    FlatLightLaf.setup();
-    SwingUtilities.invokeLater(GoogleAuthApp::new);
   }
 }

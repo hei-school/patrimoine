@@ -162,7 +162,7 @@ public class GrapheurEvolutionPatrimoine
   private Color color(String nom) {
     var nomEnNb = Arrays.stream(nom.split("")).mapToInt(s -> s.charAt(0)).sum();
 
-    // do not use same value for rgb as it will cause gray-scaled images in most cases
+    // do not use same link for rgb as it will cause gray-scaled images in most cases
     var r = nomEnNb % 255;
     var g = 255 - r;
     var b = (128 + nomEnNb) % 255;

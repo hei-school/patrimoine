@@ -1,32 +1,28 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.component.app;
 
+import java.util.Set;
 import lombok.Getter;
 
-import java.util.Set;
-
 @Getter
-public class App extends Screen {
-    private final AppContext context;
-    private final PageManager pageManager;
+public abstract class App extends Screen {
+  private final AppContext context;
+  private final PageManager pageManager;
 
-    public App(String windowTitle, String defaultPage,  int width, int height, Set<Page> pages) {
-        super(windowTitle, width, height);
+  public App(String contextId, String windowTitle, int width, int height) {
+    super(windowTitle, width, height);
 
-        pageManager = new PageManager(defaultPage, pages);
-        context = AppContext.createAsDefault(AppContext.DEFAULT_CONTEXT_ID_VALUE, this);
+    context = AppContext.createAsDefault(contextId, this);
+    pageManager = new PageManager(defaultPageName(), pages());
 
-        add(pageManager);
-    }
+    add(pageManager);
+  }
 
-    public App(String contextId, String windowTitle, String defaultPage,  int width, int height, Set<Page> pages) {
-        super(windowTitle, width, height);
+  protected abstract Set<Page> pages();
 
-        pageManager = new PageManager(defaultPage, pages);
-        context = AppContext.create(contextId, this);
-    }
+  protected abstract String defaultPageName();
 
-    public static void setup(){
-        System.setProperty("awt.useSystemAAFontSettings", "on");
-        System.setProperty("swing.aatext", "true");
-    }
+  public static void setup() {
+    System.setProperty("awt.useSystemAAFontSettings", "on");
+    System.setProperty("swing.aatext", "true");
+  }
 }

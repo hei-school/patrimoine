@@ -9,21 +9,21 @@ class GoogleDriveLinkIdParserTest {
 
   @Test
   void extract_google_drive_id_from_link_ok() {
-    GoogleDriveLinkIdParser googleDriveLinkIdParser = new GoogleDriveLinkIdParser();
+    DriveLinkIdParser driveLinkIdParser = new DriveLinkIdParser();
     String validLink = "https://drive.google.com/file/d/1abc2DEF3ghi_456JKL/view?usp=drive_link";
 
-    String result = googleDriveLinkIdParser.apply(validLink);
+    String result = driveLinkIdParser.apply(validLink);
 
     assertEquals("1abc2DEF3ghi_456JKL", result);
   }
 
   @Test
   void extract_google_drive_id_from_link_ko() {
-    GoogleDriveLinkIdParser googleDriveLinkIdParser = new GoogleDriveLinkIdParser();
+    DriveLinkIdParser driveLinkIdParser = new DriveLinkIdParser();
     String invalidLink = "https://example.com/invalid-link";
 
     Exception exception =
-        assertThrows(RuntimeException.class, () -> googleDriveLinkIdParser.apply(invalidLink));
+        assertThrows(RuntimeException.class, () -> driveLinkIdParser.apply(invalidLink));
 
     assertEquals("Invalid Google Drive Link: " + invalidLink, exception.getMessage());
   }

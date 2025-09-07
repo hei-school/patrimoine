@@ -1,7 +1,6 @@
 package school.hei.patrimoine.google.api;
 
 import static com.google.api.client.googleapis.javanet.GoogleNetHttpTransport.newTrustedTransport;
-import static com.google.api.services.docs.v1.DocsScopes.DOCUMENTS_READONLY;
 import static com.google.api.services.drive.DriveScopes.DRIVE;
 import static java.util.Objects.requireNonNull;
 import static school.hei.patrimoine.compiler.CompilerUtilities.USER_HOME;
@@ -31,9 +30,11 @@ public class GoogleApi {
   static final String APPLICATION_NAME = "patrimoine";
   static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
 
-  private static final List<String> SCOPES = List.of(DOCUMENTS_READONLY, DRIVE);
+  private static final List<String> SCOPES = List.of(DRIVE);
+
   private static final String TOKENS_DIRECTORY_PATH =
       USER_HOME + "/.patrimoine-ricka/google/tokens";
+
   private static final String CREDENTIALS_FILE_PATH =
       USER_HOME + "/.patrimoine-ricka/google/client.json";
 
