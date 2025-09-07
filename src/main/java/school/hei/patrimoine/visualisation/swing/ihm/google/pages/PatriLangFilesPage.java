@@ -11,6 +11,7 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.Html
 
 public class PatriLangFilesPage extends Page {
   public static final String PAGE_NAME = "patrilang-files";
+
   private AppBar appBar;
   private HtmlViewer htmlViewer;
   private FileSideBar fileSideBar;
@@ -30,9 +31,9 @@ public class PatriLangFilesPage extends Page {
   }
 
   private void init() {
-    this.commentSideBar = new CommentSideBar();
     this.appBar = new AppBar(this::onStateChange);
     this.fileSideBar = new FileSideBar(this::onStateChange);
+    this.commentSideBar = new CommentSideBar(fileSideBar);
     this.htmlViewer = new HtmlViewer(appBar, fileSideBar);
 
     add(appBar, BorderLayout.NORTH);
@@ -45,7 +46,7 @@ public class PatriLangFilesPage extends Page {
 
     var rightSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
     rightSplit.setLeftComponent(htmlViewer.toScrollPane());
-    rightSplit.setRightComponent(commentSideBar);
+    rightSplit.setRightComponent(commentSideBar.toScrollPane());
     rightSplit.setDividerLocation(700);
 
     horizontalSplit.setRightComponent(rightSplit);
@@ -56,5 +57,6 @@ public class PatriLangFilesPage extends Page {
 
   private void onStateChange() {
     htmlViewer.update();
+    commentSideBar.update();
   }
 }

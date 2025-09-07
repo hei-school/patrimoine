@@ -16,16 +16,15 @@ public class AppBar extends JPanel {
   private int controlledFontSize;
   private final Runnable stateHandler;
 
-  public AppBar(Runnable updateUICallback) {
+  public AppBar(Runnable stateHandler) {
     super(new BorderLayout());
 
     this.controlledFontSize = 14;
     this.currentMode = ViewMode.VIEW;
-    this.stateHandler = updateUICallback;
+    this.stateHandler = stateHandler;
 
     add(leftControls(), BorderLayout.WEST);
-    add(rightControls(), BorderLayout.CENTER);
-    add(createUserInfoPanel(), BorderLayout.EAST);
+    add(rightControls(), BorderLayout.EAST);
   }
 
   private JPanel leftControls() {
@@ -96,6 +95,7 @@ public class AppBar extends JPanel {
     rightControls.add(decreaseFontButton);
     rightControls.add(fontSizeField);
     rightControls.add(increaseFontButton);
+    rightControls.add(createUserInfoPanel());
 
     return rightControls;
   }

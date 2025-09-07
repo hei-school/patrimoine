@@ -105,7 +105,7 @@ public class LinkValidityPage extends Page {
   }
 
   private void downloadFilesInBackground() {
-    var loadingDialog = new Dialog("Traitement...", 300, 200);
+var loadingDialog = new Dialog("Traitement...", 300, 100);
 
     SwingWorker<Void, Void> worker =
         new SwingWorker<>() {
