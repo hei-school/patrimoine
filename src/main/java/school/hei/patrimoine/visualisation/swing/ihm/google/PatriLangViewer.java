@@ -6,10 +6,7 @@ import com.formdev.flatlaf.FlatLightLaf;
 import java.util.Set;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.App;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.Page;
-import school.hei.patrimoine.visualisation.swing.ihm.google.pages.LinkValidityPage;
-import school.hei.patrimoine.visualisation.swing.ihm.google.pages.LoginPage;
-import school.hei.patrimoine.visualisation.swing.ihm.google.pages.PatriLangFilesPage;
-import school.hei.patrimoine.visualisation.swing.ihm.google.pages.SubmitLinkPage;
+import school.hei.patrimoine.visualisation.swing.ihm.google.pages.*;
 
 public class PatriLangViewer extends App {
   public PatriLangViewer() {
@@ -24,7 +21,7 @@ public class PatriLangViewer extends App {
   @Override
   protected Set<Page> pages() {
     return Set.of(
-        new LoginPage(), new SubmitLinkPage(), new LinkValidityPage(), new PatriLangFilesPage());
+        new LoginPage(), new SubmitLinkPage(), new LinkValidityPage(), new PatriLangFilesPage(), new RecoupementPage());
   }
 
   public static void main(String[] args) {

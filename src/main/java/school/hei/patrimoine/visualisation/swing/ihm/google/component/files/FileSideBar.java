@@ -100,20 +100,28 @@ public class FileSideBar extends JPanel {
                 .map(NamedID::id);
     }
 
-    private static List<File> getPatriLangPlannedFiles() {
+    public static List<File> getPatriLangPlannedFiles() {
         return Arrays.stream(requireNonNull(new File(DOWNLOAD_PLANNED_FILE_DIRECTORY_PATH).listFiles()))
                 .filter(file -> file.getName().endsWith(TOUT_CAS_FILE_EXTENSION) || file.getName().endsWith(CAS_FILE_EXTENSION))
                 .toList();
     }
 
-    private static List<File> getPatriLangDoneFiles() {
+    public static List<File> getPatriLangDoneFiles() {
         return Arrays.stream(requireNonNull(new File(DOWNLOAD_DONE_FILE_DIRECTORY_PATH).listFiles()))
                 .filter(file -> file.getName().endsWith(TOUT_CAS_FILE_EXTENSION) || file.getName().endsWith(CAS_FILE_EXTENSION))
                 .toList();
     }
 
-    public static File getCasSetFile() {
+    public static File getPlannedCasSetFile() {
         return Arrays.stream(requireNonNull(new File(DOWNLOAD_PLANNED_FILE_DIRECTORY_PATH).listFiles())).filter(file -> file.getName().endsWith(TOUT_CAS_FILE_EXTENSION)).findFirst().orElseThrow();
+    }
+
+    public  static File getDoneCasSetFile() {
+        return Arrays.stream(requireNonNull(new File(DOWNLOAD_DONE_FILE_DIRECTORY_PATH).listFiles())).filter(file -> file.getName().endsWith(TOUT_CAS_FILE_EXTENSION)).findFirst().orElseThrow();
+    }
+
+    public static List<File> getPlannedPatrilangFilesWithoutCasSet(){
+        return getPatriLangPlannedFiles().stream().filter(file -> !file.getName().endsWith(TOUT_CAS_FILE_EXTENSION)).toList();
     }
 
     private record State(File currentFile, Boolean isPlanned){}

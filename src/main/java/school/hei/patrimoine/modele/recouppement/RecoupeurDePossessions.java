@@ -29,7 +29,7 @@ public record RecoupeurDePossessions(Set<Possession> prévus, Set<Possession> r�
         }).flatMap(Collection::stream).collect(toSet());
     }
 
-    public Set<Possession> getPossessionsExecutés() {
+    public Set<Possession> getPossessionsÉxecutés() {
         return prévus.stream().filter(p -> getEquivalent(réalités, p).isPresent()).collect(toSet());
     }
 
@@ -54,13 +54,29 @@ public record RecoupeurDePossessions(Set<Possession> prévus, Set<Possession> r�
             corrections.addAll(correctionGenerateur.nonPrévu(p));
         });
 
-        for (var prévu : getPossessionsExecutés()) {
+        for (var prévu : getPossessionsÉxecutés()) {
             var réalité = getEquivalent(réalités, prévu).get();
             var correctionGenerateur = CorrectionGenerateurFactory.make(prévu);
             corrections.addAll(correctionGenerateur.comparer(prévu, réalité));
         }
 
         return corrections;
+    }
+
+    public Set<Possession> getPossessionsÉxecutésAvecDifférences() {
+        return getPossessionsÉxecutés().stream().filter(not(prévu -> {
+            var réalité = getEquivalent(réalités, prévu).get();
+            var correctionGenerateur = CorrectionGenerateurFactory.make(prévu);
+            return correctionGenerateur.comparer(prévu, réalité).isEmpty();
+        })).collect(toSet());
+    }
+
+    public Set<Possession> getPossessionsÉxecutésSansDifférences() {
+        return getPossessionsÉxecutés().stream().filter(prévu -> {
+            var réalité = getEquivalent(réalités, prévu).get();
+            var correctionGenerateur = CorrectionGenerateurFactory.make(prévu);
+            return correctionGenerateur.comparer(prévu, réalité).isEmpty();
+        }).collect(toSet());
     }
 
     private static Optional<Possession> getEquivalent(Collection<Possession> possessions, Possession possession) {

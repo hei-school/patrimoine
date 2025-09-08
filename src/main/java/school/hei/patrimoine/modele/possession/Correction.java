@@ -9,15 +9,16 @@ public final class Correction extends Possession {
   private final Possession possession;
   private final CompteCorrection compteCorrection;
 
-  public Correction(FluxArgentCorrection fluxArgent) {
+  public Correction(FluxArgent fluxArgent) {
     super(
+
         String.format("Correction[p=%s,%s]", fluxArgent.getCompte().nom, fluxArgent.nom),
         fluxArgent.t,
         fluxArgent.valeurComptable);
     this.possession = fluxArgent.getCompte();
     this.compteCorrection = possession.getCompteCorrection();
 
-    new FluxArgentCorrection(
+    new FluxArgent(
         String.format(
             "Correction.Flux[compteCorrection=%s,%s]", compteCorrection.nom, fluxArgent.nom),
         compteCorrection.getCompte(),

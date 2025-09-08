@@ -3,7 +3,6 @@ package school.hei.patrimoine.modele.recouppement.generateur;
 import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.possession.Correction;
 import school.hei.patrimoine.modele.possession.FluxArgent;
-import school.hei.patrimoine.modele.possession.FluxArgentCorrection;
 
 import java.util.Set;
 
@@ -11,13 +10,13 @@ public class FluxArgentCorrectionGenerateur extends CorrectionGenerateurBase<Flu
     @Override
     public Set<Correction> nonPrévu(FluxArgent nonPrévu) {
         var compte = nonPrévu.getCompte();
-        return Set.of(new Correction(new FluxArgentCorrection(nonPrévu.nom(), compte, nonPrévu.t(), nonPrévu.getFluxMensuel().mult(-1))));
+        return Set.of(new Correction(new FluxArgent(nonPrévu.nom(), compte, nonPrévu.t(), nonPrévu.getFluxMensuel().mult(-1))));
     }
 
     @Override
     public Set<Correction> nonÉxecuté(FluxArgent nonÉxecuté) {
         var compte = nonÉxecuté.getCompte();
-        return Set.of(new Correction(new FluxArgentCorrection(nonÉxecuté.nom(), compte, nonÉxecuté.t(), nonÉxecuté.getFluxMensuel())));
+        return Set.of(new Correction(new FluxArgent(nonÉxecuté.nom(), compte, nonÉxecuté.t(), nonÉxecuté.getFluxMensuel())));
     }
 
     @Override
@@ -30,13 +29,13 @@ public class FluxArgentCorrectionGenerateur extends CorrectionGenerateurBase<Flu
 
             var fluxMensuelDiff = réalité.getFluxMensuel().minus(prévu.getFluxMensuel(), prévu.t());
             return Set.of(new Correction(
-                new FluxArgentCorrection(prévu.nom(), compte, prévu.t(), prévu.getFin(), prévu.getDateOperation(), fluxMensuelDiff)
+                new FluxArgent(prévu.nom(), compte, prévu.t(), prévu.getFin(), prévu.getDateOperation(), fluxMensuelDiff)
             ));
         }
 
         return Set.of(
-            new Correction(new FluxArgentCorrection(prévu.nom(), compte, prévu.t(), prévu.getFluxMensuel())),
-            new Correction(new FluxArgentCorrection(prévu.nom(), compte, prévu.t(), réalité.getFluxMensuel().mult(-1)))
+            new Correction(new FluxArgent(prévu.nom(), compte, prévu.t(), prévu.getFluxMensuel())),
+            new Correction(new FluxArgent(prévu.nom(), compte, prévu.t(), réalité.getFluxMensuel().mult(-1)))
         );
     }
 

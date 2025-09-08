@@ -46,30 +46,36 @@ public class SubmitLinkPage extends Page {
     private void addInputs() {
         var formPanel = new JPanel();
         formPanel.setLayout(new BoxLayout(formPanel, BoxLayout.Y_AXIS));
-        formPanel.setBorder(BorderFactory.createEmptyBorder(0, 50, 20, 50));
+        formPanel.setBorder(BorderFactory.createEmptyBorder(0, 40, 20, 50));
 
         var plannedLabel = new JLabel("Liens Prévu :");
-        plannedLabel.setFont(new Font("Arial", PLAIN, 16));
+        plannedLabel.setFont(new Font("Arial", Font.BOLD, 16));
+        plannedLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         formPanel.add(plannedLabel);
 
         plannedInput.setLineWrap(true);
         plannedInput.setWrapStyleWord(true);
-        plannedInput.setFont(new Font("Arial", PLAIN, 16));
+        plannedInput.setFont(new Font("Arial", Font.PLAIN, 16));
 
         var plannedScroll = new JScrollPane(plannedInput);
         plannedScroll.setBorder(BorderFactory.createEmptyBorder(5, 0, 20, 0));
+        plannedScroll.setAlignmentX(Component.LEFT_ALIGNMENT);
+        plannedScroll.setMaximumSize(new Dimension(Integer.MAX_VALUE, 300));
         formPanel.add(plannedScroll);
 
         var doneLabel = new JLabel("Liens Réalisé :");
-        doneLabel.setFont(new Font("Arial", PLAIN, 16));
+        doneLabel.setFont(new Font("Arial", Font.BOLD, 16));
+        doneLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         formPanel.add(doneLabel);
 
         doneInput.setLineWrap(true);
         doneInput.setWrapStyleWord(true);
-        doneInput.setFont(new Font("Arial", PLAIN, 16));
+        doneInput.setFont(new Font("Arial", Font.PLAIN, 16));
 
         var doneScroll = new JScrollPane(doneInput);
         doneScroll.setBorder(BorderFactory.createEmptyBorder(5, 0, 20, 0));
+        doneScroll.setAlignmentX(Component.LEFT_ALIGNMENT);
+        doneScroll.setMaximumSize(new Dimension(Integer.MAX_VALUE, 300));
         formPanel.add(doneScroll);
 
         var mainScroll = new JScrollPane(formPanel);

@@ -12,7 +12,7 @@ import school.hei.patrimoine.modele.Argent;
 @ToString(callSuper = true)
 @Slf4j
 @Getter
-public sealed class FluxArgent extends Possession permits FluxArgentCorrection {
+public final class FluxArgent extends Possession {
   @ToString.Exclude private final Compte compte;
   private final LocalDate debut;
   private final LocalDate fin;
