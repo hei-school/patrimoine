@@ -2,6 +2,7 @@ package school.hei.patrimoine.visualisation.swing.ihm.google.pages;
 
 import java.awt.*;
 import javax.swing.*;
+import lombok.Getter;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.AppContext;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.Page;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.AppBar;
@@ -9,6 +10,7 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.Comm
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.FileSideBar;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.HtmlViewer;
 
+@Getter
 public class PatriLangFilesPage extends Page {
   public static final String PAGE_NAME = "patrilang-files";
 
@@ -31,10 +33,25 @@ public class PatriLangFilesPage extends Page {
   }
 
   private void init() {
-    this.appBar = new AppBar(this::onStateChange);
     this.fileSideBar = new FileSideBar(this::onStateChange);
-    this.htmlViewer = new HtmlViewer(appBar, fileSideBar);
-    this.commentSideBar = new CommentSideBar(fileSideBar);
+
+    this.commentSideBar =
+        new CommentSideBar(
+            () -> getFileSideBar().getSelectedFile().orElse(null),
+            () -> getFileSideBar().getSelectedFileDriveId().orElse(null));
+
+    this.appBar =
+        new AppBar(
+            () -> getHtmlViewer().getText(),
+            () -> getFileSideBar().getSelectedFileDriveId().orElse(null),
+            () -> getFileSideBar().getSelectedFile().orElse(null),
+            this::onStateChange);
+
+    this.htmlViewer =
+        new HtmlViewer(
+            () -> getAppBar().getCurrentMode(),
+            () -> getAppBar().getControlledFontSize(),
+            () -> getFileSideBar().getSelectedFile().orElse(null));
 
     add(appBar, BorderLayout.NORTH);
     addMainSplitPane();

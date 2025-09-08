@@ -23,8 +23,7 @@ public record DriveApi(Drive driveService) {
             .build());
   }
 
-
-    public void update(String driveFileId, String mimeType, File localFile)
+  public void update(String driveFileId, String mimeType, File localFile)
       throws GoogleIntegrationException {
     try {
       var fileMetadata = new com.google.api.services.drive.model.File();
@@ -38,7 +37,8 @@ public record DriveApi(Drive driveService) {
     }
   }
 
-  public void download(String driveFileId, FileNameExtractor fileNameExtractor, String downloadPath) throws GoogleIntegrationException {
+  public void download(String driveFileId, FileNameExtractor fileNameExtractor, String downloadPath)
+      throws GoogleIntegrationException {
     var tempFile = new File(TEMP_DIRECTORY, "prefix_" + randomUUID());
 
     try (var inputStream = driveService.files().get(driveFileId).executeMediaAsInputStream();

@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 
-class GoogleDriveLinkIdParserTest {
+class DriveLinkIdParserTest {
 
   @Test
   void extract_google_drive_id_from_link_ok() {

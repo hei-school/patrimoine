@@ -6,15 +6,17 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.AppCon
 
 public class Dialog extends JDialog {
   public Dialog(String title, int width, int height) {
-    this(AppContext.getDefault().app(), title, width, height);
+    this(title, width, height, true);
   }
 
-  public Dialog(Frame owner, String title, int width, int height) {
-    super(owner, title, true);
+  public Dialog(String title, int width, int height, boolean withLabel) {
+    super(AppContext.getDefault().app(), title, true);
 
-    var label = new JLabel(title);
-    label.setHorizontalAlignment(SwingConstants.CENTER);
-    getContentPane().add(label, BorderLayout.CENTER);
+    if (withLabel) {
+      var label = new JLabel(title);
+      label.setHorizontalAlignment(SwingConstants.CENTER);
+      getContentPane().add(label, BorderLayout.CENTER);
+    }
 
     setLocationRelativeTo(null);
     setDefaultCloseOperation(DISPOSE_ON_CLOSE);

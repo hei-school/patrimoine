@@ -7,45 +7,46 @@ import javax.swing.border.EmptyBorder;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.PossessionRecoupée;
 
 public class PossessionRecoupéeCellRenderer extends JPanel implements ListCellRenderer<Object> {
-    private static final DateTimeFormatter DATE_FORMATTER =
-            DateTimeFormatter.ofPattern("dd/MM/yyyy");
+  private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
-    private final JLabel label;
+  private final JLabel label;
 
-    public PossessionRecoupéeCellRenderer() {
-        setLayout(new BorderLayout());
+  public PossessionRecoupéeCellRenderer() {
+    setLayout(new BorderLayout());
 
-        label = new JLabel();
-        label.setOpaque(true);
-        label.setBorder(new EmptyBorder(10, 10, 10, 10));
-        label.setFont(new Font("Arial", Font.PLAIN, 16));
+    label = new JLabel();
+    label.setOpaque(true);
+    label.setBorder(new EmptyBorder(10, 10, 10, 10));
+    label.setFont(new Font("Arial", Font.PLAIN, 16));
 
-        add(label, BorderLayout.CENTER);
-        setBorder(new EmptyBorder(0, 0, 8, 0));
-    }
+    add(label, BorderLayout.CENTER);
+    setBorder(new EmptyBorder(0, 0, 8, 0));
+  }
 
-    @Override
-    public Component getListCellRendererComponent(
-            JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+  @Override
+  public Component getListCellRendererComponent(
+      JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
 
-        if (value instanceof PossessionRecoupée recoupée) {
-            var dateStr = recoupée.possession().t().format(DATE_FORMATTER);
-            label.setText(dateStr + " - " + recoupée.possession().nom());
+    if (value instanceof PossessionRecoupée recoupée) {
+      var dateStr = recoupée.possession().t().format(DATE_FORMATTER);
+      var typeStr = recoupée.possession().getClass().getSimpleName(); // <-- type de la possession
+      label.setText(dateStr + " - " + recoupée.possession().nom() + " (" + typeStr + ")");
 
-            if (isSelected) {
-                label.setBackground(list.getSelectionBackground());
-                label.setForeground(list.getSelectionForeground());
-            } else {
-                switch (recoupée.status()) {
-                    case NON_PRÉVU -> label.setBackground(Color.RED);
-                    case NON_ÉXECUTÉ -> label.setBackground(Color.BLUE);
-                    case ÉXECUTÉ_AVEC_DIFFÉRENCE -> label.setBackground(Color.YELLOW);
-                    case ÉXECUTÉ_SANS_DIFFÉRENCE -> label.setBackground(Color.GREEN);
-                }
-                label.setForeground(Color.BLACK);
-            }
+      if (isSelected) {
+        label.setBackground(list.getSelectionBackground());
+        label.setForeground(list.getSelectionForeground());
+      } else {
+        switch (recoupée.status()) {
+          case NON_PRÉVU -> label.setBackground(Color.RED);
+          case NON_ÉXECUTÉ -> label.setBackground(Color.BLUE);
+          case ÉXECUTÉ_AVEC_CORRECTION -> label.setBackground(Color.YELLOW);
+          case ÉXECUTÉ_SANS_CORRECTION -> label.setBackground(Color.GREEN);
+          default -> label.setBackground(Color.LIGHT_GRAY);
         }
-
-        return this;
+        label.setForeground(Color.BLACK);
+      }
     }
+
+    return this;
+  }
 }

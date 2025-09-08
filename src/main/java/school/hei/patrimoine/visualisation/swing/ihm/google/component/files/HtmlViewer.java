@@ -3,18 +3,25 @@ package school.hei.patrimoine.visualisation.swing.ihm.google.component.files;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.component.files.AppBar.ViewMode;
 
 import java.awt.*;
+import java.io.File;
 import java.nio.file.Files;
+import java.util.function.Supplier;
 import javax.swing.*;
 import school.hei.patrimoine.visualisation.swing.ihm.google.utils.MarkdownToHtmlConverter;
 
 public class HtmlViewer extends JEditorPane {
+  private final Supplier<File> currentFileSupplier;
+  private final Supplier<ViewMode> currentModeSupplier;
+  private final Supplier<Integer> currentFontSizeSupplier;
   private final MarkdownToHtmlConverter markdownToHtmlConverter;
-  private final AppBar appBar;
-  private final FileSideBar fileSideBar;
 
-  public HtmlViewer(AppBar appBar, FileSideBar fileSideBar) {
-    this.appBar = appBar;
-    this.fileSideBar = fileSideBar;
+  public HtmlViewer(
+      Supplier<ViewMode> currentModeSupplier,
+      Supplier<Integer> currentFontSizeSupplier,
+      Supplier<File> currentFileSupplier) {
+    this.currentModeSupplier = currentModeSupplier;
+    this.currentFontSizeSupplier = currentFontSizeSupplier;
+    this.currentFileSupplier = currentFileSupplier;
     this.markdownToHtmlConverter = new MarkdownToHtmlConverter();
 
     addEmptyContent();
@@ -34,9 +41,9 @@ public class HtmlViewer extends JEditorPane {
   }
 
   public void update() {
-    var currentMode = appBar.getCurrentMode();
-    var currentFontSize = appBar.getControlledFontSize();
-    var currentFile = fileSideBar.getSelectedFile().orElse(null);
+    var currentMode = currentModeSupplier.get();
+    var currentFontSize = currentFontSizeSupplier.get();
+    var currentFile = currentFileSupplier.get();
 
     if (currentFile == null || !currentFile.exists()) {
       addEmptyContent();

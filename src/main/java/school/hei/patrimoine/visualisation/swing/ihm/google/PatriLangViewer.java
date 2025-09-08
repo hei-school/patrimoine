@@ -21,7 +21,11 @@ public class PatriLangViewer extends App {
   @Override
   protected Set<Page> pages() {
     return Set.of(
-        new LoginPage(), new SubmitLinkPage(), new LinkValidityPage(), new PatriLangFilesPage(), new RecoupementPage());
+        new LoginPage(),
+        new SubmitLinkPage(),
+        new LinkValidityPage(),
+        new PatriLangFilesPage(),
+        new RecoupementPage());
   }
 
   public static void main(String[] args) {

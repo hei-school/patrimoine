@@ -11,7 +11,6 @@ public final class Correction extends Possession {
 
   public Correction(FluxArgent fluxArgent) {
     super(
-
         String.format("Correction[p=%s,%s]", fluxArgent.getCompte().nom, fluxArgent.nom),
         fluxArgent.t,
         fluxArgent.valeurComptable);
