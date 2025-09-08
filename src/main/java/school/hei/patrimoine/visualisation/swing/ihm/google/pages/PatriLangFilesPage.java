@@ -33,8 +33,8 @@ public class PatriLangFilesPage extends Page {
   private void init() {
     this.appBar = new AppBar(this::onStateChange);
     this.fileSideBar = new FileSideBar(this::onStateChange);
-    this.commentSideBar = new CommentSideBar(fileSideBar);
     this.htmlViewer = new HtmlViewer(appBar, fileSideBar);
+    this.commentSideBar = new CommentSideBar(fileSideBar);
 
     add(appBar, BorderLayout.NORTH);
     addMainSplitPane();
@@ -42,7 +42,7 @@ public class PatriLangFilesPage extends Page {
 
   private void addMainSplitPane() {
     var horizontalSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-    horizontalSplit.setLeftComponent(fileSideBar.toScrollPane());
+    horizontalSplit.setLeftComponent(fileSideBar);
 
     var rightSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
     rightSplit.setLeftComponent(htmlViewer.toScrollPane());

@@ -19,14 +19,10 @@ public class CompilerUtilities {
   public static final String DOWNLOADS_DIRECTORY_PATH = USER_HOME + "/Downloads/drive";
   private static final String PATRIMOINE_JAR_NAME = "patrimoine-1.0-SNAPSHOT.jar";
 
-  public static final String PATRIMOINE_JAR_URL =
-      "https://drive.google.com/file/d/16sFnwlP_x7_00bc0ojfRH5e80KBQAMNb/view?usp=drive_link";
-
   public static final String PATRIMOINE_JAR_PATH =
       String.valueOf(Path.of(DOWNLOADS_DIRECTORY_PATH).resolve(PATRIMOINE_JAR_NAME));
 
   static {
-    // resetIfExist(DOWNLOADS_DIRECTORY_PATH);
     resetIfExist(COMPILE_DIR_NAME);
   }
 

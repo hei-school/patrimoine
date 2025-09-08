@@ -1,6 +1,5 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.component.app;
 
-import java.awt.*;
 import javax.swing.JPanel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

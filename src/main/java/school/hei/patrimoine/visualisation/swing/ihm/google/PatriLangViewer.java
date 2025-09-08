@@ -28,8 +28,8 @@ public class PatriLangViewer extends App {
   }
 
   public static void main(String[] args) {
-    FlatLightLaf.setup();
     App.setup();
+    FlatLightLaf.setup();
     invokeLater(PatriLangViewer::new);
   }
 }
