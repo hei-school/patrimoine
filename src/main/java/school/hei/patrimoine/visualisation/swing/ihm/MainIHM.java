@@ -43,7 +43,7 @@ public class MainIHM extends JFrame implements Observer {
   private final EvolutionPatrimoineSelectionnéIHM evolutionPatrimoineSelectionnéIHM;
   private final SelecteurGrapheConfIHM selecteurGrapheConfIHM;
 
-  public MainIHM(List<Patrimoine> patrimoines) {
+  public MainIHM(List<Patrimoine> patrimoines, int closeOperation) {
     List<Patrimoine> patrimoinesAvecPersonnes = new ArrayList<>();
     patrimoinesAvecPersonnes.addAll(patrimoines);
     patrimoinesAvecPersonnes.addAll(patrimoinesPersonnels(patrimoines));
@@ -61,8 +61,12 @@ public class MainIHM extends JFrame implements Observer {
         new EvolutionPatrimoineSelectionnéIHM(patrimoinesVisualisables, grapheConfObservable);
     this.selecteurGrapheConfIHM = new SelecteurGrapheConfIHM(grapheConfObservable);
 
-    configureFrame();
+    configureFrame(closeOperation);
     configureContentPane();
+  }
+
+  public MainIHM(List<Patrimoine> patrimoines) {
+    this(patrimoines, EXIT_ON_CLOSE);
   }
 
   private static Set<Patrimoine> patrimoinesPersonnels(List<Patrimoine> patrimoines) {
@@ -74,9 +78,10 @@ public class MainIHM extends JFrame implements Observer {
   }
 
   @SneakyThrows
-  private void configureFrame() {
+  @SuppressWarnings("all")
+  private void configureFrame(int closeOperation) {
     setTitle();
-    setDefaultCloseOperation(EXIT_ON_CLOSE);
+    setDefaultCloseOperation(closeOperation);
     pack();
     setSize(getDefaultToolkit().getScreenSize());
     setResizable(true);

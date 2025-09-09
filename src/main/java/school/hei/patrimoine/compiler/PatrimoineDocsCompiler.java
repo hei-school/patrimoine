@@ -1,8 +1,8 @@
 package school.hei.patrimoine.compiler;
 
 import static javax.tools.ToolProvider.getSystemJavaCompiler;
+import static school.hei.patrimoine.compiler.CompilerUtilities.COMPILE_DIR_NAME;
 import static school.hei.patrimoine.compiler.JavaFileNameExtractor.JAVA_FILE_EXTENSION;
-import static school.hei.patrimoine.google.GoogleApi.COMPILE_DIR_NAME;
 
 import java.io.File;
 import java.net.URL;
@@ -12,19 +12,22 @@ import java.nio.file.Path;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import school.hei.patrimoine.modele.Patrimoine;
 
+@Slf4j
 public class PatrimoineDocsCompiler implements BiFunction<String, String, Patrimoine> {
 
   static {
-    File tokensDirectory = new File(COMPILE_DIR_NAME);
-    if (!tokensDirectory.exists()) {
-      tokensDirectory.mkdirs();
+    var compileDirectory = new File(COMPILE_DIR_NAME);
+    if (!compileDirectory.exists() && !compileDirectory.mkdirs()) {
+      log.warn("Failed to create directory {}", compileDirectory.getAbsolutePath());
     }
   }
 
-  @SneakyThrows
   @Override
+  @SneakyThrows
+  @SuppressWarnings("unchecked")
   public Patrimoine apply(String filename, String javaSource) {
     var ioDirPath = Path.of(COMPILE_DIR_NAME);
     var sourcePath = Path.of(ioDirPath + "/" + filename);
