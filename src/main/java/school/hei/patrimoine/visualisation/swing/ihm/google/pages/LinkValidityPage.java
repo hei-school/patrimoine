@@ -1,7 +1,6 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.pages;
 
 import static java.awt.Font.BOLD;
-import static javax.swing.JOptionPane.showMessageDialog;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -10,15 +9,13 @@ import javax.swing.*;
 import lombok.extern.slf4j.Slf4j;
 import school.hei.patrimoine.google.DriveLinkIdParser;
 import school.hei.patrimoine.google.api.DriveApi;
-import school.hei.patrimoine.google.exception.GoogleIntegrationException;
-import school.hei.patrimoine.visualisation.swing.ihm.google.component.Dialog;
-import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.AppContext;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.Page;
-import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.PageManager;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.NavigateButton;
 import school.hei.patrimoine.visualisation.swing.ihm.google.downloader.DriveNamedIdDownloader;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.*;
+import school.hei.patrimoine.visualisation.swing.ihm.google.utils.AsyncTask;
+import school.hei.patrimoine.visualisation.swing.ihm.google.utils.MessageDialog;
 
 @Slf4j
 public class LinkValidityPage extends Page {
@@ -49,7 +46,7 @@ public class LinkValidityPage extends Page {
     addNamedLinksLists();
     addSubmitButton();
 
-    subscribe("named-links");
+    globalState().subscribe("named-links", this::test);
   }
 
   private void addTitle() {
@@ -116,19 +113,19 @@ public class LinkValidityPage extends Page {
     return returnButton;
   }
 
-  @Override
-  public void update(AppContext appContext) {
-    GoogleLinkList<NamedLink> links = appContext.getData("named-links");
+  protected void test() {
+    GoogleLinkList<NamedLink> links = globalState().get("named-links");
 
     plannedNamedLinksModel.clear();
     doneNamedLinksModel.clear();
 
     links.planned().forEach(plannedNamedLinksModel::addElement);
     links.done().forEach(doneNamedLinksModel::addElement);
+    super.update();
   }
 
   private GoogleLinkList<NamedID> parseNamedIds() {
-    GoogleLinkList<NamedLink> namedLinks = AppContext.getDefault().getData("named-links");
+    GoogleLinkList<NamedLink> namedLinks = globalState().get("named-links");
 
     List<NamedID> plannedIds = new ArrayList<>();
     List<NamedID> doneIds = new ArrayList<>();
@@ -148,42 +145,23 @@ public class LinkValidityPage extends Page {
   }
 
   private void downloadFilesInBackground() {
-    var loadingDialog = new Dialog("Traitement...", 300, 100);
+    AsyncTask.<Void>builder()
+        .task(
+            () -> {
+              var namedIds = parseNamedIds();
+              DriveApi driveApi = globalState().get("drive-api");
+              var downloader = new DriveNamedIdDownloader(driveApi);
 
-    SwingWorker<Void, Void> worker =
-        new SwingWorker<>() {
-          @Override
-          protected Void doInBackground() throws GoogleIntegrationException {
-            var namedIds = parseNamedIds();
-            DriveApi driveApi = AppContext.getDefault().getData("drive-api");
-            var downloader = new DriveNamedIdDownloader(driveApi);
+              // downloader.apply(namedIds);
 
-            // downloader.apply(namedIds);
-
-            AppContext.getDefault().setData("named-ids", namedIds);
-
-            return null;
-          }
-
-          @Override
-          protected void done() {
-            loadingDialog.dispose();
-            try {
-              PageManager.navigateTo(PatriLangFilesPage.PAGE_NAME);
-            } catch (Exception e) {
-              log.info(e.getMessage());
-
-              showMessageDialog(
-                  AppContext.getDefault().app(),
-                  "Veuillez vérifier le contenu de vos documents",
-                  "Erreur",
-                  JOptionPane.ERROR_MESSAGE);
-            }
-          }
-        };
-
-    worker.execute();
-    loadingDialog.setVisible(true);
+              globalState().update("named-ids", namedIds);
+              return null;
+            })
+        .onSuccess(result -> pageManager().navigate(PatriLangFilesPage.PAGE_NAME))
+        .onError(
+            e -> MessageDialog.error("Erreur", "Veuillez vérifier le contenu de vos documents"))
+        .build()
+        .execute();
   }
 
   private static class NameLinkRenderer extends JPanel implements ListCellRenderer<NamedLink> {

@@ -1,31 +1,27 @@
-package school.hei.patrimoine.visualisation.swing.ihm.google.component.files;
+package school.hei.patrimoine.visualisation.swing.ihm.google.component;
 
-import static school.hei.patrimoine.visualisation.swing.ihm.google.component.files.AppBar.ViewMode;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.component.AppBar.ViewMode;
 
 import java.awt.*;
 import java.io.File;
 import java.nio.file.Files;
-import java.util.function.Supplier;
+import java.util.Set;
 import javax.swing.*;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
 import school.hei.patrimoine.visualisation.swing.ihm.google.utils.MarkdownToHtmlConverter;
 
 public class HtmlViewer extends JEditorPane {
-  private final Supplier<File> currentFileSupplier;
-  private final Supplier<ViewMode> currentModeSupplier;
-  private final Supplier<Integer> currentFontSizeSupplier;
+  private final State state;
   private final MarkdownToHtmlConverter markdownToHtmlConverter;
 
-  public HtmlViewer(
-      Supplier<ViewMode> currentModeSupplier,
-      Supplier<Integer> currentFontSizeSupplier,
-      Supplier<File> currentFileSupplier) {
-    this.currentModeSupplier = currentModeSupplier;
-    this.currentFontSizeSupplier = currentFontSizeSupplier;
-    this.currentFileSupplier = currentFileSupplier;
+  public HtmlViewer(State state) {
+    this.state = state;
     this.markdownToHtmlConverter = new MarkdownToHtmlConverter();
 
     addEmptyContent();
     setBackground(new Color(255, 248, 220));
+
+    state.subscribe(Set.of("viewMode", "fontSize", "selectedFile"), this::update);
   }
 
   private void addEmptyContent() {
@@ -41,9 +37,9 @@ public class HtmlViewer extends JEditorPane {
   }
 
   public void update() {
-    var currentMode = currentModeSupplier.get();
-    var currentFontSize = currentFontSizeSupplier.get();
-    var currentFile = currentFileSupplier.get();
+    ViewMode currentMode = state.get("viewMode");
+    File currentFile = state.get("selectedFile");
+    int currentFontSize = state.get("fontSize");
 
     if (currentFile == null || !currentFile.exists()) {
       addEmptyContent();

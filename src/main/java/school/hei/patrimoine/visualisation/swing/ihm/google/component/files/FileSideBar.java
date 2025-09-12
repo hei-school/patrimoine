@@ -10,21 +10,23 @@ import java.awt.*;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import javax.swing.*;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.AppContext;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.GoogleLinkList;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.NamedID;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
 
 public class FileSideBar extends JPanel {
+  private final State state;
   private final JList<File> plannedList;
   private final JList<File> doneList;
-  private State state;
 
-  public FileSideBar(Runnable stateHandler) {
+  public FileSideBar(State state) {
     super(new BorderLayout());
 
-    this.state = new State(null, null);
+    this.state = state;
     this.plannedList = new JList<>(new FileListModel(getPatriLangPlannedFiles()));
     this.doneList = new JList<>(new FileListModel(getPatriLangDoneFiles()));
 
@@ -39,9 +41,15 @@ public class FileSideBar extends JPanel {
           if (!e.getValueIsAdjusting()) {
             var selected = plannedList.getSelectedValue();
             if (selected != null) {
-              state = new State(selected, true);
+              this.state.update(
+                  Map.of(
+                      "selectedFile",
+                      selected,
+                      "selectedFileId",
+                      getSelectedFileDriveId(selected, true).orElse(""),
+                      "isPlannedSelectedFile",
+                      true));
               doneList.clearSelection();
-              stateHandler.run();
             }
           }
         });
@@ -51,9 +59,15 @@ public class FileSideBar extends JPanel {
           if (!e.getValueIsAdjusting()) {
             var selected = doneList.getSelectedValue();
             if (selected != null) {
-              state = new State(selected, false);
+              this.state.update(
+                  Map.of(
+                      "selectedFile",
+                      selected,
+                      "selectedFileId",
+                      getSelectedFileDriveId(selected, false).orElse(""),
+                      "isPlannedSelectedFile",
+                      false));
               plannedList.clearSelection();
-              stateHandler.run();
             }
           }
         });
@@ -76,19 +90,14 @@ public class FileSideBar extends JPanel {
     add(panel, BorderLayout.CENTER);
   }
 
-  public Optional<File> getSelectedFile() {
-    return Optional.ofNullable(state.currentFile());
-  }
-
-  public Optional<String> getSelectedFileDriveId() {
+  private Optional<String> getSelectedFileDriveId(File currentFile, boolean isPlannedSelectedFile) {
     GoogleLinkList<NamedID> ids = AppContext.getDefault().getData("named-ids");
 
-    var currentFile = state.currentFile();
     if (currentFile == null) {
       return Optional.empty();
     }
 
-    var namedIds = state.isPlanned() ? ids.planned() : ids.done();
+    var namedIds = isPlannedSelectedFile ? ids.planned() : ids.done();
     return namedIds.stream()
         .filter(
             driveNamedId -> {
@@ -140,6 +149,4 @@ public class FileSideBar extends JPanel {
         .filter(file -> !file.getName().endsWith(TOUT_CAS_FILE_EXTENSION))
         .toList();
   }
-
-  private record State(File currentFile, Boolean isPlanned) {}
 }

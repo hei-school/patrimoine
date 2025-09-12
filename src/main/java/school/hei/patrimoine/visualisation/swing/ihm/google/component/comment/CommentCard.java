@@ -1,4 +1,4 @@
-package school.hei.patrimoine.visualisation.swing.ihm.google.component.files;
+package school.hei.patrimoine.visualisation.swing.ihm.google.component.comment;
 
 import java.awt.*;
 import java.time.ZoneId;
@@ -114,7 +114,9 @@ public class CommentCard extends JPanel {
   }
 
   private void showAnswerssDialog(Comment parentComment) {
-    var dialog = new Dialog("Réponses au commentaire", 800, 600, false);
+    var dialog =
+        new school.hei.patrimoine.visualisation.swing.ihm.google.component.Dialog(
+            "Réponses au commentaire", 800, 600, false);
 
     dialog.setModal(true);
     dialog.setLayout(new BorderLayout());

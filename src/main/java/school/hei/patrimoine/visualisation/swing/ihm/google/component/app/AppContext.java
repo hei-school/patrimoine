@@ -2,41 +2,17 @@ package school.hei.patrimoine.visualisation.swing.ihm.google.component.app;
 
 import java.util.*;
 import java.util.function.Supplier;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
 
-public record AppContext(
-    String id, App app, Map<String, Object> data, Map<String, Set<AppContextObserver>> observers) {
+public record AppContext(String id, App app, State globalState) {
   private static final String DEFAULT_CONTEXT_ID_VALUE = "default";
 
   public AppContext(String id, App app) {
-    this(id, app, new HashMap<>(), new HashMap<>());
+    this(id, app, new State(new HashMap<>()));
   }
 
-  @SuppressWarnings("unchecked")
-  public <T> Optional<T> findData(String key) {
-    return (Optional<T>) Optional.ofNullable(data.get(key));
-  }
-
-  @SuppressWarnings("unchecked")
   public <T> T getData(String key) {
-    var optionalData = findData(key);
-
-    if (optionalData.isEmpty()) {
-      throw new IllegalArgumentException("No data found for key " + key);
-    }
-
-    return (T) optionalData.get();
-  }
-
-  public void addObserver(String dataKey, AppContextObserver observer) {
-    observers.computeIfAbsent(dataKey, k -> new HashSet<>()).add(observer);
-  }
-
-  public void setData(String key, Object value) {
-    data.put(key, value);
-
-    if (observers.containsKey(key)) {
-      observers.get(key).forEach(o -> o.update(this));
-    }
+    return globalState.get(key);
   }
 
   public static AppContext getDefault() {

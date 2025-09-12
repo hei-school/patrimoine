@@ -32,9 +32,11 @@ public class GoogleApi {
 
   private static final List<String> SCOPES = List.of(DRIVE);
 
-  private static final String TOKENS_DIRECTORY_PATH = USER_HOME + "/.patrimoine/google/tokens";
+  private static final String TOKENS_DIRECTORY_PATH =
+      USER_HOME + "/.patrimoine-ricka/google/tokens";
 
-  private static final String CREDENTIALS_FILE_PATH = USER_HOME + "/.patrimoine/google/client.json";
+  private static final String CREDENTIALS_FILE_PATH =
+      USER_HOME + "/.patrimoine-ricka/google/client.json";
 
   public GoogleApi() {
     this.userMapper = UserMapper.getInstance();

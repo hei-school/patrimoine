@@ -12,7 +12,6 @@ public class CorrectionGenerateurFactory {
       return (CorrectionGenerateur<T>) new FluxArgentCorrectionGenerateur();
     }
 
-    // TODO
     return new CorrectionGenerateurBase<>() {
       @Override
       public Set<Correction> comparer(T prévu, T réalité) {
