@@ -1,69 +1,67 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.pages;
 
+import static javax.swing.SwingUtilities.invokeLater;
+import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
+import static school.hei.patrimoine.patrilang.PatriLangTranspiler.transpileToutCas;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.component.AppBar.*;
+
 import java.awt.*;
+import java.util.List;
+import java.util.Map;
 import javax.swing.*;
 import lombok.Getter;
-import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.AppContext;
-import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.Page;
-import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.AppBar;
-import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.CommentSideBar;
+import school.hei.patrimoine.cas.CasSetAnalyzer;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.AppBar;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.HtmlViewer;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.LazyPage;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.NavigateButton;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.comment.CommentSideBar;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.FileSideBar;
-import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.HtmlViewer;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
 
 @Getter
-public class PatriLangFilesPage extends Page {
+public class PatriLangFilesPage extends LazyPage {
   public static final String PAGE_NAME = "patrilang-files";
-
-  private AppBar appBar;
+  private final State state;
   private HtmlViewer htmlViewer;
-  private FileSideBar fileSideBar;
-  private CommentSideBar commentSideBar;
 
   public PatriLangFilesPage() {
     super(PAGE_NAME);
 
+    state = new State(Map.of("viewMode", ViewMode.VIEW, "fontSize", 14));
+
     setLayout(new BorderLayout());
-    subscribe("named-ids");
   }
 
   @Override
-  public void update(AppContext appContext) {
-    init();
-    super.update(appContext);
+  protected void init() {
+    addAppBar();
+    addMainSplitPane();
   }
 
-  private void init() {
-    this.fileSideBar = new FileSideBar(this::onStateChange);
-
-    this.commentSideBar =
-        new CommentSideBar(
-            () -> getFileSideBar().getSelectedFile().orElse(null),
-            () -> getFileSideBar().getSelectedFileDriveId().orElse(null));
-
-    this.appBar =
+  private void addAppBar() {
+    var appBar =
         new AppBar(
-            () -> getHtmlViewer().getText(),
-            () -> getFileSideBar().getSelectedFileDriveId().orElse(null),
-            () -> getFileSideBar().getSelectedFile().orElse(null),
-            this::onStateChange);
-
-    this.htmlViewer =
-        new HtmlViewer(
-            () -> getAppBar().getCurrentMode(),
-            () -> getAppBar().getControlledFontSize(),
-            () -> getFileSideBar().getSelectedFile().orElse(null));
+            List.of(
+                builtInViewModeSelect(state),
+                builtInSaveButton(state, () -> getHtmlViewer().getText()),
+                builtInSyncButton(state),
+                evolutionGraphicButton(),
+                recoupementButton()),
+            List.of(builtInFontSizeControllerButton(state), builtInUserInfoPanel()));
 
     add(appBar, BorderLayout.NORTH);
-    addMainSplitPane();
   }
 
   private void addMainSplitPane() {
     var horizontalSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-    horizontalSplit.setLeftComponent(fileSideBar);
+    horizontalSplit.setLeftComponent(new FileSideBar(state));
 
+    this.htmlViewer = new HtmlViewer(state);
     var rightSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
     rightSplit.setLeftComponent(htmlViewer.toScrollPane());
-    rightSplit.setRightComponent(commentSideBar.toScrollPane());
+    rightSplit.setRightComponent(new CommentSideBar(state).toScrollPane());
     rightSplit.setDividerLocation(700);
 
     horizontalSplit.setRightComponent(rightSplit);
@@ -72,8 +70,20 @@ public class PatriLangFilesPage extends Page {
     add(horizontalSplit, BorderLayout.CENTER);
   }
 
-  private void onStateChange() {
-    htmlViewer.update();
-    commentSideBar.update();
+  public static Button recoupementButton() {
+    return new NavigateButton("Recoupement", RecoupementPage.PAGE_NAME);
+  }
+
+  public static Button evolutionGraphicButton() {
+    var graphicButton = new Button("Évolution graphique");
+    graphicButton.addActionListener(
+        e ->
+            invokeLater(
+                () ->
+                    new CasSetAnalyzer(DISPOSE_ON_CLOSE)
+                        .accept(
+                            transpileToutCas(
+                                FileSideBar.getPlannedCasSetFile().getAbsolutePath()))));
+    return graphicButton;
   }
 }

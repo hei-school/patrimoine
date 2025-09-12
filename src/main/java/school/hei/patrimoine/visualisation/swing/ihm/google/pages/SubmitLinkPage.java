@@ -8,13 +8,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import javax.swing.*;
-import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.AppContext;
+import lombok.extern.slf4j.Slf4j;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.Page;
-import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.PageManager;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.GoogleLinkList;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.NamedLink;
+import school.hei.patrimoine.visualisation.swing.ihm.google.utils.AsyncTask;
 
+@Slf4j
 public class SubmitLinkPage extends Page {
   public static final String PAGE_NAME = "submit-file-url";
   private final JTextArea plannedInput;
@@ -26,7 +27,6 @@ public class SubmitLinkPage extends Page {
     this.doneInput = new JTextArea();
 
     setLayout(new BorderLayout());
-
     addTitle();
     addInputs();
     addSubmitButton();
@@ -87,7 +87,7 @@ public class SubmitLinkPage extends Page {
     submitButton.setFont(new Font("Arial", BOLD, 18));
     submitButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
     submitButton.setPreferredSize(new Dimension(200, 50));
-    submitButton.addActionListener(e -> loadDataInBackground());
+    submitButton.addActionListener(e -> submitLink());
 
     var wrapper = new JPanel();
     wrapper.setLayout(new BoxLayout(wrapper, BoxLayout.X_AXIS));
@@ -97,30 +97,22 @@ public class SubmitLinkPage extends Page {
     add(wrapper, BorderLayout.SOUTH);
   }
 
-  private void loadDataInBackground() {
-    SwingWorker<GoogleLinkList<NamedLink>, Void> worker =
-        new SwingWorker<>() {
-          @Override
-          protected GoogleLinkList<NamedLink> doInBackground() {
-            var plannedLinks = extractDriveLinks(plannedInput.getText());
-            var doneLinks = extractDriveLinks(doneInput.getText());
-
-            return new GoogleLinkList<>(plannedLinks, doneLinks);
-          }
-
-          @Override
-          protected void done() {
-            try {
-              var links = get();
-              AppContext.getDefault().setData("named-links", links);
-              PageManager.navigateTo(LinkValidityPage.PAGE_NAME);
-            } catch (Exception e) {
-              throw new RuntimeException(e);
-            }
-          }
-        };
-
-    worker.execute();
+  private void submitLink() {
+    AsyncTask.<GoogleLinkList<NamedLink>>builder()
+        .task(
+            () -> {
+              var plannedLinks = extractDriveLinks(plannedInput.getText());
+              var doneLinks = extractDriveLinks(doneInput.getText());
+              return new GoogleLinkList<>(plannedLinks, doneLinks);
+            })
+        .onSuccess(
+            links -> {
+              globalState().update("named-links", links);
+              pageManager().navigate(LinkValidityPage.PAGE_NAME);
+            })
+        .withDialogLoading(false)
+        .build()
+        .execute();
   }
 
   private Optional<NamedLink> extractDriveLink(String line) {

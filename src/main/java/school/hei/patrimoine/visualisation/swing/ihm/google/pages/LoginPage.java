@@ -1,18 +1,18 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.pages;
 
 import java.awt.*;
-import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.util.Map;
 import java.util.Objects;
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import lombok.SneakyThrows;
+import school.hei.patrimoine.google.api.CommentApi;
 import school.hei.patrimoine.google.api.DriveApi;
 import school.hei.patrimoine.google.api.GoogleApi;
-import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.AppContext;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.Page;
-import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.PageManager;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.ButtonWithIcon;
+import school.hei.patrimoine.visualisation.swing.ihm.google.utils.AsyncTask;
+import school.hei.patrimoine.visualisation.swing.ihm.google.utils.MessageDialog;
 
 public class LoginPage extends Page {
   private final GoogleApi googleApi;
@@ -23,12 +23,11 @@ public class LoginPage extends Page {
     googleApi = new GoogleApi();
 
     setLayout(new BorderLayout());
-
     var title = new JLabel("Patrimoine");
     title.setFont(new Font("Arial", Font.BOLD, 32));
 
     var signInButton = new ButtonWithIcon("Se connecter avec Google", loadGoogleLogo());
-    signInButton.addActionListener(onSigning());
+    signInButton.addActionListener(e -> onSigning());
 
     var centerPanel = new JPanel(new GridBagLayout());
     GridBagConstraints gbc = new GridBagConstraints();
@@ -46,15 +45,34 @@ public class LoginPage extends Page {
     add(centerPanel, BorderLayout.CENTER);
   }
 
-  @SneakyThrows
-  private ActionListener onSigning() {
-    return e -> {
-      var authDetails = googleApi.requestAuthentication();
-      AppContext.getDefault().setData("auth-details", authDetails);
-      AppContext.getDefault().setData("connected-user", authDetails.user());
-      AppContext.getDefault().setData("drive-api", new DriveApi(authDetails));
-      PageManager.navigateTo(SubmitLinkPage.PAGE_NAME);
-    };
+  private void onSigning() {
+    AsyncTask.<GoogleApi.AuthDetails>builder()
+        .task(googleApi::requestAuthentication)
+        .onSuccess(
+            (authDetails) -> {
+              var driveApi = new DriveApi(authDetails);
+              globalState()
+                  .update(
+                      Map.of(
+                          "auth-details",
+                          authDetails,
+                          "connected-user",
+                          authDetails.user(),
+                          "drive-api",
+                          driveApi,
+                          "comment-api",
+                          new CommentApi(driveApi)));
+              pageManager().navigate(SubmitLinkPage.PAGE_NAME);
+            })
+        .onError(
+            e -> MessageDialog.error("Erreur", "Erreur d'authentification, veuillez réessayer"))
+        .build()
+        .execute();
+  }
+
+  @Override
+  protected boolean destroyOnLeave() {
+    return true;
   }
 
   private Image loadGoogleLogo() {
