@@ -197,9 +197,9 @@ public class LinkValidityPage extends Page {
       valueLabel.setText(value.link());
 
       if (driveLinkVerifier.verify(value.link())) {
-        setBackground(Color.GREEN);
+        setBackground(new Color(120, 220, 140));
       } else {
-        setBackground(Color.RED);
+        setBackground(new Color(235, 100, 110));
       }
 
       return this;

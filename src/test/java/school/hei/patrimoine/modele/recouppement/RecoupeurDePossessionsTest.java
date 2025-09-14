@@ -26,7 +26,7 @@ class RecoupeurDePossessionsTest {
     var au02Mars2025 = LocalDate.of(2025, MARCH, 2);
 
     var comptePersonnelPrévu = new Compte("comptePersonnel", au01Janvier2025, ariary(0));
-    var comptePersonnelRéalité = new Compte("comptePersonnel", au01Janvier2025, ariary(0));
+    var comptePersonnelréalisé = new Compte("comptePersonnel", au01Janvier2025, ariary(0));
 
     var prévu =
         Patrimoine.of(
@@ -38,17 +38,17 @@ class RecoupeurDePossessionsTest {
                 comptePersonnelPrévu,
                 new FluxArgent("salaire", comptePersonnelPrévu, au02Mars2025, ariary(200))));
 
-    var réalité =
+    var réalisé =
         Patrimoine.of(
             "zety",
             MGA,
             au01Janvier2025,
             Map.of(),
             Set.of(
-                comptePersonnelRéalité,
-                new FluxArgent("salaire", comptePersonnelRéalité, au02Mars2025, ariary(200))));
+                comptePersonnelréalisé,
+                new FluxArgent("salaire", comptePersonnelréalisé, au02Mars2025, ariary(200))));
 
-    var subject = RecoupeurDePossessions.of(prévu, réalité);
+    var subject = RecoupeurDePossessions.of(prévu, réalisé);
 
     assertTrue(subject.getCorrections().isEmpty());
     assertTrue(subject.getPossessionsNonPrévus().isEmpty());
@@ -68,7 +68,7 @@ class RecoupeurDePossessionsTest {
     var au02Mars2025 = LocalDate.of(2025, MARCH, 2);
 
     var comptePersonnelPrévu = new Compte("comptePersonnel", au01Janvier2025, ariary(200));
-    var comptePersonnelRéalité = new Compte("comptePersonnel", au01Janvier2025, ariary(200));
+    var comptePersonnelréalisé = new Compte("comptePersonnel", au01Janvier2025, ariary(200));
 
     var prévu =
         Patrimoine.of(
@@ -80,17 +80,17 @@ class RecoupeurDePossessionsTest {
                 comptePersonnelPrévu,
                 new FluxArgent("salaire", comptePersonnelPrévu, au02Mars2025, ariary(300))));
 
-    var réalité =
+    var réalisé =
         Patrimoine.of(
             "zety",
             MGA,
             au01Janvier2025,
             Map.of(),
             Set.of(
-                comptePersonnelRéalité,
-                new FluxArgent("salaire", comptePersonnelRéalité, au02Mars2025, ariary(200))));
+                comptePersonnelréalisé,
+                new FluxArgent("salaire", comptePersonnelréalisé, au02Mars2025, ariary(200))));
 
-    var subject = RecoupeurDePossessions.of(prévu, réalité);
+    var subject = RecoupeurDePossessions.of(prévu, réalisé);
 
     assertTrue(subject.getPossessionsNonPrévus().isEmpty());
     assertTrue(subject.getPossessionsNonExecutés().isEmpty());
@@ -112,7 +112,7 @@ class RecoupeurDePossessionsTest {
     var au02Juin2025 = LocalDate.of(2025, JUNE, 2);
 
     var comptePersonnelPrévu = new Compte("comptePersonnel", au01Janvier2025, ariary(0));
-    var comptePersonnelRéalité = new Compte("comptePersonnel", au01Janvier2025, ariary(0));
+    var comptePersonnelréalisé = new Compte("comptePersonnel", au01Janvier2025, ariary(0));
 
     var prévu =
         Patrimoine.of(
@@ -125,26 +125,26 @@ class RecoupeurDePossessionsTest {
                 new FluxArgent(
                     "salaire", comptePersonnelPrévu, au02Mars2025, au02Juin2025, 2, ariary(200))));
 
-    var réalité =
+    var réalisé =
         Patrimoine.of(
             "zety",
             MGA,
             au01Janvier2025,
             Map.of(),
             Set.of(
-                comptePersonnelRéalité,
+                comptePersonnelréalisé,
                 new FluxArgent(
                     "salaire__du_" + au02Mars2025,
-                    comptePersonnelRéalité,
+                    comptePersonnelréalisé,
                     au02Mars2025,
                     ariary(200)),
                 new FluxArgent(
                     "salaire__du_" + au02Mai2025,
-                    comptePersonnelRéalité,
+                    comptePersonnelréalisé,
                     au02Mai2025,
                     ariary(200))));
 
-    var subject = RecoupeurDePossessions.of(prévu, réalité);
+    var subject = RecoupeurDePossessions.of(prévu, réalisé);
 
     assertEquals(2, subject.getCorrections().size());
     assertEquals(2, subject.getPossessionsNonExecutés().size());
