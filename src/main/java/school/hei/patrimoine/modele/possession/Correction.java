@@ -12,7 +12,7 @@ public final class Correction extends Possession {
   public Correction(FluxArgent fluxArgent) {
     super(
         String.format("Correction[p=%s,%s]", fluxArgent.getCompte().nom, fluxArgent.nom),
-        fluxArgent.getDebut(),
+        fluxArgent.t,
         fluxArgent.valeurComptable);
     this.possession = fluxArgent.getCompte();
     this.compteCorrection = possession.getCompteCorrection();

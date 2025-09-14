@@ -26,7 +26,7 @@ public final class FluxArgent extends Possession {
       LocalDate fin,
       int dateOperation,
       Argent fluxMensuel) {
-    super(nom, LocalDate.MIN, new Argent(0, fluxMensuel.devise()));
+    super(nom, debut, new Argent(0, fluxMensuel.devise()));
     this.compte = compte;
     this.compte.addFinancés(this);
 

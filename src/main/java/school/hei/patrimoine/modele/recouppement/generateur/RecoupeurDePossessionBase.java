@@ -5,14 +5,13 @@ import school.hei.patrimoine.modele.possession.Possession;
 
 import java.time.LocalDate;
 
-public abstract class CorrectionGenerateurBase<T extends Possession>
-    implements CorrectionGenerateur<T> {
-  protected boolean memeDate(T prévu, T réalité) {
-    return getDate(prévu).equals(getDate(réalité));
+public abstract class RecoupeurDePossessionBase<T extends Possession> implements RecoupeurDePossession<T> {
+  protected boolean memeDate(T prévu, T réalisé) {
+    return getDate(prévu).equals(getDate(réalisé));
   }
 
-  protected boolean memeValeur(T prévu, T réalité) {
-    return getValeur(prévu).equals(getValeur(réalité));
+  protected boolean memeValeur(T prévu, T réalisé) {
+    return getValeur(prévu).equals(getValeur(réalisé));
   }
 
   protected Argent getValeur(T possession) {
@@ -43,8 +42,8 @@ public abstract class CorrectionGenerateurBase<T extends Possession>
     return "Valeur différente – " + possession.nom();
   }
 
-  protected String dateDifferenteNom(T prévu, T réalité){
-      if(prévu.t().isAfter(réalité.t())){
+  protected String dateDifferenteNom(T prévu, T réalisé){
+      if(prévu.t().isAfter(réalisé.t())){
             return enAvanceNom(prévu) ;
       }
 
