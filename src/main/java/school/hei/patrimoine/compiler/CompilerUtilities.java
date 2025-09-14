@@ -16,7 +16,7 @@ public class CompilerUtilities {
   public static final String USER_HOME = System.getProperty("user.home");
   public static final String TEMP_DIRECTORY = System.getProperty("java.io.tmpdir");
   public static final String COMPILE_DIR_NAME = USER_HOME + "/.patrimoine/compile";
-  public static final String DOWNLOADS_DIRECTORY_PATH = USER_HOME + "/Downloads/drive";
+  public static final String DOWNLOADS_DIRECTORY_PATH = USER_HOME + "/.patrimoine/drive";
   private static final String PATRIMOINE_JAR_NAME = "patrimoine-1.0-SNAPSHOT.jar";
 
   public static final String PATRIMOINE_JAR_PATH =

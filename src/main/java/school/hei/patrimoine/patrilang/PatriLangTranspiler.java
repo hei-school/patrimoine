@@ -6,20 +6,27 @@ import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.DocumentCont
 
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.function.Function;
 import org.antlr.v4.runtime.CommonTokenStream;
 import school.hei.patrimoine.cas.Cas;
 import school.hei.patrimoine.cas.CasSet;
 import school.hei.patrimoine.patrilang.antlr.PatriLangLexer;
 import school.hei.patrimoine.patrilang.antlr.PatriLangParser;
 import school.hei.patrimoine.patrilang.factory.SectionVisitorFactory;
+import school.hei.patrimoine.patrilang.listener.PatrilangErrorListener;
 import school.hei.patrimoine.patrilang.visitors.PatriLangCasVisitor;
 import school.hei.patrimoine.patrilang.visitors.PatriLangToutCasVisitor;
 import school.hei.patrimoine.patrilang.visitors.PatriLangVisitor;
 import school.hei.patrimoine.patrilang.visitors.SectionVisitor;
 
-public class PatriLangTranspiler {
+public class PatriLangTranspiler implements Function<String, CasSet> {
   public static final String CAS_FILE_EXTENSION = ".cas.md";
   public static final String TOUT_CAS_FILE_EXTENSION = ".tout.md";
+
+  @Override
+  public CasSet apply(String casSetFilePath) {
+    return transpileToutCas(casSetFilePath);
+  }
 
   public static Cas transpileCas(String casName, SectionVisitor sectionVisitor) {
     var casPath =
@@ -55,6 +62,13 @@ public class PatriLangTranspiler {
       var lexer = new PatriLangLexer(fromFileName(filePath));
       var tokens = new CommonTokenStream(lexer);
       var parser = new PatriLangParser(tokens);
+      var errorListener = new PatrilangErrorListener(filePath);
+
+      parser.removeErrorListeners();
+      parser.addErrorListener(errorListener);
+
+      lexer.removeErrorListeners();
+      lexer.addErrorListener(errorListener);
       return parser.document();
     } catch (IOException e) {
       throw new RuntimeException(e);

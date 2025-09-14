@@ -37,7 +37,7 @@ public class VariableExpressionVisitor extends PatriLangParserBaseVisitor<Double
       switch (operator) {
         case "+" -> result += rightOperand;
         case "-" -> result -= rightOperand;
-        default -> throw new IllegalStateException("Opérateur d'addition inconnu : " + operator);
+        default -> throw new IllegalArgumentException("Opérateur d'addition inconnu : " + operator);
       }
     }
 
@@ -58,7 +58,7 @@ public class VariableExpressionVisitor extends PatriLangParserBaseVisitor<Double
         case "*" -> result *= rightOperand;
         case "/" -> result /= rightOperand;
         default ->
-            throw new IllegalStateException("Opérateur de multiplication inconnu : " + operator);
+            throw new IllegalArgumentException("Opérateur de multiplication inconnu : " + operator);
       }
     }
 

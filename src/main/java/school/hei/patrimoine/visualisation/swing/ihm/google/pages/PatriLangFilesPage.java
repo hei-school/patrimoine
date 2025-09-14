@@ -61,7 +61,7 @@ public class PatriLangFilesPage extends LazyPage {
     this.htmlViewer = new HtmlViewer(state);
     var rightSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
     rightSplit.setLeftComponent(htmlViewer.toScrollPane());
-    rightSplit.setRightComponent(new CommentSideBar(state).toScrollPane());
+    rightSplit.setRightComponent(new CommentSideBar(state));
     rightSplit.setDividerLocation(700);
 
     horizontalSplit.setRightComponent(rightSplit);

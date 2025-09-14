@@ -7,8 +7,10 @@ import java.util.List;
 import java.util.function.Supplier;
 import javax.swing.*;
 import lombok.Getter;
+import org.antlr.v4.runtime.misc.ParseCancellationException;
 import school.hei.patrimoine.google.api.DriveApi;
 import school.hei.patrimoine.google.model.User;
+import school.hei.patrimoine.patrilang.validator.PatriLangValidator;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.AppContext;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
@@ -44,7 +46,8 @@ public class AppBar extends JPanel {
     return rightControls;
   }
 
-  private static void saveSelectedFile(State state, Supplier<String> currentFileContentSupplier) {
+  private static void saveSelectedFile(
+      State state, Supplier<String> currentFileNewContentSupplier) {
     ViewMode currentMode = state.get("viewMode");
     if (!ViewMode.EDIT.equals(currentMode)) {
       MessageDialog.error("Erreur", "Vous devez être en mode édition pour sauvegarder.");
@@ -57,13 +60,45 @@ public class AppBar extends JPanel {
       return;
     }
 
-    try {
-      var content = currentFileContentSupplier.get();
-      Files.writeString(currentFile.toPath(), content);
-      MessageDialog.info("Succès", "Vous pouvez maintenant le synchroniser avec Google Drive.");
-    } catch (Exception e) {
-      MessageDialog.error("Erreur", "Une erreur est survenue lors de l'enregistrement");
-    }
+    AsyncTask.<Void>builder()
+        .loadingMessage("Validation et sauvegarde du fichier...")
+        .task(
+            () -> {
+              String oldContent = Files.readString(currentFile.toPath());
+              String newContent = currentFileNewContentSupplier.get();
+              Files.writeString(currentFile.toPath(), newContent);
+
+              try {
+                File currentCasSetFile = state.get("selectedCasSetFile");
+                new PatriLangValidator().accept(currentCasSetFile.getAbsolutePath());
+              } catch (ParseCancellationException | IllegalArgumentException e) {
+                if (currentFile.exists()) {
+                  Files.writeString(currentFile.toPath(), oldContent);
+                }
+                throw e;
+              }
+              return null;
+            })
+        .onSuccess(
+            result ->
+                MessageDialog.info(
+                    "Succès", "Vous pouvez maintenant le synchroniser avec Google Drive."))
+        .onError(
+            error -> {
+              if (error instanceof ParseCancellationException e) {
+                MessageDialog.error("Erreur", e.getMessage());
+                return;
+              }
+
+              if (error instanceof IllegalArgumentException e) {
+                MessageDialog.error("Erreur", e.getMessage());
+                return;
+              }
+
+              MessageDialog.error("Erreur", "Une erreur est survenue lors de l'enregistrement");
+            })
+        .build()
+        .execute();
   }
 
   private static void syncSelectedFileWithDrive(State state) {
@@ -122,9 +157,10 @@ public class AppBar extends JPanel {
     return modeSelect;
   }
 
-  public static Button builtInSaveButton(State state, Supplier<String> currentFileContentSupplier) {
+  public static Button builtInSaveButton(
+      State state, Supplier<String> currentFileNewContentSupplier) {
     var saveButton = new Button("Enregistrement local");
-    saveButton.addActionListener(e -> saveSelectedFile(state, currentFileContentSupplier));
+    saveButton.addActionListener(e -> saveSelectedFile(state, currentFileNewContentSupplier));
 
     return saveButton;
   }

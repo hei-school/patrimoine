@@ -17,7 +17,7 @@ public class CommentMapper {
   }
 
   public Comment toDomain(com.google.api.services.drive.model.Comment comment) {
-    List<Comment> replies =
+    List<Comment> answers =
         comment.getReplies() == null
             ? List.of()
             : comment.getReplies().stream().map(this::replyToDomain).toList();
@@ -28,12 +28,13 @@ public class CommentMapper {
         .resolved(comment.getResolved() != null && comment.getResolved())
         .author(userMapper.toDomain(comment.getAuthor()))
         .createdAt(Instant.parse(comment.getCreatedTime().toString()))
-        .replies(replies)
+        .answers(answers)
         .build();
   }
 
   public com.google.api.services.drive.model.Comment toGoogle(Comment comment) {
     return new com.google.api.services.drive.model.Comment()
+        .setId(comment.id())
         .setContent(comment.content())
         .setResolved(comment.resolved());
   }
@@ -48,7 +49,7 @@ public class CommentMapper {
         .content(comment.getContent())
         .author(userMapper.toDomain(comment.getAuthor()))
         .createdAt(Instant.parse(comment.getCreatedTime().toString()))
-        .replies(List.of())
+        .answers(List.of())
         .build();
   }
 }
