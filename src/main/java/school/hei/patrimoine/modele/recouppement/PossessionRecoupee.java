@@ -7,7 +7,10 @@ import school.hei.patrimoine.modele.possession.Possession;
 
 @Builder
 public record PossessionRecoupee(
-    PossessionRecoupeeStatus status, Possession possession, Set<Correction> corrections) {
+    PossessionRecoupeeStatus status,
+    Possession possession,
+    Set<Correction> corrections
+) {
   public enum PossessionRecoupeeStatus {
     IMPREVU,
     NON_EXECUTE,

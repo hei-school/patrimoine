@@ -3,10 +3,12 @@ package school.hei.patrimoine.modele.recouppement.generateur;
 import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.possession.Possession;
 
+import java.time.LocalDate;
+
 public abstract class CorrectionGenerateurBase<T extends Possession>
     implements CorrectionGenerateur<T> {
   protected boolean memeDate(T prévu, T réalité) {
-    return prévu.t().equals(réalité.t());
+    return getDate(prévu).equals(getDate(réalité));
   }
 
   protected boolean memeValeur(T prévu, T réalité) {
@@ -15,6 +17,10 @@ public abstract class CorrectionGenerateurBase<T extends Possession>
 
   protected Argent getValeur(T possession) {
     return possession.valeurComptable();
+  }
+
+  protected LocalDate getDate(T possession){
+      return possession.t();
   }
 
   protected String imprevuNom(T possession) {
