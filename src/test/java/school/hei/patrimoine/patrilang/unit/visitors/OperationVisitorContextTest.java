@@ -10,7 +10,7 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 import school.hei.patrimoine.modele.possession.Possession;
 import school.hei.patrimoine.patrilang.antlr.PatriLangParser;
-import school.hei.patrimoine.patrilang.factory.OperationVisitorFactory;
+import school.hei.patrimoine.patrilang.visitors.factory.OperationVisitorFactory;
 import school.hei.patrimoine.patrilang.utils.UnitTestVisitor;
 import school.hei.patrimoine.patrilang.visitors.OperationVisitor;
 import school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor;

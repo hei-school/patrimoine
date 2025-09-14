@@ -2,7 +2,6 @@ package school.hei.patrimoine.visualisation.swing.ihm.google.component;
 
 import java.awt.*;
 import java.io.File;
-import java.nio.file.Files;
 import java.util.List;
 import java.util.function.Supplier;
 import javax.swing.*;
@@ -10,12 +9,12 @@ import lombok.Getter;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import school.hei.patrimoine.google.api.DriveApi;
 import school.hei.patrimoine.google.model.User;
-import school.hei.patrimoine.patrilang.validator.PatriLangValidator;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.AppContext;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
 import school.hei.patrimoine.visualisation.swing.ihm.google.utils.AsyncTask;
 import school.hei.patrimoine.visualisation.swing.ihm.google.utils.MessageDialog;
+import school.hei.patrimoine.visualisation.swing.ihm.google.utils.PatriLangFileWritter;
 
 @Getter
 public class AppBar extends JPanel {
@@ -64,19 +63,9 @@ public class AppBar extends JPanel {
         .loadingMessage("Validation et sauvegarde du fichier...")
         .task(
             () -> {
-              String oldContent = Files.readString(currentFile.toPath());
-              String newContent = currentFileNewContentSupplier.get();
-              Files.writeString(currentFile.toPath(), newContent);
-
-              try {
-                File currentCasSetFile = state.get("selectedCasSetFile");
-                new PatriLangValidator().accept(currentCasSetFile.getAbsolutePath());
-              } catch (ParseCancellationException | IllegalArgumentException e) {
-                if (currentFile.exists()) {
-                  Files.writeString(currentFile.toPath(), oldContent);
-                }
-                throw e;
-              }
+              var fileWritter = new PatriLangFileWritter();
+              File currentCasSetFile = state.get("selectedCasSetFile");
+              fileWritter.write(currentFileNewContentSupplier, currentFile, currentCasSetFile);
               AppContext.getDefault().globalState().update("newUpdate", true);
               return null;
             })

@@ -1,5 +1,6 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.component.recoupement;
 
+import static school.hei.patrimoine.modele.recouppement.PossessionRecoupee.PossessionRecoupeeStatus.NON_EXECUTE;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.component.recoupement.PossessionRecoupeeItem.formatArgent;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.component.recoupement.PossessionRecoupeeItem.formatDate;
 
@@ -9,12 +10,15 @@ import javax.swing.border.EmptyBorder;
 import school.hei.patrimoine.modele.recouppement.PossessionRecoupee;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.Dialog;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
 
 public class PossessionReoupeeDetailDialog extends Dialog {
+  private final State state;
   private final PossessionRecoupee possessionRecoupee;
 
-  public PossessionReoupeeDetailDialog(PossessionRecoupee possessionRecoupee) {
-    super("Détails de l'opération", 800, 400, false);
+  public PossessionReoupeeDetailDialog(State state, PossessionRecoupee possessionRecoupee) {
+    super("Détails de l'opération", 800, 500, false);
+    this.state = state;
     this.possessionRecoupee = possessionRecoupee;
 
     setLayout(new BorderLayout());
@@ -102,11 +106,18 @@ public class PossessionReoupeeDetailDialog extends Dialog {
 
   private void addCloseButton() {
     var buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+    buttonPanel.setOpaque(true);
     buttonPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
-    buttonPanel.setBackground(Color.WHITE);
 
     var closeButton = new Button("Fermer", e -> dispose());
     buttonPanel.add(closeButton);
+
+    if (NON_EXECUTE.equals(possessionRecoupee.status())) {
+      var executeButton =
+          new Button(
+              "Exécuter", e -> new PossessionRecoupeeExecuteDialog(state, possessionRecoupee));
+      buttonPanel.add(executeButton);
+    }
 
     add(buttonPanel, BorderLayout.SOUTH);
   }

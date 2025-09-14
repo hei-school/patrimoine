@@ -23,7 +23,7 @@ public abstract class RecoupeurDePossessionBase<T extends Possession>
   }
 
   protected String imprevuNom(T possession) {
-    return "imprevu – " + possession.nom();
+    return "Imprevu – " + possession.nom();
   }
 
   protected String nonExecuteNom(T possession) {

@@ -3,7 +3,6 @@ package school.hei.patrimoine.visualisation.swing.ihm.google.component.comment;
 import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-
 import school.hei.patrimoine.google.api.CommentApi;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.Dialog;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.AppContext;

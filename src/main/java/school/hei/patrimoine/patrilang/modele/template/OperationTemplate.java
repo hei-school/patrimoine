@@ -8,7 +8,7 @@ import java.util.Set;
 import java.util.function.BiFunction;
 import lombok.Builder;
 import school.hei.patrimoine.modele.possession.Possession;
-import school.hei.patrimoine.patrilang.factory.OperationVisitorFactory;
+import school.hei.patrimoine.patrilang.visitors.factory.OperationVisitorFactory;
 import school.hei.patrimoine.patrilang.modele.variable.VariableScope;
 import school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor;
 

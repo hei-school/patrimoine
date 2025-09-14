@@ -36,12 +36,7 @@ public class RecoupementPage extends LazyPage {
   public RecoupementPage() {
     super(PAGE_NAME);
     this.state = new State(Map.of("filterStatus", PossessionRecoupeeFilterStatus.TOUT));
-    this.possessionRecoupeeListPanel =
-        new PossessionRecoupeeListPanel(
-            () -> {
-              updateCasSet();
-              update();
-            });
+    this.possessionRecoupeeListPanel = new PossessionRecoupeeListPanel(state);
 
     state.subscribe(Set.of("filterStatus", "selectedFile"), this::update);
     globalState()
@@ -93,8 +88,7 @@ public class RecoupementPage extends LazyPage {
   }
 
   private void addMainSplitPane() {
-    var fileList =
-        new JList<>(new FileListModel(FileSideBar.getPlannedPatrilangFilesWithoutCasSet()));
+    var fileList = new JList<>(new FileListModel(FileSideBar.getDonePatrilangFilesWithoutCasSet()));
     fileList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     fileList.setCellRenderer(new FileListCellRenderer());
     fileList.addListSelectionListener(

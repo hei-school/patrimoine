@@ -148,8 +148,8 @@ public class FileSideBar extends JPanel {
         .orElseThrow();
   }
 
-  public static List<File> getPlannedPatrilangFilesWithoutCasSet() {
-    return getPatriLangPlannedFiles().stream()
+  public static List<File> getDonePatrilangFilesWithoutCasSet() {
+    return getPatriLangDoneFiles().stream()
         .filter(file -> !file.getName().endsWith(TOUT_CAS_FILE_EXTENSION))
         .toList();
   }

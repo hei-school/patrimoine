@@ -11,14 +11,15 @@ import school.hei.patrimoine.google.model.Comment;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
 
 public class CommentCard extends JPanel {
-    private final Component parent;
+  private final Component parent;
   private final String fileId;
   private final Comment comment;
   private final Runnable refresh;
   public static final DateTimeFormatter DATE_TIME_FORMATTER =
       DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm").withZone(ZoneId.systemDefault());
 
-  public CommentCard(Component parent, String fileId, Comment comment, boolean withActions, Runnable refresh) {
+  public CommentCard(
+      Component parent, String fileId, Comment comment, boolean withActions, Runnable refresh) {
     this.fileId = fileId;
     this.comment = comment;
     this.refresh = refresh;
@@ -98,11 +99,11 @@ public class CommentCard extends JPanel {
     return buttons;
   }
 
-    @Override
-    public Dimension getMaximumSize() {
-        var pref = getPreferredSize();
-        return new Dimension(parent.getWidth() - 15 , pref.height);
-    }
+  @Override
+  public Dimension getMaximumSize() {
+    var pref = getPreferredSize();
+    return new Dimension(parent.getWidth() - 15, pref.height);
+  }
 
   static Button showAnswersButton(String fileId, Comment parentComment, Runnable refresh) {
     return new Button(
