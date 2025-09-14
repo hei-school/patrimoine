@@ -9,5 +9,5 @@ public interface CorrectionGenerateur<T extends Possession> {
 
   Set<Correction> nonÉxecuté(T nonÉxecuté);
 
-  Set<Correction> nonPrévu(T nonPrévu);
+  Set<Correction> imprévu(T nonPrévu);
 }

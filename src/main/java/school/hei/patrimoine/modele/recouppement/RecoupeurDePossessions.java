@@ -71,7 +71,7 @@ public record RecoupeurDePossessions(Set<Possession> prévus, Set<Possession> r�
         .forEach(
             p -> {
               var correctionGenerateur = CorrectionGenerateurFactory.make(p);
-              var corrections = correctionGenerateur.nonPrévu(p);
+              var corrections = correctionGenerateur.imprévu(p);
               possessionRecoupees.add(
                   PossessionRecoupee.builder()
                       .status(IMPREVU)

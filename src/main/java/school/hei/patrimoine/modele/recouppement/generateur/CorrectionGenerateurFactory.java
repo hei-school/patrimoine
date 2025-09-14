@@ -24,7 +24,7 @@ public class CorrectionGenerateurFactory {
       }
 
       @Override
-      public Set<Correction> nonPrévu(T nonPrévu) {
+      public Set<Correction> imprévu(T nonPrévu) {
         return Set.of();
       }
     };
