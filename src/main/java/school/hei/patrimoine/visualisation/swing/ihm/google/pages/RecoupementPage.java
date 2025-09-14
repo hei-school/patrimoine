@@ -1,10 +1,7 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.pages;
 
-import static java.util.stream.Collectors.toSet;
 import static school.hei.patrimoine.patrilang.PatriLangTranspiler.transpileToutCas;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.component.AppBar.builtInUserInfoPanel;
-import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.PossessionRecoupée.Status;
-import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.PossessionRecoupée.Status.*;
 
 import java.awt.*;
 import java.io.File;
@@ -14,7 +11,8 @@ import javax.swing.*;
 import school.hei.patrimoine.cas.Cas;
 import school.hei.patrimoine.cas.CasSet;
 import school.hei.patrimoine.modele.Patrimoine;
-import school.hei.patrimoine.modele.possession.Possession;
+import school.hei.patrimoine.modele.recouppement.PossessionRecoupee;
+import school.hei.patrimoine.modele.recouppement.PossessionRecoupee.PossessionRecoupeeStatus;
 import school.hei.patrimoine.modele.recouppement.RecoupeurDePossessions;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.AppBar;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.LazyPage;
@@ -22,8 +20,7 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Nav
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.FileListCellRenderer;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.FileListModel;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.FileSideBar;
-import school.hei.patrimoine.visualisation.swing.ihm.google.component.recoupement.PossessionRecoupéeCellRenderer;
-import school.hei.patrimoine.visualisation.swing.ihm.google.modele.PossessionRecoupée;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.recoupement.PossessionRecoupeeCellRenderer;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
 
 public class RecoupementPage extends LazyPage {
@@ -33,11 +30,11 @@ public class RecoupementPage extends LazyPage {
   private CasSet doneCasSet;
 
   private final State state;
-  private final DefaultListModel<PossessionRecoupée> possessionsModel;
+  private final DefaultListModel<PossessionRecoupee> possessionsModel;
 
   public RecoupementPage() {
     super(PAGE_NAME);
-    this.state = new State(Map.of("filterStatus", TOUT));
+    this.state = new State(Map.of("filterStatus", PossessionRecoupeeFilterStatus.TOUT));
     this.possessionsModel = new DefaultListModel<>();
 
     setLayout(new BorderLayout());
@@ -54,16 +51,16 @@ public class RecoupementPage extends LazyPage {
   }
 
   private void addAppBar() {
-    var possessionsFilterSelect = new JComboBox<>(Status.values());
-    possessionsFilterSelect.setSelectedItem(TOUT);
-    possessionsFilterSelect.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
-    possessionsFilterSelect.setCursor(new Cursor(Cursor.HAND_CURSOR));
-    possessionsFilterSelect.addActionListener(
-        e -> state.update("filterStatus", possessionsFilterSelect.getSelectedItem()));
+    var statusFilter = new JComboBox<>(PossessionRecoupeeFilterStatus.values());
+    statusFilter.setSelectedItem(PossessionRecoupeeFilterStatus.TOUT);
+    statusFilter.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
+    statusFilter.setCursor(new Cursor(Cursor.HAND_CURSOR));
+    statusFilter.addActionListener(
+        e -> state.update("filterStatus", statusFilter.getSelectedItem()));
 
     var appBar =
         new AppBar(
-            List.of(new NavigateButton("Retour", "patrilang-files"), possessionsFilterSelect),
+            List.of(new NavigateButton("Retour", "patrilang-files"), statusFilter),
             List.of(builtInUserInfoPanel()));
 
     add(appBar, BorderLayout.NORTH);
@@ -81,7 +78,7 @@ public class RecoupementPage extends LazyPage {
     var possessionsList = new JList<>(possessionsModel);
 
     possessionsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-    possessionsList.setCellRenderer(new PossessionRecoupéeCellRenderer());
+    possessionsList.setCellRenderer(new PossessionRecoupeeCellRenderer());
 
     horizontalSplit.setLeftComponent(new JScrollPane(fileList));
     horizontalSplit.setRightComponent(new JScrollPane(possessionsList));
@@ -90,53 +87,25 @@ public class RecoupementPage extends LazyPage {
     add(horizontalSplit, BorderLayout.CENTER);
   }
 
-  private List<PossessionRecoupée> getFilteredPossessionRecoupées() {
+  private List<PossessionRecoupee> getFilteredPossessionRecoupees() {
     var plannedPatrimoine = getPatrimoine(state.get("selectedFile"), plannedCasSet);
     var donePatrimoine = getPatrimoine(state.get("selectedFile"), doneCasSet);
     var recoupeurDePossession = RecoupeurDePossessions.of(plannedPatrimoine, donePatrimoine);
-    Set<PossessionRecoupée> possessionRecouppées = new HashSet<>();
-    Status filterStatus = state.get("filterStatus");
+    var possessionsRecoupees = recoupeurDePossession.getPossessionsRecoupees();
 
-    switch (filterStatus) {
-      case TOUT -> {
-        possessionRecouppées.addAll(
-            toPossessionRecoupées(
-                recoupeurDePossession.getPossessionsNonPrévus(), Status.NON_PRÉVU));
-        possessionRecouppées.addAll(
-            toPossessionRecoupées(
-                recoupeurDePossession.getPossessionsNonExecutés(), Status.NON_ÉXECUTÉ));
-        possessionRecouppées.addAll(
-            toPossessionRecoupées(
-                recoupeurDePossession.getPossessionsÉxecutésAvecCorrections(),
-                Status.ÉXECUTÉ_AVEC_CORRECTION));
-        possessionRecouppées.addAll(
-            toPossessionRecoupées(
-                recoupeurDePossession.getPossessionsÉxecutésSansCorrections(),
-                Status.ÉXECUTÉ_SANS_CORRECTION));
-      }
-
-      case NON_PRÉVU ->
-          possessionRecouppées.addAll(
-              toPossessionRecoupées(
-                  recoupeurDePossession.getPossessionsNonPrévus(), Status.NON_PRÉVU));
-      case NON_ÉXECUTÉ ->
-          possessionRecouppées.addAll(
-              toPossessionRecoupées(
-                  recoupeurDePossession.getPossessionsNonExecutés(), Status.NON_ÉXECUTÉ));
-      case ÉXECUTÉ_AVEC_CORRECTION ->
-          possessionRecouppées.addAll(
-              toPossessionRecoupées(
-                  recoupeurDePossession.getPossessionsÉxecutésAvecCorrections(),
-                  Status.ÉXECUTÉ_AVEC_CORRECTION));
-      case ÉXECUTÉ_SANS_CORRECTION ->
-          possessionRecouppées.addAll(
-              toPossessionRecoupées(
-                  recoupeurDePossession.getPossessionsÉxecutésSansCorrections(),
-                  Status.ÉXECUTÉ_SANS_CORRECTION));
+    Set<PossessionRecoupeeStatus> statusToKeep = new HashSet<>();
+    switch ((PossessionRecoupeeFilterStatus) state.get("filterStatus")) {
+      case TOUT -> statusToKeep.addAll(Set.of(PossessionRecoupeeStatus.values()));
+      case IMPREVU -> statusToKeep.add(PossessionRecoupeeStatus.IMPREVU);
+      case EXECUTE_AVEC_CORRECTION ->
+          statusToKeep.add(PossessionRecoupeeStatus.EXECUTE_AVEC_CORRECTION);
+      case EXECUTE_SANS_CORRECTION ->
+          statusToKeep.add(PossessionRecoupeeStatus.EXECUTE_SANS_CORRECTION);
     }
 
-    return possessionRecouppées.stream()
-        .sorted(Comparator.comparing((PossessionRecoupée p) -> p.possession().t()).reversed())
+    return possessionsRecoupees.stream()
+        .filter(p -> statusToKeep.contains(p.status()))
+        .sorted(Comparator.comparing((PossessionRecoupee p) -> p.possession().t()).reversed())
         .toList();
   }
 
@@ -147,7 +116,7 @@ public class RecoupementPage extends LazyPage {
     }
 
     possessionsModel.clear();
-    getFilteredPossessionRecoupées().forEach(possessionsModel::addElement);
+    getFilteredPossessionRecoupees().forEach(possessionsModel::addElement);
   }
 
   private static Patrimoine getPatrimoine(File file, CasSet casSet) {
@@ -161,8 +130,22 @@ public class RecoupementPage extends LazyPage {
         .orElseThrow();
   }
 
-  private static Set<PossessionRecoupée> toPossessionRecoupées(
-      Set<Possession> possessions, Status status) {
-    return possessions.stream().map(p -> new PossessionRecoupée(p, status)).collect(toSet());
+  public enum PossessionRecoupeeFilterStatus {
+    TOUT("Tout"),
+    IMPREVU("Imprévu"),
+    NON_EXECUTE("Non Éxecuté"),
+    EXECUTE_AVEC_CORRECTION("Éxecuté avec correction"),
+    EXECUTE_SANS_CORRECTION("Éxecuté sans correction");
+
+    public final String label;
+
+    PossessionRecoupeeFilterStatus(String label) {
+      this.label = label;
+    }
+
+    @Override
+    public String toString() {
+      return label;
+    }
   }
 }
