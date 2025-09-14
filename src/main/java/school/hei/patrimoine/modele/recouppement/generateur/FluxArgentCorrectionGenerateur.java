@@ -7,12 +7,12 @@ import school.hei.patrimoine.modele.possession.FluxArgent;
 
 public class FluxArgentCorrectionGenerateur extends CorrectionGenerateurBase<FluxArgent> {
   @Override
-  public Set<Correction> nonPrévu(FluxArgent nonPrévu) {
+  public Set<Correction> imprévu(FluxArgent nonPrévu) {
     var compte = nonPrévu.getCompte();
     return Set.of(
         new Correction(
             new FluxArgent(
-                nonPrévu.nom(), compte, nonPrévu.t(), nonPrévu.getFluxMensuel().mult(-1))));
+                imprevuNom(nonPrévu), compte, nonPrévu.t(), nonPrévu.getFluxMensuel().mult(-1))));
   }
 
   @Override
@@ -20,33 +20,55 @@ public class FluxArgentCorrectionGenerateur extends CorrectionGenerateurBase<Flu
     var compte = nonÉxecuté.getCompte();
     return Set.of(
         new Correction(
-            new FluxArgent(nonÉxecuté.nom(), compte, nonÉxecuté.t(), nonÉxecuté.getFluxMensuel())));
+            new FluxArgent(
+                nonExecuteNom(nonÉxecuté), compte, nonÉxecuté.t(), nonÉxecuté.getFluxMensuel())));
   }
 
   @Override
   public Set<Correction> comparer(FluxArgent prévu, FluxArgent réalité) {
     var compte = prévu.getCompte();
+    var diff = getValeur(réalité).minus(getValeur(prévu), prévu.t());
+
     if (memeDate(prévu, réalité)) {
       if (memeValeur(prévu, réalité)) {
         return Set.of();
       }
 
-      var fluxMensuelDiff = réalité.getFluxMensuel().minus(prévu.getFluxMensuel(), prévu.t());
       return Set.of(
           new Correction(
               new FluxArgent(
-                  prévu.nom(),
+                  valeurDifferenteNom(prévu),
                   compte,
                   prévu.t(),
                   prévu.getFin(),
                   prévu.getDateOperation(),
-                  fluxMensuelDiff)));
+                  diff)));
+    }
+
+    if (memeValeur(prévu, réalité)) {
+      return Set.of(
+          new Correction(
+              new FluxArgent(
+                  dateDifferenteNom(prévu, réalité), compte, prévu.t(), prévu.getFluxMensuel())),
+          new Correction(
+              new FluxArgent(
+                  dateDifferenteNom(prévu, réalité),
+                  compte,
+                  réalité.t(),
+                  réalité.getFluxMensuel().mult(-1))));
     }
 
     return Set.of(
-        new Correction(new FluxArgent(prévu.nom(), compte, prévu.t(), prévu.getFluxMensuel())),
+        new Correction(new FluxArgent(valeurDifferenteNom(prévu), compte, réalité.t(), diff)),
         new Correction(
-            new FluxArgent(prévu.nom(), compte, prévu.t(), réalité.getFluxMensuel().mult(-1))));
+            new FluxArgent(
+                dateDifferenteNom(prévu, réalité), compte, prévu.t(), prévu.getFluxMensuel())),
+        new Correction(
+            new FluxArgent(
+                dateDifferenteNom(prévu, réalité),
+                compte,
+                réalité.t(),
+                réalité.getFluxMensuel().mult(-1))));
   }
 
   @Override

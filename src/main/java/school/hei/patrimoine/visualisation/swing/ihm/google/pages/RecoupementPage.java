@@ -39,15 +39,30 @@ public class RecoupementPage extends LazyPage {
 
     setLayout(new BorderLayout());
     state.subscribe(Set.of("filterStatus", "selectedFile"), this::update);
+    globalState().subscribe(Set.of("newUpdate"), () -> {
+        updateCasSet();
+        update();
+    });
   }
 
   @Override
-  public void init() {
-    this.plannedCasSet = transpileToutCas(FileSideBar.getPlannedCasSetFile().getAbsolutePath());
-    this.doneCasSet = transpileToutCas(FileSideBar.getDoneCasSetFile().getAbsolutePath());
+  protected void init() {
+    updateCasSet();
 
     addAppBar();
     addMainSplitPane();
+  }
+
+  private void updateCasSet(){
+    boolean isNewUpdate = globalState().get("newUpdate") == null || (boolean) globalState().get("newUpdate");
+
+    if(!isNewUpdate){
+        return;
+    }
+
+    this.plannedCasSet = transpileToutCas(FileSideBar.getPlannedCasSetFile().getAbsolutePath());
+    this.doneCasSet = transpileToutCas(FileSideBar.getDoneCasSetFile().getAbsolutePath());
+    globalState().update("newUpdate", false);
   }
 
   private void addAppBar() {
@@ -97,6 +112,7 @@ public class RecoupementPage extends LazyPage {
     switch ((PossessionRecoupeeFilterStatus) state.get("filterStatus")) {
       case TOUT -> statusToKeep.addAll(Set.of(PossessionRecoupeeStatus.values()));
       case IMPREVU -> statusToKeep.add(PossessionRecoupeeStatus.IMPREVU);
+      case NON_EXECUTE -> statusToKeep.add(PossessionRecoupeeStatus.NON_EXECUTE);
       case EXECUTE_AVEC_CORRECTION ->
           statusToKeep.add(PossessionRecoupeeStatus.EXECUTE_AVEC_CORRECTION);
       case EXECUTE_SANS_CORRECTION ->
