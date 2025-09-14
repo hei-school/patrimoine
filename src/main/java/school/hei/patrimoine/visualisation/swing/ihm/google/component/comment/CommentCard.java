@@ -14,7 +14,7 @@ public class CommentCard extends JPanel {
   private final String fileId;
   private final Comment comment;
   private final Runnable refresh;
-  private static final DateTimeFormatter DATE_TIME_FORMATTER =
+  public static final DateTimeFormatter DATE_TIME_FORMATTER =
       DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm").withZone(ZoneId.systemDefault());
 
   public CommentCard(

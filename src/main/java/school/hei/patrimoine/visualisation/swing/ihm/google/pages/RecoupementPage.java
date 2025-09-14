@@ -20,7 +20,7 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Nav
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.FileListCellRenderer;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.FileListModel;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.FileSideBar;
-import school.hei.patrimoine.visualisation.swing.ihm.google.component.recoupement.PossessionRecoupeeCellRenderer;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.recoupement.PossessionRecoupeeListPanel;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
 
 public class RecoupementPage extends LazyPage {
@@ -30,19 +30,23 @@ public class RecoupementPage extends LazyPage {
   private CasSet doneCasSet;
 
   private final State state;
-  private final DefaultListModel<PossessionRecoupee> possessionsModel;
+  private final PossessionRecoupeeListPanel possessionRecoupeeListPanel;
 
   public RecoupementPage() {
     super(PAGE_NAME);
     this.state = new State(Map.of("filterStatus", PossessionRecoupeeFilterStatus.TOUT));
-    this.possessionsModel = new DefaultListModel<>();
+    this.possessionRecoupeeListPanel = new PossessionRecoupeeListPanel(() -> {
+        updateCasSet();
+        update();
+    });
 
-    setLayout(new BorderLayout());
     state.subscribe(Set.of("filterStatus", "selectedFile"), this::update);
     globalState().subscribe(Set.of("newUpdate"), () -> {
         updateCasSet();
         update();
     });
+
+    setLayout(new BorderLayout());
   }
 
   @Override
@@ -90,13 +94,8 @@ public class RecoupementPage extends LazyPage {
         e -> state.update("selectedFile", fileList.getSelectedValue()));
 
     var horizontalSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-    var possessionsList = new JList<>(possessionsModel);
-
-    possessionsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-    possessionsList.setCellRenderer(new PossessionRecoupeeCellRenderer());
-
     horizontalSplit.setLeftComponent(new JScrollPane(fileList));
-    horizontalSplit.setRightComponent(new JScrollPane(possessionsList));
+    horizontalSplit.setRightComponent(possessionRecoupeeListPanel.toScrollPane());
     horizontalSplit.setDividerLocation(200);
 
     add(horizontalSplit, BorderLayout.CENTER);
@@ -131,8 +130,8 @@ public class RecoupementPage extends LazyPage {
       return;
     }
 
-    possessionsModel.clear();
-    getFilteredPossessionRecoupees().forEach(possessionsModel::addElement);
+    var possessionsRecoupees = getFilteredPossessionRecoupees();
+    possessionRecoupeeListPanel.update(possessionsRecoupees);
   }
 
   private static Patrimoine getPatrimoine(File file, CasSet casSet) {

@@ -49,13 +49,7 @@ public class CommentAnswersDialog extends Dialog {
   }
 
   private void addCommentList() {
-    var scroll =
-        new JScrollPane(
-            commentListPanel,
-            JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-            JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-    scroll.getViewport().setScrollMode(JViewport.BLIT_SCROLL_MODE);
-    add(scroll, BorderLayout.CENTER);
+    add(commentListPanel.toScrollPane(), BorderLayout.CENTER);
     update();
   }
 
