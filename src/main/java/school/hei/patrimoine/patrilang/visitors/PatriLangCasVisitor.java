@@ -8,17 +8,17 @@ import static school.hei.patrimoine.patrilang.visitors.BaseVisitor.visitText;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import lombok.RequiredArgsConstructor;
-import school.hei.patrimoine.cas.Cas;
-import school.hei.patrimoine.modele.Devise;
 import school.hei.patrimoine.modele.possession.Possession;
+import school.hei.patrimoine.patrilang.modele.PatriLangCas;
 
 @RequiredArgsConstructor
-public class PatriLangCasVisitor implements Function<CasContext, Cas> {
+public class PatriLangCasVisitor implements Function<CasContext, PatriLangCas> {
   private final SectionVisitor sectionVisitor;
 
   @Override
-  public Cas apply(CasContext ctx) {
+  public PatriLangCas apply(CasContext ctx) {
     var sectionCasGeneral = ctx.sectionCasGeneral();
     var nom = visitText(sectionCasGeneral.ligneCasNom().nom);
     var devise = visitDevise(sectionCasGeneral.ligneDevise().devise());
@@ -46,56 +46,48 @@ public class PatriLangCasVisitor implements Function<CasContext, Cas> {
           ctx.sectionOperationTemplateDeclaration());
     }
 
-    return new Cas(ajd, finSimulation, possesseurs) {
-      @Override
-      protected Devise devise() {
-        return devise;
-      }
+    Runnable init =
+        () -> {
+          var chilSectionVisitor = sectionVisitor.createChildSectionVisitor();
+          if (nonNull(ctx.sectionInitialisation())) {
+            chilSectionVisitor.visitSectionInitialisation(ctx.sectionInitialisation());
+          }
+        };
 
-      @Override
-      protected String nom() {
-        return nom;
-      }
+    Runnable suivi =
+        () -> {
+          var chilSectionVisitor = sectionVisitor.createChildSectionVisitor();
+          if (nonNull(ctx.sectionSuivi())) {
+            chilSectionVisitor.visitSectionSuivi(ctx.sectionSuivi());
+          }
+        };
 
-      @Override
-      protected void init() {
-        var chilSectionVisitor = sectionVisitor.createChildSectionVisitor();
-        if (nonNull(ctx.sectionInitialisation())) {
-          chilSectionVisitor.visitSectionInitialisation(ctx.sectionInitialisation());
-        }
-      }
+    Supplier<Set<Possession>> possessionsSupplier =
+        () -> {
+          var chilSectionVisitor = sectionVisitor.createChildSectionVisitor();
+          Set<Possession> possessions = new HashSet<>();
 
-      @Override
-      protected void suivi() {
-        var chilSectionVisitor = sectionVisitor.createChildSectionVisitor();
-        if (nonNull(ctx.sectionSuivi())) {
-          chilSectionVisitor.visitSectionSuivi(ctx.sectionSuivi());
-        }
-      }
+          if (nonNull(ctx.sectionTresoreries())) {
+            possessions.addAll(
+                chilSectionVisitor.visitSectionTrésoreries(ctx.sectionTresoreries()));
+          }
 
-      @Override
-      public Set<Possession> possessions() {
-        var chilSectionVisitor = sectionVisitor.createChildSectionVisitor();
-        Set<Possession> possessions = new HashSet<>();
+          if (nonNull(ctx.sectionCreances())) {
+            possessions.addAll(chilSectionVisitor.visitSectionCréances(ctx.sectionCreances()));
+          }
 
-        if (nonNull(ctx.sectionTresoreries())) {
-          possessions.addAll(chilSectionVisitor.visitSectionTrésoreries(ctx.sectionTresoreries()));
-        }
+          if (nonNull(ctx.sectionDettes())) {
+            possessions.addAll(chilSectionVisitor.visitSectionDettes(ctx.sectionDettes()));
+          }
 
-        if (nonNull(ctx.sectionCreances())) {
-          possessions.addAll(chilSectionVisitor.visitSectionCréances(ctx.sectionCreances()));
-        }
+          if (nonNull(ctx.sectionOperations())) {
+            possessions.addAll(chilSectionVisitor.visitSectionOperations(ctx.sectionOperations()));
+          }
 
-        if (nonNull(ctx.sectionDettes())) {
-          possessions.addAll(chilSectionVisitor.visitSectionDettes(ctx.sectionDettes()));
-        }
+          return possessions;
+        };
 
-        if (nonNull(ctx.sectionOperations())) {
-          possessions.addAll(chilSectionVisitor.visitSectionOperations(ctx.sectionOperations()));
-        }
-
-        return possessions;
-      }
-    };
+    return new PatriLangCas(
+        nom, devise, ajd, finSimulation, possesseurs, init, suivi, possessionsSupplier);
   }
 }

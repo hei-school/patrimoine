@@ -45,6 +45,8 @@ public class FileSideBar extends JPanel {
                   Map.of(
                       "selectedFile",
                       selected,
+                      "selectedCasSetFile",
+                      getPlannedCasSetFile(),
                       "selectedFileId",
                       getSelectedFileDriveId(selected, true).orElse(""),
                       "isPlannedSelectedFile",
@@ -63,6 +65,8 @@ public class FileSideBar extends JPanel {
                   Map.of(
                       "selectedFile",
                       selected,
+                      "selectedCasSetFile",
+                      getDoneCasSetFile(),
                       "selectedFileId",
                       getSelectedFileDriveId(selected, false).orElse(""),
                       "isPlannedSelectedFile",

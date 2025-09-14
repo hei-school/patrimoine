@@ -7,6 +7,7 @@ public class GoogleIntegrationException extends Exception {
   public GoogleIntegrationException(String message, Exception cause) {
     super(message, cause);
 
-    log.error(message, cause.getMessage());
+    log.error(message);
+    log.error(cause.getMessage());
   }
 }

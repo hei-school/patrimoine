@@ -66,6 +66,7 @@ public class CommentApi {
           .driveService()
           .comments()
           .create(fileId, commentMapper.toGoogle(newComment))
+          .setFields("id")
           .execute();
     } catch (IOException e) {
       throw new GoogleIntegrationException("Failed to add comment to fileId=" + fileId, e);
@@ -81,23 +82,26 @@ public class CommentApi {
           .driveService()
           .replies()
           .create(fileId, commentId, commentMapper.toGoogleReply(reply))
+          .setFields("id")
           .execute();
     } catch (IOException e) {
+      System.out.printf(e.getMessage());
       throw new GoogleIntegrationException("Failed to reply to comment " + commentId, e);
     }
   }
 
-  public void resolve(String fileId, String commentId) throws GoogleIntegrationException {
+  public void resolve(String fileId, Comment comment) throws GoogleIntegrationException {
     try {
-      var updatedComment = Comment.builder().resolved(true).build();
+      var updatedComment = comment.toBuilder().resolved(true).build();
 
       driveApi
           .driveService()
           .comments()
-          .update(fileId, commentId, commentMapper.toGoogle(updatedComment))
+          .update(fileId, updatedComment.id(), commentMapper.toGoogle(updatedComment))
+          .setFields("id")
           .execute();
     } catch (IOException e) {
-      throw new GoogleIntegrationException("Failed to resolve comment " + commentId, e);
+      throw new GoogleIntegrationException("Failed to resolve comment " + comment.id(), e);
     }
   }
 }

@@ -1,37 +1,34 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.component.comment;
 
+import static school.hei.patrimoine.visualisation.swing.ihm.google.component.comment.CommentSideBar.resolveComment;
+
 import java.awt.*;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.function.BiConsumer;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import school.hei.patrimoine.google.model.Comment;
-import school.hei.patrimoine.visualisation.swing.ihm.google.component.Dialog;
-import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.AppContext;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
 
 public class CommentCard extends JPanel {
   private final String fileId;
   private final Comment comment;
-  private final BiConsumer<Comment, String> sendReplyConsumer;
+  private final Runnable refresh;
   private static final DateTimeFormatter DATE_TIME_FORMATTER =
       DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm").withZone(ZoneId.systemDefault());
 
   public CommentCard(
-      String fileId,
-      Comment comment,
-      BiConsumer<Comment, String> sendReplyConsumer,
-      boolean withActions) {
+      String fileId, Comment comment, int maxWidth, boolean withActions, Runnable refresh) {
     this.fileId = fileId;
     this.comment = comment;
-    this.sendReplyConsumer = sendReplyConsumer;
+    this.refresh = refresh;
 
     setOpaque(false);
     setAlignmentX(Component.LEFT_ALIGNMENT);
     setBackground(new Color(245, 245, 245));
     setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
     setBorder(new EmptyBorder(10, 10, 10, 10));
+    setMaximumSize(new Dimension(maxWidth, Integer.MAX_VALUE));
 
     add(header());
     add(content());
@@ -66,17 +63,23 @@ public class CommentCard extends JPanel {
     return header;
   }
 
-  public JLabel content() {
+  public JTextArea content() {
     var contentText = comment.content() != null ? comment.content() : "";
-    var content =
-        new JLabel(
-            "<html><div style='width:100%'>"
-                + contentText.replaceAll("\n", "<br>")
-                + "</div></html>");
+    var content = new JTextArea(contentText);
+    content.setLineWrap(true);
+    content.setWrapStyleWord(true);
+    content.setEditable(false);
+    content.setFocusable(false);
+    content.setOpaque(false);
+    content.setFont(content.getFont().deriveFont(14f));
     content.setBorder(new EmptyBorder(5, 5, 5, 5));
     content.setAlignmentX(Component.LEFT_ALIGNMENT);
-    content.setFont(content.getFont().deriveFont(14f));
 
+    int maxWidth = getMaximumSize().width;
+    content.setSize(maxWidth, Short.MAX_VALUE);
+    var d = content.getPreferredSize();
+    content.setPreferredSize(new Dimension(maxWidth, d.height));
+    content.setMaximumSize(new Dimension(maxWidth, d.height));
     return content;
   }
 
@@ -85,108 +88,27 @@ public class CommentCard extends JPanel {
     buttons.setOpaque(false);
     buttons.setBorder(new EmptyBorder(10, 0, 0, 0));
     buttons.setAlignmentX(Component.LEFT_ALIGNMENT);
-    buttons.add(replyBtn());
+    buttons.add(replyButton(fileId, comment, refresh));
 
-    if (!comment.replies().isEmpty()) {
-      buttons.add(showRepliesBtn());
+    if (!comment.answers().isEmpty()) {
+      buttons.add(showAnswersButton(fileId, comment, refresh));
     }
 
-    buttons.add(resolveBtn());
+    buttons.add(resolveButton(fileId, comment, refresh));
     return buttons;
   }
 
-  private Button replyBtn() {
-    var replyBtn = new Button("Répondre");
-    replyBtn.addActionListener(e -> showReplyDialog());
-    return replyBtn;
+  static Button showAnswersButton(String fileId, Comment parentComment, Runnable refresh) {
+    return new Button(
+        "Réponses (" + parentComment.answers().size() + ")",
+        e -> new CommentAnswersDialog(fileId, parentComment, refresh));
   }
 
-  private Button resolveBtn() {
-    var resolveBtn = new Button("Résoudre");
-    resolveBtn.addActionListener(e -> showReplyDialog());
-    return resolveBtn;
+  static Button replyButton(String fileId, Comment parentComment, Runnable refresh) {
+    return new Button("Répondre", e -> new CommentReplyDialog(fileId, parentComment, refresh));
   }
 
-  private Button showRepliesBtn() {
-    var showRepliesBtn = new Button("Réponses (" + comment.replies().size() + ")");
-    showRepliesBtn.addActionListener(e -> showAnswerssDialog(comment));
-    return showRepliesBtn;
-  }
-
-  private void showAnswerssDialog(Comment parentComment) {
-    var dialog =
-        new school.hei.patrimoine.visualisation.swing.ihm.google.component.Dialog(
-            "Réponses au commentaire", 800, 600, false);
-
-    dialog.setModal(true);
-    dialog.setLayout(new BorderLayout());
-
-    var contentPanel = new JPanel();
-    contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
-    contentPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
-
-    var mainWrapper = new CommentCard(fileId, comment, sendReplyConsumer, false);
-    contentPanel.add(mainWrapper);
-    contentPanel.add(Box.createVerticalStrut(15));
-
-    for (var reply : parentComment.replies()) {
-      var commentCard = new CommentCard(fileId, reply, sendReplyConsumer, false);
-      contentPanel.add(commentCard);
-      contentPanel.add(Box.createVerticalStrut(10));
-    }
-
-    var scroll =
-        new JScrollPane(
-            contentPanel,
-            JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-            JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-    scroll.getVerticalScrollBar().setUnitIncrement(16);
-    dialog.add(scroll, BorderLayout.CENTER);
-
-    var closeBtn = new Button("Fermer");
-    closeBtn.addActionListener(e -> dialog.dispose());
-
-    var btnPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-    btnPanel.add(replyBtn());
-    btnPanel.add(resolveBtn());
-    btnPanel.add(closeBtn);
-
-    dialog.add(btnPanel, BorderLayout.SOUTH);
-    dialog.pack();
-    dialog.setLocationRelativeTo(AppContext.getDefault().app());
-    dialog.setVisible(true);
-  }
-
-  private void showReplyDialog() {
-    var dialog = new Dialog("Répondre au commentaire", 500, 200, false);
-    dialog.setLayout(new BorderLayout());
-
-    var textArea = new JTextArea();
-    textArea.setLineWrap(true);
-    textArea.setWrapStyleWord(true);
-    dialog.add(new JScrollPane(textArea), BorderLayout.CENTER);
-
-    var sendBtn = new Button("Envoyer");
-    sendBtn.addActionListener(
-        e -> {
-          var content = textArea.getText().trim();
-          if (!content.isEmpty()) {
-            sendReplyConsumer.accept(comment, content);
-            dialog.dispose();
-          }
-        });
-
-    var cancelBtn = new Button("Annuler");
-    cancelBtn.addActionListener(e -> dialog.dispose());
-
-    var btnPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-    btnPanel.add(sendBtn);
-    btnPanel.add(cancelBtn);
-    dialog.add(btnPanel, BorderLayout.SOUTH);
-
-    dialog.pack();
-    dialog.setVisible(true);
-    dialog.setLocationRelativeTo(AppContext.getDefault().app());
-    dialog.setPreferredSize(new Dimension(750, 450));
+  static Button resolveButton(String fileId, Comment parentComment, Runnable refresh) {
+    return new Button("Résolu", e -> resolveComment(fileId, parentComment, refresh));
   }
 }
