@@ -34,8 +34,8 @@ public record DriveNamedIdDownloader(FileNameExtractor fileNameExtractor, DriveA
       log.warn("Failed to create directory {}", plannedFilesDirectory.getAbsolutePath());
     }
 
-    // resetIfExist(DOWNLOAD_PLANNED_FILE_DIRECTORY_PATH);
-    // resetIfExist(DOWNLOAD_DONE_FILE_DIRECTORY_PATH);
+    resetIfExist(DOWNLOAD_PLANNED_FILE_DIRECTORY_PATH);
+    resetIfExist(DOWNLOAD_DONE_FILE_DIRECTORY_PATH);
   }
 
   @Override

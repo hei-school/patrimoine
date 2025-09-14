@@ -1,4 +1,4 @@
-package school.hei.patrimoine.patrilang.factory;
+package school.hei.patrimoine.patrilang.visitors.factory;
 
 import school.hei.patrimoine.patrilang.visitors.*;
 import school.hei.patrimoine.patrilang.visitors.possession.*;

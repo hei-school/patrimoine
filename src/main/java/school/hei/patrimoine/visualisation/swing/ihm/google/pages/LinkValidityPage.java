@@ -152,7 +152,7 @@ public class LinkValidityPage extends Page {
               DriveApi driveApi = globalState().get("drive-api");
               var downloader = new DriveNamedIdDownloader(driveApi);
 
-              // downloader.apply(namedIds);
+              downloader.apply(namedIds);
 
               globalState().update("named-ids", namedIds);
               return null;

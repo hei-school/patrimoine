@@ -3,13 +3,14 @@ package school.hei.patrimoine.visualisation.swing.ihm.google.component.recoupeme
 import java.util.List;
 import javax.swing.*;
 import school.hei.patrimoine.modele.recouppement.PossessionRecoupee;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
 
 public class PossessionRecoupeeListPanel extends JPanel {
-  private final Runnable refresh;
+  private final State state;
 
-  public PossessionRecoupeeListPanel(Runnable refresh) {
+  public PossessionRecoupeeListPanel(State state) {
     super();
-    this.refresh = refresh;
+    this.state = state;
 
     setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
     setOpaque(true);
@@ -19,7 +20,7 @@ public class PossessionRecoupeeListPanel extends JPanel {
     removeAll();
 
     for (var possessionRecoupee : possessionRecoupees) {
-      add(new PossessionRecoupeeItem(possessionRecoupee, refresh));
+      add(new PossessionRecoupeeItem(state, possessionRecoupee));
       add(Box.createVerticalStrut(10));
     }
 

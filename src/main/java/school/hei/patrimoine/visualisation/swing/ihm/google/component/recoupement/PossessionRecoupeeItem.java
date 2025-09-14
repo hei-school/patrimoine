@@ -9,13 +9,14 @@ import javax.swing.border.EmptyBorder;
 import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.recouppement.PossessionRecoupee;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
 
 public class PossessionRecoupeeItem extends JPanel {
-  private final Runnable refresh;
+  private final State state;
   private final PossessionRecoupee possessionRecoupee;
 
-  public PossessionRecoupeeItem(PossessionRecoupee possessionRecoupee, Runnable refresh) {
-    this.refresh = refresh;
+  public PossessionRecoupeeItem(State state, PossessionRecoupee possessionRecoupee) {
+    this.state = state;
     this.possessionRecoupee = possessionRecoupee;
 
     setOpaque(true);
@@ -61,12 +62,13 @@ public class PossessionRecoupeeItem extends JPanel {
     if (NON_EXECUTE.equals(possessionRecoupee.status())) {
       var executeButton =
           new Button(
-              "Exécuter", e -> new PossessionRecoupeeExecuteDialog(refresh, possessionRecoupee));
+              "Exécuter", e -> new PossessionRecoupeeExecuteDialog(state, possessionRecoupee));
       panel.add(executeButton);
     }
 
     var detailButton =
-        new Button("Voir Details", e -> new PossessionReoupeeDetailDialog(possessionRecoupee));
+        new Button(
+            "Voir Details", e -> new PossessionReoupeeDetailDialog(state, possessionRecoupee));
     panel.setOpaque(false);
     panel.add(detailButton);
 
