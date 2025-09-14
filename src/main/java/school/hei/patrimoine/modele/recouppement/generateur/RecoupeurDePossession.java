@@ -4,9 +4,9 @@ import school.hei.patrimoine.modele.possession.Possession;
 import school.hei.patrimoine.modele.recouppement.PossessionRecoupee;
 
 public interface RecoupeurDePossession<T extends Possession> {
-  PossessionRecoupee comparer(T prévu, T réalisé);
+  PossessionRecoupee comparer(T prevu, T realise);
 
-  PossessionRecoupee nonÉxecuté(T nonÉxecuté);
+  PossessionRecoupee nonExecute(T nonExecute);
 
-  PossessionRecoupee imprévu(T nonPrévu);
+  PossessionRecoupee imprevu(T nonPrevu);
 }

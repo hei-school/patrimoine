@@ -22,6 +22,7 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.File
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.FileSideBar;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.recoupement.PossessionRecoupeeListPanel;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
+import school.hei.patrimoine.visualisation.swing.ihm.google.utils.AsyncTask;
 
 public class RecoupementPage extends LazyPage {
   public static final String PAGE_NAME = "recoupement";
@@ -35,16 +36,21 @@ public class RecoupementPage extends LazyPage {
   public RecoupementPage() {
     super(PAGE_NAME);
     this.state = new State(Map.of("filterStatus", PossessionRecoupeeFilterStatus.TOUT));
-    this.possessionRecoupeeListPanel = new PossessionRecoupeeListPanel(() -> {
-        updateCasSet();
-        update();
-    });
+    this.possessionRecoupeeListPanel =
+        new PossessionRecoupeeListPanel(
+            () -> {
+              updateCasSet();
+              update();
+            });
 
     state.subscribe(Set.of("filterStatus", "selectedFile"), this::update);
-    globalState().subscribe(Set.of("newUpdate"), () -> {
-        updateCasSet();
-        update();
-    });
+    globalState()
+        .subscribe(
+            Set.of("newUpdate"),
+            () -> {
+              updateCasSet();
+              update();
+            });
 
     setLayout(new BorderLayout());
   }
@@ -57,11 +63,12 @@ public class RecoupementPage extends LazyPage {
     addMainSplitPane();
   }
 
-  private void updateCasSet(){
-    boolean isNewUpdate = globalState().get("newUpdate") == null || (boolean) globalState().get("newUpdate");
+  private void updateCasSet() {
+    boolean isNewUpdate =
+        globalState().get("newUpdate") == null || (boolean) globalState().get("newUpdate");
 
-    if(!isNewUpdate){
-        return;
+    if (!isNewUpdate) {
+      return;
     }
 
     this.plannedCasSet = transpileToutCas(FileSideBar.getPlannedCasSetFile().getAbsolutePath());
@@ -130,8 +137,12 @@ public class RecoupementPage extends LazyPage {
       return;
     }
 
-    var possessionsRecoupees = getFilteredPossessionRecoupees();
-    possessionRecoupeeListPanel.update(possessionsRecoupees);
+    AsyncTask.<List<PossessionRecoupee>>builder()
+        .task(this::getFilteredPossessionRecoupees)
+        .onSuccess(possessionRecoupeeListPanel::update)
+        .withDialogLoading(isActive())
+        .build()
+        .execute();
   }
 
   private static Patrimoine getPatrimoine(File file, CasSet casSet) {

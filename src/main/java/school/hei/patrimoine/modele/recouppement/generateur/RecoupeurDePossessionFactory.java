@@ -1,13 +1,13 @@
 package school.hei.patrimoine.modele.recouppement.generateur;
 
+import static school.hei.patrimoine.modele.recouppement.PossessionRecoupee.PossessionRecoupeeStatus.EXECUTE_SANS_CORRECTION;
+
 import java.util.Set;
 import school.hei.patrimoine.modele.possession.FluxArgent;
 import school.hei.patrimoine.modele.possession.Possession;
 import school.hei.patrimoine.modele.recouppement.PossessionRecoupee;
 
-import static school.hei.patrimoine.modele.recouppement.PossessionRecoupee.PossessionRecoupeeStatus.EXECUTE_SANS_CORRECTION;
-
-public class RecoupeurDepossessionFactory {
+public class RecoupeurDePossessionFactory {
   @SuppressWarnings("unchecked")
   public static <T extends Possession> RecoupeurDePossession<T> make(T possession) {
     if (possession instanceof FluxArgent) {
@@ -16,18 +16,18 @@ public class RecoupeurDepossessionFactory {
 
     return new RecoupeurDePossessionBase<>() {
       @Override
-      public PossessionRecoupee comparer(T prévu, T réalisé) {
-        return new PossessionRecoupee(EXECUTE_SANS_CORRECTION, prévu, Set.of());
+      public PossessionRecoupee comparer(T prevu, T realise) {
+        return new PossessionRecoupee(EXECUTE_SANS_CORRECTION, prevu, Set.of());
       }
 
       @Override
-      public PossessionRecoupee nonÉxecuté(T nonÉxecuté) {
-        return new PossessionRecoupee(EXECUTE_SANS_CORRECTION, nonÉxecuté, Set.of());
+      public PossessionRecoupee nonExecute(T nonExecute) {
+        return new PossessionRecoupee(EXECUTE_SANS_CORRECTION, nonExecute, Set.of());
       }
 
       @Override
-      public PossessionRecoupee imprévu(T imprévu) {
-        return new PossessionRecoupee(EXECUTE_SANS_CORRECTION, imprévu, Set.of());
+      public PossessionRecoupee imprevu(T imprevu) {
+        return new PossessionRecoupee(EXECUTE_SANS_CORRECTION, imprevu, Set.of());
       }
     };
   }

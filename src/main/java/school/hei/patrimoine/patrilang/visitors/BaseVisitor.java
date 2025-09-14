@@ -1,7 +1,7 @@
 package school.hei.patrimoine.patrilang.visitors;
 
-import static school.hei.patrimoine.modele.Devise.*;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.*;
+import static school.hei.patrimoine.patrilang.mapper.DeviseMapper.stringToDevise;
 import static school.hei.patrimoine.patrilang.mapper.MaterielAppreciationMapper.stringToMaterielAppreciationType;
 
 import org.antlr.v4.runtime.tree.TerminalNode;
@@ -28,14 +28,7 @@ public class BaseVisitor {
   }
 
   public static Devise visitDevise(DeviseContext ctx) {
-    return switch (parseNodeValue(ctx.DEVISE())) {
-      case "Ar" -> MGA;
-      case "€" -> EUR;
-      case "$" -> CAD;
-      default ->
-          throw new IllegalArgumentException(
-              "Unknown devise type: " + parseNodeValue(ctx.DEVISE()));
-    };
+    return stringToDevise(parseNodeValue(ctx.DEVISE()));
   }
 
   public static double visitMaterielAppreciationFacteur(TerminalNode ctx) {

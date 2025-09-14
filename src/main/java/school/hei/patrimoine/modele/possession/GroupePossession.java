@@ -54,7 +54,7 @@ public final class GroupePossession extends Possession {
     }
 
     throw new RuntimeException(
-        "Imprévu ! Peut-être possessions vide ? groupePossessions.nom="
+        "imprevu ! Peut-être possessions vide ? groupePossessions.nom="
             + nom
             + ", possessions="
             + possessions);
