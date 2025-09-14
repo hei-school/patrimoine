@@ -2,6 +2,7 @@ package school.hei.patrimoine.modele.recouppement;
 
 import static java.util.function.Predicate.not;
 import static java.util.stream.Collectors.toSet;
+import static school.hei.patrimoine.modele.recouppement.PossessionRecoupee.PossessionRecoupeeStatus.*;
 
 import java.util.*;
 import school.hei.patrimoine.modele.Patrimoine;
@@ -50,30 +51,59 @@ public record RecoupeurDePossessions(Set<Possession> prévus, Set<Possession> r�
     return réalités.stream().filter(p -> getEquivalent(prévus, p).isEmpty()).collect(toSet());
   }
 
-  public Set<Correction> getCorrections() {
-    Set<Correction> corrections = new HashSet<>();
+  public Set<PossessionRecoupee> getPossessionsRecoupees() {
+    Set<PossessionRecoupee> possessionRecoupees = new HashSet<>();
 
     getPossessionsNonExecutés()
         .forEach(
             p -> {
               var correctionGenerateur = CorrectionGenerateurFactory.make(p);
-              corrections.addAll(correctionGenerateur.nonÉxecuté(p));
+              var corrections = correctionGenerateur.nonÉxecuté(p);
+              possessionRecoupees.add(
+                  PossessionRecoupee.builder()
+                      .status(NON_EXECUTE)
+                      .possession(p)
+                      .corrections(corrections)
+                      .build());
             });
 
     getPossessionsNonPrévus()
         .forEach(
             p -> {
               var correctionGenerateur = CorrectionGenerateurFactory.make(p);
-              corrections.addAll(correctionGenerateur.nonPrévu(p));
+              var corrections = correctionGenerateur.nonPrévu(p);
+              possessionRecoupees.add(
+                  PossessionRecoupee.builder()
+                      .status(IMPREVU)
+                      .possession(p)
+                      .corrections(corrections)
+                      .build());
             });
 
-    for (var prévu : getPossessionsÉxecutés()) {
-      var réalité = getEquivalent(réalités, prévu).get();
-      var correctionGenerateur = CorrectionGenerateurFactory.make(prévu);
-      corrections.addAll(correctionGenerateur.comparer(prévu, réalité));
-    }
+    getPossessionsÉxecutés()
+        .forEach(
+            prévu -> {
+              var réalité = getEquivalent(réalités, prévu).get();
+              var correctionGenerateur = CorrectionGenerateurFactory.make(prévu);
+              var corrections = correctionGenerateur.comparer(prévu, réalité);
+              var status =
+                  corrections.isEmpty() ? EXECUTE_SANS_CORRECTION : EXECUTE_AVEC_CORRECTION;
+              possessionRecoupees.add(
+                  PossessionRecoupee.builder()
+                      .status(status)
+                      .possession(prévu)
+                      .corrections(corrections)
+                      .build());
+            });
 
-    return corrections;
+    return possessionRecoupees;
+  }
+
+  public Set<Correction> getCorrections() {
+    return getPossessionsRecoupees().stream()
+        .map(PossessionRecoupee::corrections)
+        .flatMap(Collection::stream)
+        .collect(toSet());
   }
 
   public Set<Possession> getPossessionsÉxecutésAvecCorrections() {
@@ -101,13 +131,16 @@ public record RecoupeurDePossessions(Set<Possession> prévus, Set<Possession> r�
 
   private static Optional<Possession> getEquivalent(
       Collection<Possession> possessions, Possession possession) {
-    var equivalent = possessions.stream().filter(p -> p.nom().equals(possession.nom())).findFirst();
+    return possessions.stream()
+        .filter(
+            p -> {
+              if (!p.nom().equals(possession.nom())) {
+                return false;
+              }
 
-    if (equivalent.isPresent() && !equivalent.get().getClass().equals(possession.getClass())) {
-      throw new IllegalArgumentException("TODO: handle message");
-    }
-
-    return equivalent;
+              return possession.getClass().equals(p.getClass());
+            })
+        .findFirst();
   }
 
   private static Set<Possession> withoutCompteCorrections(Set<Possession> possessions) {
