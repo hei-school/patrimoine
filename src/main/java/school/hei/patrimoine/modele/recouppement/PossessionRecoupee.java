@@ -13,34 +13,36 @@ public record PossessionRecoupee(
     PossessionRecoupeeStatus status,
     Possession possession,
     Set<Correction> corrections,
-    Argent valeurPrévu,
-    Argent valeurRéalisé,
-    LocalDate datePrévu,
-    LocalDate dateRéalisé
-) {
-    public PossessionRecoupee(PossessionRecoupeeStatus status, Possession possession, Set<Correction> corrections) {
-        this(
-            status,
-            possession,
-            corrections,
-            possession.valeurComptable(),
-            possession.valeurComptable(),
-            possession.t(),
-            possession.t()
-        );
+    Argent valeurPrevu,
+    Argent valeurRealise,
+    LocalDate datePrevu,
+    LocalDate dateRealise) {
+  public PossessionRecoupee(
+      PossessionRecoupeeStatus status, Possession possession, Set<Correction> corrections) {
+    this(
+        status,
+        possession,
+        corrections,
+        possession.valeurComptable(),
+        possession.valeurComptable(),
+        possession.t(),
+        possession.t());
+  }
+
+  public int dateDifferenceEnJour() {
+    if (LocalDate.MIN.equals(datePrevu)
+        || LocalDate.MIN.equals(dateRealise)
+        || LocalDate.MAX.equals(datePrevu)
+        || LocalDate.MAX.equals(dateRealise)) {
+      return 0;
     }
 
-    public int dateDifferenceEnJour(){
-        if(LocalDate.MIN.equals(datePrévu) || LocalDate.MIN.equals(dateRéalisé) || LocalDate.MAX.equals(datePrévu) || LocalDate.MAX.equals(dateRéalisé)){
-            return 0;
-        }
+    return (int) ChronoUnit.DAYS.between(datePrevu, dateRealise);
+  }
 
-        return (int) ChronoUnit.DAYS.between(datePrévu, dateRéalisé);
-    }
-
-    public Argent valeurDifference() {
-        return valeurPrévu.minus(valeurRéalisé, dateRéalisé);
-    }
+  public Argent valeurDifference() {
+    return valeurPrevu.minus(valeurRealise, dateRealise);
+  }
 
   public enum PossessionRecoupeeStatus {
     IMPREVU,

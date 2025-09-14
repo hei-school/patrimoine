@@ -4,8 +4,6 @@ import static school.hei.patrimoine.visualisation.swing.ihm.google.component.com
 import static school.hei.patrimoine.visualisation.swing.ihm.google.component.comment.CommentCard.resolveButton;
 
 import java.awt.*;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
@@ -20,7 +18,7 @@ public class CommentAnswersDialog extends Dialog {
   private final Runnable refresh;
 
   public CommentAnswersDialog(String fileId, Comment parentComment, Runnable refreshParent) {
-    super("Réponses au commentaire", 800, 600, false);
+    super("Réponses au commentaire", 800, 500, false);
     this.fileId = fileId;
     this.refresh =
         () -> {
@@ -36,13 +34,6 @@ public class CommentAnswersDialog extends Dialog {
 
     addCommentList();
     addActions();
-    addComponentListener(
-        new ComponentAdapter() {
-          @Override
-          public void componentResized(ComponentEvent e) {
-            CommentAnswersDialog.this.update();
-          }
-        });
 
     pack();
     setVisible(true);

@@ -22,4 +22,21 @@ public class MonthMapper {
       default -> throw new IllegalArgumentException("Mois invalide : " + token);
     };
   }
+
+  public static String monthToString(Month month) {
+    return switch (month) {
+      case JANUARY -> "janvier";
+      case FEBRUARY -> "février";
+      case MARCH -> "mars";
+      case APRIL -> "avril";
+      case MAY -> "mai";
+      case JUNE -> "juin";
+      case JULY -> "juillet";
+      case AUGUST -> "août";
+      case SEPTEMBER -> "septembre";
+      case OCTOBER -> "octobre";
+      case NOVEMBER -> "novembre";
+      case DECEMBER -> "décembre";
+    };
+  }
 }

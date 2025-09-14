@@ -29,7 +29,7 @@ public class CommentListPanel extends JPanel {
     removeAll();
 
     for (var comment : comments) {
-      add(new CommentCard(fileId, comment, parent.getWidth() - 15, withActions, refresh));
+      add(new CommentCard(parent, fileId, comment, withActions, refresh));
       add(Box.createVerticalStrut(10));
     }
 
@@ -38,9 +38,11 @@ public class CommentListPanel extends JPanel {
   }
 
   public JScrollPane toScrollPane() {
-      var scroll = new JScrollPane(this, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-      scroll.getVerticalScrollBar().setUnitIncrement(20);
+    var scroll =
+        new JScrollPane(
+            this, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+    scroll.getVerticalScrollBar().setUnitIncrement(20);
 
-      return scroll;
+    return scroll;
   }
 }

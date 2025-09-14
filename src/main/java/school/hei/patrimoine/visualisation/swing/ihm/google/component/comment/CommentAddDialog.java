@@ -2,6 +2,8 @@ package school.hei.patrimoine.visualisation.swing.ihm.google.component.comment;
 
 import java.awt.*;
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+
 import school.hei.patrimoine.google.api.CommentApi;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.Dialog;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.AppContext;
@@ -16,7 +18,7 @@ public class CommentAddDialog extends Dialog {
   private final JTextArea textArea;
 
   public CommentAddDialog(State state, Runnable refreshParent) {
-    super("Ajouter une réponse", 500, 300, true);
+    super("ajouter une réponse", 500, 300, false);
     this.state = state;
     this.textArea = new JTextArea();
     this.refresh =
@@ -27,11 +29,19 @@ public class CommentAddDialog extends Dialog {
 
     setLayout(new BorderLayout());
 
+    addTitle();
     addCommentInput();
     addActions();
 
     pack();
     setVisible(true);
+  }
+
+  private void addTitle() {
+    var title = new JLabel("Ajouter un commentaire :");
+    title.setFont(new Font("Arial", Font.BOLD, 16));
+    title.setBorder(new EmptyBorder(10, 10, 10, 10));
+    add(title, BorderLayout.NORTH);
   }
 
   private void addCommentInput() {
@@ -44,6 +54,7 @@ public class CommentAddDialog extends Dialog {
             JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
     scroll.setPreferredSize(new Dimension(600, 200));
+    scroll.setBorder(new EmptyBorder(10, 10, 10, 10));
     add(scroll, BorderLayout.CENTER);
   }
 

@@ -3,8 +3,6 @@ package school.hei.patrimoine.visualisation.swing.ihm.google.component.comment;
 import static school.hei.patrimoine.google.api.CommentApi.COMMENTS_CACHE_KEY;
 
 import java.awt.*;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.util.List;
 import java.util.Set;
 import javax.swing.*;
@@ -34,14 +32,6 @@ public class CommentSideBar extends JPanel {
 
     addTopPanel();
     addCommentList();
-
-    addComponentListener(
-        new ComponentAdapter() {
-          @Override
-          public void componentResized(ComponentEvent e) {
-            CommentSideBar.this.update();
-          }
-        });
 
     state.subscribe(Set.of("selectedFile", "selectedFileId"), this::update);
   }

@@ -2,7 +2,6 @@ package school.hei.patrimoine.modele.recouppement;
 
 import static java.util.function.Predicate.not;
 import static java.util.stream.Collectors.toSet;
-import static school.hei.patrimoine.modele.recouppement.PossessionRecoupee.PossessionRecoupeeStatus.*;
 
 import java.util.*;
 import school.hei.patrimoine.modele.Patrimoine;
@@ -10,16 +9,16 @@ import school.hei.patrimoine.modele.possession.CompteCorrection;
 import school.hei.patrimoine.modele.possession.Correction;
 import school.hei.patrimoine.modele.possession.Possession;
 import school.hei.patrimoine.modele.recouppement.decomposeur.PossessionDecomposeurFactory;
-import school.hei.patrimoine.modele.recouppement.generateur.RecoupeurDepossessionFactory;
+import school.hei.patrimoine.modele.recouppement.generateur.RecoupeurDePossessionFactory;
 
-public record RecoupeurDePossessions(Set<Possession> prévus, Set<Possession> réalisés) {
-  public static RecoupeurDePossessions of(Patrimoine prévu, Patrimoine réalisé) {
-    return new RecoupeurDePossessions(prévu.getPossessions(), réalisé.getPossessions());
+public record RecoupeurDePossessions(Set<Possession> prevus, Set<Possession> realises) {
+  public static RecoupeurDePossessions of(Patrimoine prevu, Patrimoine realise) {
+    return new RecoupeurDePossessions(prevu.getPossessions(), realise.getPossessions());
   }
 
-  public RecoupeurDePossessions(Set<Possession> prévus, Set<Possession> réalisés) {
-    this.prévus =
-        withoutCompteCorrections(prévus).stream()
+  public RecoupeurDePossessions(Set<Possession> prevus, Set<Possession> realises) {
+    this.prevus =
+        withoutCompteCorrections(prevus).stream()
             .map(
                 p -> {
                   var decomposeur = PossessionDecomposeurFactory.make(p);
@@ -28,8 +27,8 @@ public record RecoupeurDePossessions(Set<Possession> prévus, Set<Possession> r�
             .flatMap(Collection::stream)
             .collect(toSet());
 
-    this.réalisés =
-        withoutCompteCorrections(réalisés).stream()
+    this.realises =
+        withoutCompteCorrections(realises).stream()
             .map(
                 p -> {
                   var decomposeur = PossessionDecomposeurFactory.make(p);
@@ -39,41 +38,41 @@ public record RecoupeurDePossessions(Set<Possession> prévus, Set<Possession> r�
             .collect(toSet());
   }
 
-  public Set<Possession> getPossessionsÉxecutés() {
-    return prévus.stream().filter(p -> getEquivalent(réalisés, p).isPresent()).collect(toSet());
+  public Set<Possession> getPossessionsExecutes() {
+    return prevus.stream().filter(p -> getEquivalent(realises, p).isPresent()).collect(toSet());
   }
 
-  public Set<Possession> getPossessionsNonExecutés() {
-    return prévus.stream().filter(p -> getEquivalent(réalisés, p).isEmpty()).collect(toSet());
+  public Set<Possession> getPossessionsNonExecutes() {
+    return prevus.stream().filter(p -> getEquivalent(realises, p).isEmpty()).collect(toSet());
   }
 
-  public Set<Possession> getPossessionsNonPrévus() {
-    return réalisés.stream().filter(p -> getEquivalent(prévus, p).isEmpty()).collect(toSet());
+  public Set<Possession> getPossessionsNonPrevus() {
+    return realises.stream().filter(p -> getEquivalent(prevus, p).isEmpty()).collect(toSet());
   }
 
   public Set<PossessionRecoupee> getPossessionsRecoupees() {
     Set<PossessionRecoupee> possessionRecoupees = new HashSet<>();
 
-    getPossessionsNonExecutés()
+    getPossessionsNonExecutes()
         .forEach(
             p -> {
-              var possessionRecoupeur = RecoupeurDepossessionFactory.make(p);
-              possessionRecoupees.add(possessionRecoupeur.nonÉxecuté(p));
+              var possessionRecoupeur = RecoupeurDePossessionFactory.make(p);
+              possessionRecoupees.add(possessionRecoupeur.nonExecute(p));
             });
 
-    getPossessionsNonPrévus()
+    getPossessionsNonPrevus()
         .forEach(
             p -> {
-              var possessionRecoupeur = RecoupeurDepossessionFactory.make(p);
-              possessionRecoupees.add(possessionRecoupeur.imprévu(p));
+              var possessionRecoupeur = RecoupeurDePossessionFactory.make(p);
+              possessionRecoupees.add(possessionRecoupeur.imprevu(p));
             });
 
-    getPossessionsÉxecutés()
+    getPossessionsExecutes()
         .forEach(
-            prévu -> {
-              var réalisé = getEquivalent(réalisés, prévu).get();
-              var possessionRecoupeur = RecoupeurDepossessionFactory.make(prévu);
-              possessionRecoupees.add(possessionRecoupeur.comparer(prévu, réalisé));
+            prevu -> {
+              var realise = getEquivalent(realises, prevu).get();
+              var possessionRecoupeur = RecoupeurDePossessionFactory.make(prevu);
+              possessionRecoupees.add(possessionRecoupeur.comparer(prevu, realise));
             });
 
     return possessionRecoupees;
@@ -86,25 +85,25 @@ public record RecoupeurDePossessions(Set<Possession> prévus, Set<Possession> r�
         .collect(toSet());
   }
 
-  public Set<Possession> getPossessionsÉxecutésAvecCorrections() {
-    return getPossessionsÉxecutés().stream()
+  public Set<Possession> getPossessionsExecutesAvecCorrections() {
+    return getPossessionsExecutes().stream()
         .filter(
             not(
-                prévu -> {
-                  var réalisé = getEquivalent(réalisés, prévu).get();
-                  var possessionRecoupeur = RecoupeurDepossessionFactory.make(prévu);
-                  return possessionRecoupeur.comparer(prévu, réalisé).corrections().isEmpty();
+                prevu -> {
+                  var realise = getEquivalent(realises, prevu).get();
+                  var possessionRecoupeur = RecoupeurDePossessionFactory.make(prevu);
+                  return possessionRecoupeur.comparer(prevu, realise).corrections().isEmpty();
                 }))
         .collect(toSet());
   }
 
-  public Set<Possession> getPossessionsÉxecutésSansCorrections() {
-    return getPossessionsÉxecutés().stream()
+  public Set<Possession> getPossessionsExecutesSansCorrections() {
+    return getPossessionsExecutes().stream()
         .filter(
-            prévu -> {
-              var réalisé = getEquivalent(réalisés, prévu).get();
-              var possessionRecoupeur = RecoupeurDepossessionFactory.make(prévu);
-              return possessionRecoupeur.comparer(prévu, réalisé).corrections().isEmpty();
+            prevu -> {
+              var realise = getEquivalent(realises, prevu).get();
+              var possessionRecoupeur = RecoupeurDePossessionFactory.make(prevu);
+              return possessionRecoupeur.comparer(prevu, realise).corrections().isEmpty();
             })
         .collect(toSet());
   }

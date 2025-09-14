@@ -11,63 +11,63 @@ import school.hei.patrimoine.modele.recouppement.PossessionRecoupee;
 
 public class FluxArgentRecoupeurDePossession extends RecoupeurDePossessionBase<FluxArgent> {
   @Override
-  public PossessionRecoupee imprévu(FluxArgent imprévu) {
-    var compte = imprévu.getCompte();
+  public PossessionRecoupee imprevu(FluxArgent imprevu) {
+    var compte = imprevu.getCompte();
     var corrections =
         Set.of(
             new Correction(
                 new FluxArgent(
-                    imprevuNom(imprévu), compte, getDate(imprévu), getValeur(imprévu).mult(-1))));
+                    imprevuNom(imprevu), compte, getDate(imprevu), getValeur(imprevu).mult(-1))));
 
     return PossessionRecoupee.builder()
         .status(IMPREVU)
-        .possession(imprévu)
+        .possession(imprevu)
         .corrections(corrections)
-        .datePrévu(LocalDate.MIN)
-        .valeurPrévu(new Argent(0, imprévu.devise()))
-        .dateRéalisé(getDate(imprévu))
-        .valeurRéalisé(getValeur(imprévu))
+        .datePrevu(LocalDate.MIN)
+        .valeurPrevu(new Argent(0, imprevu.devise()))
+        .dateRealise(getDate(imprevu))
+        .valeurRealise(getValeur(imprevu))
         .build();
   }
 
   @Override
-  public PossessionRecoupee nonÉxecuté(FluxArgent nonÉxecuté) {
-    var compte = nonÉxecuté.getCompte();
+  public PossessionRecoupee nonExecute(FluxArgent nonExecute) {
+    var compte = nonExecute.getCompte();
     var corrections =
         Set.of(
             new Correction(
                 new FluxArgent(
-                    nonExecuteNom(nonÉxecuté),
+                    nonExecuteNom(nonExecute),
                     compte,
-                    getDate(nonÉxecuté),
-                    getValeur(nonÉxecuté))));
+                    getDate(nonExecute),
+                    getValeur(nonExecute))));
 
     return PossessionRecoupee.builder()
         .status(NON_EXECUTE)
-        .possession(nonÉxecuté)
+        .possession(nonExecute)
         .corrections(corrections)
-        .dateRéalisé(LocalDate.MIN)
-        .valeurRéalisé(new Argent(0, nonÉxecuté.devise()))
-        .datePrévu(getDate(nonÉxecuté))
-        .valeurPrévu(getValeur(nonÉxecuté))
+        .dateRealise(LocalDate.MIN)
+        .valeurRealise(new Argent(0, nonExecute.devise()))
+        .datePrevu(getDate(nonExecute))
+        .valeurPrevu(getValeur(nonExecute))
         .build();
   }
 
   @Override
-  public PossessionRecoupee comparer(FluxArgent prévu, FluxArgent réalisé) {
-    var compte = prévu.getCompte();
-    var valeurDiff = getValeur(réalisé).minus(getValeur(prévu), getDate(réalisé));
+  public PossessionRecoupee comparer(FluxArgent prevu, FluxArgent realise) {
+    var compte = prevu.getCompte();
+    var valeurDiff = getValeur(realise).minus(getValeur(prevu), getDate(realise));
 
-    if (memeDate(prévu, réalisé)) {
-      if (memeValeur(prévu, réalisé)) {
+    if (memeDate(prevu, realise)) {
+      if (memeValeur(prevu, realise)) {
         return PossessionRecoupee.builder()
-            .possession(prévu)
+            .possession(prevu)
             .status(EXECUTE_SANS_CORRECTION)
             .corrections(Set.of())
-            .valeurPrévu(getValeur(prévu))
-            .valeurRéalisé(getValeur(réalisé))
-            .datePrévu(getDate(prévu))
-            .dateRéalisé(getDate(réalisé))
+            .valeurPrevu(getValeur(prevu))
+            .valeurRealise(getValeur(realise))
+            .datePrevu(getDate(prevu))
+            .dateRealise(getDate(realise))
             .build();
       }
 
@@ -75,64 +75,64 @@ public class FluxArgentRecoupeurDePossession extends RecoupeurDePossessionBase<F
           Set.of(
               new Correction(
                   new FluxArgent(
-                      valeurDifferenteNom(prévu), compte, getDate(réalisé), valeurDiff)));
+                      valeurDifferenteNom(prevu), compte, getDate(realise), valeurDiff)));
       return PossessionRecoupee.builder()
-          .possession(prévu)
+          .possession(prevu)
           .corrections(corrections)
           .status(EXECUTE_AVEC_CORRECTION)
-          .valeurPrévu(getValeur(prévu))
-          .valeurRéalisé(getValeur(réalisé))
-          .datePrévu(getDate(prévu))
-          .dateRéalisé(getDate(réalisé))
+          .valeurPrevu(getValeur(prevu))
+          .valeurRealise(getValeur(realise))
+          .datePrevu(getDate(prevu))
+          .dateRealise(getDate(realise))
           .build();
     }
 
-    if (memeValeur(prévu, réalisé)) {
+    if (memeValeur(prevu, realise)) {
       var corrections =
           Set.of(
               new Correction(
                   new FluxArgent(
-                      dateDifferenteNom(prévu, réalisé), compte, getDate(prévu), getValeur(prévu))),
+                      dateDifferenteNom(prevu, realise), compte, getDate(prevu), getValeur(prevu))),
               new Correction(
                   new FluxArgent(
-                      dateDifferenteNom(prévu, réalisé),
+                      dateDifferenteNom(prevu, realise),
                       compte,
-                      getDate(réalisé),
-                      getValeur(réalisé).mult(-1))));
+                      getDate(realise),
+                      getValeur(realise).mult(-1))));
 
       return PossessionRecoupee.builder()
-          .possession(prévu)
+          .possession(prevu)
           .status(EXECUTE_AVEC_CORRECTION)
           .corrections(corrections)
-          .dateRéalisé(getDate(réalisé))
-          .valeurRéalisé(getValeur(réalisé))
-          .datePrévu(getDate(prévu))
-          .valeurPrévu(getValeur(prévu))
+          .dateRealise(getDate(realise))
+          .valeurRealise(getValeur(realise))
+          .datePrevu(getDate(prevu))
+          .valeurPrevu(getValeur(prevu))
           .build();
     }
 
     var corrections =
         Set.of(
             new Correction(
-                new FluxArgent(valeurDifferenteNom(prévu), compte, getDate(réalisé), valeurDiff)),
+                new FluxArgent(valeurDifferenteNom(prevu), compte, getDate(realise), valeurDiff)),
             new Correction(
                 new FluxArgent(
-                    dateDifferenteNom(prévu, réalisé), compte, getDate(prévu), getValeur(prévu))),
+                    dateDifferenteNom(prevu, realise), compte, getDate(prevu), getValeur(prevu))),
             new Correction(
                 new FluxArgent(
-                    dateDifferenteNom(prévu, réalisé),
+                    dateDifferenteNom(prevu, realise),
                     compte,
-                    getDate(réalisé),
-                    getValeur(réalisé).mult(-1))));
+                    getDate(realise),
+                    getValeur(realise).mult(-1))));
 
     return PossessionRecoupee.builder()
-        .possession(prévu)
+        .possession(prevu)
         .status(EXECUTE_AVEC_CORRECTION)
         .corrections(corrections)
-        .dateRéalisé(getDate(réalisé))
-        .valeurRéalisé(getValeur(réalisé))
-        .datePrévu(getDate(prévu))
-        .valeurPrévu(getValeur(prévu))
+        .dateRealise(getDate(realise))
+        .valeurRealise(getValeur(realise))
+        .datePrevu(getDate(prevu))
+        .valeurPrevu(getValeur(prevu))
         .build();
   }
 

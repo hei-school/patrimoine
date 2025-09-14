@@ -1,29 +1,29 @@
 package school.hei.patrimoine.modele.recouppement.generateur;
 
+import java.time.LocalDate;
 import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.possession.Possession;
 
-import java.time.LocalDate;
-
-public abstract class RecoupeurDePossessionBase<T extends Possession> implements RecoupeurDePossession<T> {
-  protected boolean memeDate(T prévu, T réalisé) {
-    return getDate(prévu).equals(getDate(réalisé));
+public abstract class RecoupeurDePossessionBase<T extends Possession>
+    implements RecoupeurDePossession<T> {
+  protected boolean memeDate(T prevu, T realise) {
+    return getDate(prevu).equals(getDate(realise));
   }
 
-  protected boolean memeValeur(T prévu, T réalisé) {
-    return getValeur(prévu).equals(getValeur(réalisé));
+  protected boolean memeValeur(T prevu, T realise) {
+    return getValeur(prevu).equals(getValeur(realise));
   }
 
   protected Argent getValeur(T possession) {
     return possession.valeurComptable();
   }
 
-  protected LocalDate getDate(T possession){
-      return possession.t();
+  protected LocalDate getDate(T possession) {
+    return possession.t();
   }
 
   protected String imprevuNom(T possession) {
-    return "Imprévu – " + possession.nom();
+    return "imprevu – " + possession.nom();
   }
 
   protected String nonExecuteNom(T possession) {
@@ -42,11 +42,11 @@ public abstract class RecoupeurDePossessionBase<T extends Possession> implements
     return "Valeur différente – " + possession.nom();
   }
 
-  protected String dateDifferenteNom(T prévu, T réalisé){
-      if(prévu.t().isAfter(réalisé.t())){
-            return enAvanceNom(prévu) ;
-      }
+  protected String dateDifferenteNom(T prevu, T realise) {
+    if (prevu.t().isAfter(realise.t())) {
+      return enAvanceNom(prevu);
+    }
 
-      return enRetardNom(prévu);
+    return enRetardNom(prevu);
   }
 }
