@@ -9,12 +9,14 @@ import lombok.Getter;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import school.hei.patrimoine.google.api.DriveApi;
 import school.hei.patrimoine.google.model.User;
+import school.hei.patrimoine.patrilang.files.PatriLangFileWritter;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.AppContext;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
 import school.hei.patrimoine.visualisation.swing.ihm.google.utils.AsyncTask;
 import school.hei.patrimoine.visualisation.swing.ihm.google.utils.MessageDialog;
-import school.hei.patrimoine.visualisation.swing.ihm.google.utils.PatriLangFileWritter;
+
+import static school.hei.patrimoine.patrilang.files.PatriLangFileWritter.FileWritterInput;
 
 @Getter
 public class AppBar extends JPanel {
@@ -45,8 +47,7 @@ public class AppBar extends JPanel {
     return rightControls;
   }
 
-  private static void saveSelectedFile(
-      State state, Supplier<String> currentFileNewContentSupplier) {
+  private static void saveSelectedFile(State state, String content) {
     ViewMode currentMode = state.get("viewMode");
     if (!ViewMode.EDIT.equals(currentMode)) {
       MessageDialog.error("Erreur", "Vous devez être en mode édition pour sauvegarder.");
@@ -63,16 +64,19 @@ public class AppBar extends JPanel {
         .loadingMessage("Validation et sauvegarde du fichier...")
         .task(
             () -> {
-              var fileWritter = new PatriLangFileWritter();
-              File currentCasSetFile = state.get("selectedCasSetFile");
-              fileWritter.write(currentFileNewContentSupplier, currentFile, currentCasSetFile);
-              AppContext.getDefault().globalState().update("newUpdate", true);
+               new PatriLangFileWritter()
+                .write(FileWritterInput.builder()
+                .casSet(state.get("selectedCasSetFile"))
+                .file(currentFile)
+                .content(content)
+                .build());
               return null;
             })
         .onSuccess(
-            result ->
-                MessageDialog.info(
-                    "Succès", "Vous pouvez maintenant le synchroniser avec Google Drive."))
+            result ->{
+                AppContext.getDefault().globalState().update("newUpdate", true);
+                MessageDialog.info("Succès", "Vous pouvez maintenant le synchroniser avec Google Drive.");
+            })
         .onError(
             error -> {
               if (error instanceof ParseCancellationException e) {
@@ -147,10 +151,9 @@ public class AppBar extends JPanel {
     return modeSelect;
   }
 
-  public static Button builtInSaveButton(
-      State state, Supplier<String> currentFileNewContentSupplier) {
+  public static Button builtInSaveButton(State state, Supplier<String> currentFileNewContentSupplier) {
     var saveButton = new Button("Enregistrement local");
-    saveButton.addActionListener(e -> saveSelectedFile(state, currentFileNewContentSupplier));
+    saveButton.addActionListener(e -> saveSelectedFile(state, currentFileNewContentSupplier.get()));
 
     return saveButton;
   }
