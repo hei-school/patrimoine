@@ -4,8 +4,8 @@ import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class DriveLinkIdParser implements Function<String, String> {
-  public static final Pattern GOOGLE_DRIVE_ID_PATTERN =
+public record DriveLinkIdParser() implements Function<String, String> {
+  static final Pattern GOOGLE_DRIVE_ID_PATTERN =
       Pattern.compile("/(?:file/d/|open?id=|uc\\?id=|folders/)([a-zA-Z0-9-_]+)");
 
   @Override

@@ -1,7 +1,7 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.pages;
 
 import static java.awt.Font.BOLD;
-import static school.hei.patrimoine.google.DriveLinkIdParser.GOOGLE_DRIVE_ID_PATTERN;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.GoogleLinkList.*;
 
 import java.awt.*;
 import java.util.Arrays;
@@ -9,22 +9,24 @@ import java.util.List;
 import java.util.Optional;
 import javax.swing.*;
 import lombok.extern.slf4j.Slf4j;
+import school.hei.patrimoine.google.DriveLinkVerifier;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.Page;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.GoogleLinkList;
-import school.hei.patrimoine.visualisation.swing.ihm.google.modele.NamedLink;
 import school.hei.patrimoine.visualisation.swing.ihm.google.utils.AsyncTask;
 
 @Slf4j
 public class SubmitLinkPage extends Page {
   public static final String PAGE_NAME = "submit-file-url";
-  private final JTextArea plannedInput;
   private final JTextArea doneInput;
+  private final JTextArea plannedInput;
+  private final DriveLinkVerifier linkVerifier;
 
   public SubmitLinkPage() {
     super(PAGE_NAME);
-    this.plannedInput = new JTextArea();
     this.doneInput = new JTextArea();
+    this.plannedInput = new JTextArea();
+    this.linkVerifier = new DriveLinkVerifier();
 
     setLayout(new BorderLayout());
     addTitle();
@@ -115,6 +117,16 @@ public class SubmitLinkPage extends Page {
         .execute();
   }
 
+  private List<NamedLink> extractDriveLinks(String rawText) {
+    var lines = Arrays.asList(rawText.split("\n"));
+    return lines.stream()
+        .filter(linkVerifier::verify)
+        .map(this::extractDriveLink)
+        .filter(Optional::isPresent)
+        .map(Optional::get)
+        .toList();
+  }
+
   private Optional<NamedLink> extractDriveLink(String line) {
     var parts = line.split(":", 2);
 
@@ -125,16 +137,5 @@ public class SubmitLinkPage extends Page {
     var linkName = parts[0].trim();
     var linkValue = parts[1].trim();
     return Optional.of(new NamedLink(linkName, linkValue));
-  }
-
-  private List<NamedLink> extractDriveLinks(String rawText) {
-    var lines = Arrays.asList(rawText.split("\n"));
-
-    return lines.stream()
-        .filter(line -> GOOGLE_DRIVE_ID_PATTERN.matcher(line).find())
-        .map(this::extractDriveLink)
-        .filter(Optional::isPresent)
-        .map(Optional::get)
-        .toList();
   }
 }

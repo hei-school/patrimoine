@@ -1,9 +1,9 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.component.recoupement;
 
 import static java.lang.Double.parseDouble;
+import static school.hei.patrimoine.patrilang.files.PatriLangFileWritter.FileWritterInput;
 import static school.hei.patrimoine.patrilang.mapper.DeviseMapper.stringToDevise;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.component.recoupement.PossessionReoupeeDetailDialog.makeInfoRow;
-import static school.hei.patrimoine.patrilang.files.PatriLangFileWritter.FileWritterInput;
 
 import java.awt.*;
 import java.io.File;
@@ -18,8 +18,8 @@ import org.jdatepicker.impl.*;
 import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.possession.FluxArgent;
 import school.hei.patrimoine.modele.recouppement.PossessionRecoupee;
-import school.hei.patrimoine.patrilang.files.PatriLangFileWritter;
 import school.hei.patrimoine.patrilang.files.PatriLangFileQuerier;
+import school.hei.patrimoine.patrilang.files.PatriLangFileWritter;
 import school.hei.patrimoine.patrilang.generator.PatriLangGeneratorFactory;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.Dialog;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.AppContext;
@@ -76,6 +76,7 @@ public class PossessionRecoupeeExecuteDialog extends Dialog {
     panel.add(makeInfoRow("Date d'exécution", null));
     datePicker = createDatePicker(LocalDate.now());
     datePicker.setOpaque(true);
+    datePicker.setFont(datePicker.getFont().deriveFont(18f));
     datePicker.setBackground(Color.WHITE);
     panel.add(datePicker);
 
@@ -94,7 +95,11 @@ public class PossessionRecoupeeExecuteDialog extends Dialog {
   private static JDatePickerImpl createDatePicker(LocalDate defaultDate) {
     var model =
         new UtilDateModel(Date.from(defaultDate.atStartOfDay(ZoneId.systemDefault()).toInstant()));
-    var datePanel = new JDatePanelImpl(model, new Properties());
+
+    var i18n = new Properties();
+    i18n.put("text.today", "ce jour");
+
+    var datePanel = new JDatePanelImpl(model, i18n);
     return new JDatePickerImpl(datePanel, new DateFormatter());
   }
 
@@ -119,18 +124,21 @@ public class PossessionRecoupeeExecuteDialog extends Dialog {
     AsyncTask.<Void>builder()
         .task(
             () -> {
-              var sectionOperation = patriLangFileQuerier.query(selectedFile.getAbsolutePath(), document -> document.cas().sectionOperations());
+              var sectionOperation =
+                  patriLangFileQuerier.query(
+                      selectedFile.getAbsolutePath(),
+                      document -> document.cas().sectionOperations());
               if (sectionOperation.isEmpty()) {
                 throw new RuntimeException("Section Operations introuvable dans le fichier");
               }
 
               patriLangFileWritter.insertAtLine(
-                  FileWritterInput
-                      .builder()
-                          .content(getNewLine())
-                          .file(selectedFile)
-                          .casSet(casSet)
-                      .build(), sectionOperation.get().endLine() + 1);
+                  FileWritterInput.builder()
+                      .content(getNewLine())
+                      .file(selectedFile)
+                      .casSet(casSet)
+                      .build(),
+                  sectionOperation.get().endLine());
               return null;
             })
         .onError(

@@ -6,11 +6,11 @@ import java.nio.file.Paths;
 import java.util.function.Function;
 import school.hei.patrimoine.cas.Cas;
 import school.hei.patrimoine.cas.CasSet;
-import school.hei.patrimoine.patrilang.visitors.factory.SectionVisitorFactory;
 import school.hei.patrimoine.patrilang.visitors.PatriLangCasVisitor;
 import school.hei.patrimoine.patrilang.visitors.PatriLangToutCasVisitor;
 import school.hei.patrimoine.patrilang.visitors.PatriLangVisitor;
 import school.hei.patrimoine.patrilang.visitors.SectionVisitor;
+import school.hei.patrimoine.patrilang.visitors.factory.SectionVisitorFactory;
 
 public class PatriLangTranspiler implements Function<String, CasSet> {
   public static final String CAS_FILE_EXTENSION = ".cas.md";

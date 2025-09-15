@@ -20,8 +20,8 @@ public class PatriLangFileQuerier {
     return Optional.of(
         QueryResult.<T>builder()
             .context(context)
-            .endLine(context.stop.getLine())
-            .startLine(context.start.getLine())
+            .endLine(context.getStop().getLine())
+            .startLine(context.getStart().getLine())
             .build());
   }
 

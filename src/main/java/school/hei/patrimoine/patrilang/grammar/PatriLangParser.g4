@@ -46,7 +46,7 @@ sectionNombresDeclarations
     ;
 /* Cas */
 cas
-    :   sectionCasGeneral sectionPossesseurs sectionNombresDeclarations? sectionDatesDeclarations? sectionTresoreries? sectionCreances? sectionDettes? sectionInitialisation?  sectionOperationTemplateDeclaration? sectionOperations? sectionSuivi? EOF
+    :   sectionCasGeneral sectionPossesseurs sectionNombresDeclarations? sectionDatesDeclarations? sectionTresoreries? sectionCreances? sectionDettes? sectionInitialisation? sectionOperations? sectionOperationTemplateDeclaration? sectionSuivi? EOF
     ;
 
 sectionCasGeneral

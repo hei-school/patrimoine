@@ -1,9 +1,10 @@
 package school.hei.patrimoine.patrilang.files;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-
+import java.nio.file.StandardOpenOption;
 import lombok.Builder;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import school.hei.patrimoine.patrilang.validator.PatriLangValidator;
@@ -16,16 +17,22 @@ public class PatriLangFileWritter {
   }
 
   public void write(FileWritterInput input) throws Exception {
-    rollbackIfNotValid(() -> Files.writeString(input.file().toPath(), input.content()), input);
+    rollbackIfNotValid(
+        () -> Files.writeString(input.file().toPath(), input.content(), StandardCharsets.UTF_8),
+        input);
   }
 
   public void insertAtLine(FileWritterInput input, int lineIndex) throws Exception {
     rollbackIfNotValid(
         () -> {
           var tempFile = new File(input.file().getAbsolutePath() + ".tmp");
-
-          var reader = new BufferedReader(new FileReader(input.file()));
-          var writer = new BufferedWriter(new FileWriter(tempFile));
+          var reader = Files.newBufferedReader(input.file().toPath(), StandardCharsets.UTF_8);
+          var writer =
+              Files.newBufferedWriter(
+                  tempFile.toPath(),
+                  StandardCharsets.UTF_8,
+                  StandardOpenOption.CREATE,
+                  StandardOpenOption.TRUNCATE_EXISTING);
 
           String line;
           int current = 0;
@@ -44,7 +51,8 @@ public class PatriLangFileWritter {
             writer.write(input.content());
             writer.newLine();
           }
-
+          reader.close();
+          writer.close();
           Files.move(tempFile.toPath(), input.file().toPath(), StandardCopyOption.REPLACE_EXISTING);
         },
         input);
@@ -53,12 +61,11 @@ public class PatriLangFileWritter {
   private void rollbackIfNotValid(ThrowingRunnable runnable, FileWritterInput input)
       throws Exception {
     var oldContent = Files.readString(input.file().toPath());
-
     try {
       runnable.run();
       validator.accept(input.casSet().getAbsolutePath());
     } catch (ParseCancellationException | IllegalArgumentException e) {
-      Files.writeString(input.file().toPath(), oldContent);
+      Files.writeString(input.file().toPath(), oldContent, StandardCharsets.UTF_8);
       throw e;
     }
   }

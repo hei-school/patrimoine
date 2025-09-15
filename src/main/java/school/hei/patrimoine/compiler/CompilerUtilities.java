@@ -1,8 +1,6 @@
 package school.hei.patrimoine.compiler;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -14,7 +12,6 @@ public class CompilerUtilities {
   private CompilerUtilities() {}
 
   public static final String USER_HOME = System.getProperty("user.home");
-  public static final String TEMP_DIRECTORY = System.getProperty("java.io.tmpdir");
   public static final String COMPILE_DIR_NAME = USER_HOME + "/.patrimoine/compile";
   public static final String DOWNLOADS_DIRECTORY_PATH = USER_HOME + "/.patrimoine/drive";
   private static final String PATRIMOINE_JAR_NAME = "patrimoine-1.0-SNAPSHOT.jar";
@@ -38,26 +35,6 @@ public class CompilerUtilities {
       Files.createDirectories(path);
     } catch (IOException e) {
       throw new RuntimeException("Directory reset error : " + directoryPath, e);
-    }
-  }
-
-  public static void copyFileContent(File sourceFile, File targetFile) {
-    byte[] buffer = new byte[1024];
-    int bytesRead;
-
-    try (FileOutputStream targetOutputStream = new FileOutputStream(targetFile);
-        FileInputStream sourceInputStream = new FileInputStream(sourceFile)) {
-
-      while ((bytesRead = sourceInputStream.read(buffer)) != -1) {
-        targetOutputStream.write(buffer, 0, bytesRead);
-      }
-
-    } catch (IOException e) {
-      throw new RuntimeException("Failed to copy file content", e);
-    } finally {
-      if (sourceFile.exists() && !sourceFile.delete()) {
-        log.warn("Failed to delete file {}", sourceFile.getAbsolutePath());
-      }
     }
   }
 }

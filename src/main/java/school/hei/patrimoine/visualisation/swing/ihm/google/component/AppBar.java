@@ -1,5 +1,7 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.component;
 
+import static school.hei.patrimoine.patrilang.files.PatriLangFileWritter.FileWritterInput;
+
 import java.awt.*;
 import java.io.File;
 import java.util.List;
@@ -15,8 +17,6 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.But
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
 import school.hei.patrimoine.visualisation.swing.ihm.google.utils.AsyncTask;
 import school.hei.patrimoine.visualisation.swing.ihm.google.utils.MessageDialog;
-
-import static school.hei.patrimoine.patrilang.files.PatriLangFileWritter.FileWritterInput;
 
 @Getter
 public class AppBar extends JPanel {
@@ -64,18 +64,20 @@ public class AppBar extends JPanel {
         .loadingMessage("Validation et sauvegarde du fichier...")
         .task(
             () -> {
-               new PatriLangFileWritter()
-                .write(FileWritterInput.builder()
-                .casSet(state.get("selectedCasSetFile"))
-                .file(currentFile)
-                .content(content)
-                .build());
+              new PatriLangFileWritter()
+                  .write(
+                      FileWritterInput.builder()
+                          .casSet(state.get("selectedCasSetFile"))
+                          .file(currentFile)
+                          .content(content)
+                          .build());
               return null;
             })
         .onSuccess(
-            result ->{
-                AppContext.getDefault().globalState().update("newUpdate", true);
-                MessageDialog.info("Succès", "Vous pouvez maintenant le synchroniser avec Google Drive.");
+            result -> {
+              AppContext.getDefault().globalState().update("newUpdate", true);
+              MessageDialog.info(
+                  "Succès", "Vous pouvez maintenant le synchroniser avec Google Drive.");
             })
         .onError(
             error -> {
@@ -151,7 +153,8 @@ public class AppBar extends JPanel {
     return modeSelect;
   }
 
-  public static Button builtInSaveButton(State state, Supplier<String> currentFileNewContentSupplier) {
+  public static Button builtInSaveButton(
+      State state, Supplier<String> currentFileNewContentSupplier) {
     var saveButton = new Button("Enregistrement local");
     saveButton.addActionListener(e -> saveSelectedFile(state, currentFileNewContentSupplier.get()));
 
