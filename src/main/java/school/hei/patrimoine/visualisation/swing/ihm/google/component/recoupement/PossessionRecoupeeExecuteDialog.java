@@ -1,9 +1,9 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.component.recoupement;
 
 import static java.lang.Double.parseDouble;
-import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.SectionOperationsContext;
 import static school.hei.patrimoine.patrilang.mapper.DeviseMapper.stringToDevise;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.component.recoupement.PossessionReoupeeDetailDialog.makeInfoRow;
+import static school.hei.patrimoine.patrilang.files.PatriLangFileWritter.FileWritterInput;
 
 import java.awt.*;
 import java.io.File;
@@ -18,6 +18,8 @@ import org.jdatepicker.impl.*;
 import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.possession.FluxArgent;
 import school.hei.patrimoine.modele.recouppement.PossessionRecoupee;
+import school.hei.patrimoine.patrilang.files.PatriLangFileWritter;
+import school.hei.patrimoine.patrilang.files.PatriLangFileQuerier;
 import school.hei.patrimoine.patrilang.generator.PatriLangGeneratorFactory;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.Dialog;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.AppContext;
@@ -26,15 +28,13 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.File
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
 import school.hei.patrimoine.visualisation.swing.ihm.google.utils.AsyncTask;
 import school.hei.patrimoine.visualisation.swing.ihm.google.utils.MessageDialog;
-import school.hei.patrimoine.visualisation.swing.ihm.google.utils.PatriLangFileWritter;
-import school.hei.patrimoine.visualisation.swing.ihm.google.utils.PatriLangSectionFinder;
 import school.hei.patrimoine.visualisation.swing.ihm.selecteur.jdatepicker.DateFormatter;
 
 public class PossessionRecoupeeExecuteDialog extends Dialog {
   private final State state;
   private final PossessionRecoupee possessionRecoupee;
   private final PatriLangFileWritter patriLangFileWritter;
-  private final PatriLangSectionFinder<SectionOperationsContext> sectionOperationFinder;
+  private final PatriLangFileQuerier patriLangFileQuerier;
 
   private JDatePickerImpl datePicker;
   private JComboBox<String> deviseCombo;
@@ -45,7 +45,7 @@ public class PossessionRecoupeeExecuteDialog extends Dialog {
     this.state = state;
     this.possessionRecoupee = possessionRecoupee;
     this.patriLangFileWritter = new PatriLangFileWritter();
-    this.sectionOperationFinder = new PatriLangSectionFinder<>();
+    this.patriLangFileQuerier = new PatriLangFileQuerier();
 
     setLayout(new BorderLayout());
     setBackground(Color.WHITE);
@@ -119,20 +119,18 @@ public class PossessionRecoupeeExecuteDialog extends Dialog {
     AsyncTask.<Void>builder()
         .task(
             () -> {
-              var sectionOperation =
-                  sectionOperationFinder.apply(
-                      selectedFile.getAbsolutePath(),
-                      document -> document.cas().sectionOperations());
+              var sectionOperation = patriLangFileQuerier.query(selectedFile.getAbsolutePath(), document -> document.cas().sectionOperations());
               if (sectionOperation.isEmpty()) {
-                // TODO: show a message
-                return null;
+                throw new RuntimeException("Section Operations introuvable dans le fichier");
               }
 
               patriLangFileWritter.insertAtLine(
-                  this::getNewLine,
-                  selectedFile,
-                  sectionOperation.get().getStop().getLine() + 1,
-                  casSet);
+                  FileWritterInput
+                      .builder()
+                          .content(getNewLine())
+                          .file(selectedFile)
+                          .casSet(casSet)
+                      .build(), sectionOperation.get().endLine() + 1);
               return null;
             })
         .onError(
