@@ -1,6 +1,7 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.pages;
 
 import static java.awt.Font.BOLD;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.GoogleLinkList.*;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -8,12 +9,13 @@ import java.util.List;
 import javax.swing.*;
 import lombok.extern.slf4j.Slf4j;
 import school.hei.patrimoine.google.DriveLinkIdParser;
+import school.hei.patrimoine.google.DriveLinkVerifier;
 import school.hei.patrimoine.google.api.DriveApi;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.Page;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.NavigateButton;
-import school.hei.patrimoine.visualisation.swing.ihm.google.downloader.DriveNamedIdDownloader;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.*;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.GoogleLinkListDownloader;
 import school.hei.patrimoine.visualisation.swing.ihm.google.utils.AsyncTask;
 import school.hei.patrimoine.visualisation.swing.ihm.google.utils.MessageDialog;
 
@@ -150,9 +152,9 @@ public class LinkValidityPage extends Page {
             () -> {
               var namedIds = parseNamedIds();
               DriveApi driveApi = globalState().get("drive-api");
-              var downloader = new DriveNamedIdDownloader(driveApi);
+              var downloader = new GoogleLinkListDownloader(driveApi);
 
-              downloader.apply(namedIds);
+              downloader.download(namedIds);
 
               globalState().update("named-ids", namedIds);
               return null;

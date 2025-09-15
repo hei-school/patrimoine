@@ -18,10 +18,6 @@ public abstract class Page extends JPanel {
     globalState().subscribe("page-name", this::draw);
   }
 
-  public AppContext appContext() {
-    return AppContext.getDefault();
-  }
-
   public PageManager pageManager() {
     return AppContext.getDefault().app().getPageManager();
   }

@@ -3,8 +3,6 @@ package school.hei.patrimoine.visualisation.swing.ihm.google.component.files;
 import static java.util.Objects.requireNonNull;
 import static school.hei.patrimoine.patrilang.PatriLangTranspiler.CAS_FILE_EXTENSION;
 import static school.hei.patrimoine.patrilang.PatriLangTranspiler.TOUT_CAS_FILE_EXTENSION;
-import static school.hei.patrimoine.visualisation.swing.ihm.google.downloader.DriveNamedIdDownloader.DOWNLOAD_DONE_FILE_DIRECTORY_PATH;
-import static school.hei.patrimoine.visualisation.swing.ihm.google.downloader.DriveNamedIdDownloader.DOWNLOAD_PLANNED_FILE_DIRECTORY_PATH;
 
 import java.awt.*;
 import java.io.File;
@@ -15,7 +13,8 @@ import java.util.Optional;
 import javax.swing.*;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.AppContext;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.GoogleLinkList;
-import school.hei.patrimoine.visualisation.swing.ihm.google.modele.NamedID;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.GoogleLinkList.NamedID;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.GoogleLinkListDownloader;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
 
 public class FileSideBar extends JPanel {
@@ -117,7 +116,9 @@ public class FileSideBar extends JPanel {
   }
 
   public static List<File> getPatriLangPlannedFiles() {
-    return Arrays.stream(requireNonNull(new File(DOWNLOAD_PLANNED_FILE_DIRECTORY_PATH).listFiles()))
+    return Arrays.stream(
+            requireNonNull(
+                new File(GoogleLinkListDownloader.getPlannedDirectoryPath()).listFiles()))
         .filter(
             file ->
                 file.getName().endsWith(TOUT_CAS_FILE_EXTENSION)
@@ -126,7 +127,8 @@ public class FileSideBar extends JPanel {
   }
 
   public static List<File> getPatriLangDoneFiles() {
-    return Arrays.stream(requireNonNull(new File(DOWNLOAD_DONE_FILE_DIRECTORY_PATH).listFiles()))
+    return Arrays.stream(
+            requireNonNull(new File(GoogleLinkListDownloader.getDoneDirectoryPath()).listFiles()))
         .filter(
             file ->
                 file.getName().endsWith(TOUT_CAS_FILE_EXTENSION)
@@ -135,14 +137,17 @@ public class FileSideBar extends JPanel {
   }
 
   public static File getPlannedCasSetFile() {
-    return Arrays.stream(requireNonNull(new File(DOWNLOAD_PLANNED_FILE_DIRECTORY_PATH).listFiles()))
+    return Arrays.stream(
+            requireNonNull(
+                new File(GoogleLinkListDownloader.getPlannedDirectoryPath()).listFiles()))
         .filter(file -> file.getName().endsWith(TOUT_CAS_FILE_EXTENSION))
         .findFirst()
         .orElseThrow();
   }
 
   public static File getDoneCasSetFile() {
-    return Arrays.stream(requireNonNull(new File(DOWNLOAD_DONE_FILE_DIRECTORY_PATH).listFiles()))
+    return Arrays.stream(
+            requireNonNull(new File(GoogleLinkListDownloader.getDoneDirectoryPath()).listFiles()))
         .filter(file -> file.getName().endsWith(TOUT_CAS_FILE_EXTENSION))
         .findFirst()
         .orElseThrow();
