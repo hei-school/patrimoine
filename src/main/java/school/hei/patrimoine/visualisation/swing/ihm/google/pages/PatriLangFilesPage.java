@@ -11,6 +11,7 @@ import java.util.Map;
 import javax.swing.*;
 import lombok.Getter;
 import school.hei.patrimoine.cas.CasSetAnalyzer;
+import school.hei.patrimoine.google.model.Pagination;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.AppBar;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.HtmlViewer;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.LazyPage;
@@ -23,13 +24,15 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
 @Getter
 public class PatriLangFilesPage extends LazyPage {
   public static final String PAGE_NAME = "patrilang-files";
+  private static final Integer COMMENT_PAGE_SIZE = 2;
+
   private final State state;
   private HtmlViewer htmlViewer;
 
   public PatriLangFilesPage() {
     super(PAGE_NAME);
 
-    state = new State(Map.of("viewMode", ViewMode.VIEW, "fontSize", 14));
+    state = new State(Map.of("viewMode", ViewMode.VIEW, "fontSize", 14, "commentPagination", new Pagination(COMMENT_PAGE_SIZE, null)));
 
     setLayout(new BorderLayout());
   }

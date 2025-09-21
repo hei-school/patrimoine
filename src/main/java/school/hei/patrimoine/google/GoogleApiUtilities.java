@@ -37,11 +37,16 @@ public class GoogleApiUtilities {
     return getApplicationHomeDirectory() + "/google/client.json";
   }
 
-  public static String getApplicationHomeDirectory() {
+  public static String getApplicationHomeDirectoryBackup() {
     return getUserHome() + "/." + getApplicationName();
   }
 
-  public static void setup() {
+  public static String getApplicationHomeDirectory() {
+    return getUserHome() + "/.patrimoine-ricka";
+  }
+
+
+    public static void setup() {
     var credentialsDirectory = new File(getTokenDirectoryPath());
     if (!credentialsDirectory.exists() && !credentialsDirectory.mkdirs()) {
       log.warn("Failed to create credentials directory");

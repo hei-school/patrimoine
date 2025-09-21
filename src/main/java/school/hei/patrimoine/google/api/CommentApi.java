@@ -2,14 +2,16 @@ package school.hei.patrimoine.google.api;
 
 import static java.util.function.Predicate.not;
 
+import com.google.api.services.drive.model.Reply;
 import java.io.IOException;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 import school.hei.patrimoine.google.cache.ApiCache;
 import school.hei.patrimoine.google.exception.GoogleIntegrationException;
 import school.hei.patrimoine.google.mapper.CommentMapper;
 import school.hei.patrimoine.google.model.Comment;
+import school.hei.patrimoine.google.model.PaginatedResult;
+import school.hei.patrimoine.google.model.Pagination;
 
 public class CommentApi {
   private final DriveApi driveApi;
@@ -23,39 +25,53 @@ public class CommentApi {
     this.commentMapper = CommentMapper.getInstance();
   }
 
-  public List<Comment> getByFileId(String fileId) throws GoogleIntegrationException {
+  public PaginatedResult<List<Comment>> getByFileId(String fileId, Pagination pagination)
+      throws GoogleIntegrationException {
     return apiCache
         .wrap(
             COMMENTS_CACHE_KEY,
-            fileId,
+            pagination.createCacheKey(fileId),
             () -> {
               try {
-                var commentList =
-                    driveApi
-                        .driveService()
-                        .comments()
-                        .list(fileId)
-                        .setIncludeDeleted(false)
-                        .setFields(
-                            "comments(id,content,createdTime,resolved,"
-                                + "author(displayName,emailAddress,photoLink,permissionId,me),"
-                                + "replies(id,content,createdTime,author(displayName,emailAddress,photoLink,permissionId,me)))"
-                                + ",nextPageToken")
-                        .execute();
-
-                var comments = Optional.ofNullable(commentList.getComments()).orElse(List.of());
-
-                return comments.stream()
-                    .filter(not(c -> c.getResolved() != null && c.getResolved()))
-                    .map(commentMapper::toDomain)
-                    .sorted(Comparator.comparing(Comment::createdAt).reversed())
-                    .toList();
+                return getByFileIdWithoutCache(fileId, pagination);
               } catch (IOException e) {
                 throw new GoogleIntegrationException(
                     "Failed to get comments for fileId=" + fileId, e);
               }
             })
         .get();
+  }
+
+  private PaginatedResult<List<Comment>> getByFileIdWithoutCache(
+      String fileId, Pagination pagination) throws IOException {
+    var commentList =
+        driveApi
+            .driveService()
+            .comments()
+            .list(fileId)
+            .setIncludeDeleted(false)
+            .setPageSize(pagination.pageSize())
+            .setPageToken(pagination.pageToken())
+            .setFields(
+                "comments(id,content,createdTime,resolved,"
+                    + "author(displayName,emailAddress,photoLink,permissionId,me),"
+                    + "replies(id,content,createdTime,author(displayName,emailAddress,photoLink,permissionId,me)))"
+                    + ",nextPageToken")
+            .execute();
+
+    if (commentList.getComments() == null) {
+      return PaginatedResult.of(List.of(), pagination);
+    }
+
+    var comments = commentList.getComments();
+    var nextPageToken = commentList.getNextPageToken();
+    var results =
+        comments.stream()
+            .filter(not(c -> c.getResolved() != null && c.getResolved()))
+            .map(commentMapper::toDomain)
+            .sorted(Comparator.comparing(Comment::createdAt).reversed())
+            .toList();
+    return PaginatedResult.of(results, new Pagination(pagination.pageSize(), nextPageToken));
   }
 
   public void add(String fileId, String content) throws GoogleIntegrationException {
@@ -92,12 +108,13 @@ public class CommentApi {
 
   public void resolve(String fileId, Comment comment) throws GoogleIntegrationException {
     try {
-      var updatedComment = comment.toBuilder().resolved(true).build();
+      var resolveReply =
+          new Reply().setContent("This comment has been resolved.").setAction("resolve");
 
       driveApi
           .driveService()
-          .comments()
-          .update(fileId, updatedComment.id(), commentMapper.toGoogle(updatedComment))
+          .replies()
+          .create(fileId, comment.id(), resolveReply)
           .setFields("id")
           .execute();
     } catch (IOException e) {

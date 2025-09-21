@@ -11,7 +11,7 @@ public class Button extends JButton {
     super(text);
 
     setCursor(new Cursor(HAND_CURSOR));
-    setMargin(new Insets(12, 16, 8, 16));
+    setMargin(new Insets(8, 16, 8, 16));
     setVerticalAlignment(CENTER);
   }
 

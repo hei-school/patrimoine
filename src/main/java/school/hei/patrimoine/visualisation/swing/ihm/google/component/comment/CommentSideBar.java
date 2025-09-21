@@ -65,7 +65,10 @@ public class CommentSideBar extends JPanel {
                 return List.of();
               }
 
-              return commentApi.getByFileId(state.get("selectedFileId"));
+              var paginatedResult = commentApi.getByFileId(state.get("selectedFileId"), state.get("commentPagination"));
+              state.update("commentPagination", paginatedResult.getNextPagination());
+
+              return paginatedResult.data();
             })
         .onSuccess(newComments -> commentListPanel.update(state.get("selectedFileId"), newComments))
         .withDialogLoading(false)
@@ -77,7 +80,7 @@ public class CommentSideBar extends JPanel {
 
   private void refreshCurrentFileCommentsCache() {
     if (state.get("selectedFile") != null) {
-      this.apiCache.invalidate(COMMENTS_CACHE_KEY, state.get("selectedFileId"));
+      this.apiCache.invalidate(COMMENTS_CACHE_KEY, cacheKey -> cacheKey.startsWith(state.get("selectedFileId")));
     }
 
     this.update();
