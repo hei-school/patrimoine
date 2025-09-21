@@ -34,7 +34,7 @@ public class PatriLangViewer extends App {
     App.setup();
     FlatLightLaf.setup();
     GoogleApiUtilities.setup();
-    GoogleLinkListDownloader.setup();
+    //GoogleLinkListDownloader.setup();
     invokeLater(PatriLangViewer::new);
   }
 }
