@@ -7,26 +7,33 @@ import school.hei.patrimoine.modele.Devise;
 public class DeviseMapper {
   public static String deviseToString(Devise devise) {
     if (MGA.equals(devise)) {
-      return "Ar";
+      return MGA.symbole();
     }
 
     if (EUR.equals(devise)) {
-      return "€";
+      return EUR.symbole();
     }
 
     if (CAD.equals(devise)) {
-      return "$";
+      return CAD.symbole();
     }
 
     return devise.nom();
   }
 
   public static Devise stringToDevise(String devise) {
-    return switch (devise) {
-      case "Ar" -> MGA;
-      case "€" -> EUR;
-      case "$" -> CAD;
-      default -> throw new IllegalArgumentException("Devise inconnu: " + devise);
-    };
+    if (MGA.symbole().equals(devise)) {
+      return MGA;
+    }
+
+    if (EUR.symbole().equals(devise)) {
+      return EUR;
+    }
+
+    if (CAD.symbole().equals(devise)) {
+      return CAD;
+    }
+
+    throw new IllegalArgumentException("Devise inconnu: " + devise);
   }
 }

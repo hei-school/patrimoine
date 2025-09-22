@@ -10,19 +10,21 @@ import java.util.List;
 import javax.swing.*;
 import school.hei.patrimoine.cas.Cas;
 import school.hei.patrimoine.cas.CasSet;
-import school.hei.patrimoine.modele.Patrimoine;
 import school.hei.patrimoine.modele.recouppement.PossessionRecoupee;
-import school.hei.patrimoine.modele.recouppement.PossessionRecoupee.PossessionRecoupeeStatus;
+import school.hei.patrimoine.modele.recouppement.RecoupementStatus;
 import school.hei.patrimoine.modele.recouppement.RecoupeurDePossessions;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.AppBar;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.LazyPage;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.NavigateButton;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.FileListCellRenderer;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.FileListModel;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.FileSideBar;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.recoupement.AddImprevuDialog;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.recoupement.PossessionRecoupeeListPanel;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
 import school.hei.patrimoine.visualisation.swing.ihm.google.utils.AsyncTask;
+import school.hei.patrimoine.visualisation.swing.ihm.google.utils.MessageDialog;
 
 public class RecoupementPage extends LazyPage {
   public static final String PAGE_NAME = "recoupement";
@@ -35,7 +37,7 @@ public class RecoupementPage extends LazyPage {
 
   public RecoupementPage() {
     super(PAGE_NAME);
-    this.state = new State(Map.of("filterStatus", PossessionRecoupeeFilterStatus.TOUT));
+    this.state = new State(Map.of("filterStatus", PossessionRecoupeeFilterStatus.NON_EXECUTE));
     this.possessionRecoupeeListPanel = new PossessionRecoupeeListPanel(state);
 
     state.subscribe(Set.of("filterStatus", "selectedFile"), this::update);
@@ -73,15 +75,28 @@ public class RecoupementPage extends LazyPage {
 
   private void addAppBar() {
     var statusFilter = new JComboBox<>(PossessionRecoupeeFilterStatus.values());
-    statusFilter.setSelectedItem(PossessionRecoupeeFilterStatus.TOUT);
+    statusFilter.setSelectedItem(PossessionRecoupeeFilterStatus.NON_EXECUTE);
     statusFilter.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
     statusFilter.setCursor(new Cursor(Cursor.HAND_CURSOR));
     statusFilter.addActionListener(
         e -> state.update("filterStatus", statusFilter.getSelectedItem()));
 
+    var addImprevuButton =
+        new Button(
+            "Ajouter un imprévu",
+            e -> {
+              if (state.get("selectedFile") == null) {
+                MessageDialog.error(
+                    "Erreur", "Veuillez sélectionner un fichier avant d'ajouter un imprévu");
+                return;
+              }
+              new AddImprevuDialog(state);
+            });
+
     var appBar =
         new AppBar(
-            List.of(new NavigateButton("Retour", "patrilang-files"), statusFilter),
+            List.of(
+                new NavigateButton("Retour", "patrilang-files"), statusFilter, addImprevuButton),
             List.of(builtInUserInfoPanel()));
 
     add(appBar, BorderLayout.NORTH);
@@ -103,20 +118,24 @@ public class RecoupementPage extends LazyPage {
   }
 
   private List<PossessionRecoupee> getFilteredPossessionRecoupees() {
-    var plannedPatrimoine = getPatrimoine(state.get("selectedFile"), plannedCasSet);
-    var donePatrimoine = getPatrimoine(state.get("selectedFile"), doneCasSet);
-    var recoupeurDePossession = RecoupeurDePossessions.of(plannedPatrimoine, donePatrimoine);
+    var plannedCas = getCas(state.get("selectedFile"), plannedCasSet);
+    var doneCas = getCas(state.get("selectedFile"), doneCasSet);
+
+    state.update("plannedCas", plannedCas);
+    state.update("doneCas", plannedCas);
+
+    var recoupeurDePossession =
+        RecoupeurDePossessions.of(
+            plannedCas.getFinSimulation(), plannedCas.patrimoine(), doneCas.patrimoine());
     var possessionsRecoupees = recoupeurDePossession.getPossessionsRecoupees();
 
-    Set<PossessionRecoupeeStatus> statusToKeep = new HashSet<>();
+    Set<RecoupementStatus> statusToKeep = new HashSet<>();
     switch ((PossessionRecoupeeFilterStatus) state.get("filterStatus")) {
-      case TOUT -> statusToKeep.addAll(Set.of(PossessionRecoupeeStatus.values()));
-      case IMPREVU -> statusToKeep.add(PossessionRecoupeeStatus.IMPREVU);
-      case NON_EXECUTE -> statusToKeep.add(PossessionRecoupeeStatus.NON_EXECUTE);
-      case EXECUTE_AVEC_CORRECTION ->
-          statusToKeep.add(PossessionRecoupeeStatus.EXECUTE_AVEC_CORRECTION);
-      case EXECUTE_SANS_CORRECTION ->
-          statusToKeep.add(PossessionRecoupeeStatus.EXECUTE_SANS_CORRECTION);
+      case TOUT -> statusToKeep.addAll(Set.of(RecoupementStatus.values()));
+      case IMPREVU -> statusToKeep.add(RecoupementStatus.IMPREVU);
+      case NON_EXECUTE -> statusToKeep.add(RecoupementStatus.NON_EXECUTE);
+      case EXECUTE_AVEC_CORRECTION -> statusToKeep.add(RecoupementStatus.EXECUTE_AVEC_CORRECTION);
+      case EXECUTE_SANS_CORRECTION -> statusToKeep.add(RecoupementStatus.EXECUTE_SANS_CORRECTION);
     }
 
     return possessionsRecoupees.stream()
@@ -139,13 +158,12 @@ public class RecoupementPage extends LazyPage {
         .execute();
   }
 
-  private static Patrimoine getPatrimoine(File file, CasSet casSet) {
+  private static Cas getCas(File file, CasSet casSet) {
     var fileName = file.getName();
     var baseName = fileName.contains(".") ? fileName.substring(0, fileName.indexOf('.')) : fileName;
 
     return casSet.set().stream()
-        .map(Cas::patrimoine)
-        .filter(p -> p.nom().equals(baseName))
+        .filter(cas -> cas.patrimoine().nom().equals(baseName))
         .findFirst()
         .orElseThrow();
   }

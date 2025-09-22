@@ -32,7 +32,15 @@ public class PatriLangFilesPage extends LazyPage {
   public PatriLangFilesPage() {
     super(PAGE_NAME);
 
-    state = new State(Map.of("viewMode", ViewMode.VIEW, "fontSize", 14, "commentPagination", new Pagination(COMMENT_PAGE_SIZE, null)));
+    state =
+        new State(
+            Map.of(
+                "viewMode",
+                ViewMode.VIEW,
+                "fontSize",
+                14,
+                "commentPagination",
+                new Pagination(COMMENT_PAGE_SIZE, null)));
 
     setLayout(new BorderLayout());
   }

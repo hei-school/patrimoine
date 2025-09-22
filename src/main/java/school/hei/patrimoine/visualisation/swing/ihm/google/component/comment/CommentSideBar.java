@@ -10,6 +10,7 @@ import javax.swing.border.EmptyBorder;
 import school.hei.patrimoine.google.api.CommentApi;
 import school.hei.patrimoine.google.cache.ApiCache;
 import school.hei.patrimoine.google.model.Comment;
+import school.hei.patrimoine.google.model.Pagination;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.AppContext;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
@@ -65,9 +66,8 @@ public class CommentSideBar extends JPanel {
                 return List.of();
               }
 
-              var paginatedResult = commentApi.getByFileId(state.get("selectedFileId"), state.get("commentPagination"));
-              state.update("commentPagination", paginatedResult.getNextPagination());
-
+              var paginatedResult =
+                  commentApi.getByFileId(state.get("selectedFileId"), new Pagination(100, null));
               return paginatedResult.data();
             })
         .onSuccess(newComments -> commentListPanel.update(state.get("selectedFileId"), newComments))
@@ -80,7 +80,8 @@ public class CommentSideBar extends JPanel {
 
   private void refreshCurrentFileCommentsCache() {
     if (state.get("selectedFile") != null) {
-      this.apiCache.invalidate(COMMENTS_CACHE_KEY, cacheKey -> cacheKey.startsWith(state.get("selectedFileId")));
+      this.apiCache.invalidate(
+          COMMENTS_CACHE_KEY, cacheKey -> cacheKey.startsWith(state.get("selectedFileId")));
     }
 
     this.update();

@@ -17,7 +17,7 @@ public class CommentAddDialog extends Dialog {
   private final JTextArea textArea;
 
   public CommentAddDialog(State state, Runnable refreshParent) {
-    super("ajouter une réponse", 500, 300, false);
+    super("Ajouter un commentaire", 500, 300, false);
     this.state = state;
     this.textArea = new JTextArea();
     this.refresh =
