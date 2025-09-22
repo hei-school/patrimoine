@@ -45,8 +45,7 @@ public class GoogleApiUtilities {
     return getUserHome() + "/.patrimoine-ricka";
   }
 
-
-    public static void setup() {
+  public static void setup() {
     var credentialsDirectory = new File(getTokenDirectoryPath());
     if (!credentialsDirectory.exists() && !credentialsDirectory.mkdirs()) {
       log.warn("Failed to create credentials directory");

@@ -12,7 +12,7 @@ import school.hei.patrimoine.modele.possession.Compte;
 import school.hei.patrimoine.modele.possession.FluxArgent;
 
 public class FluxArgentDecomposeurTest {
-  FluxArgentDecomposeur subject = new FluxArgentDecomposeur();
+  FluxArgentDecomposeur subject = new FluxArgentDecomposeur(LocalDate.MAX);
 
   @Test
   void decompose_flux_d_une_seule_date() {

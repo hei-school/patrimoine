@@ -2,7 +2,6 @@ package school.hei.patrimoine.google.cache;
 
 import java.util.*;
 import java.util.function.Predicate;
-
 import school.hei.patrimoine.google.exception.GoogleIntegrationException;
 
 public class ApiCache {
@@ -37,8 +36,8 @@ public class ApiCache {
     caches.getOrDefault(type, Map.of()).remove(key);
   }
 
-  public void invalidate(String type, Predicate<String> predicate){
-     var items = caches.getOrDefault(type, Map.of());
-     items.keySet().removeIf(predicate);
+  public void invalidate(String type, Predicate<String> predicate) {
+    var items = caches.getOrDefault(type, Map.of());
+    items.keySet().removeIf(predicate);
   }
 }

@@ -48,7 +48,7 @@ class RecoupeurDePossessionsTest {
                 comptePersonnelrealise,
                 new FluxArgent("salaire", comptePersonnelrealise, au02Mars2025, ariary(200))));
 
-    var subject = RecoupeurDePossessions.of(prevu, realise);
+    var subject = RecoupeurDePossessions.of(LocalDate.MAX, prevu, realise);
 
     assertTrue(subject.getCorrections().isEmpty());
     assertTrue(subject.getPossessionsNonPrevus().isEmpty());
@@ -90,7 +90,7 @@ class RecoupeurDePossessionsTest {
                 comptePersonnelrealise,
                 new FluxArgent("salaire", comptePersonnelrealise, au02Mars2025, ariary(200))));
 
-    var subject = RecoupeurDePossessions.of(prevu, realise);
+    var subject = RecoupeurDePossessions.of(LocalDate.MAX, prevu, realise);
 
     assertTrue(subject.getPossessionsNonPrevus().isEmpty());
     assertTrue(subject.getPossessionsNonExecutes().isEmpty());
@@ -144,7 +144,7 @@ class RecoupeurDePossessionsTest {
                     au02Mai2025,
                     ariary(200))));
 
-    var subject = RecoupeurDePossessions.of(prevu, realise);
+    var subject = RecoupeurDePossessions.of(LocalDate.MAX, prevu, realise);
 
     assertEquals(2, subject.getCorrections().size());
     assertEquals(2, subject.getPossessionsNonExecutes().size());

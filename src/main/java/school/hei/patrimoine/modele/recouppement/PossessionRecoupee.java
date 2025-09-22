@@ -1,7 +1,9 @@
 package school.hei.patrimoine.modele.recouppement;
 
+import static school.hei.patrimoine.modele.Argent.ariary;
+import static school.hei.patrimoine.modele.Devise.MGA;
+
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.Set;
 import lombok.Builder;
 import school.hei.patrimoine.modele.Argent;
@@ -10,44 +12,43 @@ import school.hei.patrimoine.modele.possession.Possession;
 
 @Builder
 public record PossessionRecoupee(
-    PossessionRecoupeeStatus status,
-    Possession possession,
-    Set<Correction> corrections,
-    Argent valeurPrevu,
-    Argent valeurRealise,
-    LocalDate datePrevu,
-    LocalDate dateRealise) {
-  public PossessionRecoupee(
-      PossessionRecoupeeStatus status, Possession possession, Set<Correction> corrections) {
-    this(
-        status,
-        possession,
-        corrections,
-        possession.valeurComptable(),
-        possession.valeurComptable(),
-        possession.t(),
-        possession.t());
-  }
-
-  public int dateDifferenceEnJour() {
-    if (LocalDate.MIN.equals(datePrevu)
-        || LocalDate.MIN.equals(dateRealise)
-        || LocalDate.MAX.equals(datePrevu)
-        || LocalDate.MAX.equals(dateRealise)) {
-      return 0;
+    Info prevu, Set<Info> realises, RecoupementStatus status, Set<Correction> corrections) {
+  public Argent valeurRealisee() {
+    var somme = ariary(0);
+    for (var realise : realises) {
+      somme = realise.valeur().add(somme, realise.t());
     }
 
-    return (int) ChronoUnit.DAYS.between(datePrevu, dateRealise);
+    return somme;
   }
 
-  public Argent valeurDifference() {
-    return valeurPrevu.minus(valeurRealise, dateRealise);
+  public Argent ecartValeurAvecRealises() {
+    return valeurRealisee().minus(prevu.valeur(), prevu.t());
   }
 
-  public enum PossessionRecoupeeStatus {
-    IMPREVU,
-    NON_EXECUTE,
-    EXECUTE_AVEC_CORRECTION,
-    EXECUTE_SANS_CORRECTION
+  public Possession possession() {
+    return info().possession();
+  }
+
+  public Argent valeur() {
+    return info().valeur();
+  }
+
+  public Info info() {
+    if (prevu.possession() != null) {
+      return prevu;
+    }
+
+    return realises.stream().findFirst().orElseThrow();
+  }
+
+  public record Info(LocalDate t, Argent valeur, Possession possession) {
+    public static Info of(Possession possession) {
+      return new Info(possession.t(), possession.valeurComptable(), possession);
+    }
+
+    public static Info empty() {
+      return new Info(LocalDate.MIN, new Argent(0, MGA), null);
+    }
   }
 }

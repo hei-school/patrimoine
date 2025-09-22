@@ -21,6 +21,9 @@ public class UnitTestVisitor extends PatriLangParserBaseVisitor<Object> {
     var lexer = new PatriLangLexer(charStream);
     var parser = new PatriLangParser(new CommonTokenStream(lexer));
 
+    lexer.removeErrorListeners();
+    lexer.addErrorListener(new DiagnosticErrorListener());
+
     parser.removeErrorListeners();
     parser.addErrorListener(new DiagnosticErrorListener());
 
