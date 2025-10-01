@@ -37,42 +37,42 @@ public class FileSideBar extends JPanel {
 
     plannedList.addListSelectionListener(
         e -> {
-          if (!e.getValueIsAdjusting()) {
-            var selected = plannedList.getSelectedValue();
-            if (selected != null) {
-              this.state.update(
-                  Map.of(
-                      "selectedFile",
-                      selected,
-                      "selectedCasSetFile",
-                      getPlannedCasSetFile(),
-                      "selectedFileId",
-                      getSelectedFileDriveId(selected, true).orElse(""),
-                      "isPlannedSelectedFile",
-                      true));
-              doneList.clearSelection();
-            }
+          if (e.getValueIsAdjusting() || plannedList.getSelectedValue() == null) {
+            return;
           }
+
+          var selectedFile = plannedList.getSelectedValue();
+          this.state.update(
+              Map.of(
+                  "selectedFile",
+                  selectedFile,
+                  "selectedCasSetFile",
+                  getPlannedCasSetFile(),
+                  "selectedFileId",
+                  getSelectedFileDriveId(selectedFile, true).orElse(""),
+                  "isPlannedSelectedFile",
+                  true));
+          doneList.clearSelection();
         });
 
     doneList.addListSelectionListener(
         e -> {
-          if (!e.getValueIsAdjusting()) {
-            var selected = doneList.getSelectedValue();
-            if (selected != null) {
-              this.state.update(
-                  Map.of(
-                      "selectedFile",
-                      selected,
-                      "selectedCasSetFile",
-                      getDoneCasSetFile(),
-                      "selectedFileId",
-                      getSelectedFileDriveId(selected, false).orElse(""),
-                      "isPlannedSelectedFile",
-                      false));
-              plannedList.clearSelection();
-            }
+          if (e.getValueIsAdjusting() || doneList.getSelectedValue() == null) {
+            return;
           }
+
+          var selectedFile = doneList.getSelectedValue();
+          this.state.update(
+              Map.of(
+                  "selectedFile",
+                  selectedFile,
+                  "selectedCasSetFile",
+                  getDoneCasSetFile(),
+                  "selectedFileId",
+                  getSelectedFileDriveId(selectedFile, false).orElse(""),
+                  "isPlannedSelectedFile",
+                  false));
+          plannedList.clearSelection();
         });
 
     var panel = new JPanel();

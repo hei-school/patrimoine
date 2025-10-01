@@ -1,5 +1,8 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.component.comment;
 
+import static school.hei.patrimoine.visualisation.swing.ihm.google.utils.MessageDialog.showError;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.utils.MessageDialog.showInfo;
+
 import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -9,7 +12,6 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.AppCon
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
 import school.hei.patrimoine.visualisation.swing.ihm.google.utils.AsyncTask;
-import school.hei.patrimoine.visualisation.swing.ihm.google.utils.MessageDialog;
 
 public class CommentAddDialog extends Dialog {
   private final State state;
@@ -66,13 +68,12 @@ public class CommentAddDialog extends Dialog {
 
   private void addComment() {
     if (state.get("selectedFileId") == null) {
-      MessageDialog.error(
-          "Erreur", "Veuillez sélectionner un fichier avant d'ajouter un commentaire.");
+      showError("Erreur", "Veuillez sélectionner un fichier avant d'ajouter un commentaire.");
       return;
     }
 
     if (textArea.getText().trim().isBlank()) {
-      MessageDialog.error("Erreur", "Le contenu du commentaire ne peut pas être vide.");
+      showError("Erreur", "Le contenu du commentaire ne peut pas être vide.");
       return;
     }
 
@@ -86,11 +87,11 @@ public class CommentAddDialog extends Dialog {
         .loadingMessage("Envoi en cours...")
         .onSuccess(
             result -> {
-              MessageDialog.info("Succès", "Le commentaire a été ajouté avec succès.");
+              showInfo("Succès", "Le commentaire a été ajouté avec succès.");
               dispose();
               refresh.run();
             })
-        .onError(error -> MessageDialog.error("Error", "Erreur lors de l'envoi du commentaire"))
+        .onError(error -> showError("Error", "Erreur lors de l'envoi du commentaire"))
         .build()
         .execute();
   }

@@ -2,6 +2,7 @@ package school.hei.patrimoine.visualisation.swing.ihm.google.pages;
 
 import static school.hei.patrimoine.patrilang.PatriLangTranspiler.transpileToutCas;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.component.AppBar.builtInUserInfoPanel;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.utils.MessageDialog.showError;
 
 import java.awt.*;
 import java.io.File;
@@ -24,7 +25,6 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.component.recoupemen
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.recoupement.PossessionRecoupeeListPanel;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
 import school.hei.patrimoine.visualisation.swing.ihm.google.utils.AsyncTask;
-import school.hei.patrimoine.visualisation.swing.ihm.google.utils.MessageDialog;
 
 public class RecoupementPage extends LazyPage {
   public static final String PAGE_NAME = "recoupement";
@@ -86,10 +86,10 @@ public class RecoupementPage extends LazyPage {
             "Ajouter un imprévu",
             e -> {
               if (state.get("selectedFile") == null) {
-                MessageDialog.error(
-                    "Erreur", "Veuillez sélectionner un fichier avant d'ajouter un imprévu");
+                showError("Erreur", "Veuillez sélectionner un fichier avant d'ajouter un imprévu");
                 return;
               }
+
               new AddImprevuDialog(state);
             });
 

@@ -37,12 +37,8 @@ public class GoogleApiUtilities {
     return getApplicationHomeDirectory() + "/google/client.json";
   }
 
-  public static String getApplicationHomeDirectoryBackup() {
-    return getUserHome() + "/." + getApplicationName();
-  }
-
   public static String getApplicationHomeDirectory() {
-    return getUserHome() + "/.patrimoine-ricka";
+    return getUserHome() + "/." + getApplicationName();
   }
 
   public static void setup() {

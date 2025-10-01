@@ -7,6 +7,7 @@ import java.util.Set;
 import school.hei.patrimoine.google.GoogleApiUtilities;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.App;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.Page;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.GoogleLinkListDownloader;
 import school.hei.patrimoine.visualisation.swing.ihm.google.pages.*;
 
 public class PatriLangViewer extends App {
@@ -33,7 +34,7 @@ public class PatriLangViewer extends App {
     App.setup();
     FlatLightLaf.setup();
     GoogleApiUtilities.setup();
-    // GoogleLinkListDownloader.setup();
+    GoogleLinkListDownloader.setup();
     invokeLater(PatriLangViewer::new);
   }
 }

@@ -24,7 +24,7 @@ public class DatePicker extends JDatePickerImpl {
 
     if (getComponent(1) instanceof JButton button) {
       button.setFont(new Font("Arial", Font.BOLD, 18));
-      button.setPreferredSize(new java.awt.Dimension(40, 30));
+      button.setPreferredSize(new java.awt.Dimension(40, 40));
     }
 
     setBackground(Color.WHITE);

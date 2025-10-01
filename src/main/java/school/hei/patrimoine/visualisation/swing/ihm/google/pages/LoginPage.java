@@ -1,5 +1,7 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.pages;
 
+import static school.hei.patrimoine.visualisation.swing.ihm.google.utils.MessageDialog.showError;
+
 import java.awt.*;
 import java.io.IOException;
 import java.util.Map;
@@ -12,7 +14,6 @@ import school.hei.patrimoine.google.api.GoogleApi;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.Page;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.ButtonWithIcon;
 import school.hei.patrimoine.visualisation.swing.ihm.google.utils.AsyncTask;
-import school.hei.patrimoine.visualisation.swing.ihm.google.utils.MessageDialog;
 
 public class LoginPage extends Page {
   private final GoogleApi googleApi;
@@ -64,8 +65,7 @@ public class LoginPage extends Page {
                           new CommentApi(driveApi)));
               pageManager().navigate(SubmitLinkPage.PAGE_NAME);
             })
-        .onError(
-            e -> MessageDialog.error("Erreur", "Erreur d'authentification, veuillez réessayer"))
+        .onError(e -> showError("Erreur", "Erreur d'authentification, veuillez réessayer"))
         .build()
         .execute();
   }

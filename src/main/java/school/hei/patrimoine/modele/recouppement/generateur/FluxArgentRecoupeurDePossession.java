@@ -7,19 +7,22 @@ import java.time.LocalDate;
 import java.util.Optional;
 import java.util.Set;
 import school.hei.patrimoine.modele.Argent;
+import school.hei.patrimoine.modele.possession.Compte;
 import school.hei.patrimoine.modele.possession.Correction;
 import school.hei.patrimoine.modele.possession.FluxArgent;
+import school.hei.patrimoine.modele.possession.Possession;
 import school.hei.patrimoine.modele.recouppement.PossessionRecoupee;
 import school.hei.patrimoine.modele.recouppement.PossessionRecoupee.Info;
 
 public class FluxArgentRecoupeurDePossession extends RecoupeurDePossessionBase<FluxArgent> {
   @Override
   public PossessionRecoupee imprevu(FluxArgent imprevu) {
+    var correctionValeur = getCorrectionValeur(null, Set.of(imprevu));
     var corrections =
         Set.of(
             new Correction(
                 new FluxArgent(
-                    nommeAsImprevu(imprevu, imprevu.t()),
+                    nommeAsImprevu(imprevu, imprevu.t(), correctionValeur),
                     imprevu.getCompte(),
                     getDate(imprevu),
                     getCorrectionValeur(null, Set.of(imprevu)))));
@@ -33,15 +36,16 @@ public class FluxArgentRecoupeurDePossession extends RecoupeurDePossessionBase<F
   }
 
   @Override
-  public PossessionRecoupee nonExecute(FluxArgent nonExecute) {
+  public PossessionRecoupee nonExecute(FluxArgent nonExecute, Set<Possession> possessions) {
+    var correctionValeur = getCorrectionValeur(nonExecute, Set.of());
     var corrections =
         Set.of(
             new Correction(
                 new FluxArgent(
-                    nommerAsNonExecute(nonExecute, nonExecute.t()),
-                    nonExecute.getCompte(),
+                    nommerAsNonExecute(nonExecute, nonExecute.t(), correctionValeur),
+                    getNonExecuteCompte(nonExecute.getCompte().nom(), possessions),
                     getDate(nonExecute),
-                    getCorrectionValeur(nonExecute, Set.of()))));
+                    correctionValeur)));
 
     return PossessionRecoupee.builder()
         .status(NON_EXECUTE)
@@ -92,18 +96,28 @@ public class FluxArgentRecoupeurDePossession extends RecoupeurDePossessionBase<F
 
     String nom;
     if (t.isAfter(prevu.t())) {
-      nom = nommerAsEnRetard(prevu, t);
+      nom = nommerAsEnRetard(prevu, t, correctionValeur);
     } else if (t.isBefore(prevu.t())) {
-      nom = nommerAsEnAvance(prevu, t);
+      nom = nommerAsEnAvance(prevu, t, correctionValeur);
     } else {
-      nom = nommerAsValeurDifferentes(prevu, t);
+      nom = nommerAsValeurDifferentes(prevu, t, correctionValeur);
     }
 
-    return Optional.of(new Correction(new FluxArgent(nom, prevu.getCompte(), t, correctionValeur)));
+    var oneRealise = realises.stream().findFirst().orElseThrow();
+    return Optional.of(
+        new Correction(new FluxArgent(nom, oneRealise.getCompte(), t, correctionValeur)));
   }
 
   @Override
   protected Argent getValeur(FluxArgent possession) {
     return possession.getFluxMensuel();
+  }
+
+  private static Compte getNonExecuteCompte(String compteNom, Set<Possession> possessions) {
+    return (Compte)
+        possessions.stream()
+            .filter(p -> p instanceof Compte && p.nom().equals(compteNom))
+            .findFirst()
+            .orElseThrow();
   }
 }

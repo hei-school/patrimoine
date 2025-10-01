@@ -1,6 +1,8 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.component.comment;
 
 import static school.hei.patrimoine.google.api.CommentApi.COMMENTS_CACHE_KEY;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.utils.MessageDialog.showError;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.utils.MessageDialog.showInfo;
 
 import java.awt.*;
 import java.util.List;
@@ -15,7 +17,6 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.AppCon
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
 import school.hei.patrimoine.visualisation.swing.ihm.google.utils.AsyncTask;
-import school.hei.patrimoine.visualisation.swing.ihm.google.utils.MessageDialog;
 
 public class CommentSideBar extends JPanel {
   private final State state;
@@ -72,8 +73,7 @@ public class CommentSideBar extends JPanel {
             })
         .onSuccess(newComments -> commentListPanel.update(state.get("selectedFileId"), newComments))
         .withDialogLoading(false)
-        .onError(
-            e -> MessageDialog.error("Error", "Erreur lors de la récupération des commentaires"))
+        .onError(e -> showError("Error", "Erreur lors de la récupération des commentaires"))
         .build()
         .execute();
   }
@@ -109,13 +109,12 @@ public class CommentSideBar extends JPanel {
         .loadingMessage("Envoi en cours...")
         .onSuccess(
             result -> {
-              MessageDialog.info("Succès", "Le commentaire a été envoyé avec succès.");
+              showInfo("Succès", "Le commentaire a été envoyé avec succès.");
               refresh.run();
             })
         .onError(
             error ->
-                MessageDialog.error(
-                    "Erreur", "Impossible d'envoyer le commentaire. Veuillez réessayer."))
+                showError("Erreur", "Impossible d'envoyer le commentaire. Veuillez réessayer."))
         .build()
         .execute();
   }

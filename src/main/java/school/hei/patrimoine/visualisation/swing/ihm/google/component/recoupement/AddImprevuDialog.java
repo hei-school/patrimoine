@@ -1,6 +1,7 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.component.recoupement;
 
 import static java.util.Objects.requireNonNull;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.utils.MessageDialog.*;
 
 import java.awt.*;
 import java.io.File;
@@ -8,10 +9,10 @@ import java.util.Map;
 import java.util.Set;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.jetbrains.annotations.NotNull;
 import school.hei.patrimoine.Pair;
 import school.hei.patrimoine.modele.Argent;
+import school.hei.patrimoine.modele.Patrimoine;
 import school.hei.patrimoine.modele.possession.Compte;
 import school.hei.patrimoine.modele.possession.FluxArgent;
 import school.hei.patrimoine.patrilang.files.PatriLangFileQuerier;
@@ -25,24 +26,23 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.File
 import school.hei.patrimoine.visualisation.swing.ihm.google.generator.possession.FluxArgentExecutionGenerator;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
 import school.hei.patrimoine.visualisation.swing.ihm.google.utils.AsyncTask;
-import school.hei.patrimoine.visualisation.swing.ihm.google.utils.MessageDialog;
 
 public class AddImprevuDialog extends Dialog {
   private final State state;
-  private AddRecoupementExecutionForm form;
-  private JComboBox<NamedCompte> compteSelect;
   private final PatriLangFileQuerier querier;
-
   private final PatriLangFileWritter writter;
+
+  private AddRecoupementExecutionForm form;
+  private final JComboBox<NamedCompte> compteSelect;
 
   public AddImprevuDialog(State state) {
     super("Ajouter un imprévu", 800, 700, false);
     this.state = state;
     this.querier = new PatriLangFileQuerier();
     this.writter = new PatriLangFileWritter();
+    this.compteSelect = compteSelect();
 
     setLayout(new BorderLayout());
-    initCompteList();
 
     addTitle();
     addForm();
@@ -51,31 +51,21 @@ public class AddImprevuDialog extends Dialog {
     setVisible(true);
   }
 
-  private void initCompteList() {
-    PatriLangCas plannedCas = state.get("plannedCas");
-    var comptes =
-        plannedCas.patrimoine().getPossessions().stream()
-            .filter(p -> p instanceof Compte)
-            .map(compte -> (Compte) compte)
-            .map(NamedCompte::new)
-            .toArray(NamedCompte[]::new);
-
-    compteSelect = new JComboBox<>(comptes);
-  }
-
   private void addForm() {
+    var patrimoine = getPlannedPatrimoine();
     this.form =
         new AddRecoupementExecutionForm(
-            Set.of(Pair.of("Compte", compteSelect)),
             "",
-            getPlannedCas().patrimoine().getDevise(),
-            new Argent(0, getPlannedCas().patrimoine().getDevise()));
+            patrimoine.getDevise(),
+            new Argent(0, patrimoine.getDevise()),
+            Set.of(Pair.of("Compte : ", compteSelect)));
 
     add(form, BorderLayout.CENTER);
   }
 
-  private PatriLangCas getPlannedCas() {
-    return state.get("plannedCas");
+  private Patrimoine getPlannedPatrimoine() {
+    PatriLangCas cas = state.get("plannedCas");
+    return cas.patrimoine();
   }
 
   private void addTitle() {
@@ -92,19 +82,32 @@ public class AddImprevuDialog extends Dialog {
     buttonPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 
     buttonPanel.add(
-        new school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button(
+        new Button(
             "Ajouter",
             e -> {
               try {
                 addExecution();
                 dispose();
               } catch (IllegalArgumentException error) {
-                MessageDialog.error("Erreur", error.getMessage());
+                showError("Erreur", error.getMessage());
               }
             }));
 
     buttonPanel.add(new Button("Annuler", e -> dispose()));
     add(buttonPanel, BorderLayout.SOUTH);
+  }
+
+  private JComboBox<NamedCompte> compteSelect() {
+    PatriLangCas plannedCas = state.get("plannedCas");
+
+    var comptes =
+        plannedCas.patrimoine().getPossessions().stream()
+            .filter(p -> p instanceof Compte)
+            .map(compte -> (Compte) compte)
+            .map(NamedCompte::new)
+            .toArray(NamedCompte[]::new);
+
+    return new JComboBox<>(comptes);
   }
 
   private void addExecution() {
@@ -141,21 +144,15 @@ public class AddImprevuDialog extends Dialog {
             })
         .onError(
             error -> {
-              if (error instanceof ParseCancellationException e) {
-                MessageDialog.error("Erreur", e.getMessage());
+              if (showExceptionMessageIfRecognizedException(error)) {
                 return;
               }
 
-              if (error instanceof IllegalArgumentException e) {
-                MessageDialog.error("Erreur", e.getMessage());
-                return;
-              }
-
-              MessageDialog.error("Erreur", "Une erreur est survenue lors de l'enregistrement");
+              showError("Erreur", "Une erreur est survenue lors de l'enregistrement");
             })
         .onSuccess(
             result -> {
-              MessageDialog.info("Succès", "L'opération a été exécutée avec succès");
+              showInfo("Succès", "L'opération a été exécutée avec succès");
               AppContext.getDefault().globalState().update("newUpdate", true);
               dispose();
             })

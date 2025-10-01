@@ -27,6 +27,11 @@ public class State {
     notifyObservers(newData.keySet());
   }
 
+  public void invalidate(Set<String> keys) {
+    keys.forEach(data::remove);
+    notifyObservers(keys);
+  }
+
   public void update(String key, @Nullable Object value) {
     data.put(key, value);
     notifyObservers(Set.of(key));

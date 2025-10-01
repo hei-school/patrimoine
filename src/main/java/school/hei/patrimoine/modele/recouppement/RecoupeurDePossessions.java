@@ -68,7 +68,7 @@ public record RecoupeurDePossessions(
         .forEach(
             p -> {
               var possessionRecoupeur = RecoupeurDePossessionFactory.make(p);
-              possessionRecoupees.add(possessionRecoupeur.nonExecute(p));
+              possessionRecoupees.add(possessionRecoupeur.nonExecute(p, realises));
             });
 
     getPossessionsNonPrevus()

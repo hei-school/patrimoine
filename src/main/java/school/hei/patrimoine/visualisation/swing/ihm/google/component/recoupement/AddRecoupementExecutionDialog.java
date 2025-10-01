@@ -1,18 +1,18 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.component.recoupement;
 
+import static school.hei.patrimoine.visualisation.swing.ihm.google.utils.MessageDialog.showError;
+
 import java.awt.*;
 import java.util.*;
 import java.util.function.Consumer;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import org.jdatepicker.impl.*;
 import school.hei.patrimoine.modele.possession.FluxArgent;
 import school.hei.patrimoine.modele.recouppement.PossessionRecoupee;
 import school.hei.patrimoine.modele.recouppement.PossessionRecoupee.Info;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.Dialog;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
 import school.hei.patrimoine.visualisation.swing.ihm.google.generator.PossessionGeneratorFactory;
-import school.hei.patrimoine.visualisation.swing.ihm.google.utils.MessageDialog;
 
 public class AddRecoupementExecutionDialog extends Dialog {
   private final AddRecoupementExecutionForm form;
@@ -64,7 +64,7 @@ public class AddRecoupementExecutionDialog extends Dialog {
                 addExecution();
                 dispose();
               } catch (IllegalArgumentException error) {
-                MessageDialog.error("Erreur", error.getMessage());
+                showError("Erreur", error.getMessage());
               }
             }));
 
