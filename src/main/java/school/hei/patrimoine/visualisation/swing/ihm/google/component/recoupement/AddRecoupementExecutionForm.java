@@ -18,103 +18,33 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.utils.formatter.Arge
 import school.hei.patrimoine.visualisation.swing.ihm.google.validator.NombreValidator;
 
 public class AddRecoupementExecutionForm extends JPanel {
-  private final Devise defaultDevise;
-  private final Argent defaultValeur;
-  private final String defaultNom;
-
   private JTextField nomField;
   private JTextField valeurField;
   private JComboBox<String> deviseCombo;
   private DatePicker executionDatePicker;
 
   public AddRecoupementExecutionForm(
-      Set<Pair<String, JComponent>> components,
       String defaultNom,
       Devise defaultDevise,
-      Argent defaultValeur) {
-    this(defaultNom, defaultDevise, defaultValeur);
-
-    components.forEach(
-        pair -> {
-          add(styledLabel(pair.first()));
-          styleInput(pair.second());
-          add(Box.createVerticalStrut(5));
-          add(pair.second());
-          add(Box.createVerticalStrut(15));
-        });
-  }
-
-  public AddRecoupementExecutionForm(
-      String defaultNom, Devise defaultDevise, Argent defaultValeur) {
-    super();
-    this.defaultNom = defaultNom;
-    this.defaultDevise = defaultDevise;
-    this.defaultValeur = defaultValeur;
+      Argent defaultValeur,
+      Set<Pair<String, JComponent>> components) {
 
     setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
     setOpaque(true);
     setBorder(new EmptyBorder(15, 15, 15, 15));
     setBackground(Color.WHITE);
 
-    addNomField();
-    addDateField();
-    addValeurField();
-    addDeviseField();
+    addNomField(defaultNom);
+    addDateField(LocalDate.now());
+    addValeurField(defaultValeur);
+    addDeviseField(defaultDevise);
+
+    components.forEach(component -> addField(component.first(), component.second()));
   }
 
-  private JLabel styledLabel(String text) {
-    var label = new JLabel(text);
-    label.setFont(new Font("Arial", Font.BOLD, 18));
-    label.setBorder(new EmptyBorder(5, 8, 5, 8));
-    label.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-    return label;
-  }
-
-  private void styleInput(JComponent input) {
-    input.setFont(new Font("Arial", Font.PLAIN, 20));
-    input.setMaximumSize(new Dimension(Integer.MAX_VALUE, 35));
-    input.setAlignmentX(Component.LEFT_ALIGNMENT);
-  }
-
-  private void addNomField() {
-    add(styledLabel("Nom :"));
-
-    nomField = new JTextField(defaultNom);
-    styleInput(nomField);
-    add(Box.createVerticalStrut(5));
-    add(nomField);
-    add(Box.createVerticalStrut(15));
-  }
-
-  private void addDateField() {
-    add(styledLabel("Date de l'exécution :"));
-
-    executionDatePicker = new DatePicker(LocalDate.now());
-    styleInput(executionDatePicker);
-    add(Box.createVerticalStrut(5));
-    add(executionDatePicker);
-    add(Box.createVerticalStrut(15));
-  }
-
-  private void addValeurField() {
-    add(styledLabel("Valeur :"));
-
-    valeurField = new JTextField(ArgentFormatter.montant(defaultValeur));
-    styleInput(valeurField);
-    add(Box.createVerticalStrut(5));
-    add(valeurField);
-    add(Box.createVerticalStrut(15));
-  }
-
-  private void addDeviseField() {
-    add(styledLabel("Devise :"));
-
-    deviseCombo = new JComboBox<>(new String[] {EUR.symbole(), MGA.symbole(), CAD.symbole()});
-    styleInput(deviseCombo);
-    deviseCombo.setSelectedItem(defaultDevise);
-    add(Box.createVerticalStrut(5));
-    add(deviseCombo);
+  public AddRecoupementExecutionForm(
+      String defaultNom, Devise defaultDevise, Argent defaultValeur) {
+    this(defaultNom, defaultDevise, defaultValeur, Set.of());
   }
 
   public Argent getValeur() {
@@ -135,10 +65,57 @@ public class AddRecoupementExecutionForm extends JPanel {
   }
 
   public String getNom() {
-    if (nomField.getText().isBlank()) {
+    if (nomField.getText().trim().isBlank()) {
       throw new IllegalArgumentException("Le champ 'Nom' est obligatoire.");
     }
 
     return nomField.getText().trim().replaceAll(" ", "_");
+  }
+
+  private void addNomField(String defaultNom) {
+    nomField = new JTextField(defaultNom);
+    addField("Nom : ", nomField);
+  }
+
+  private void addDateField(LocalDate defaultDate) {
+    executionDatePicker = new DatePicker(defaultDate);
+
+    addField("Date de l'exécution : ", executionDatePicker);
+  }
+
+  private void addField(String label, JComponent input) {
+    add(styledLabel(label));
+    add(Box.createVerticalStrut(5));
+    add(styledInput(input));
+    add(Box.createVerticalStrut(15));
+  }
+
+  private void addValeurField(Argent defaultValeur) {
+    valeurField = new JTextField(ArgentFormatter.montant(defaultValeur));
+    addField("Valeur : ", valeurField);
+  }
+
+  private void addDeviseField(Devise defaultDevise) {
+    deviseCombo = new JComboBox<>(new String[] {EUR.symbole(), MGA.symbole(), CAD.symbole()});
+    deviseCombo.setSelectedItem(defaultDevise.symbole());
+
+    addField("Devise : ", deviseCombo);
+  }
+
+  private static JLabel styledLabel(String text) {
+    var label = new JLabel(text);
+    label.setFont(new Font("Arial", Font.BOLD, 18));
+    label.setBorder(new EmptyBorder(5, 8, 5, 8));
+    label.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+    return label;
+  }
+
+  private static JComponent styledInput(JComponent input) {
+    input.setFont(new Font("Arial", Font.PLAIN, 20));
+    input.setMaximumSize(new Dimension(Integer.MAX_VALUE, 35));
+    input.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+    return input;
   }
 }

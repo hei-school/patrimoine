@@ -3,6 +3,7 @@ package school.hei.patrimoine.visualisation.swing.ihm.google.component.recoupeme
 import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import school.hei.patrimoine.modele.possession.Correction;
 import school.hei.patrimoine.modele.recouppement.PossessionRecoupee;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.Dialog;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
@@ -96,9 +97,7 @@ public class PossessionRecoupeeDetailDialog extends Dialog {
     listPanel.add(
         createList(
             "Corrections",
-            possessionRecoupee.corrections().stream()
-                .map(c -> String.format("%s , %s", DateFormatter.format(c.t()), c.nom()))
-                .toArray(String[]::new),
+            possessionRecoupee.corrections().stream().map(Correction::nom).toArray(String[]::new),
             new Color(255, 245, 200)));
 
     return listPanel;

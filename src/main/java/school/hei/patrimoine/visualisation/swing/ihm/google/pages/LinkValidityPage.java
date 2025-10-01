@@ -2,6 +2,7 @@ package school.hei.patrimoine.visualisation.swing.ihm.google.pages;
 
 import static java.awt.Font.BOLD;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.GoogleLinkList.*;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.utils.MessageDialog.showError;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -17,7 +18,6 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Nav
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.*;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.GoogleLinkListDownloader;
 import school.hei.patrimoine.visualisation.swing.ihm.google.utils.AsyncTask;
-import school.hei.patrimoine.visualisation.swing.ihm.google.utils.MessageDialog;
 
 @Slf4j
 public class LinkValidityPage extends Page {
@@ -133,12 +133,12 @@ public class LinkValidityPage extends Page {
     List<NamedID> doneIds = new ArrayList<>();
     DriveLinkIdParser idParser = new DriveLinkIdParser();
 
-    for (var namedLink : namedLinks.done()) {
+    for (var namedLink : namedLinks.planned()) {
       var parsedId = idParser.apply(namedLink.link());
       plannedIds.add(new NamedID(namedLink.name(), parsedId));
     }
 
-    for (var namedLink : namedLinks.planned()) {
+    for (var namedLink : namedLinks.done()) {
       var parsedId = idParser.apply(namedLink.link());
       doneIds.add(new NamedID(namedLink.name(), parsedId));
     }
@@ -154,14 +154,13 @@ public class LinkValidityPage extends Page {
               DriveApi driveApi = globalState().get("drive-api");
               var downloader = new GoogleLinkListDownloader(driveApi);
 
-              // downloader.download(namedIds);
+              downloader.download(namedIds);
 
               globalState().update("named-ids", namedIds);
               return null;
             })
         .onSuccess(result -> pageManager().navigate(PatriLangFilesPage.PAGE_NAME))
-        .onError(
-            e -> MessageDialog.error("Erreur", "Veuillez vérifier le contenu de vos documents"))
+        .onError(e -> showError("Erreur", "Veuillez vérifier le contenu de vos documents"))
         .build()
         .execute();
   }

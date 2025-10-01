@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Main-Class: school.hei.patrimoine.visualisation.swing.ihm.google.PatriLa
+ ngViewer
+

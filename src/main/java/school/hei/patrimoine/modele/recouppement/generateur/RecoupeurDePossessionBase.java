@@ -12,24 +12,25 @@ import school.hei.patrimoine.modele.recouppement.PossessionRecoupee;
 import school.hei.patrimoine.modele.recouppement.PossessionRecoupee.Info;
 
 public class RecoupeurDePossessionBase<T extends Possession> implements RecoupeurDePossession<T> {
-  protected String nommeAsImprevu(T possession, LocalDate t) {
-    return String.format("Imprevu[date=%s, nom=%s]", t, possession.nom());
+  protected String nommeAsImprevu(T possession, LocalDate t, Argent valeur) {
+    return String.format("Imprevu[date=%s, nom=%s, valeur=%s]", t, possession.nom(), valeur);
   }
 
-  protected String nommerAsNonExecute(T possession, LocalDate t) {
-    return String.format("NonExecuté[date=%s, nom=%s]", t, possession.nom());
+  protected String nommerAsNonExecute(T possession, LocalDate t, Argent valeur) {
+    return String.format("NonExecuté[date=%s, nom=%s, valeur=%s]", t, possession.nom(), valeur);
   }
 
-  protected String nommerAsEnRetard(T possession, LocalDate t) {
-    return String.format("EnRetard[date=%s, nom=%s]", t, possession.nom());
+  protected String nommerAsEnRetard(T possession, LocalDate t, Argent valeur) {
+    return String.format("EnRetard[date=%s, nom=%s, valeur=%s]", t, possession.nom(), valeur);
   }
 
-  protected String nommerAsEnAvance(T possession, LocalDate t) {
-    return String.format("EnAvance[date=%s, nom=%s]", t, possession.nom());
+  protected String nommerAsEnAvance(T possession, LocalDate t, Argent valeur) {
+    return String.format("EnAvance[date=%s, nom=%s, valeur=%s]", t, possession.nom(), valeur);
   }
 
-  protected String nommerAsValeurDifferentes(T possession, LocalDate t) {
-    return String.format("ValeurDifferentes[date=%s, nom=%s]", t, possession.nom());
+  protected String nommerAsValeurDifferentes(T possession, LocalDate t, Argent valeur) {
+    return String.format(
+        "ValeurDifferentes[date=%s, nom=%s, valeur=%s]", t, possession.nom(), valeur);
   }
 
   protected LocalDate getDate(T possession) {
@@ -91,7 +92,7 @@ public class RecoupeurDePossessionBase<T extends Possession> implements Recoupeu
   }
 
   @Override
-  public PossessionRecoupee nonExecute(T nonExecute) {
+  public PossessionRecoupee nonExecute(T nonExecute, Set<Possession> possessions) {
     return PossessionRecoupee.builder()
         .prevu(Info.of(nonExecute))
         .realises(Set.of(Info.of(nonExecute)))

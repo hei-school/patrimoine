@@ -34,7 +34,7 @@ public class CompilerUtilities {
       }
       Files.createDirectories(path);
     } catch (IOException e) {
-      throw new RuntimeException("Directory reset error : " + directoryPath, e);
+      throw new RuntimeException("Directory reset showError : " + directoryPath, e);
     }
   }
 }

@@ -2,6 +2,7 @@ package school.hei.patrimoine.visualisation.swing.ihm.google.component.recoupeme
 
 import static java.util.stream.Collectors.joining;
 import static school.hei.patrimoine.modele.recouppement.RecoupementStatus.IMPREVU;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.utils.MessageDialog.*;
 
 import java.awt.*;
 import java.io.File;
@@ -9,7 +10,6 @@ import java.util.HashSet;
 import java.util.Set;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import org.antlr.v4.runtime.misc.ParseCancellationException;
 import school.hei.patrimoine.modele.recouppement.PossessionRecoupee;
 import school.hei.patrimoine.modele.recouppement.PossessionRecoupee.Info;
 import school.hei.patrimoine.patrilang.files.PatriLangFileQuerier;
@@ -22,7 +22,6 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.But
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.FileSideBar;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
 import school.hei.patrimoine.visualisation.swing.ihm.google.utils.AsyncTask;
-import school.hei.patrimoine.visualisation.swing.ihm.google.utils.MessageDialog;
 import school.hei.patrimoine.visualisation.swing.ihm.google.utils.formatter.ArgentFormatter;
 import school.hei.patrimoine.visualisation.swing.ihm.google.utils.formatter.DateFormatter;
 
@@ -118,10 +117,10 @@ public class PossessionRecoupeeRealisationsDialog extends Dialog {
   }
 
   private boolean alreadyExist(Info candiate) {
-    Set<Info> exits = new HashSet<>(possessionRecoupee.realises());
-    exits.addAll(pendingInfos);
+    Set<Info> exists = new HashSet<>(possessionRecoupee.realises());
+    exists.addAll(pendingInfos);
 
-    return exits.stream()
+    return exists.stream()
         .anyMatch(info -> info.possession().nom().equals(candiate.possession().nom()));
   }
 
@@ -160,21 +159,14 @@ public class PossessionRecoupeeRealisationsDialog extends Dialog {
             })
         .onError(
             error -> {
-              if (error instanceof ParseCancellationException e) {
-                MessageDialog.error("Erreur", e.getMessage());
+              if (showExceptionMessageIfRecognizedException(error)) {
                 return;
               }
-
-              if (error instanceof IllegalArgumentException e) {
-                MessageDialog.error("Erreur", e.getMessage());
-                return;
-              }
-
-              MessageDialog.error("Erreur", "Une erreur est survenue lors de l'enregistrement");
+              showError("Erreur", "Une erreur est survenue lors de l'enregistrement");
             })
         .onSuccess(
             result -> {
-              MessageDialog.info("Succès", "L'opération a été exécutée avec succès");
+              showInfo("Succès", "L'opération a été exécutée avec succès");
               AppContext.getDefault().globalState().update("newUpdate", true);
               dispose();
             })

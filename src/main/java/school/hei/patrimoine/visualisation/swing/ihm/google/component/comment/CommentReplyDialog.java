@@ -1,5 +1,8 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.component.comment;
 
+import static school.hei.patrimoine.visualisation.swing.ihm.google.utils.MessageDialog.showError;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.utils.MessageDialog.showInfo;
+
 import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -9,7 +12,6 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.component.Dialog;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.AppContext;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
 import school.hei.patrimoine.visualisation.swing.ihm.google.utils.AsyncTask;
-import school.hei.patrimoine.visualisation.swing.ihm.google.utils.MessageDialog;
 
 public class CommentReplyDialog extends Dialog {
   private final String fileId;
@@ -66,7 +68,7 @@ public class CommentReplyDialog extends Dialog {
 
   private void replyComment() {
     if (textArea.getText().trim().isBlank()) {
-      MessageDialog.error("Erreur", "Le contenu du commentaire ne peut pas être vide.");
+      showError("Erreur", "Le contenu du commentaire ne peut pas être vide.");
       return;
     }
 
@@ -79,11 +81,11 @@ public class CommentReplyDialog extends Dialog {
         .loadingMessage("Envoi en cours...")
         .onSuccess(
             result -> {
-              MessageDialog.info("Succès", "Le commentaire a été ajouté avec succès.");
+              showInfo("Succès", "Le commentaire a été ajouté avec succès.");
               dispose();
               refresh.run();
             })
-        .onError(error -> MessageDialog.error("Error", "Erreur lors de l'envoi du commentaire"))
+        .onError(error -> showError("Error", "Erreur lors de l'envoi du commentaire"))
         .build()
         .execute();
   }

@@ -1,6 +1,7 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.component;
 
 import static school.hei.patrimoine.patrilang.files.PatriLangFileWritter.FileWritterInput;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.utils.MessageDialog.*;
 
 import java.awt.*;
 import java.io.File;
@@ -8,7 +9,6 @@ import java.util.List;
 import java.util.function.Supplier;
 import javax.swing.*;
 import lombok.Getter;
-import org.antlr.v4.runtime.misc.ParseCancellationException;
 import school.hei.patrimoine.google.api.DriveApi;
 import school.hei.patrimoine.google.model.User;
 import school.hei.patrimoine.patrilang.files.PatriLangFileWritter;
@@ -16,7 +16,6 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.AppCon
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
 import school.hei.patrimoine.visualisation.swing.ihm.google.utils.AsyncTask;
-import school.hei.patrimoine.visualisation.swing.ihm.google.utils.MessageDialog;
 
 @Getter
 public class AppBar extends JPanel {
@@ -50,13 +49,13 @@ public class AppBar extends JPanel {
   private static void saveSelectedFile(State state, String content) {
     ViewMode currentMode = state.get("viewMode");
     if (!ViewMode.EDIT.equals(currentMode)) {
-      MessageDialog.error("Erreur", "Vous devez être en mode édition pour sauvegarder.");
+      showError("Erreur", "Vous devez être en mode édition pour sauvegarder.");
       return;
     }
 
     File currentFile = state.get("selectedFile");
     if (currentFile == null) {
-      MessageDialog.error("Erreur", "Veuillez sélectionner un fichier avant de sauvegarder.");
+      showError("Erreur", "Veuillez sélectionner un fichier avant de sauvegarder.");
       return;
     }
 
@@ -76,22 +75,14 @@ public class AppBar extends JPanel {
         .onSuccess(
             result -> {
               AppContext.getDefault().globalState().update("newUpdate", true);
-              MessageDialog.info(
-                  "Succès", "Vous pouvez maintenant le synchroniser avec Google Drive.");
+              showInfo("Succès", "Vous pouvez maintenant le synchroniser avec Google Drive.");
             })
         .onError(
             error -> {
-              if (error instanceof ParseCancellationException e) {
-                MessageDialog.error("Erreur", e.getMessage());
+              if (showExceptionMessageIfRecognizedException(error)) {
                 return;
               }
-
-              if (error instanceof IllegalArgumentException e) {
-                MessageDialog.error("Erreur", e.getMessage());
-                return;
-              }
-
-              MessageDialog.error("Erreur", "Une erreur est survenue lors de l'enregistrement");
+              showError("Erreur", "Une erreur est survenue lors de l'enregistrement");
             })
         .build()
         .execute();
@@ -100,8 +91,7 @@ public class AppBar extends JPanel {
   private static void syncSelectedFileWithDrive(State state) {
     File currentFile = state.get("selectedFile");
     if (currentFile == null) {
-      MessageDialog.error(
-          "Erreur", "Veuillez sélectionner un fichier avant de synchroniser avec Drive.");
+      showError("Erreur", "Veuillez sélectionner un fichier avant de synchroniser avec Drive.");
       return;
     }
 
@@ -131,9 +121,8 @@ public class AppBar extends JPanel {
         .loadingMessage("Synchronisation avec Drive...")
         .onSuccess(
             result ->
-                MessageDialog.info(
-                    "Succès", "Le fichier a été synchronisé avec succès sur Google Drive."))
-        .onError(error -> MessageDialog.error("Erreur", "Échec de la synchronisation"))
+                showInfo("Succès", "Le fichier a été synchronisé avec succès sur Google Drive."))
+        .onError(error -> showError("Erreur", "Échec de la synchronisation"))
         .build()
         .execute();
   }

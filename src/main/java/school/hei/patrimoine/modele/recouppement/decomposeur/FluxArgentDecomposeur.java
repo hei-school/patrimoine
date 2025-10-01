@@ -16,7 +16,6 @@ public class FluxArgentDecomposeur extends PossessionDecomposeurBase<FluxArgent>
     if (fluxArgent.getDebut().equals(fluxArgent.getFin())) {
       return List.of(fluxArgent);
     }
-
     var fin = fluxArgent.getFin().isBefore(finSimulation) ? fluxArgent.getFin() : finSimulation;
 
     return fluxArgent
@@ -26,10 +25,14 @@ public class FluxArgentDecomposeur extends PossessionDecomposeurBase<FluxArgent>
         .map(
             date ->
                 new FluxArgent(
-                    fluxArgent.nom() + FLUX_ARGENT_DATE_SEPARATEUR + date,
+                    normalize(fluxArgent.nom() + FLUX_ARGENT_DATE_SEPARATEUR + date),
                     fluxArgent.getCompte(),
                     date,
                     fluxArgent.getFluxMensuel()))
         .toList();
+  }
+
+  private static String normalize(String nom) {
+    return nom.replaceAll("-", "_");
   }
 }
