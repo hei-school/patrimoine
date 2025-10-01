@@ -62,9 +62,10 @@ public class FluxArgentRecoupeurDePossession extends RecoupeurDePossessionBase<F
       groupedByDate.put(getDate(prevu), Set.of());
     }
 
+    var compte = realises.stream().findFirst().orElseThrow().getCompte();
     var corrections =
         groupedByDate.entrySet().stream()
-            .map(entry -> getCorrectionForDateT(entry.getKey(), prevu, entry.getValue()))
+            .map(entry -> getCorrectionForDateT(entry.getKey(), prevu, entry.getValue(), compte))
             .filter(Optional::isPresent)
             .map(Optional::get)
             .collect(toSet());
@@ -87,7 +88,7 @@ public class FluxArgentRecoupeurDePossession extends RecoupeurDePossessionBase<F
   }
 
   private Optional<Correction> getCorrectionForDateT(
-      LocalDate t, FluxArgent prevu, Set<FluxArgent> realises) {
+      LocalDate t, FluxArgent prevu, Set<FluxArgent> realises, Compte compte) {
     var correctionValeur = getCorrectionValeur(t.equals(prevu.t()) ? prevu : null, realises);
 
     if (correctionValeur.equals(new Argent(0, correctionValeur.devise()))) {
@@ -103,9 +104,7 @@ public class FluxArgentRecoupeurDePossession extends RecoupeurDePossessionBase<F
       nom = nommerAsValeurDifferentes(prevu, t, correctionValeur);
     }
 
-    var oneRealise = realises.stream().findFirst().orElseThrow();
-    return Optional.of(
-        new Correction(new FluxArgent(nom, oneRealise.getCompte(), t, correctionValeur)));
+    return Optional.of(new Correction(new FluxArgent(nom, compte, t, correctionValeur)));
   }
 
   @Override
