@@ -134,12 +134,12 @@ class RecoupeurDePossessionsTest {
             Set.of(
                 comptePersonnelrealise,
                 new FluxArgent(
-                    "salaire__du_" + au02Mars2025,
+                    String.format("salaire__du_%s", au02Mars2025).replaceAll("-", "_"),
                     comptePersonnelrealise,
                     au02Mars2025,
                     ariary(200)),
                 new FluxArgent(
-                    "salaire__du_" + au02Mai2025,
+                    String.format("salaire__du_%s", au02Mai2025).replaceAll("-", "_"),
                     comptePersonnelrealise,
                     au02Mai2025,
                     ariary(200))));
