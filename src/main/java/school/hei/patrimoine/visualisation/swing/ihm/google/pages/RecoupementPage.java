@@ -18,6 +18,7 @@ import school.hei.patrimoine.modele.recouppement.PossessionRecoupee;
 import school.hei.patrimoine.modele.recouppement.RecoupementStatus;
 import school.hei.patrimoine.modele.recouppement.RecoupeurDePossessions;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.AppBar;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.PlaceholderTextField;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.LazyPage;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.NavigateButton;
@@ -96,7 +97,7 @@ public class RecoupementPage extends LazyPage {
               new AddImprevuDialog(state);
             });
 
-    var nameFilter = new JTextField();
+    var nameFilter = new PlaceholderTextField("Rechercher");
     nameFilter.setPreferredSize(new Dimension(180, 35));
     nameFilter.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
 
