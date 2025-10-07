@@ -1,8 +1,6 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.component;
 
 import java.awt.*;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
 import javax.swing.*;
 
 public class PlaceholderTextField extends JTextField {
@@ -10,19 +8,6 @@ public class PlaceholderTextField extends JTextField {
 
   public PlaceholderTextField(String placeholder) {
     this.placeholder = placeholder;
-
-    this.addFocusListener(
-        new FocusAdapter() {
-          @Override
-          public void focusGained(FocusEvent e) {
-            repaint();
-          }
-
-          @Override
-          public void focusLost(FocusEvent e) {
-            repaint();
-          }
-        });
   }
 
   @Override
