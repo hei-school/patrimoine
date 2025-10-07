@@ -62,13 +62,13 @@ public class RecoupeurDePossessionBase<T extends Possession> implements Recoupeu
     return possessions.stream().map(this::toInfo).collect(toSet());
   }
 
-  // Valeur de correction = Valeur prévue - la somme des valeurs réalisées
+  // Valeur de correction = la somme des valeurs réalisées - Valeur prévue
   protected Argent getCorrectionValeur(T prevu, Set<T> realises) {
     if (prevu == null) {
-      return getValeur(realises).mult(-1);
+      return getValeur(realises);
     }
 
-    return getValeur(prevu).minus(getValeur(realises), prevu.t());
+    return getValeur(realises).minus(getValeur(prevu), prevu.t());
   }
 
   protected Map<LocalDate, Set<T>> groupByDate(Collection<T> possessions) {

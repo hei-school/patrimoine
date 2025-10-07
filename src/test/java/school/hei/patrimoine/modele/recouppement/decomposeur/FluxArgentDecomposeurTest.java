@@ -50,7 +50,7 @@ public class FluxArgentDecomposeurTest {
 
     assertEquals(3, actual.size());
     assertEquals("Salaire__du_2025_01_12", actual.get(0).nom());
-    assertEquals("Salaire__du_2025-02_12", actual.get(1).nom());
+    assertEquals("Salaire__du_2025_02_12", actual.get(1).nom());
     assertEquals("Salaire__du_2025_03_12", actual.get(2).nom());
   }
 

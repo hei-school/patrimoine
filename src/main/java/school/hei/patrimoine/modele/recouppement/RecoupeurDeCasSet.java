@@ -1,6 +1,7 @@
 package school.hei.patrimoine.modele.recouppement;
 
 import static java.util.stream.Collectors.toSet;
+import static school.hei.patrimoine.modele.recouppement.RecoupeurDePossessions.withoutCompteCorrections;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -35,7 +36,7 @@ public record RecoupeurDeCasSet(CasSet planned, CasSet done) {
             .getCorrections();
 
     Set<Possession> possessions = new HashSet<>(corrections);
-    possessions.addAll(doneCas.patrimoine().getPossessions());
+    possessions.addAll(withoutCompteCorrections(doneCas.patrimoine().getPossessions()));
 
     return new Cas(
         doneCas.getAjd(), doneCas.getFinSimulation(), doneCas.patrimoine().getPossesseurs()) {

@@ -159,7 +159,7 @@ public record RecoupeurDePossessions(
         .collect(toSet());
   }
 
-  private static Set<Possession> withoutCompteCorrections(Set<Possession> possessions) {
+  static Set<Possession> withoutCompteCorrections(Set<Possession> possessions) {
     return possessions.stream().filter(not(p -> p instanceof CompteCorrection)).collect(toSet());
   }
 }
