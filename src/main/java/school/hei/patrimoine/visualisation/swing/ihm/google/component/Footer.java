@@ -4,7 +4,9 @@ import java.awt.*;
 import java.util.Set;
 import java.util.stream.IntStream;
 import javax.swing.*;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
+import school.hei.patrimoine.visualisation.swing.ihm.google.providers.model.Pagination;
 
 public class Footer extends JPanel {
   private final State state;
@@ -51,9 +53,7 @@ public class Footer extends JPanel {
           }
         });
 
-    nextPageButton = new Button("Suivante");
-    nextPageButton.addActionListener(e -> goToNextPage());
-
+    nextPageButton = new Button("Suivante", e -> goToNextPage());
     nextPageButton.setFont(new Font("Arial", 0, 14));
     nextPageButton.setBackground(Color.WHITE);
     nextPageButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
@@ -72,7 +72,9 @@ public class Footer extends JPanel {
         e -> {
           if (pageSelector.getSelectedItem() != null) {
             int selectedPage = (Integer) pageSelector.getSelectedItem();
-            state.update("currentPage", selectedPage);
+
+            var currentPage = (Pagination) state.get("pagination");
+            state.update("pagination", new Pagination(selectedPage, currentPage.size()));
           }
         });
   }
