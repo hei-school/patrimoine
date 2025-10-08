@@ -13,8 +13,8 @@ import school.hei.patrimoine.cas.Cas;
 import school.hei.patrimoine.cas.CasSet;
 import school.hei.patrimoine.modele.recouppement.PossessionRecoupee;
 import school.hei.patrimoine.modele.recouppement.RecoupementStatus;
-import school.hei.patrimoine.modele.recouppement.RecoupeurDePossessions;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.AppBar;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.Footer;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.LazyPage;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.NavigateButton;
@@ -24,6 +24,8 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.File
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.recoupement.AddImprevuDialog;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.recoupement.PossessionRecoupeeListPanel;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
+import school.hei.patrimoine.visualisation.swing.ihm.google.providers.PossessionRecoupeeProvider;
+import school.hei.patrimoine.visualisation.swing.ihm.google.providers.model.Pagination;
 import school.hei.patrimoine.visualisation.swing.ihm.google.utils.AsyncTask;
 
 public class RecoupementPage extends LazyPage {
@@ -37,10 +39,16 @@ public class RecoupementPage extends LazyPage {
 
   public RecoupementPage() {
     super(PAGE_NAME);
-    this.state = new State(Map.of("filterStatus", PossessionRecoupeeFilterStatus.NON_EXECUTE));
+    this.state =
+        new State(
+            Map.of(
+                "filterStatus",
+                PossessionRecoupeeFilterStatus.NON_EXECUTE,
+                "pagination",
+                new Pagination(1, 2)));
     this.possessionRecoupeeListPanel = new PossessionRecoupeeListPanel(state);
 
-    state.subscribe(Set.of("filterStatus", "selectedFile"), this::update);
+    state.subscribe(Set.of("filterStatus", "selectedFile", "pagination"), this::update);
     globalState()
         .subscribe(
             Set.of("newUpdate"),
@@ -58,6 +66,7 @@ public class RecoupementPage extends LazyPage {
 
     addAppBar();
     addMainSplitPane();
+    addFooter();
   }
 
   private void updateCasSet() {
@@ -102,6 +111,11 @@ public class RecoupementPage extends LazyPage {
     add(appBar, BorderLayout.NORTH);
   }
 
+  private void addFooter() {
+    var footer = new Footer(state);
+    add(footer, BorderLayout.SOUTH);
+  }
+
   private void addMainSplitPane() {
     var fileList = new JList<>(new FileListModel(FileSideBar.getDonePatrilangFilesWithoutCasSet()));
     fileList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -120,14 +134,11 @@ public class RecoupementPage extends LazyPage {
   private List<PossessionRecoupee> getFilteredPossessionRecoupees() {
     var plannedCas = getCas(state.get("selectedFile"), plannedCasSet);
     var doneCas = getCas(state.get("selectedFile"), doneCasSet);
-
-    var recoupeurDePossession =
-        RecoupeurDePossessions.of(
-            plannedCas.getFinSimulation(), plannedCas.patrimoine(), doneCas.patrimoine());
-    var possessionsRecoupees = recoupeurDePossession.getPossessionsRecoupees();
+    var pagination = (Pagination) state.get("pagination");
+    var filteredStatus = (PossessionRecoupeeFilterStatus) state.get("filterStatus");
 
     Set<RecoupementStatus> statusToKeep = new HashSet<>();
-    switch ((PossessionRecoupeeFilterStatus) state.get("filterStatus")) {
+    switch (filteredStatus) {
       case TOUT -> statusToKeep.addAll(Set.of(RecoupementStatus.values()));
       case IMPREVU -> statusToKeep.add(RecoupementStatus.IMPREVU);
       case NON_EXECUTE -> statusToKeep.add(RecoupementStatus.NON_EXECUTE);
@@ -135,13 +146,14 @@ public class RecoupementPage extends LazyPage {
       case EXECUTE_SANS_CORRECTION -> statusToKeep.add(RecoupementStatus.EXECUTE_SANS_CORRECTION);
     }
 
-    var filtered = possessionsRecoupees.stream()
-        .filter(p -> statusToKeep.contains(p.status()))
-        .sorted(Comparator.comparing((PossessionRecoupee p) -> p.possession().t()).reversed())
-        .toList();
+    var provider = new PossessionRecoupeeProvider();
+    var meta = new PossessionRecoupeeProvider.Meta(plannedCas, doneCas);
+    var filter = new PossessionRecoupeeProvider.Filter(statusToKeep, pagination);
 
-    state.update(Map.of("plannedCas", plannedCas, "doneCas", doneCas));
-    return filtered;
+    int totalPages = provider.getTotalPages(meta, filter);
+    state.update("totalPages", totalPages);
+
+    return provider.getList(meta, filter);
   }
 
   @Override
