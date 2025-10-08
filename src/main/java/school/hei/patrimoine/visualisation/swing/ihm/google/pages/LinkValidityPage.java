@@ -154,7 +154,7 @@ public class LinkValidityPage extends Page {
               DriveApi driveApi = globalState().get("drive-api");
               var downloader = new GoogleLinkListDownloader(driveApi);
 
-              // downloader.download(namedIds);
+              downloader.download(namedIds);
 
               globalState().update("named-ids", namedIds);
               return null;

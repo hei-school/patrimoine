@@ -34,6 +34,7 @@ public class RecoupementPage extends LazyPage {
   private CasSet plannedCasSet;
   private CasSet doneCasSet;
 
+  private Footer footer;
   private final State state;
   private final PossessionRecoupeeListPanel possessionRecoupeeListPanel;
 
@@ -42,10 +43,12 @@ public class RecoupementPage extends LazyPage {
     this.state =
         new State(
             Map.of(
+                "totalPages",
+                1,
                 "filterStatus",
                 PossessionRecoupeeFilterStatus.NON_EXECUTE,
                 "pagination",
-                new Pagination(1, 2)));
+                new Pagination(1, 50)));
     this.possessionRecoupeeListPanel = new PossessionRecoupeeListPanel(state);
 
     state.subscribe(Set.of("filterStatus", "selectedFile", "pagination"), this::update);
@@ -112,7 +115,7 @@ public class RecoupementPage extends LazyPage {
   }
 
   private void addFooter() {
-    var footer = new Footer(state);
+    footer = new Footer(state);
     add(footer, BorderLayout.SOUTH);
   }
 
@@ -150,10 +153,12 @@ public class RecoupementPage extends LazyPage {
     var meta = new PossessionRecoupeeProvider.Meta(plannedCas, doneCas);
     var filter = new PossessionRecoupeeProvider.Filter(statusToKeep, pagination);
 
-    int totalPages = provider.getTotalPages(meta, filter);
-    state.update("totalPages", totalPages);
+    var result = provider.getList(meta, filter);
+    if (result.totalPage() != (int) state.get("totalPages")) {
+      state.update("totalPages", result.totalPage());
+    }
 
-    return provider.getList(meta, filter);
+    return result.possessionRecoupees();
   }
 
   @Override
@@ -165,7 +170,7 @@ public class RecoupementPage extends LazyPage {
     AsyncTask.<List<PossessionRecoupee>>builder()
         .task(this::getFilteredPossessionRecoupees)
         .onSuccess(possessionRecoupeeListPanel::update)
-        .withDialogLoading(isActive())
+        .withDialogLoading(false)
         .build()
         .execute();
   }

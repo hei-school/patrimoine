@@ -21,10 +21,8 @@ public class Footer extends JPanel {
     setLayout(new FlowLayout(FlowLayout.RIGHT));
     setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 10));
 
-    previousPageButton = new Button("Précédente");
-    previousPageButton.addActionListener(e -> goToPreviousPage());
-
-    previousPageButton.setFont(new Font("Arial", 0, 14));
+    previousPageButton = new Button("Précédente", e -> goToPreviousPage());
+    previousPageButton.setFont(new Font("Arial", Font.PLAIN, 14));
     previousPageButton.setBackground(Color.WHITE);
     previousPageButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
     previousPageButton.setPreferredSize(new Dimension(110, 40));
@@ -54,19 +52,16 @@ public class Footer extends JPanel {
         });
 
     nextPageButton = new Button("Suivante", e -> goToNextPage());
-    nextPageButton.setFont(new Font("Arial", 0, 14));
+    nextPageButton.setFont(new Font("Arial", Font.PLAIN, 14));
     nextPageButton.setBackground(Color.WHITE);
     nextPageButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
     nextPageButton.setPreferredSize(new Dimension(110, 40));
 
+    state.subscribe(Set.of("totalPages", "pagination"), this::updatePageSelector);
+
     add(previousPageButton);
     add(pageSelector);
     add(nextPageButton);
-
-    state.update("currentPage", 1);
-    state.update("totalPages", 1);
-
-    state.subscribe(Set.of("currentPage", "totalPages"), () -> updatePageSelector());
 
     pageSelector.addActionListener(
         e -> {
@@ -80,23 +75,24 @@ public class Footer extends JPanel {
   }
 
   private void goToPreviousPage() {
-    int current = (int) state.get("currentPage");
-    if (current > 1) {
-      state.update("currentPage", current - 1);
-    }
+    Pagination current = state.get("pagination");
+
+    if (current.page() > 1)
+      state.update("pagination", current.toBuilder().page(current.page() - 1).build());
   }
 
   private void goToNextPage() {
-    int current = (int) state.get("currentPage");
-    int total = (int) state.get("totalPages");
-    if (current < total) {
-      state.update("currentPage", current + 1);
-    }
+    Pagination current = state.get("pagination");
+    int total = state.get("totalPages");
+
+    if (current.page() < total)
+      state.update("pagination", current.toBuilder().page(current.page() + 1).build());
   }
 
-  private void updatePageSelector() {
-    int totalPages = (int) state.get("totalPages");
-    int currentPage = (int) state.get("currentPage");
+  public void updatePageSelector() {
+    int totalPages = state.get("totalPages");
+    Pagination pagination = state.get("pagination");
+    var currentPage = pagination.page();
 
     pageSelector.removeAllItems();
     IntStream.rangeClosed(1, totalPages).forEach(pageSelector::addItem);

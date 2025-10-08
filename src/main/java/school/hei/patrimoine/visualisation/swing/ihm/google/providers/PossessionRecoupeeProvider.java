@@ -18,7 +18,9 @@ public class PossessionRecoupeeProvider {
   @Builder
   public record Filter(Set<RecoupementStatus> statuses, Pagination pagination) {}
 
-  public List<PossessionRecoupee> getList(Meta meta, Filter filter) {
+  public record Result(List<PossessionRecoupee> possessionRecoupees, int totalPage) {}
+
+  public Result getList(Meta meta, Filter filter) {
     var recoupeur =
         RecoupeurDePossessions.of(
             meta.planned().getFinSimulation(),
@@ -36,20 +38,8 @@ public class PossessionRecoupeeProvider {
     int from = (filter.pagination().page() - 1) * filter.pagination().size();
     int to = Math.min(from + filter.pagination().size(), filtered.size());
 
-    if (from >= filtered.size()) return List.of();
-    return filtered.subList(from, to);
-  }
+    int totalPages = (int) Math.ceil((double) filtered.size() / filter.pagination().size());
 
-  public int getTotalPages(Meta meta, Filter filter) {
-    var recoupeur =
-        RecoupeurDePossessions.of(
-            meta.planned().getFinSimulation(),
-            meta.planned().patrimoine(),
-            meta.done().patrimoine());
-
-    var all = recoupeur.getPossessionsRecoupees();
-    var filteredCount = all.stream().filter(p -> filter.statuses().contains(p.status())).count();
-
-    return (int) Math.ceil((double) filteredCount / filter.pagination().size());
+    return new Result(filtered.subList(from, to), totalPages);
   }
 }
