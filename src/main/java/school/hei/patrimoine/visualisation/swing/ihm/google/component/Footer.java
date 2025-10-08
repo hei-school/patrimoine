@@ -29,7 +29,7 @@ public class Footer extends JPanel {
 
     pageSelector = new JComboBox<>();
     pageSelector.setFont(new Font("Arial", Font.PLAIN, 14));
-    pageSelector.setPreferredSize(new Dimension(70, 28));
+    pageSelector.setPreferredSize(new Dimension(70, 40));
     pageSelector.setCursor(new Cursor(Cursor.HAND_CURSOR));
     pageSelector.setRenderer(
         new DefaultListCellRenderer() {
