@@ -121,9 +121,6 @@ public class RecoupementPage extends LazyPage {
     var plannedCas = getCas(state.get("selectedFile"), plannedCasSet);
     var doneCas = getCas(state.get("selectedFile"), doneCasSet);
 
-    state.update("plannedCas", plannedCas);
-    state.update("doneCas", plannedCas);
-
     var recoupeurDePossession =
         RecoupeurDePossessions.of(
             plannedCas.getFinSimulation(), plannedCas.patrimoine(), doneCas.patrimoine());
@@ -138,10 +135,13 @@ public class RecoupementPage extends LazyPage {
       case EXECUTE_SANS_CORRECTION -> statusToKeep.add(RecoupementStatus.EXECUTE_SANS_CORRECTION);
     }
 
-    return possessionsRecoupees.stream()
+    var filtered = possessionsRecoupees.stream()
         .filter(p -> statusToKeep.contains(p.status()))
         .sorted(Comparator.comparing((PossessionRecoupee p) -> p.possession().t()).reversed())
         .toList();
+
+    state.update(Map.of("plannedCas", plannedCas, "doneCas", doneCas));
+    return filtered;
   }
 
   @Override
