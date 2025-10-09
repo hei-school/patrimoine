@@ -37,7 +37,9 @@ public class GoogleApiUtilities {
     return getApplicationHomeDirectory() + "/google/client.json";
   }
 
-  public static String getCacheDirectoryPath() { return getApplicationHomeDirectory() + "/cache"; }
+  public static String getCacheDirectoryPath() {
+    return getApplicationHomeDirectory() + "/cache";
+  }
 
   public static String getApplicationHomeDirectory() {
     return getUserHome() + "/." + getApplicationName();
