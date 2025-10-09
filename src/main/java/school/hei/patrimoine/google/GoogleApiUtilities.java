@@ -37,6 +37,10 @@ public class GoogleApiUtilities {
     return getApplicationHomeDirectory() + "/google/client.json";
   }
 
+  public static String getCacheDirectoryPath() {
+    return getApplicationHomeDirectory() + "/cache";
+  }
+
   public static String getApplicationHomeDirectory() {
     return getUserHome() + "/." + getApplicationName();
   }
@@ -50,6 +54,11 @@ public class GoogleApiUtilities {
     var downloadDirectory = new File(getDownloadDirectoryPath());
     if (!downloadDirectory.exists() && !downloadDirectory.mkdirs()) {
       log.warn("Failed to create download directory");
+    }
+
+    var cacheDirectory = new File(getCacheDirectoryPath());
+    if (!cacheDirectory.exists() && !cacheDirectory.mkdirs()) {
+      log.warn("Failed to create cache directory");
     }
   }
 }
