@@ -51,7 +51,7 @@ public class RecoupementPage extends LazyPage {
                 "totalPages",
                 1,
                 "filterStatus",
-                PossessionRecoupeeFilterStatus.NON_EXECUTE,
+                PossessionRecoupeeFilterStatus.TOUT,
                 "pagination",
                 new Pagination(1, DEFAULT_TOTAL_PAGES)));
     this.possessionRecoupeeListPanel = new PossessionRecoupeeListPanel(state);
@@ -93,7 +93,7 @@ public class RecoupementPage extends LazyPage {
 
   private void addAppBar() {
     var statusFilter = new JComboBox<>(PossessionRecoupeeFilterStatus.values());
-    statusFilter.setSelectedItem(PossessionRecoupeeFilterStatus.NON_EXECUTE);
+    statusFilter.setSelectedItem(PossessionRecoupeeFilterStatus.TOUT);
     statusFilter.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
     statusFilter.setCursor(new Cursor(Cursor.HAND_CURSOR));
     statusFilter.addActionListener(
