@@ -156,7 +156,7 @@ public class LinkValidityPage extends Page {
               downloader.download(namedIds);
 
               GoogleLinkList<NamedLink> namedLinks = globalState().get("named-links");
-              var saver = new GoogleLinkListSaver();
+              var saver = new GoogleLinkListCacheManager();
               saver.save(namedLinks);
 
               globalState().update("named-ids", namedIds);
