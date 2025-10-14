@@ -142,19 +142,43 @@ public class AppBar extends JPanel {
     return modeSelect;
   }
 
-  public static Button builtInSaveButton(
+  public static JMenuItem builtInSaveButton(
       State state, Supplier<String> currentFileNewContentSupplier) {
-    var saveButton = new Button("Enregistrement local");
+    var saveButton = new JMenuItem("Enregistrement local");
     saveButton.addActionListener(e -> saveSelectedFile(state, currentFileNewContentSupplier.get()));
 
     return saveButton;
   }
 
-  public static Button builtInSyncButton(State state) {
-    var saveButton = new Button("Synchroniser avec Drive");
+  public static JMenuItem builtInSyncButton(State state) {
+    var saveButton = new JMenuItem("Synchroniser avec Drive");
     saveButton.addActionListener(e -> syncSelectedFileWithDrive(state));
 
     return saveButton;
+  }
+
+  public static JPanel builtInFileDropdown(
+      State state, Supplier<String> currentFileNewContentSupplier) {
+    JButton menuButton = new JButton("Sauvegarder / Synchroniser");
+    menuButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+    ToolTipManager.sharedInstance().setInitialDelay(10);
+    menuButton.setToolTipText(menuButton.getText());
+    menuButton.setPreferredSize(new Dimension(110, 35));
+    JPopupMenu popupMenu = new JPopupMenu();
+
+    var saveItem = builtInSaveButton(state, currentFileNewContentSupplier);
+    var syncItem = builtInSyncButton(state);
+
+    popupMenu.add(saveItem);
+    popupMenu.add(syncItem);
+
+    menuButton.addActionListener(e -> popupMenu.show(menuButton, 0, menuButton.getHeight()));
+
+    JPanel panel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+    panel.setOpaque(false);
+    panel.add(menuButton);
+
+    return panel;
   }
 
   public static JPanel builtInFontSizeControllerButton(State state) {
