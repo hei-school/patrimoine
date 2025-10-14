@@ -36,7 +36,8 @@ public class FileListCellRenderer extends DefaultListCellRenderer {
       Point mousePos = null;
       try {
         mousePos = list.getMousePosition();
-      } catch (IllegalComponentStateException ignored) {}
+      } catch (IllegalComponentStateException ignored) {
+      }
 
       if (mousePos != null) {
         int hoverIndex = list.locationToIndex(mousePos);
