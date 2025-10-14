@@ -6,11 +6,13 @@ import static school.hei.patrimoine.visualisation.swing.ihm.google.component.App
 import static school.hei.patrimoine.visualisation.swing.ihm.google.utils.MessageDialog.showError;
 
 import java.awt.*;
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.swing.*;
 import lombok.Getter;
+import school.hei.patrimoine.cas.Cas;
 import school.hei.patrimoine.cas.CasSet;
 import school.hei.patrimoine.cas.CasSetAnalyzer;
 import school.hei.patrimoine.google.model.Pagination;
@@ -21,6 +23,7 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.LazyPa
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.comment.CommentSideBar;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.FileSideBar;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.recoupement.AddImprevuDialog;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
 import school.hei.patrimoine.visualisation.swing.ihm.google.utils.AsyncTask;
 
@@ -28,6 +31,11 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.utils.AsyncTask;
 public class PatriLangFilesPage extends LazyPage {
   public static final String PAGE_NAME = "patrilang-files";
   private static final Integer COMMENT_PAGE_SIZE = 2;
+  private static final String INITIAL_CAS_NAME = "CasSet.tout.md";
+
+  private CasSet plannedCasSet;
+  private CasSet doneCasSet;
+  private Button addImprevuButton;
 
   private final State state;
   private HtmlViewer htmlViewer;
@@ -45,6 +53,12 @@ public class PatriLangFilesPage extends LazyPage {
                 "commentPagination",
                 new Pagination(COMMENT_PAGE_SIZE, null)));
 
+    globalState().subscribe(Set.of("newUpdate"), this::updateCasSet);
+    updateCas();
+
+    state.subscribe("selectedFile", this::updateCas);
+    state.subscribe("selectedFile", this::updateAddImprevuButtonVisibility);
+
     setLayout(new BorderLayout());
   }
 
@@ -54,18 +68,60 @@ public class PatriLangFilesPage extends LazyPage {
     addMainSplitPane();
   }
 
+  private void updateAddImprevuButtonVisibility() {
+    if (addImprevuButton == null) return;
+
+    File selectedFile = state.get("selectedFile");
+
+    SwingUtilities.invokeLater(
+        () -> {
+          if (selectedFile == null) {
+            addImprevuButton.setVisible(false);
+            return;
+          }
+
+          boolean isToutCasFile = selectedFile.getName().equals(INITIAL_CAS_NAME);
+          addImprevuButton.setVisible(!isToutCasFile);
+        });
+  }
+
   private void addAppBar() {
+    addImprevuButton =
+        new Button(
+            "Ajouter un imprévu",
+            e -> {
+              if (state.get("selectedFile") == null) {
+                showError("Erreur", "Veuillez sélectionner un fichier avant d'ajouter un imprévu");
+                return;
+              }
+
+              if (plannedCasSet == null || doneCasSet == null) updateCasSet();
+
+              updateCas();
+
+              if (state.get("plannedCas") == null) {
+                showError(
+                    "Erreur",
+                    "Le cas planifié n'a pas été trouvé. Veuillez vérifier que le fichier"
+                        + " sélectionné est correct.");
+                return;
+              }
+
+              new AddImprevuDialog(state);
+            });
+
     var appBar =
         new AppBar(
             List.of(
                 builtInViewModeSelect(state),
-                builtInSaveButton(state, () -> getHtmlViewer().getText()),
-                builtInSyncButton(state),
+                builtInFileDropdown(state, () -> getHtmlViewer().getText()),
                 evolutionGraphicButton(),
-                recoupementButton()),
+                recoupementButton(),
+                addImprevuButton),
             List.of(builtInFontSizeControllerButton(state), builtInUserInfoPanel()));
 
     add(appBar, BorderLayout.NORTH);
+    updateAddImprevuButtonVisibility();
   }
 
   private void addMainSplitPane() {
@@ -122,5 +178,47 @@ public class PatriLangFilesPage extends LazyPage {
             })
         .build()
         .execute();
+  }
+
+  private void updateCasSet() {
+    boolean isNewUpdate =
+        globalState().get("newUpdate") == null || (boolean) globalState().get("newUpdate");
+
+    if (!isNewUpdate) return;
+
+    this.plannedCasSet = transpileToutCas(FileSideBar.getPlannedCasSetFile().getAbsolutePath());
+    this.doneCasSet = transpileToutCas(FileSideBar.getDoneCasSetFile().getAbsolutePath());
+
+    updateCas();
+  }
+
+  private void updateCas() {
+    File selectedFile = state.get("selectedFile");
+
+    if (selectedFile == null || plannedCasSet == null || doneCasSet == null) return;
+
+    if (selectedFile.getName().equals(INITIAL_CAS_NAME)) return;
+
+    var plannedCas = getCasPatriLangFilesPage(selectedFile, plannedCasSet);
+    var doneCas = getCasPatriLangFilesPage(selectedFile, doneCasSet);
+
+    if (plannedCas == null || doneCas == null) {
+      System.err.println("No cases found for " + selectedFile.getName());
+      return;
+    }
+
+    state.update(Map.of("plannedCas", plannedCas, "doneCas", doneCas));
+  }
+
+  private static Cas getCasPatriLangFilesPage(File file, CasSet casSet) {
+    if (file == null || casSet == null) return null;
+
+    var fileName = file.getName();
+    var baseName = fileName.contains(".") ? fileName.substring(0, fileName.indexOf('.')) : fileName;
+
+    return casSet.set().stream()
+        .filter(cas -> cas.patrimoine() != null && cas.patrimoine().nom().equals(baseName))
+        .findFirst()
+        .orElse(null);
   }
 }

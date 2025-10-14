@@ -32,11 +32,17 @@ public class FileListCellRenderer extends DefaultListCellRenderer {
     label.setBorder(new EmptyBorder(6, 12, 6, 12));
     label.setFont(label.getFont().deriveFont(label.getFont().getSize() + 4f));
 
-    if (!isSelected && list.getMousePosition() != null) {
-      var p = list.getMousePosition();
-      int hoverIndex = list.locationToIndex(p);
-      if (hoverIndex == index && hoverIndex != -1) {
-        label.setBackground(new Color(200, 220, 255));
+    if (!isSelected) {
+      Point mousePos = null;
+      try {
+        mousePos = list.getMousePosition();
+      } catch (IllegalComponentStateException ignored) {}
+
+      if (mousePos != null) {
+        int hoverIndex = list.locationToIndex(mousePos);
+        if (hoverIndex == index && hoverIndex != -1) {
+          label.setBackground(new Color(200, 220, 255));
+        }
       }
     }
 
