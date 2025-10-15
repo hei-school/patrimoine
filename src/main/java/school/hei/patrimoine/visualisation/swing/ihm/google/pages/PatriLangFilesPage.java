@@ -95,27 +95,35 @@ public class PatriLangFilesPage extends LazyPage {
     return new Button(
         "Ajouter un imprévu",
         e -> {
-          if (state.get("selectedFile") == null) {
-            showError("Erreur", "Veuillez sélectionner un fichier avant d'ajouter un imprévu");
+          if (!ensureReadyToAddImprevu()) {
             return;
           }
-
-          if (plannedCasSet == null || doneCasSet == null) {
-            updateCasSet();
-          }
-
-          updateCas();
-
-          if (state.get("plannedCas") == null) {
-            showError(
-                "Erreur",
-                "Le cas planifié n'a pas été trouvé. Veuillez vérifier que le fichier"
-                    + " sélectionné est correct.");
-            return;
-          }
-
           new AddImprevuDialog(state);
         });
+  }
+
+  private boolean ensureReadyToAddImprevu() {
+    File selectedFile = state.get("selectedFile");
+    if (selectedFile == null) {
+      showError("Erreur", "Veuillez sélectionner un fichier avant d'ajouter un imprévu");
+      return false;
+    }
+
+    if (plannedCasSet == null || doneCasSet == null) {
+      updateCasSet();
+    }
+
+    updateCas();
+
+    if (state.get("plannedCas") == null) {
+      showError(
+          "Erreur",
+          "Le cas planifié n'a pas été trouvé. Veuillez vérifier que le fichier"
+              + " sélectionné est correct.");
+      return false;
+    }
+
+    return true;
   }
 
   private void addAppBar() {
