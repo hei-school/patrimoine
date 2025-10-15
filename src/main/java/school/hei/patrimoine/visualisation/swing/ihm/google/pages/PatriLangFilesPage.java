@@ -58,7 +58,12 @@ public class PatriLangFilesPage extends LazyPage {
     globalState().subscribe(Set.of("newUpdate"), this::updateCasSet);
     updateCas();
 
-    state.subscribe("selectedFile", () -> { this.updateCas(); this.updateAddImprevuButtonVisibility(); });
+    state.subscribe(
+        "selectedFile",
+        () -> {
+          this.updateCas();
+          this.updateAddImprevuButtonVisibility();
+        });
 
     setLayout(new BorderLayout());
   }
