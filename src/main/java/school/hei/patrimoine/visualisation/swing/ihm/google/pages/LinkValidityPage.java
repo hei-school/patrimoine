@@ -153,8 +153,11 @@ public class LinkValidityPage extends Page {
               var namedIds = parseNamedIds();
               DriveApi driveApi = globalState().get("drive-api");
               var downloader = new GoogleLinkListDownloader(driveApi);
-
               downloader.download(namedIds);
+
+              GoogleLinkList<NamedLink> namedLinks = globalState().get("named-links");
+              var saver = new GoogleLinkListCacheManager();
+              saver.save(namedLinks);
 
               globalState().update("named-ids", namedIds);
               return null;
