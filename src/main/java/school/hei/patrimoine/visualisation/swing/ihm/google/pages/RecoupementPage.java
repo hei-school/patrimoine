@@ -174,6 +174,8 @@ public class RecoupementPage extends LazyPage {
     var doneCas = getCas(state.get("selectedFile"), doneCasSet);
     var filteredStatus = (PossessionRecoupeeFilterStatus) state.get("filterStatus");
 
+    state.update(Map.of("plannedCas", plannedCas, "doneCas", doneCas));
+
     Set<RecoupementStatus> statusToKeep = new HashSet<>();
     switch (filteredStatus) {
       case TOUT -> statusToKeep.addAll(Set.of(RecoupementStatus.values()));
