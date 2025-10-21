@@ -5,11 +5,12 @@ import static school.hei.patrimoine.modele.possession.TypeAgregat.FLUX;
 
 import java.time.LocalDate;
 import java.util.Set;
+import lombok.Getter;
 import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.Devise;
 
+@Getter
 public final class GroupePossession extends Possession {
-
   private final Set<Possession> possessions;
 
   public GroupePossession(String nom, Devise devise, LocalDate t, Set<Possession> possessions) {

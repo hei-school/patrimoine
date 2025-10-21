@@ -34,12 +34,11 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.utils.AsyncTask;
 
 public class RecoupementPage extends LazyPage {
   public static final String PAGE_NAME = "recoupement";
-  public static final int DEFAULT_TOTAL_PAGES = 1;
+  public static final int RECOUPEMENT_ITEM_PER_PAGE = 50;
 
   private CasSet plannedCasSet;
   private CasSet doneCasSet;
 
-  private Footer footer;
   private final State state;
   private final PossessionRecoupeeListPanel possessionRecoupeeListPanel;
 
@@ -53,7 +52,7 @@ public class RecoupementPage extends LazyPage {
                 "filterStatus",
                 PossessionRecoupeeFilterStatus.TOUT,
                 "pagination",
-                new Pagination(1, DEFAULT_TOTAL_PAGES)));
+                new Pagination(1, RECOUPEMENT_ITEM_PER_PAGE)));
     this.possessionRecoupeeListPanel = new PossessionRecoupeeListPanel(state);
 
     state.subscribe(
@@ -125,7 +124,7 @@ public class RecoupementPage extends LazyPage {
                       "filterName",
                       nameFilter.getText().trim(),
                       "pagination",
-                      new Pagination(1, DEFAULT_TOTAL_PAGES)));
+                      new Pagination(1, RECOUPEMENT_ITEM_PER_PAGE)));
             });
     debounceTimer.setRepeats(false);
 
@@ -150,8 +149,7 @@ public class RecoupementPage extends LazyPage {
   }
 
   private void addFooter() {
-    footer = new Footer(state);
-    add(footer, BorderLayout.SOUTH);
+    add(new Footer(state), BorderLayout.SOUTH);
   }
 
   private void addMainSplitPane() {
