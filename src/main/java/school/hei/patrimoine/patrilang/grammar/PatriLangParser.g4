@@ -236,11 +236,16 @@ argentValue
 
 dateDelta
     :   (PLUS | MOINS) anneePart moisPart jourPart
+    |   (PLUS | MOINS) anneePart moisPart semainePart jourPart
     |   (PLUS | MOINS) anneePart moisPart
     |   (PLUS | MOINS) anneePart
+    |   (PLUS | MOINS) anneePart semainePart jourPart
     |   (PLUS | MOINS) anneePart jourPart
+    |   (PLUS | MOINS) moisPart semainePart jourPart
     |   (PLUS | MOINS) moisPart jourPart
     |   (PLUS | MOINS) moisPart
+    |   (PLUS | MOINS) semainePart jourPart
+    |   (PLUS | MOINS) semainePart
     |   (PLUS | MOINS) jourPart
     ;
 
@@ -250,6 +255,10 @@ anneePart
 
 moisPart
     :   variable MOT_MOIS MOT_ET?
+    ;
+
+semainePart
+    :   variable (MOT_SEMAINE | MOT_SEMAINES) MOT_ET?
     ;
 
 jourPart

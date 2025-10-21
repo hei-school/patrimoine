@@ -61,12 +61,23 @@ public class VariableDateVisitor {
     var anneePart = visitAnneePart(ctx.anneePart());
     var moisPart = visitMoisPart(ctx.moisPart());
     var joursPart = visitJours(ctx.jourPart());
+    var semainesPart = visitSemaines(ctx.semainePart());
     LocalDate newValue;
 
     if (isMinus) {
-      newValue = baseValue.minusYears(anneePart).minusMonths(moisPart).minusDays(joursPart);
+      newValue =
+          baseValue
+              .minusYears(anneePart)
+              .minusMonths(moisPart)
+              .minusDays(semainesPart)
+              .minusDays(joursPart);
     } else {
-      newValue = baseValue.plusYears(anneePart).plusMonths(moisPart).plusDays(joursPart);
+      newValue =
+          baseValue
+              .plusYears(anneePart)
+              .plusMonths(moisPart)
+              .plusDays(semainesPart)
+              .plusDays(joursPart);
     }
 
     return newValue;
@@ -97,5 +108,12 @@ public class VariableDateVisitor {
             .get()
             .apply(ctx.variable().expression())
             .intValue();
+  }
+
+  private int visitSemaines(SemainePartContext ctx) {
+    return isNull(ctx)
+        ? 0
+        : this.variableExpressionVisitorSupplier.get().apply(ctx.variable().expression()).intValue()
+            * 7;
   }
 }
