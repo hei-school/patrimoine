@@ -159,7 +159,19 @@ public class RecoupementPage extends LazyPage {
     fileList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     fileList.setCellRenderer(new FileListCellRenderer());
     fileList.addListSelectionListener(
-        e -> state.update("selectedFile", fileList.getSelectedValue()));
+        e -> {
+          if (!e.getValueIsAdjusting()) {
+            File selectedFile = fileList.getSelectedValue();
+            if (selectedFile != null) {
+              var currentPagination = (Pagination) state.get("pagination");
+              var resetPagination = new Pagination(1, currentPagination.size());
+              state.update(
+                  Map.of(
+                      "selectedFile", selectedFile,
+                      "pagination", resetPagination));
+            }
+          }
+        });
 
     var horizontalSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
     horizontalSplit.setLeftComponent(new JScrollPane(fileList));
@@ -192,8 +204,15 @@ public class RecoupementPage extends LazyPage {
             statusToKeep, state.get("pagination"), state.get("filterName"));
 
     var result = provider.getList(meta, filter);
-    if (result.totalPage() != (int) state.get("totalPages")) {
-      state.update("totalPages", result.totalPage());
+
+    int totalPage = result.totalPage();
+    Pagination current = state.get("pagination");
+    if (current.page() > totalPage && totalPage > 0) {
+      state.update("pagination", current.toBuilder().page(totalPage).build());
+    }
+
+    if (totalPage != (int) state.get("totalPages")) {
+      state.update("totalPages", totalPage);
     }
 
     return result.possessionRecoupees();
