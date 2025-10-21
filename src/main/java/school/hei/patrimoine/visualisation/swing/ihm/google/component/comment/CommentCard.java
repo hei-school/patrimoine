@@ -36,8 +36,7 @@ public class CommentCard extends JPanel {
         comment.answers().stream()
             .anyMatch(
                 answer ->
-                    answer.content() != null
-                        && answer.content().equalsIgnoreCase("approuvé"));
+                    answer.content() != null && answer.content().equalsIgnoreCase("approuvé"));
 
     if (isApproved) {
       backgroundColor = new Color(120, 220, 140);
