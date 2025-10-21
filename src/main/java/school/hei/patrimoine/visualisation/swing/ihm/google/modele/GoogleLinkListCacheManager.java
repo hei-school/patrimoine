@@ -10,6 +10,9 @@ import school.hei.patrimoine.google.GoogleApiUtilities;
 @Slf4j
 public record GoogleLinkListCacheManager() {
   public void save(GoogleLinkList<GoogleLinkList.NamedLink> links) {
+    if (links.planned().isEmpty() && links.done().isEmpty()) {
+      return;
+    }
     writeLinksToFile(getPlannedFilePath(), links.planned());
     writeLinksToFile(getDoneFilePath(), links.done());
 
