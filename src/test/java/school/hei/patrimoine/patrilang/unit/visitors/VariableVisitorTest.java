@@ -1,7 +1,6 @@
 package school.hei.patrimoine.patrilang.unit.visitors;
 
-import static java.time.Month.FEBRUARY;
-import static java.time.Month.JULY;
+import static java.time.Month.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static school.hei.patrimoine.modele.Argent.ariary;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.VariableContext;
@@ -145,6 +144,28 @@ class VariableVisitorTest {
     subject.addToScope("ajd", DATE, ajd);
 
     var variable = (Variable<Argent>) visitor.visit(input, PatriLangParser::variable);
+    var actual = variable.value();
+
+    assertEquals(expected, actual);
+  }
+
+  @Test
+  void can_parse_date_with_semaine() {
+    var input = "le 25 janvier 2025 + 2 semaines";
+    var expected = LocalDate.of(2025, FEBRUARY, 8);
+
+    var variable = (Variable<LocalDate>) visitor.visit(input, PatriLangParser::variable);
+    var actual = variable.value();
+
+    assertEquals(expected, actual);
+  }
+
+  @Test
+  void can_parse_date_with_semaine_and_jour() {
+    var input = "le 25 janvier 2025 + 2 semaines et 3 jours";
+    var expected = LocalDate.of(2025, FEBRUARY, 11);
+
+    var variable = (Variable<LocalDate>) visitor.visit(input, PatriLangParser::variable);
     var actual = variable.value();
 
     assertEquals(expected, actual);

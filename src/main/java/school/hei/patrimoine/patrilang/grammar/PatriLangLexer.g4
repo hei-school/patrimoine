@@ -324,6 +324,12 @@ DIV
 MOINS
     :   '-'
     ;
+MOT_SEMAINE
+    :   'semaine'
+    ;
+MOT_SEMAINES
+    :   'semaines'
+    ;
 MOT_JOUR
     :   'jour'
     ;
