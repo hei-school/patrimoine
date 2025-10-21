@@ -1,7 +1,7 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.pages;
 
 import static school.hei.patrimoine.patrilang.PatriLangTranspiler.transpileToutCas;
-import static school.hei.patrimoine.visualisation.swing.ihm.google.component.AppBar.builtInUserInfoPanel;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.AppBar.builtInUserInfoPanel;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.utils.MessageDialog.showError;
 
 import java.awt.*;
@@ -16,7 +16,7 @@ import school.hei.patrimoine.cas.Cas;
 import school.hei.patrimoine.cas.CasSet;
 import school.hei.patrimoine.modele.recouppement.PossessionRecoupee;
 import school.hei.patrimoine.modele.recouppement.RecoupementStatus;
-import school.hei.patrimoine.visualisation.swing.ihm.google.component.AppBar;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.AppBar;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.Footer;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.PlaceholderTextField;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.LazyPage;
