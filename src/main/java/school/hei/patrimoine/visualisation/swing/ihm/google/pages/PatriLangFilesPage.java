@@ -3,7 +3,7 @@ package school.hei.patrimoine.visualisation.swing.ihm.google.pages;
 import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
 import static school.hei.patrimoine.patrilang.PatriLangTranspiler.TOUT_CAS_FILE_EXTENSION;
 import static school.hei.patrimoine.patrilang.PatriLangTranspiler.transpileToutCas;
-import static school.hei.patrimoine.visualisation.swing.ihm.google.component.AppBar.*;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.AppBar.*;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.utils.MessageDialog.showError;
 
 import java.awt.*;
@@ -19,9 +19,10 @@ import school.hei.patrimoine.cas.CasSet;
 import school.hei.patrimoine.cas.CasSetAnalyzer;
 import school.hei.patrimoine.google.model.Pagination;
 import school.hei.patrimoine.modele.recouppement.RecoupeurDeCasSet;
-import school.hei.patrimoine.visualisation.swing.ihm.google.component.AppBar;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.HtmlViewer;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.LazyPage;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.AppBar;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.builtin.SaveAndSyncFileButton;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.comment.CommentSideBar;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.FileSideBar;
@@ -133,7 +134,7 @@ public class PatriLangFilesPage extends LazyPage {
         new AppBar(
             List.of(
                 builtInViewModeSelect(state),
-                builtInFileDropdown(state, () -> getHtmlViewer().getText()),
+                new SaveAndSyncFileButton(state, () -> getHtmlViewer().getText()),
                 evolutionGraphicButton(),
                 recoupementButton(),
                 addImprevuButton),

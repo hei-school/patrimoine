@@ -1,6 +1,6 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.component;
 
-import static school.hei.patrimoine.visualisation.swing.ihm.google.component.AppBar.ViewMode;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.AppBar.ViewMode;
 
 import java.awt.*;
 import java.io.File;
