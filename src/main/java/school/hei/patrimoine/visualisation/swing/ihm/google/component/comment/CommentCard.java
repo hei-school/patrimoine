@@ -15,6 +15,8 @@ public class CommentCard extends JPanel {
   private final String fileId;
   private final Comment comment;
   private final Runnable refresh;
+  private static final Color DEFAULT_BACKGROUND_COLOR = new Color(222, 221, 220);
+  private static final Color APPROVED_BACKGROUND_COLOR = new Color(120, 220, 140);
   public static final DateTimeFormatter DATE_TIME_FORMATTER =
       DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm").withZone(ZoneId.systemDefault());
 
@@ -27,9 +29,12 @@ public class CommentCard extends JPanel {
 
     setOpaque(false);
     setAlignmentX(Component.LEFT_ALIGNMENT);
-    setBackground(new Color(245, 245, 245));
     setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
     setBorder(new EmptyBorder(10, 10, 10, 10));
+
+    var backgroundColor =
+        comment.isApproved() ? APPROVED_BACKGROUND_COLOR : DEFAULT_BACKGROUND_COLOR;
+    setBackground(backgroundColor);
 
     add(header());
     add(content());
@@ -43,7 +48,7 @@ public class CommentCard extends JPanel {
   protected void paintComponent(Graphics g) {
     var g2 = (Graphics2D) g.create();
     g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-    g2.setColor(new Color(222, 221, 220));
+    g2.setColor(getBackground());
     g2.fillRoundRect(0, 0, getWidth(), getHeight(), 8, 8);
     g2.dispose();
     super.paintComponent(g);
