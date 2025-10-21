@@ -15,6 +15,8 @@ public class CommentCard extends JPanel {
   private final String fileId;
   private final Comment comment;
   private final Runnable refresh;
+  private static final Color DEFAULT_BACKGROUND_COLOR = new Color(222, 221, 220);
+  private static final Color APPROVED_BACKGROUND_COLOR = new Color(120, 220, 140);
   public static final DateTimeFormatter DATE_TIME_FORMATTER =
       DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm").withZone(ZoneId.systemDefault());
 
@@ -30,18 +32,8 @@ public class CommentCard extends JPanel {
     setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
     setBorder(new EmptyBorder(10, 10, 10, 10));
 
-    Color backgroundColor = new Color(222, 221, 220);
-
-    boolean isApproved =
-        comment.answers().stream()
-            .anyMatch(
-                answer ->
-                    answer.content() != null && answer.content().equalsIgnoreCase("approuvé"));
-
-    if (isApproved) {
-      backgroundColor = new Color(120, 220, 140);
-    }
-
+    var backgroundColor =
+        comment.isApproved() ? APPROVED_BACKGROUND_COLOR : DEFAULT_BACKGROUND_COLOR;
     setBackground(backgroundColor);
 
     add(header());
