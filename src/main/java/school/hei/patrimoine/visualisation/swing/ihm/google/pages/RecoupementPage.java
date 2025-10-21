@@ -16,10 +16,10 @@ import school.hei.patrimoine.cas.Cas;
 import school.hei.patrimoine.cas.CasSet;
 import school.hei.patrimoine.modele.recouppement.PossessionRecoupee;
 import school.hei.patrimoine.modele.recouppement.RecoupementStatus;
-import school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.AppBar;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.Footer;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.PlaceholderTextField;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.LazyPage;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.AppBar;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.NavigateButton;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.FileListCellRenderer;
@@ -34,7 +34,7 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.utils.AsyncTask;
 
 public class RecoupementPage extends LazyPage {
   public static final String PAGE_NAME = "recoupement";
-  public static final int DEFAULT_TOTAL_PAGES = 50;
+  public static final int DEFAULT_TOTAL_PAGES = 1;
 
   private CasSet plannedCasSet;
   private CasSet doneCasSet;

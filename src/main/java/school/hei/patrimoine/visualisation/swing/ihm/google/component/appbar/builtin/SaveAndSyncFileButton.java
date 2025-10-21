@@ -39,11 +39,11 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
   }
 
   private static void saveSelectedFileLocally(
-          AppBar.ViewMode currentMode, File selectedFile, File selectedCasSetFile, String content) {
-      if (!AppBar.ViewMode.EDIT.equals(currentMode)) {
-          showError("Erreur", "Vous devez être en mode édition pour sauvegarder.");
-          return;
-      }
+      AppBar.ViewMode currentMode, File selectedFile, File selectedCasSetFile, String content) {
+    if (!AppBar.ViewMode.EDIT.equals(currentMode)) {
+      showError("Erreur", "Vous devez être en mode édition pour sauvegarder.");
+      return;
+    }
 
     if (selectedFile == null) {
       showError("Erreur", "Veuillez sélectionner un fichier avant de sauvegarder.");
