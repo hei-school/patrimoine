@@ -161,12 +161,16 @@ class RecoupeurDePossessionsTest {
     var fluxEnTrop = new FluxArgent("cadeau", compte, date, ariary(20));
 
     var prevu = Patrimoine.of("zety", MGA, date, Map.of(), Set.of(compte, fluxPrevu));
-    var realise = Patrimoine.of("zety", MGA, date, Map.of(), Set.of(compte, fluxPrevu, fluxDeBonus, fluxEnTrop));
+    var realise =
+        Patrimoine.of(
+            "zety", MGA, date, Map.of(), Set.of(compte, fluxPrevu, fluxDeBonus, fluxEnTrop));
 
     var subject = RecoupeurDePossessions.of(LocalDate.MAX, prevu, realise);
 
     assertEquals(2, subject.getPossessionsNonPrevus().size());
-    assertTrue(subject.getPossessionsNonPrevus().stream().anyMatch(p -> p.nom().equals("bonus") || p.nom().equals("cadeau")));
+    assertTrue(
+        subject.getPossessionsNonPrevus().stream()
+            .anyMatch(p -> p.nom().equals("bonus") || p.nom().equals("cadeau")));
   }
 
   @Test
@@ -176,7 +180,8 @@ class RecoupeurDePossessionsTest {
     var fluxPrevuPrime = new FluxArgent("prime", compte, date, ariary(100));
     var fluxPrevuBonus = new FluxArgent("bonus", compte, date, ariary(50));
 
-    var prevu = Patrimoine.of("zety", MGA, date, Map.of(), Set.of(compte, fluxPrevuPrime, fluxPrevuBonus));
+    var prevu =
+        Patrimoine.of("zety", MGA, date, Map.of(), Set.of(compte, fluxPrevuPrime, fluxPrevuBonus));
     var realise = Patrimoine.of("zety", MGA, date, Map.of(), Set.of(compte, fluxPrevuPrime));
 
     var subject = RecoupeurDePossessions.of(LocalDate.MAX, prevu, realise);
@@ -198,8 +203,11 @@ class RecoupeurDePossessionsTest {
 
     assertEquals(1, subject.getPossessionsNonExecutes().size());
     assertEquals(1, subject.getPossessionsNonPrevus().size());
-    assertTrue(subject.getPossessionsNonExecutes().stream().anyMatch(p -> p.nom().equals("comptePersonnel")));
-    assertTrue(subject.getPossessionsNonPrevus().stream().anyMatch(p -> p.nom().equals("comptePerso")));
+    assertTrue(
+        subject.getPossessionsNonExecutes().stream()
+            .anyMatch(p -> p.nom().equals("comptePersonnel")));
+    assertTrue(
+        subject.getPossessionsNonPrevus().stream().anyMatch(p -> p.nom().equals("comptePerso")));
   }
 
   @Test
@@ -210,21 +218,25 @@ class RecoupeurDePossessionsTest {
 
     var prevu = Patrimoine.of("zety", MGA, date, Map.of(), Set.of(comptePrevu));
     var realise =
-            Patrimoine.of(
-                    "zety",
-                    MGA,
-                    date,
-                    Map.of(),
-                    Set.of(compteOwner, new FluxArgent("comptePersonnel", compteOwner, date, ariary(100))));
+        Patrimoine.of(
+            "zety",
+            MGA,
+            date,
+            Map.of(),
+            Set.of(compteOwner, new FluxArgent("comptePersonnel", compteOwner, date, ariary(100))));
 
     var subject = RecoupeurDePossessions.of(LocalDate.MAX, prevu, realise);
 
     assertEquals(1, subject.getPossessionsNonExecutes().size());
     assertEquals(2, subject.getPossessionsNonPrevus().size());
-    assertTrue(subject.getPossessionsNonExecutes().stream().anyMatch(p -> p.nom().equals("comptePersonnel")));
-    assertTrue(subject.getPossessionsNonPrevus().stream().anyMatch(p -> p.nom().equals("comptePersonnel")));
+    assertTrue(
+        subject.getPossessionsNonExecutes().stream()
+            .anyMatch(p -> p.nom().equals("comptePersonnel")));
+    assertTrue(
+        subject.getPossessionsNonPrevus().stream()
+            .anyMatch(p -> p.nom().equals("comptePersonnel")));
   }
-  
+
   @Test
   void detecte_date_de_possession_different() {
     var datePrevu = LocalDate.of(2025, JANUARY, 1);
@@ -241,7 +253,9 @@ class RecoupeurDePossessionsTest {
     var subject = RecoupeurDePossessions.of(LocalDate.MAX, prevu, realise);
 
     assertEquals(1, subject.getPossessionsExecutesAvecCorrections().size());
-    assertTrue(subject.getPossessionsExecutesAvecCorrections().stream().anyMatch(p -> p.nom().equals("salaire")));
+    assertTrue(
+        subject.getPossessionsExecutesAvecCorrections().stream()
+            .anyMatch(p -> p.nom().equals("salaire")));
   }
 
   @Test
