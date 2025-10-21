@@ -27,9 +27,23 @@ public class CommentCard extends JPanel {
 
     setOpaque(false);
     setAlignmentX(Component.LEFT_ALIGNMENT);
-    setBackground(new Color(245, 245, 245));
     setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
     setBorder(new EmptyBorder(10, 10, 10, 10));
+
+    Color backgroundColor = new Color(222, 221, 220);
+
+    boolean isApproved =
+        comment.answers().stream()
+            .anyMatch(
+                answer ->
+                    answer.content() != null
+                        && answer.content().equalsIgnoreCase("approuvé"));
+
+    if (isApproved) {
+      backgroundColor = new Color(120, 220, 140);
+    }
+
+    setBackground(backgroundColor);
 
     add(header());
     add(content());
@@ -43,7 +57,7 @@ public class CommentCard extends JPanel {
   protected void paintComponent(Graphics g) {
     var g2 = (Graphics2D) g.create();
     g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-    g2.setColor(new Color(222, 221, 220));
+    g2.setColor(getBackground());
     g2.fillRoundRect(0, 0, getWidth(), getHeight(), 8, 8);
     g2.dispose();
     super.paintComponent(g);
