@@ -16,10 +16,12 @@ import school.hei.patrimoine.modele.possession.Possession;
 import school.hei.patrimoine.visualisation.swing.ihm.google.providers.model.Pagination;
 
 class PossessionRecoupeeProviderTest {
+  private static final PossessionRecoupeeProvider subject = new PossessionRecoupeeProvider();
+  private static final LocalDate date = LocalDate.of(2025, JANUARY, 1);
+
   @Test
   void getList_empty_data() {
-    var date = LocalDate.of(2025, JANUARY, 1);
-    var subject = new PossessionRecoupeeProvider();
+
     var cas =
         new Cas(date, date, Map.of()) {
           @Override
@@ -57,7 +59,6 @@ class PossessionRecoupeeProviderTest {
 
   @Test
   void getList_with_status_filter() {
-    var date = LocalDate.of(2025, JANUARY, 1);
     var compte = new Compte("compte1", date, Argent.ariary(100));
 
     var cas =
@@ -84,7 +85,6 @@ class PossessionRecoupeeProviderTest {
           }
         };
 
-    var subject = new PossessionRecoupeeProvider();
     var result =
         subject.getList(
             PossessionRecoupeeProvider.Meta.builder().planned(cas).done(cas).build(),
@@ -102,7 +102,6 @@ class PossessionRecoupeeProviderTest {
 
   @Test
   void getList_with_name_filter() {
-    var date = LocalDate.of(2025, JANUARY, 1);
     var compte = new Compte("compteSpecial", date, Argent.ariary(100));
 
     var cas =
@@ -129,7 +128,6 @@ class PossessionRecoupeeProviderTest {
           }
         };
 
-    var subject = new PossessionRecoupeeProvider();
     var result =
         subject.getList(
             PossessionRecoupeeProvider.Meta.builder().planned(cas).done(cas).build(),
@@ -145,7 +143,6 @@ class PossessionRecoupeeProviderTest {
 
   @Test
   void getList_out_of_bounds_pagination() {
-    var date = LocalDate.of(2025, JANUARY, 1);
     var compte = new Compte("compte1", date, Argent.ariary(100));
     var cas =
         new Cas(date, date, Map.of()) {
@@ -171,7 +168,6 @@ class PossessionRecoupeeProviderTest {
           }
         };
 
-    var subject = new PossessionRecoupeeProvider();
     var result =
         subject.getList(
             PossessionRecoupeeProvider.Meta.builder().planned(cas).done(cas).build(),
@@ -186,7 +182,6 @@ class PossessionRecoupeeProviderTest {
 
   @Test
   void getList_pagination_total_pages() {
-    var date = LocalDate.of(2025, JANUARY, 1);
     var compte1 = new Compte("compte1", date, Argent.ariary(100));
     var compte2 = new Compte("compte2", date, Argent.ariary(200));
     var cas =
@@ -213,7 +208,6 @@ class PossessionRecoupeeProviderTest {
           }
         };
 
-    var subject = new PossessionRecoupeeProvider();
     var result =
         subject.getList(
             PossessionRecoupeeProvider.Meta.builder().planned(cas).done(cas).build(),
