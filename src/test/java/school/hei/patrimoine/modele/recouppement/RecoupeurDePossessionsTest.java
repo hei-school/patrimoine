@@ -152,6 +152,150 @@ class RecoupeurDePossessionsTest {
     assertEquals(3, subject.getPossessionsExecutesSansCorrections().size());
   }
 
+  @Test
+  void detecte_possession_en_trop_dans_reel() {
+    var date = LocalDate.of(2025, JANUARY, 1);
+    var compte = new Compte("comptePersonnel", date, ariary(0));
+    var fluxPrevu = new FluxArgent("prime", compte, date, ariary(100));
+    var fluxDeBonus = new FluxArgent("bonus", compte, date, ariary(50));
+    var fluxEnTrop = new FluxArgent("cadeau", compte, date, ariary(20));
+
+    var prevu = Patrimoine.of("zety", MGA, date, Map.of(), Set.of(compte, fluxPrevu));
+    var realise =
+        Patrimoine.of(
+            "zety", MGA, date, Map.of(), Set.of(compte, fluxPrevu, fluxDeBonus, fluxEnTrop));
+
+    var subject = RecoupeurDePossessions.of(LocalDate.MAX, prevu, realise);
+
+    assertEquals(2, subject.getPossessionsNonPrevus().size());
+    assertTrue(
+        subject.getPossessionsNonPrevus().stream()
+            .anyMatch(p -> p.nom().equals("bonus") || p.nom().equals("cadeau")));
+  }
+
+  @Test
+  void detecte_possession_manquante_dans_reel() {
+    var date = LocalDate.of(2025, JANUARY, 1);
+    var compte = new Compte("comptePersonnel", date, ariary(0));
+    var fluxPrevuPrime = new FluxArgent("prime", compte, date, ariary(100));
+    var fluxPrevuBonus = new FluxArgent("bonus", compte, date, ariary(50));
+
+    var prevu =
+        Patrimoine.of("zety", MGA, date, Map.of(), Set.of(compte, fluxPrevuPrime, fluxPrevuBonus));
+    var realise = Patrimoine.of("zety", MGA, date, Map.of(), Set.of(compte, fluxPrevuPrime));
+
+    var subject = RecoupeurDePossessions.of(LocalDate.MAX, prevu, realise);
+
+    assertEquals(1, subject.getPossessionsNonExecutes().size());
+    assertTrue(subject.getPossessionsNonExecutes().stream().anyMatch(p -> p.nom().equals("bonus")));
+  }
+
+  @Test
+  void detecte_nom_de_possession_different() {
+    var date = LocalDate.of(2025, JANUARY, 1);
+    var comptePrevu = new Compte("comptePersonnel", date, ariary(0));
+    var compteRealise = new Compte("comptePerso", date, ariary(0));
+
+    var prevu = Patrimoine.of("zety", MGA, date, Map.of(), Set.of(comptePrevu));
+    var realise = Patrimoine.of("zety", MGA, date, Map.of(), Set.of(compteRealise));
+
+    var subject = RecoupeurDePossessions.of(LocalDate.MAX, prevu, realise);
+
+    assertEquals(1, subject.getPossessionsNonExecutes().size());
+    assertEquals(1, subject.getPossessionsNonPrevus().size());
+    assertTrue(
+        subject.getPossessionsNonExecutes().stream()
+            .anyMatch(p -> p.nom().equals("comptePersonnel")));
+    assertTrue(
+        subject.getPossessionsNonPrevus().stream().anyMatch(p -> p.nom().equals("comptePerso")));
+  }
+
+  @Test
+  void detecte_type_de_possession_different() {
+    var date = LocalDate.of(2025, JANUARY, 1);
+    var comptePrevu = new Compte("comptePersonnel", date, ariary(0));
+    var compteOwner = new Compte("owner", date, ariary(0));
+
+    var prevu = Patrimoine.of("zety", MGA, date, Map.of(), Set.of(comptePrevu));
+    var realise =
+        Patrimoine.of(
+            "zety",
+            MGA,
+            date,
+            Map.of(),
+            Set.of(compteOwner, new FluxArgent("comptePersonnel", compteOwner, date, ariary(100))));
+
+    var subject = RecoupeurDePossessions.of(LocalDate.MAX, prevu, realise);
+
+    assertEquals(1, subject.getPossessionsNonExecutes().size());
+    assertEquals(2, subject.getPossessionsNonPrevus().size());
+    assertTrue(
+        subject.getPossessionsNonExecutes().stream()
+            .anyMatch(p -> p.nom().equals("comptePersonnel")));
+    assertTrue(
+        subject.getPossessionsNonPrevus().stream()
+            .anyMatch(p -> p.nom().equals("comptePersonnel")));
+  }
+
+  @Test
+  void detecte_date_de_possession_different() {
+    var datePrevu = LocalDate.of(2025, JANUARY, 1);
+    var dateRealise = LocalDate.of(2025, FEBRUARY, 1);
+
+    var compte = new Compte("comptePersonnel", datePrevu, ariary(0));
+
+    var fluxPrevu = new FluxArgent("salaire", compte, datePrevu, ariary(100));
+    var fluxRealise = new FluxArgent("salaire", compte, dateRealise, ariary(100));
+
+    var prevu = Patrimoine.of("zety", MGA, datePrevu, Map.of(), Set.of(fluxPrevu));
+    var realise = Patrimoine.of("zety", MGA, datePrevu, Map.of(), Set.of(fluxRealise));
+
+    var subject = RecoupeurDePossessions.of(LocalDate.MAX, prevu, realise);
+
+    assertEquals(1, subject.getPossessionsExecutesAvecCorrections().size());
+    assertTrue(
+        subject.getPossessionsExecutesAvecCorrections().stream()
+            .anyMatch(p -> p.nom().equals("salaire")));
+  }
+
+  @Test
+  void generer_correction_si_plusieurs_ecarts_existent() {
+    var au01Janvier2025 = LocalDate.of(2025, JANUARY, 1);
+    var au02Mars2025 = LocalDate.of(2025, MARCH, 2);
+
+    var comptePersonnelPrevu = new Compte("comptePersonnel", au01Janvier2025, ariary(200));
+    var comptePersonnelrealise = new Compte("comptePersonnel", au01Janvier2025, ariary(200));
+
+    var prevu =
+        Patrimoine.of(
+            "zety",
+            MGA,
+            au01Janvier2025,
+            Map.of(),
+            Set.of(
+                comptePersonnelPrevu,
+                new FluxArgent("salaire", comptePersonnelPrevu, au02Mars2025, ariary(300))));
+
+    var realise =
+        Patrimoine.of(
+            "zety",
+            MGA,
+            au01Janvier2025,
+            Map.of(),
+            Set.of(
+                comptePersonnelrealise,
+                new FluxArgent("salaire", comptePersonnelrealise, au02Mars2025, ariary(100))));
+
+    var subject = RecoupeurDePossessions.of(LocalDate.MAX, prevu, realise);
+
+    assertEquals(
+        sortedWithoutCompteCorrectionsPossessions(prevu.getPossessions()),
+        sortedWithoutCompteCorrectionsPossessions(subject.getPossessionsExecutes()));
+    assertEquals(1, subject.getCorrections().size());
+    assertEquals(1, subject.getPossessionsExecutesAvecCorrections().size());
+    assertEquals(1, subject.getPossessionsExecutesSansCorrections().size());
+  }
+
   private static List<Possession> sortedWithoutCompteCorrectionsPossessions(
       Set<Possession> possessions) {
     return possessions.stream()
