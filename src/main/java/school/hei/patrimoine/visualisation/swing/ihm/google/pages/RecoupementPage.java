@@ -160,17 +160,18 @@ public class RecoupementPage extends LazyPage {
     fileList.setCellRenderer(new FileListCellRenderer());
     fileList.addListSelectionListener(
         e -> {
-          if (!e.getValueIsAdjusting()) {
-            File selectedFile = fileList.getSelectedValue();
-            if (selectedFile != null) {
-              var currentPagination = (Pagination) state.get("pagination");
-              var resetPagination = new Pagination(1, currentPagination.size());
-              state.update(
-                  Map.of(
-                      "selectedFile", selectedFile,
-                      "pagination", resetPagination));
-            }
-          }
+          if (e.getValueIsAdjusting()) return;
+
+          File selectedFile = fileList.getSelectedValue();
+          if (selectedFile == null) return;
+
+          var currentPagination = (Pagination) state.get("pagination");
+          var resetPagination = new Pagination(1, currentPagination.size());
+
+          state.update(
+              Map.of(
+                  "selectedFile", selectedFile,
+                  "pagination", resetPagination));
         });
 
     var horizontalSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
@@ -205,14 +206,16 @@ public class RecoupementPage extends LazyPage {
 
     var result = provider.getList(meta, filter);
 
-    int totalPage = result.totalPage();
+    int totalPages = Math.max(result.totalPage(), 1);
     Pagination current = state.get("pagination");
-    if (current.page() > totalPage && totalPage > 0) {
-      state.update("pagination", current.toBuilder().page(totalPage).build());
+
+    if (current.page() > totalPages && totalPages > 0) {
+      current = current.toBuilder().page(totalPages).build();
+      state.update("pagination", current);
     }
 
-    if (totalPage != (int) state.get("totalPages")) {
-      state.update("totalPages", totalPage);
+    if (totalPages != (int) state.get("totalPages")) {
+      state.update("totalPages", totalPages);
     }
 
     return result.possessionRecoupees();
