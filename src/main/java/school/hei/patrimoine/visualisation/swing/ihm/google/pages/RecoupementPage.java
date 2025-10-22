@@ -1,50 +1,46 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.pages;
 
-import static school.hei.patrimoine.patrilang.PatriLangTranspiler.transpileToutCas;
-import static school.hei.patrimoine.visualisation.swing.ihm.google.component.AppBar.builtInUserInfoPanel;
-import static school.hei.patrimoine.visualisation.swing.ihm.google.utils.MessageDialog.showError;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.AppBar.builtInUserInfoPanel;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.pages.PatriLangFilesPage.addImprevuButton;
 
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.io.File;
 import java.util.*;
 import java.util.List;
 import javax.swing.*;
 import javax.swing.Timer;
-import school.hei.patrimoine.cas.Cas;
-import school.hei.patrimoine.cas.CasSet;
+import org.jetbrains.annotations.NotNull;
 import school.hei.patrimoine.modele.recouppement.PossessionRecoupee;
 import school.hei.patrimoine.modele.recouppement.RecoupementStatus;
-import school.hei.patrimoine.visualisation.swing.ihm.google.component.AppBar;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.Footer;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.PlaceholderTextField;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.LazyPage;
-import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.AppBar;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.NavigateButton;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.FileListCellRenderer;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.FileListModel;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.FileSideBar;
-import school.hei.patrimoine.visualisation.swing.ihm.google.component.recoupement.AddImprevuDialog;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.recoupement.PossessionRecoupeeListPanel;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.AsyncTask;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.CasSetSetter;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
 import school.hei.patrimoine.visualisation.swing.ihm.google.providers.PossessionRecoupeeProvider;
 import school.hei.patrimoine.visualisation.swing.ihm.google.providers.model.Pagination;
-import school.hei.patrimoine.visualisation.swing.ihm.google.utils.AsyncTask;
 
 public class RecoupementPage extends LazyPage {
   public static final String PAGE_NAME = "recoupement";
-  public static final int DEFAULT_TOTAL_PAGES = 50;
+  public static final int RECOUPEMENT_ITEM_PER_PAGE = 50;
 
-  private CasSet plannedCasSet;
-  private CasSet doneCasSet;
-
-  private Footer footer;
+  private final CasSetSetter casSetSetter;
   private final State state;
+
   private final PossessionRecoupeeListPanel possessionRecoupeeListPanel;
 
   public RecoupementPage() {
     super(PAGE_NAME);
+    this.casSetSetter = CasSetSetter.getInstance();
+
     this.state =
         new State(
             Map.of(
@@ -53,42 +49,23 @@ public class RecoupementPage extends LazyPage {
                 "filterStatus",
                 PossessionRecoupeeFilterStatus.TOUT,
                 "pagination",
-                new Pagination(1, DEFAULT_TOTAL_PAGES)));
+                new Pagination(1, RECOUPEMENT_ITEM_PER_PAGE)));
+
     this.possessionRecoupeeListPanel = new PossessionRecoupeeListPanel(state);
 
+    casSetSetter.addObserver(this::update);
     state.subscribe(
         Set.of("filterStatus", "selectedFile", "pagination", "filterName"), this::update);
-    globalState()
-        .subscribe(
-            Set.of("newUpdate"),
-            () -> {
-              updateCasSet();
-              update();
-            });
 
     setLayout(new BorderLayout());
   }
 
   @Override
   protected void init() {
-    updateCasSet();
 
     addAppBar();
     addMainSplitPane();
     addFooter();
-  }
-
-  private void updateCasSet() {
-    boolean isNewUpdate =
-        globalState().get("newUpdate") == null || (boolean) globalState().get("newUpdate");
-
-    if (!isNewUpdate) {
-      return;
-    }
-
-    this.plannedCasSet = transpileToutCas(FileSideBar.getPlannedCasSetFile().getAbsolutePath());
-    this.doneCasSet = transpileToutCas(FileSideBar.getDoneCasSetFile().getAbsolutePath());
-    globalState().update("newUpdate", false);
   }
 
   private void addAppBar() {
@@ -99,43 +76,8 @@ public class RecoupementPage extends LazyPage {
     statusFilter.addActionListener(
         e -> state.update("filterStatus", statusFilter.getSelectedItem()));
 
-    var addImprevuButton =
-        new Button(
-            "Ajouter un imprévu",
-            e -> {
-              if (state.get("selectedFile") == null) {
-                showError("Erreur", "Veuillez sélectionner un fichier avant d'ajouter un imprévu");
-                return;
-              }
-
-              new AddImprevuDialog(state);
-            });
-
-    var nameFilter = new PlaceholderTextField("Rechercher");
-    nameFilter.setPreferredSize(new Dimension(180, 35));
-    nameFilter.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
-
-    int debounceDelay = 500;
-    Timer debounceTimer =
-        new Timer(
-            debounceDelay,
-            e -> {
-              state.update(
-                  Map.of(
-                      "filterName",
-                      nameFilter.getText().trim(),
-                      "pagination",
-                      new Pagination(1, DEFAULT_TOTAL_PAGES)));
-            });
-    debounceTimer.setRepeats(false);
-
-    nameFilter.addKeyListener(
-        new KeyAdapter() {
-          @Override
-          public void keyReleased(KeyEvent evt) {
-            debounceTimer.restart();
-          }
-        });
+    var addImprevuButton = addImprevuButton(state);
+    var nameFilter = getPlaceholderTextField();
 
     var appBar =
         new AppBar(
@@ -149,9 +91,38 @@ public class RecoupementPage extends LazyPage {
     add(appBar, BorderLayout.NORTH);
   }
 
+  // TODO: refactor to a component utilities
+  private @NotNull PlaceholderTextField getPlaceholderTextField() {
+    var nameFilter = new PlaceholderTextField("Rechercher");
+    nameFilter.setPreferredSize(new Dimension(180, 35));
+    nameFilter.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
+
+    int debounceDelay = 500;
+    var debounceTimer =
+        new Timer(
+            debounceDelay,
+            e -> {
+              state.update(
+                  Map.of(
+                      "filterName",
+                      nameFilter.getText().trim(),
+                      "pagination",
+                      new Pagination(1, RECOUPEMENT_ITEM_PER_PAGE)));
+            });
+    debounceTimer.setRepeats(false);
+
+    nameFilter.addKeyListener(
+        new KeyAdapter() {
+          @Override
+          public void keyReleased(KeyEvent evt) {
+            debounceTimer.restart();
+          }
+        });
+    return nameFilter;
+  }
+
   private void addFooter() {
-    footer = new Footer(state);
-    add(footer, BorderLayout.SOUTH);
+    add(new Footer(state), BorderLayout.SOUTH);
   }
 
   private void addMainSplitPane() {
@@ -170,8 +141,8 @@ public class RecoupementPage extends LazyPage {
   }
 
   private List<PossessionRecoupee> getFilteredPossessionRecoupees() {
-    var plannedCas = getCas(state.get("selectedFile"), plannedCasSet);
-    var doneCas = getCas(state.get("selectedFile"), doneCasSet);
+    var plannedCas = casSetSetter.getCas(state.get("selectedFile"), casSetSetter.plannedCasSet());
+    var doneCas = casSetSetter.getCas(state.get("selectedFile"), casSetSetter.doneCasSet());
     var filteredStatus = (PossessionRecoupeeFilterStatus) state.get("filterStatus");
 
     state.update(Map.of("plannedCas", plannedCas, "doneCas", doneCas));
@@ -211,16 +182,6 @@ public class RecoupementPage extends LazyPage {
         .withDialogLoading(false)
         .build()
         .execute();
-  }
-
-  private static Cas getCas(File file, CasSet casSet) {
-    var fileName = file.getName();
-    var baseName = fileName.contains(".") ? fileName.substring(0, fileName.indexOf('.')) : fileName;
-
-    return casSet.set().stream()
-        .filter(cas -> cas.patrimoine().nom().equals(baseName))
-        .findFirst()
-        .orElseThrow();
   }
 
   public enum PossessionRecoupeeFilterStatus {

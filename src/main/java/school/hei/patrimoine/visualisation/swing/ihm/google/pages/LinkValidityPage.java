@@ -2,7 +2,7 @@ package school.hei.patrimoine.visualisation.swing.ihm.google.pages;
 
 import static java.awt.Font.BOLD;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.GoogleLinkList.*;
-import static school.hei.patrimoine.visualisation.swing.ihm.google.utils.MessageDialog.showError;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.MessageDialog.showError;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -16,8 +16,8 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.Page;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.NavigateButton;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.*;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.AsyncTask;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.GoogleLinkListDownloader;
-import school.hei.patrimoine.visualisation.swing.ihm.google.utils.AsyncTask;
 
 @Slf4j
 public class LinkValidityPage extends Page {
@@ -153,8 +153,11 @@ public class LinkValidityPage extends Page {
               var namedIds = parseNamedIds();
               DriveApi driveApi = globalState().get("drive-api");
               var downloader = new GoogleLinkListDownloader(driveApi);
-
               downloader.download(namedIds);
+
+              GoogleLinkList<NamedLink> namedLinks = globalState().get("named-links");
+              var saver = new GoogleLinkListCacheManager();
+              saver.save(namedLinks);
 
               globalState().update("named-ids", namedIds);
               return null;

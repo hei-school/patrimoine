@@ -14,7 +14,7 @@ import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.Devise;
 import school.hei.patrimoine.patrilang.mapper.DeviseMapper;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.DatePicker;
-import school.hei.patrimoine.visualisation.swing.ihm.google.utils.formatter.ArgentFormatter;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.formatter.ArgentFormatter;
 import school.hei.patrimoine.visualisation.swing.ihm.google.validator.NombreValidator;
 
 public class AddRecoupementExecutionForm extends JPanel {

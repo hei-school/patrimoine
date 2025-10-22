@@ -1,4 +1,4 @@
-package school.hei.patrimoine.visualisation.swing.ihm.google.utils;
+package school.hei.patrimoine.visualisation.swing.ihm.google.modele;
 
 import static javax.swing.JOptionPane.showMessageDialog;
 

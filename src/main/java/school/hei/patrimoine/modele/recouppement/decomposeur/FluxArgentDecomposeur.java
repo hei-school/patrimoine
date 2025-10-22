@@ -1,10 +1,14 @@
 package school.hei.patrimoine.modele.recouppement.decomposeur;
 
+import static school.hei.patrimoine.modele.recouppement.decomposeur.PossessionDecomposeurFactory.normalize;
+
 import java.time.LocalDate;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import school.hei.patrimoine.modele.possession.FluxArgent;
 
-public class FluxArgentDecomposeur extends PossessionDecomposeurBase<FluxArgent> {
+@Slf4j
+public class FluxArgentDecomposeur extends PossessionDecomposeurBase<FluxArgent, FluxArgent> {
   public static final String FLUX_ARGENT_DATE_SEPARATEUR = "__du_";
 
   public FluxArgentDecomposeur(LocalDate finProjection) {
@@ -16,7 +20,18 @@ public class FluxArgentDecomposeur extends PossessionDecomposeurBase<FluxArgent>
     if (fluxArgent.getDebut().equals(fluxArgent.getFin())) {
       return List.of(fluxArgent);
     }
-    var fin = fluxArgent.getFin().isBefore(finSimulation) ? fluxArgent.getFin() : finSimulation;
+
+    var fin =
+        fluxArgent.getFin().isBefore(getFinSimulation()) ? fluxArgent.getFin() : getFinSimulation();
+
+    if (fluxArgent.getDebut().isAfter(fin)) {
+      log.warn(
+          "FluxArgent incohérent : le début ({}) est après la fin ({}). Nom = '{}'.",
+          fluxArgent.getDebut(),
+          fin,
+          fluxArgent.nom());
+      return List.of(fluxArgent);
+    }
 
     return fluxArgent
         .getDebut()
@@ -30,9 +45,5 @@ public class FluxArgentDecomposeur extends PossessionDecomposeurBase<FluxArgent>
                     date,
                     fluxArgent.getFluxMensuel()))
         .toList();
-  }
-
-  private static String normalize(String nom) {
-    return nom.replaceAll("-", "_");
   }
 }

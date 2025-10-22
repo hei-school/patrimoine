@@ -1,7 +1,7 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.component.recoupement;
 
 import static java.util.Objects.requireNonNull;
-import static school.hei.patrimoine.visualisation.swing.ihm.google.utils.MessageDialog.*;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.MessageDialog.*;
 
 import java.awt.*;
 import java.io.File;
@@ -17,6 +17,7 @@ import school.hei.patrimoine.modele.possession.Compte;
 import school.hei.patrimoine.modele.possession.FluxArgent;
 import school.hei.patrimoine.patrilang.files.PatriLangFileQuerier;
 import school.hei.patrimoine.patrilang.files.PatriLangFileWritter;
+import school.hei.patrimoine.patrilang.files.PatriLangFileWritter.FileWritterInput;
 import school.hei.patrimoine.patrilang.generator.PatriLangGeneratorFactory;
 import school.hei.patrimoine.patrilang.modele.PatriLangCas;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.Dialog;
@@ -24,8 +25,8 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.AppCon
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.FileSideBar;
 import school.hei.patrimoine.visualisation.swing.ihm.google.generator.possession.FluxArgentExecutionGenerator;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.AsyncTask;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
-import school.hei.patrimoine.visualisation.swing.ihm.google.utils.AsyncTask;
 
 public class AddImprevuDialog extends Dialog {
   private final State state;
@@ -134,7 +135,7 @@ public class AddImprevuDialog extends Dialog {
               }
 
               writter.insertAtLine(
-                  PatriLangFileWritter.FileWritterInput.builder()
+                  FileWritterInput.builder()
                       .content(line)
                       .file(selectedFile)
                       .casSet(casSet)
@@ -153,7 +154,7 @@ public class AddImprevuDialog extends Dialog {
         .onSuccess(
             result -> {
               showInfo("Succès", "L'opération a été exécutée avec succès");
-              AppContext.getDefault().globalState().update("newUpdate", true);
+              AppContext.getDefault().globalState().update("isAnyFileModified", true);
               dispose();
             })
         .build()

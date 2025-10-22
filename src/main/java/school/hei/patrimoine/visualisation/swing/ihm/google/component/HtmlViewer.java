@@ -1,14 +1,14 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.component;
 
-import static school.hei.patrimoine.visualisation.swing.ihm.google.component.AppBar.ViewMode;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.AppBar.ViewMode;
 
 import java.awt.*;
 import java.io.File;
 import java.nio.file.Files;
 import java.util.Set;
 import javax.swing.*;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.MarkdownToHtmlConverter;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
-import school.hei.patrimoine.visualisation.swing.ihm.google.utils.MarkdownToHtmlConverter;
 
 public class HtmlViewer extends JEditorPane {
   private final State state;

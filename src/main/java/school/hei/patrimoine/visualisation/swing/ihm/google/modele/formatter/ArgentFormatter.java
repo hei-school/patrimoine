@@ -1,4 +1,4 @@
-package school.hei.patrimoine.visualisation.swing.ihm.google.utils.formatter;
+package school.hei.patrimoine.visualisation.swing.ihm.google.modele.formatter;
 
 import static java.lang.Double.parseDouble;
 

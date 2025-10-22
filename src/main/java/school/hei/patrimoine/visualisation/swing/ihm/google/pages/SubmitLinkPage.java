@@ -12,8 +12,9 @@ import lombok.extern.slf4j.Slf4j;
 import school.hei.patrimoine.google.DriveLinkVerifier;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.Page;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.AsyncTask;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.GoogleLinkList;
-import school.hei.patrimoine.visualisation.swing.ihm.google.utils.AsyncTask;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.GoogleLinkListCacheManager;
 
 @Slf4j
 public class SubmitLinkPage extends Page {
@@ -31,6 +32,7 @@ public class SubmitLinkPage extends Page {
     setLayout(new BorderLayout());
     addTitle();
     addInputs();
+    loadExistingLinks();
     addSubmitButton();
   }
 
@@ -97,6 +99,12 @@ public class SubmitLinkPage extends Page {
     wrapper.add(submitButton);
 
     add(wrapper, BorderLayout.SOUTH);
+  }
+
+  private void loadExistingLinks() {
+    var saver = new GoogleLinkListCacheManager();
+    plannedInput.setText(saver.loadPlannedLinks());
+    doneInput.setText(saver.loadDoneLinks());
   }
 
   private void submitLink() {
