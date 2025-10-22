@@ -44,7 +44,8 @@ public class PossessionRecoupeeProvider {
     int to = Math.min(from + filter.pagination().size(), filtered.size());
 
     if (from >= filtered.size()) {
-      return new Result(List.of(), (int) Math.ceil((double) filtered.size() / filter.pagination().size()));
+      return new Result(
+          List.of(), (int) Math.ceil((double) filtered.size() / filter.pagination().size()));
     }
 
     int totalPage = (int) Math.ceil((double) filtered.size() / filter.pagination().size());
