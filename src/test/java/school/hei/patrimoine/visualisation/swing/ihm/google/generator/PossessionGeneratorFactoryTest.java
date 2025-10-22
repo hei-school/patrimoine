@@ -13,7 +13,7 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.generator.possession
 class PossessionGeneratorFactoryTest {
 
   @Test
-  void make_retourne_FluxArgentExecutionGenerator_quand_type_est_FluxArgent() {
+  void make_returns_FluxArgentExecutionGenerator_when_type_is_FluxArgent() {
     var compte = new Compte("CompteEpargne", LocalDate.of(2025, 5, 10), Argent.ariary(1000000));
     var flux = new FluxArgent("Salaire", compte, LocalDate.of(2025, 7, 31), Argent.ariary(50000));
 
@@ -24,7 +24,7 @@ class PossessionGeneratorFactoryTest {
   }
 
   @Test
-  void make_lance_exception_quand_type_non_supporte() {
+  void make_throws_exception_when_type_unsupported_type() {
     var unsupported =
         new Compte("CompteEpargne", LocalDate.of(2025, 5, 10), Argent.ariary(1000000));
 

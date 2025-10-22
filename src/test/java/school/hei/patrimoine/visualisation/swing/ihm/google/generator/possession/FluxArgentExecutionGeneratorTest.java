@@ -26,7 +26,7 @@ class FluxArgentExecutionGeneratorTest {
   }
 
   @Test
-  void validateArgs_ok_si_tous_les_arguments_sont_presents() {
+  void validateArgs_succeeds_when_all_arguments_are_present() {
     Map<String, Object> args =
         Map.of(
             "nom", "Salaire septembre",
@@ -38,7 +38,7 @@ class FluxArgentExecutionGeneratorTest {
   }
 
   @Test
-  void validateArgs_lance_exception_si_nom_manquant() {
+  void validateArgs_throws_exception_when_name_is_missing() {
     Map<String, Object> args =
         Map.of(
             "date", date,
@@ -51,7 +51,7 @@ class FluxArgentExecutionGeneratorTest {
   }
 
   @Test
-  void validateArgs_lance_exception_si_date_manquante() {
+  void validateArgs_throws_exception_when_date_is_missing() {
     Map<String, Object> args =
         Map.of(
             "nom", "Salaire septembre",
@@ -64,7 +64,7 @@ class FluxArgentExecutionGeneratorTest {
   }
 
   @Test
-  void validateArgs_lance_exception_si_valeur_manquante() {
+  void validateArgs_throws_exception_when_value_is_missing() {
     Map<String, Object> args =
         Map.of(
             "nom", "Salaire septembre",
@@ -77,7 +77,7 @@ class FluxArgentExecutionGeneratorTest {
   }
 
   @Test
-  void validateArgs_lance_exception_si_compte_manquant() {
+  void validateArgs_throws_exception_when_account_is_missing() {
     Map<String, Object> args =
         Map.of(
             "nom", "Salaire septembre",
@@ -90,7 +90,7 @@ class FluxArgentExecutionGeneratorTest {
   }
 
   @Test
-  void apply_cree_flux_argent_correctement_sans_prevu() {
+  void apply_creates_flux_argent_correctly_without_prevu() {
     Map<String, Object> args =
         Map.of(
             "nom", "Salaire septembre",
@@ -109,7 +109,7 @@ class FluxArgentExecutionGeneratorTest {
   }
 
   @Test
-  void apply_cree_flux_argent_avec_nom_formate_quand_prevu_existe() {
+  void apply_creates_flux_argent_with_formatted_name_when_prevu_exists() {
     FluxArgent prevu = new FluxArgent("Revenus", compte, date, valeur);
 
     Map<String, Object> args =

@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 class CommentTest {
 
   @Test
-  void réponse_contient_approuvé_en_minuscule_retourne_true() {
+  void answer_contains_approuvé_in_lowercase_returns_true() {
     var user = new User("001", "Rakoto", "rakoto@gmail.com", "photo/rakoto");
     var answer = new Comment("005", "approuvé", Instant.now(), user, false, null);
 
@@ -27,7 +27,7 @@ class CommentTest {
   }
 
   @Test
-  void réponse_contient_approuvé_en_majuscule_retourne_true() {
+  void answer_contains_approuvé_in_uppercase_returns_true() {
     var user = new User("001", "Rakoto", "rakoto@gmail.com", "photo/rakoto");
     var answer = new Comment("005", "APPROUVÉ", Instant.now(), user, false, null);
 
@@ -44,7 +44,7 @@ class CommentTest {
   }
 
   @Test
-  void réponse_contient_approuvé_avec_casse_mixte_retourne_true() {
+  void answer_contains_approuvé_with_mixed_case_returns_true() {
     var user = new User("001", "Rakoto", "rakoto@gmail.com", "photo/rakoto");
     var answer = new Comment("005", "aPProuVÉ", Instant.now(), user, false, null);
 
@@ -61,7 +61,7 @@ class CommentTest {
   }
 
   @Test
-  void réponse_contient_approuvé_dans_une_phrase_retourne_false() {
+  void answer_contains_approuvé_within_sentence_returns_false() {
     var user = new User("001", "Rakoto", "rakoto@gmail.com", "photo/rakoto");
     var answer = new Comment("005", "Commentaire approuvé", Instant.now(), user, false, null);
 
@@ -78,7 +78,7 @@ class CommentTest {
   }
 
   @Test
-  void réponse_null_retourne_false() {
+  void answer_null_returns_false() {
     var user = new User("001", "Rakoto", "rakoto@gmail.com", "photo/rakoto");
 
     var subject =
