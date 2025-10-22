@@ -2,6 +2,7 @@ package school.hei.patrimoine.visualisation.swing.ihm.google.providers;
 
 import static java.time.Month.JANUARY;
 import static org.junit.jupiter.api.Assertions.*;
+import static school.hei.patrimoine.modele.recouppement.RecoupementStatus.EXECUTE_SANS_CORRECTION;
 
 import java.time.LocalDate;
 import java.util.Map;
@@ -12,15 +13,13 @@ import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.Devise;
 import school.hei.patrimoine.modele.possession.Compte;
 import school.hei.patrimoine.modele.possession.Possession;
-import school.hei.patrimoine.modele.recouppement.RecoupementStatus;
 import school.hei.patrimoine.visualisation.swing.ihm.google.providers.model.Pagination;
 
 class PossessionRecoupeeProviderTest {
-
   @Test
   void getList_empty_data() {
     var date = LocalDate.of(2025, JANUARY, 1);
-    var provider = new PossessionRecoupeeProvider();
+    var subject = new PossessionRecoupeeProvider();
     var cas =
         new Cas(date, date, Map.of()) {
           @Override
@@ -45,7 +44,7 @@ class PossessionRecoupeeProviderTest {
           }
         };
     var result =
-        provider.getList(
+        subject.getList(
             PossessionRecoupeeProvider.Meta.builder().planned(cas).done(cas).build(),
             PossessionRecoupeeProvider.Filter.builder()
                 .statuses(Set.of())
@@ -53,7 +52,6 @@ class PossessionRecoupeeProviderTest {
                 .filterName("")
                 .build());
 
-    assertNotNull(result);
     assertTrue(result.possessionRecoupees().isEmpty());
   }
 
@@ -86,20 +84,20 @@ class PossessionRecoupeeProviderTest {
           }
         };
 
-    var provider = new PossessionRecoupeeProvider();
+    var subject = new PossessionRecoupeeProvider();
     var result =
-        provider.getList(
+        subject.getList(
             PossessionRecoupeeProvider.Meta.builder().planned(cas).done(cas).build(),
             PossessionRecoupeeProvider.Filter.builder()
-                .statuses(Set.of(RecoupementStatus.EXECUTE_SANS_CORRECTION))
+                .statuses(Set.of(EXECUTE_SANS_CORRECTION))
                 .pagination(new Pagination(1, 10))
                 .filterName("")
                 .build());
-    assertNotNull(result);
+
     assertFalse(result.possessionRecoupees().isEmpty());
     assertTrue(
         result.possessionRecoupees().stream()
-            .allMatch(p -> p.status() == RecoupementStatus.EXECUTE_SANS_CORRECTION));
+            .allMatch(p -> EXECUTE_SANS_CORRECTION.equals(p.status())));
   }
 
   @Test
@@ -116,7 +114,7 @@ class PossessionRecoupeeProviderTest {
           protected void suivi() {}
 
           @Override
-          public Set<school.hei.patrimoine.modele.possession.Possession> possessions() {
+          public Set<Possession> possessions() {
             return Set.of(compte);
           }
 
@@ -131,16 +129,16 @@ class PossessionRecoupeeProviderTest {
           }
         };
 
-    var provider = new PossessionRecoupeeProvider();
+    var subject = new PossessionRecoupeeProvider();
     var result =
-        provider.getList(
+        subject.getList(
             PossessionRecoupeeProvider.Meta.builder().planned(cas).done(cas).build(),
             PossessionRecoupeeProvider.Filter.builder()
-                .statuses(Set.of(RecoupementStatus.EXECUTE_SANS_CORRECTION))
+                .statuses(Set.of(EXECUTE_SANS_CORRECTION))
                 .pagination(new Pagination(1, 10))
                 .filterName("special")
                 .build());
-    assertNotNull(result);
+
     assertEquals(1, result.possessionRecoupees().size());
     assertTrue(result.possessionRecoupees().get(0).possession().nom().contains("Special"));
   }
@@ -173,16 +171,16 @@ class PossessionRecoupeeProviderTest {
           }
         };
 
-    var provider = new PossessionRecoupeeProvider();
+    var subject = new PossessionRecoupeeProvider();
     var result =
-        provider.getList(
+        subject.getList(
             PossessionRecoupeeProvider.Meta.builder().planned(cas).done(cas).build(),
             PossessionRecoupeeProvider.Filter.builder()
-                .statuses(Set.of(RecoupementStatus.EXECUTE_SANS_CORRECTION))
+                .statuses(Set.of(EXECUTE_SANS_CORRECTION))
                 .pagination(new Pagination(2, 10))
                 .filterName("")
                 .build());
-    assertNotNull(result);
+
     assertTrue(result.possessionRecoupees().isEmpty());
   }
 
@@ -215,16 +213,16 @@ class PossessionRecoupeeProviderTest {
           }
         };
 
-    var provider = new PossessionRecoupeeProvider();
+    var subject = new PossessionRecoupeeProvider();
     var result =
-        provider.getList(
+        subject.getList(
             PossessionRecoupeeProvider.Meta.builder().planned(cas).done(cas).build(),
             PossessionRecoupeeProvider.Filter.builder()
-                .statuses(Set.of(RecoupementStatus.EXECUTE_SANS_CORRECTION))
+                .statuses(Set.of(EXECUTE_SANS_CORRECTION))
                 .pagination(new Pagination(1, 1))
                 .filterName("")
                 .build());
-    assertNotNull(result);
+
     assertEquals(1, result.possessionRecoupees().size());
     assertEquals(2, result.totalPage());
   }
