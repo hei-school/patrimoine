@@ -6,8 +6,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static school.hei.patrimoine.modele.Argent.ariary;
 
 import java.time.LocalDate;
-import java.time.Month;
-
 import org.junit.jupiter.api.Test;
 import school.hei.patrimoine.modele.possession.Compte;
 import school.hei.patrimoine.modele.possession.FluxArgent;
@@ -28,8 +26,7 @@ class PossessionGeneratorFactoryTest {
 
   @Test
   void make_throws_exception_when_type_unsupported_type() {
-    var unsupported =
-        new Compte("CompteEpargne", LocalDate.of(2025, MAY, 10), ariary(1_000_000));
+    var unsupported = new Compte("CompteEpargne", LocalDate.of(2025, MAY, 10), ariary(1_000_000));
 
     var exception =
         assertThrows(
