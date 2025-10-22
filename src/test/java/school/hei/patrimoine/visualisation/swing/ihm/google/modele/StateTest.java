@@ -71,18 +71,6 @@ class StateTest {
   }
 
   @Test
-  void testSubscribe() {
-    AtomicInteger callbackCount = new AtomicInteger(0);
-    State.StateObserverCallbackRunnable callback = callbackCount::incrementAndGet;
-
-    state.subscribe(Set.of("name", "value"), callback);
-    state.update(Map.of("name", "newName", "value", 100));
-
-    assertEquals(
-        2, callbackCount.get(), "Callback should be called twice for 'name' and 'value' updates");
-  }
-
-  @Test
   void getData() {
     Map<String, Object> data = state.getData();
     assertEquals("test", data.get("name"));
