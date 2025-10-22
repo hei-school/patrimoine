@@ -7,8 +7,8 @@ import school.hei.patrimoine.modele.recouppement.PossessionRecoupee;
 import school.hei.patrimoine.modele.recouppement.RecoupementStatus;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
-import school.hei.patrimoine.visualisation.swing.ihm.google.utils.formatter.ArgentFormatter;
-import school.hei.patrimoine.visualisation.swing.ihm.google.utils.formatter.DateFormatter;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.formatter.ArgentFormatter;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.formatter.DateFormatter;
 
 public class PossessionRecoupeeItem extends JPanel {
   private final State state;

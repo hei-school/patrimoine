@@ -2,7 +2,7 @@ package school.hei.patrimoine.visualisation.swing.ihm.google.component.recoupeme
 
 import static java.util.stream.Collectors.joining;
 import static school.hei.patrimoine.modele.recouppement.RecoupementStatus.IMPREVU;
-import static school.hei.patrimoine.visualisation.swing.ihm.google.utils.MessageDialog.*;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.MessageDialog.*;
 
 import java.awt.*;
 import java.io.File;
@@ -20,10 +20,10 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.component.Dialog;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.AppContext;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.FileSideBar;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.AsyncTask;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
-import school.hei.patrimoine.visualisation.swing.ihm.google.utils.AsyncTask;
-import school.hei.patrimoine.visualisation.swing.ihm.google.utils.formatter.ArgentFormatter;
-import school.hei.patrimoine.visualisation.swing.ihm.google.utils.formatter.DateFormatter;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.formatter.ArgentFormatter;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.formatter.DateFormatter;
 
 public class PossessionRecoupeeRealisationsDialog extends Dialog {
   private final State state;
@@ -167,7 +167,7 @@ public class PossessionRecoupeeRealisationsDialog extends Dialog {
         .onSuccess(
             result -> {
               showInfo("Succès", "L'opération a été exécutée avec succès");
-              AppContext.getDefault().globalState().update("newUpdate", true);
+              AppContext.getDefault().globalState().update("isAnyFileModified", true);
               dispose();
             })
         .build()

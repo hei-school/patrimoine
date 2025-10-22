@@ -1,4 +1,4 @@
-package school.hei.patrimoine.visualisation.swing.ihm.google.utils;
+package school.hei.patrimoine.visualisation.swing.ihm.google.modele;
 
 import java.awt.*;
 import java.util.Arrays;
@@ -48,7 +48,11 @@ public class AsyncTask<T> {
               Throwable cause =
                   e instanceof ExecutionException ? e.getCause() : new RuntimeException(e);
               log.error(cause.getMessage());
-              log.error(Arrays.toString(cause.getStackTrace()));
+              Arrays.stream(cause.getStackTrace())
+                  .forEach(
+                      error -> {
+                        log.error(error.toString());
+                      });
 
               if (cause instanceof Exception exception) {
                 onError.accept(exception);

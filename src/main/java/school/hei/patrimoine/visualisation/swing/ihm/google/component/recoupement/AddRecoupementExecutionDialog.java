@@ -1,6 +1,6 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.component.recoupement;
 
-import static school.hei.patrimoine.visualisation.swing.ihm.google.utils.MessageDialog.showError;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.MessageDialog.showError;
 
 import java.awt.*;
 import java.util.*;

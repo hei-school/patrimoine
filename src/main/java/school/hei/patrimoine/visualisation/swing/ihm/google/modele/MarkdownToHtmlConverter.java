@@ -1,4 +1,4 @@
-package school.hei.patrimoine.visualisation.swing.ihm.google.utils;
+package school.hei.patrimoine.visualisation.swing.ihm.google.modele;
 
 import com.vladsch.flexmark.html.HtmlRenderer;
 import com.vladsch.flexmark.parser.Parser;
