@@ -1,6 +1,8 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.generator.possession;
 
+import static java.time.Month.SEPTEMBER;
 import static org.junit.jupiter.api.Assertions.*;
+import static school.hei.patrimoine.modele.Argent.ariary;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.generator.PossessionGeneratorFactory.MULTIPLE_EXECUTION_NOM_FORMAT;
 
 import java.time.LocalDate;
@@ -12,17 +14,16 @@ import school.hei.patrimoine.modele.possession.Compte;
 import school.hei.patrimoine.modele.possession.FluxArgent;
 
 class FluxArgentExecutionGeneratorTest {
-  private FluxArgentExecutionGenerator subject;
-  private LocalDate date;
+  private static final FluxArgentExecutionGenerator subject = new FluxArgentExecutionGenerator();
+  private static final LocalDate date = LocalDate.of(2025, SEPTEMBER, 5);
+
   private Argent valeur;
   private Compte compte;
 
   @BeforeEach
   void setUp() {
-    subject = new FluxArgentExecutionGenerator();
-    date = LocalDate.of(2025, 9, 5);
-    valeur = Argent.ariary(5000);
-    compte = new Compte("RandriaPersonnel", date, Argent.ariary(5000));
+    valeur = ariary(5000);
+    compte = new Compte("RandriaPersonnel", date, ariary(5000));
   }
 
   @Test
@@ -110,7 +111,7 @@ class FluxArgentExecutionGeneratorTest {
 
   @Test
   void apply_creates_flux_argent_with_formatted_name_when_prevu_exists() {
-    FluxArgent prevu = new FluxArgent("Revenus", compte, date, valeur);
+    var prevu = new FluxArgent("Revenus", compte, date, valeur);
 
     Map<String, Object> args =
         Map.of(
