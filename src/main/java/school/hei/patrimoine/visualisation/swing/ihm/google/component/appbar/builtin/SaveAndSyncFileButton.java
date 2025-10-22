@@ -1,7 +1,7 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.builtin;
 
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.Api.driveApi;
-import static school.hei.patrimoine.visualisation.swing.ihm.google.utils.MessageDialog.*;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.MessageDialog.*;
 
 import java.io.File;
 import java.util.List;
@@ -12,9 +12,9 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.AppCon
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.AppBar;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.popup.PopupItem;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.popup.PopupMenuButton;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.AsyncTask;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.ConfirmDialog;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
-import school.hei.patrimoine.visualisation.swing.ihm.google.utils.AsyncTask;
 
 public class SaveAndSyncFileButton extends PopupMenuButton {
   private static final String MIME_TYPE = "application/octet-stream";
@@ -65,7 +65,7 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
             })
         .onSuccess(
             result -> {
-              AppContext.getDefault().globalState().update("newUpdate", true);
+              AppContext.getDefault().globalState().update("isAnyFileModified", true);
               showInfo("Succès", "Vous pouvez maintenant le synchroniser avec Google Drive.");
             })
         .onError(

@@ -1,6 +1,6 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.pages;
 
-import static school.hei.patrimoine.visualisation.swing.ihm.google.utils.MessageDialog.showError;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.MessageDialog.showError;
 
 import java.awt.*;
 import java.io.IOException;
@@ -13,7 +13,7 @@ import school.hei.patrimoine.google.api.DriveApi;
 import school.hei.patrimoine.google.api.GoogleApi;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.Page;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.ButtonWithIcon;
-import school.hei.patrimoine.visualisation.swing.ihm.google.utils.AsyncTask;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.AsyncTask;
 
 public class LoginPage extends Page {
   private final GoogleApi googleApi;

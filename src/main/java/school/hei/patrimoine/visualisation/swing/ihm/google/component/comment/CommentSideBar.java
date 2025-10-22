@@ -1,8 +1,8 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.component.comment;
 
 import static school.hei.patrimoine.google.api.CommentApi.COMMENTS_CACHE_KEY;
-import static school.hei.patrimoine.visualisation.swing.ihm.google.utils.MessageDialog.showError;
-import static school.hei.patrimoine.visualisation.swing.ihm.google.utils.MessageDialog.showInfo;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.MessageDialog.showError;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.MessageDialog.showInfo;
 
 import java.awt.*;
 import java.util.List;
@@ -15,8 +15,8 @@ import school.hei.patrimoine.google.model.Comment;
 import school.hei.patrimoine.google.model.Pagination;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.AppContext;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.AsyncTask;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
-import school.hei.patrimoine.visualisation.swing.ihm.google.utils.AsyncTask;
 
 public class CommentSideBar extends JPanel {
   private final State state;

@@ -1,7 +1,7 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.component.comment;
 
-import static school.hei.patrimoine.visualisation.swing.ihm.google.utils.MessageDialog.showError;
-import static school.hei.patrimoine.visualisation.swing.ihm.google.utils.MessageDialog.showInfo;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.MessageDialog.showError;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.MessageDialog.showInfo;
 
 import java.awt.*;
 import javax.swing.*;
@@ -10,8 +10,8 @@ import school.hei.patrimoine.google.api.CommentApi;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.Dialog;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.AppContext;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.AsyncTask;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
-import school.hei.patrimoine.visualisation.swing.ihm.google.utils.AsyncTask;
 
 public class CommentAddDialog extends Dialog {
   private final State state;

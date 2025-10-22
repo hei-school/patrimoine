@@ -12,9 +12,9 @@ import lombok.extern.slf4j.Slf4j;
 import school.hei.patrimoine.google.DriveLinkVerifier;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.Page;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.AsyncTask;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.GoogleLinkList;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.GoogleLinkListCacheManager;
-import school.hei.patrimoine.visualisation.swing.ihm.google.utils.AsyncTask;
 
 @Slf4j
 public class SubmitLinkPage extends Page {
