@@ -7,16 +7,17 @@ import org.junit.jupiter.api.Test;
 class NombreValidatorTest {
 
   @Test
-  void validate() {
-    // Valid numbers
+  void validate_number() {
     assertDoesNotThrow(() -> NombreValidator.validate("123"));
     assertDoesNotThrow(() -> NombreValidator.validate("  456  "));
     assertDoesNotThrow(() -> NombreValidator.validate("7_890"));
     assertDoesNotThrow(() -> NombreValidator.validate("1 234.56"));
     assertDoesNotThrow(() -> NombreValidator.validate("-987.65"));
     assertDoesNotThrow(() -> NombreValidator.validate("0"));
+  }
 
-    // Invalid numbers
+  @Test
+  void validate_invalid_number() {
     Exception exception1 =
         assertThrows(IllegalArgumentException.class, () -> NombreValidator.validate("abc"));
     assertEquals("Nombre invalide 'abc' (syntaxe incorrecte)", exception1.getMessage());
