@@ -12,19 +12,19 @@ public class FluxArgentExecutionGenerator implements ExecutionGenerator<FluxArge
   @Override
   public void validateArgs(Map<String, Object> args) throws IllegalArgumentException {
     if (!args.containsKey("nom")) {
-      throw new IllegalArgumentException("nom is mandatory to createa fluxArgent");
+      throw new IllegalArgumentException("nom is mandatory to create a fluxArgent");
     }
 
     if (!args.containsKey("date")) {
-      throw new IllegalArgumentException("date is mandatory to createa fluxArgent");
+      throw new IllegalArgumentException("date is mandatory to create a fluxArgent");
     }
 
     if (!args.containsKey("valeur")) {
-      throw new IllegalArgumentException("valeur is mandatory to createa fluxArgent");
+      throw new IllegalArgumentException("valeur is mandatory to create a fluxArgent");
     }
 
     if (!args.containsKey("compte")) {
-      throw new IllegalArgumentException("compte is mandatory to createa fluxArgent");
+      throw new IllegalArgumentException("compte is mandatory to create a fluxArgent");
     }
   }
 
