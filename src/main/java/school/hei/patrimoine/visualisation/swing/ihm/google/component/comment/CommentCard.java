@@ -75,7 +75,7 @@ public class CommentCard extends JPanel {
     content.setLineWrap(true);
     content.setWrapStyleWord(true);
     content.setEditable(false);
-    content.setFocusable(false);
+    content.setFocusable(true);
     content.setOpaque(false);
     content.setFont(content.getFont().deriveFont(14f));
     content.setBorder(new EmptyBorder(5, 5, 5, 5));
