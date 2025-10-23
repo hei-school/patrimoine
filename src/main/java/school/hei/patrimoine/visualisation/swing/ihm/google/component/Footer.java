@@ -93,8 +93,18 @@ public class Footer extends JPanel {
     Pagination pagination = state.get("pagination");
     var currentPage = pagination.page();
 
+    if (totalPages <= 0) {
+      pageSelector.removeAllItems();
+      return;
+    }
+
     pageSelector.removeAllItems();
     IntStream.rangeClosed(1, totalPages).forEach(pageSelector::addItem);
+
+    if (currentPage > totalPages) {
+      currentPage = totalPages;
+    }
+
     pageSelector.setSelectedItem(currentPage);
 
     previousPageButton.setEnabled(currentPage > 1);
