@@ -33,7 +33,7 @@ public class CommentApi {
     return apiCache
         .wrap(
             COMMENTS_CACHE_KEY,
-            pagination.createCacheKey(fileId),
+            pagination.createCacheKey(fileId + "_" + startDate),
             () -> {
               try {
                 return getByFileIdWithoutCache(fileId, pagination, startDate);
