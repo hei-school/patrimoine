@@ -9,10 +9,10 @@ import java.awt.event.KeyEvent;
 import java.util.*;
 import java.util.List;
 import javax.swing.*;
-import javax.swing.Timer;
 import org.jetbrains.annotations.NotNull;
 import school.hei.patrimoine.modele.recouppement.PossessionRecoupee;
 import school.hei.patrimoine.modele.recouppement.RecoupementStatus;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.Debouncer;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.Footer;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.PlaceholderTextField;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.LazyPage;
@@ -97,25 +97,21 @@ public class RecoupementPage extends LazyPage {
     nameFilter.setPreferredSize(new Dimension(180, 35));
     nameFilter.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
 
-    int debounceDelay = 500;
-    var debounceTimer =
-        new Timer(
-            debounceDelay,
-            e -> {
-              state.update(
-                  Map.of(
-                      "filterName",
-                      nameFilter.getText().trim(),
-                      "pagination",
-                      new Pagination(1, RECOUPEMENT_ITEM_PER_PAGE)));
-            });
-    debounceTimer.setRepeats(false);
+    var fileSearchDebouncer =
+        new Debouncer(
+            () ->
+                state.update(
+                    Map.of(
+                        "filterName",
+                        nameFilter.getText().trim(),
+                        "pagination",
+                        new Pagination(1, RECOUPEMENT_ITEM_PER_PAGE))));
 
     nameFilter.addKeyListener(
         new KeyAdapter() {
           @Override
           public void keyReleased(KeyEvent evt) {
-            debounceTimer.restart();
+            fileSearchDebouncer.restart();
           }
         });
     return nameFilter;
@@ -129,8 +125,22 @@ public class RecoupementPage extends LazyPage {
     var fileList = new JList<>(new FileListModel(FileSideBar.getDonePatrilangFilesWithoutCasSet()));
     fileList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     fileList.setCellRenderer(new FileListCellRenderer());
+
+    var fileSelectDebouncer =
+        new Debouncer(
+            () -> {
+              var selectedFile = fileList.getSelectedValue();
+              if (selectedFile != null) {
+                state.update("selectedFile", selectedFile);
+              }
+            });
+
     fileList.addListSelectionListener(
-        e -> state.update("selectedFile", fileList.getSelectedValue()));
+        e -> {
+          if (!e.getValueIsAdjusting()) {
+            fileSelectDebouncer.restart();
+          }
+        });
 
     var horizontalSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
     horizontalSplit.setLeftComponent(new JScrollPane(fileList));
