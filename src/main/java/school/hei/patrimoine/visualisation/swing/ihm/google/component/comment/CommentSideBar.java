@@ -5,6 +5,9 @@ import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.Messag
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.MessageDialog.showInfo;
 
 import java.awt.*;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Set;
 import javax.swing.*;
@@ -13,6 +16,7 @@ import school.hei.patrimoine.google.api.CommentApi;
 import school.hei.patrimoine.google.cache.ApiCache;
 import school.hei.patrimoine.google.model.Comment;
 import school.hei.patrimoine.google.model.Pagination;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.DatePicker;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.AppContext;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.AsyncTask;
@@ -23,6 +27,7 @@ public class CommentSideBar extends JPanel {
   private final ApiCache apiCache;
   private final CommentApi commentApi;
   private final CommentListPanel commentListPanel;
+  private DatePicker datePicker;
 
   public CommentSideBar(State state) {
     super(new BorderLayout());
@@ -46,13 +51,31 @@ public class CommentSideBar extends JPanel {
     title.setFont(title.getFont().deriveFont(Font.BOLD, 16f));
     topPanel.add(title, BorderLayout.WEST);
 
+    var rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+
     var addCommentBtn =
         new Button(
             "Ajouter un commentaire",
             e -> new CommentAddDialog(state, this::refreshCurrentFileCommentsCache));
-    topPanel.add(addCommentBtn, BorderLayout.EAST);
+    rightPanel.add(addCommentBtn);
 
+    this.datePicker = new DatePicker(LocalDate.now().minusMonths(3));
+    this.datePicker.setPreferredSize(new Dimension(200, 35));
+    this.datePicker.addActionListener(e -> update());
+    rightPanel.add(datePicker);
+
+    topPanel.add(rightPanel, BorderLayout.EAST);
     add(topPanel, BorderLayout.NORTH);
+  }
+
+  public Instant datePickerToInstant(DatePicker startDatePicker) {
+    LocalDate date =
+        LocalDate.of(
+            startDatePicker.getModel().getYear(),
+            startDatePicker.getModel().getMonth() + 1,
+            startDatePicker.getModel().getDay());
+
+    return date.atStartOfDay(ZoneId.of("Indian/Antananarivo")).toInstant();
   }
 
   private void addCommentList() {
@@ -67,8 +90,11 @@ public class CommentSideBar extends JPanel {
                 return List.of();
               }
 
+              Instant startDate = datePickerToInstant(datePicker);
+
               var paginatedResult =
-                  commentApi.getByFileId(state.get("selectedFileId"), new Pagination(100, null));
+                  commentApi.getByFileId(
+                      state.get("selectedFileId"), new Pagination(20, null), startDate);
               return paginatedResult.data();
             })
         .onSuccess(newComments -> commentListPanel.update(state.get("selectedFileId"), newComments))
