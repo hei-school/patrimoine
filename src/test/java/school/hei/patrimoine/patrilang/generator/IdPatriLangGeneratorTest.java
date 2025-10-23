@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
 class IdPatriLangGeneratorTest {
-  private final IdPatriLangGenerator subject = new IdPatriLangGenerator();
+  private static final IdPatriLangGenerator subject = new IdPatriLangGenerator();
 
   @Test
   void apply() {

@@ -1,5 +1,6 @@
 package school.hei.patrimoine.patrilang.generator;
 
+import static java.time.Month.JANUARY;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDate;
@@ -10,10 +11,10 @@ import school.hei.patrimoine.modele.possession.FluxArgent;
 import school.hei.patrimoine.patrilang.generator.possession.FluxArgentPatriLangGenerator;
 
 class PatriLangGeneratorFactoryTest {
-  private final PatriLangGeneratorFactory subject = new PatriLangGeneratorFactory();
-  private final LocalDate date = LocalDate.of(2025, 1, 1);
+  private static final PatriLangGeneratorFactory subject = new PatriLangGeneratorFactory();
+  private static final LocalDate date = LocalDate.of(2025, JANUARY, 1);
   private static final Argent argent = Argent.ariary(1000);
-  private final Compte compte = new Compte("comptePersonnel", date, argent);
+  private static final Compte compte = new Compte("comptePersonnel", date, argent);
 
   @Test
   void make() {

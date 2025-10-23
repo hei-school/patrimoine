@@ -1,6 +1,7 @@
 package school.hei.patrimoine.patrilang.generator;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static school.hei.patrimoine.modele.Argent.ariary;
 
 import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
@@ -12,9 +13,10 @@ import school.hei.patrimoine.modele.possession.Dette;
 import school.hei.patrimoine.modele.possession.PersonneMorale;
 
 class VariableTypePatriLangGeneratorTest {
-  private final VariableTypePatriLangGenerator subject = new VariableTypePatriLangGenerator();
+  private static final VariableTypePatriLangGenerator subject =
+      new VariableTypePatriLangGenerator();
   private static final LocalDate date = LocalDate.of(2025, 1, 1);
-  private final Argent argent = Argent.ariary(1000);
+  private static final Argent argent = ariary(1000);
 
   @Test
   void apply_creance_type() {
