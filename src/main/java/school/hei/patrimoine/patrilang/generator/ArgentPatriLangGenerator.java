@@ -17,7 +17,11 @@ public class ArgentPatriLangGenerator implements PatriLangGenerator<Argent> {
   public static String montant(Argent argent) {
     var symbols = new DecimalFormatSymbols(Locale.FRANCE);
     symbols.setGroupingSeparator('_');
-    var df = new DecimalFormat("#,###", symbols);
+    symbols.setDecimalSeparator('.');
+
+    var df = new DecimalFormat("#,##0.##", symbols);
+    df.setGroupingUsed(true);
+
     return df.format(parseDouble(argent.ppMontant()));
   }
 }
