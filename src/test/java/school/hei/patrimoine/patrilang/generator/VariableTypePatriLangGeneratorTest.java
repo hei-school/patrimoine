@@ -21,40 +21,40 @@ class VariableTypePatriLangGeneratorTest {
   @Test
   void apply_creance_type() {
     var creance = new Creance("créances", date, argent);
-    var result = subject.apply(creance);
+    var actual = subject.apply(creance);
 
-    assertEquals("Créances", result);
+    assertEquals("Créances", actual);
   }
 
   @Test
   void apply_dette_type() {
     var dette = new Dette("dette", date, argent.mult(-1));
-    var result = subject.apply(dette);
+    var actual = subject.apply(dette);
 
-    assertEquals("Dettes", result);
+    assertEquals("Dettes", actual);
   }
 
   @Test
   void apply_personne_type() {
     var personne = new Personne("Koto");
-    var result = subject.apply(personne);
+    var actual = subject.apply(personne);
 
-    assertEquals("Personnes", result);
+    assertEquals("Personnes", actual);
   }
 
   @Test
   void apply_compte_type() {
     var compte = new Compte("comptePersonnel", date, argent);
-    var result = subject.apply(compte);
+    var actual = subject.apply(compte);
 
-    assertEquals("Trésoreries", result);
+    assertEquals("Trésoreries", actual);
   }
 
   @Test
   void apply_personne_moral_type() {
     var personneMoral = new PersonneMorale("Strat-up");
-    var result = subject.apply(personneMoral);
+    var actual = subject.apply(personneMoral);
 
-    assertEquals("PersonnesMorales", result);
+    assertEquals("PersonnesMorales", actual);
   }
 }

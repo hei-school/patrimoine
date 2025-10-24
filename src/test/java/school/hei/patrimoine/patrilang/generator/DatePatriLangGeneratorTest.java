@@ -12,18 +12,18 @@ class DatePatriLangGeneratorTest {
   @Test
   void apply_date_right_format() {
     var date = LocalDate.of(2024, MAY, 1);
-    var result = subject.apply(date);
+    var actual = subject.apply(date);
 
-    assertEquals("le 1 mai 2024", result);
+    assertEquals("le 1 mai 2024", actual);
   }
 
   @Test
   void apply_date_bad_format_or_null() {
     var date = LocalDate.of(1999, 12, 31);
-    var result = subject.apply(date);
+    var actual = subject.apply(date);
 
-    assertNotEquals("31-12-1999", result);
-    assertNotEquals("1999/12/31", result);
+    assertNotEquals("31-12-1999", actual);
+    assertNotEquals("1999/12/31", actual);
     assertThrows(NullPointerException.class, () -> subject.apply(null));
   }
 }

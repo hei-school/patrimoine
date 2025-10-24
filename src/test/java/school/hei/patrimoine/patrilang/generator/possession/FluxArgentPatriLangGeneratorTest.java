@@ -17,30 +17,27 @@ class FluxArgentPatriLangGeneratorTest {
   @Test
   void test_entree() {
     var flux = new FluxArgent("flux1", compte, date, ariary(1000));
-    var result = subject.apply(flux);
+    var actual = subject.apply(flux);
 
     var expected = "* `flux1`, le 1 janvier 2025 entrer 1_000Ar vers Trésoreries:comptePersonnel";
-    assertEquals(expected, result);
-    assertTrue(result.contains("entrer"));
+    assertEquals(expected, actual);
   }
 
   @Test
   void test_sortie() {
     var flux = new FluxArgent("flux1", compte, date, ariary(-1000));
-    var result = subject.apply(flux);
+    var actual = subject.apply(flux);
 
     var expected = "* `flux1`, le 1 janvier 2025 sortir 1_000Ar depuis Trésoreries:comptePersonnel";
-    assertEquals(expected, result);
-    assertTrue(result.contains("sortir"));
+    assertEquals(expected, actual);
   }
 
   @Test
   void test_zero_flux() {
     var flux = new FluxArgent("flux1", compte, date, ariary(0));
-    var result = subject.apply(flux);
+    var actual = subject.apply(flux);
 
     var expected = "* `flux1`, le 1 janvier 2025 entrer 0Ar vers Trésoreries:comptePersonnel";
-    assertEquals(expected, result);
-    assertTrue(result.contains("entrer"));
+    assertEquals(expected, actual);
   }
 }

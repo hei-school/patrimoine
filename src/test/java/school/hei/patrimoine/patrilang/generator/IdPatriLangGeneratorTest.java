@@ -9,19 +9,19 @@ class IdPatriLangGeneratorTest {
 
   @Test
   void apply() {
-    var result = subject.apply("  Mon Identifiant Test  ");
-    assertEquals("Mon_Identifiant_Test", result);
+    var actual = subject.apply("  Mon Identifiant Test  ");
+    assertEquals("Mon_Identifiant_Test", actual);
   }
 
   @Test
   void apply_empty_string() {
-    var result = subject.apply("     ");
-    assertEquals("", result);
+    var actual = subject.apply("     ");
+    assertEquals("", actual);
   }
 
   @Test
   void apply_with_special_characters_and_long_spaces() {
-    var result = subject.apply("  Identifiant      @    2024!  ");
-    assertEquals("Identifiant_@_2024!", result);
+    var actual = subject.apply("  Identifiant      @    2024!  ");
+    assertEquals("Identifiant_@_2024!", actual);
   }
 }

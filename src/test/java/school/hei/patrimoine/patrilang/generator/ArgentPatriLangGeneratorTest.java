@@ -13,25 +13,25 @@ class ArgentPatriLangGeneratorTest {
   void apply_MGA_devise() {
     var argent = new Argent(125000, MGA);
 
-    var result = subject.apply(argent);
+    var actual = subject.apply(argent);
 
-    assertEquals("125_000Ar", result);
+    assertEquals("125_000Ar", actual);
   }
 
   @Test
   void apply_EUR_devise() {
     var argent = new Argent(12500, EUR);
-    var result = subject.apply(argent);
+    var actual = subject.apply(argent);
 
-    assertEquals("12_500€", result);
+    assertEquals("12_500€", actual);
   }
 
   @Test
   void apply_dollar_devise() {
     var argent = new Argent(12500, CAD);
-    var result = subject.apply(argent);
+    var actual = subject.apply(argent);
 
-    assertEquals("12_500$", result);
+    assertEquals("12_500$", actual);
   }
 
   @Test
@@ -44,16 +44,16 @@ class ArgentPatriLangGeneratorTest {
   @Test
   void apply_with_decimals() {
     var argent = new Argent(12345.67, EUR);
-    var result = subject.apply(argent);
+    var actual = subject.apply(argent);
 
-    assertEquals("12_345.67€", result);
+    assertEquals("12_345.67€", actual);
   }
 
   @Test
   void montant() {
     var argent = new Argent(9876543, EUR);
-    var result = ArgentPatriLangGenerator.montant(argent);
+    var actual = ArgentPatriLangGenerator.montant(argent);
 
-    assertEquals("9_876_543", result);
+    assertEquals("9_876_543", actual);
   }
 }
