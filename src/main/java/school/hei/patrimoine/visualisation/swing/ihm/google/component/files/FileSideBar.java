@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Optional;
 import javax.swing.*;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.AppContext;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.Debouncer;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.GoogleLinkList;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.GoogleLinkList.NamedID;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.GoogleLinkListDownloader;
@@ -35,44 +36,56 @@ public class FileSideBar extends JPanel {
     plannedList.setCellRenderer(new FileListCellRenderer());
     doneList.setCellRenderer(new FileListCellRenderer());
 
+    var plannedDebouncer =
+        new Debouncer(
+            () -> {
+              var selectedFile = plannedList.getSelectedValue();
+              if (selectedFile != null) {
+                this.state.update(
+                    Map.of(
+                        "selectedFile",
+                        selectedFile,
+                        "selectedCasSetFile",
+                        getPlannedCasSetFile(),
+                        "selectedFileId",
+                        getSelectedFileDriveId(selectedFile, true).orElse(""),
+                        "isPlannedSelectedFile",
+                        true));
+                doneList.clearSelection();
+              }
+            });
+
+    var doneDebouncer =
+        new Debouncer(
+            () -> {
+              var selectedFile = doneList.getSelectedValue();
+              if (selectedFile != null) {
+                this.state.update(
+                    Map.of(
+                        "selectedFile",
+                        selectedFile,
+                        "selectedCasSetFile",
+                        getDoneCasSetFile(),
+                        "selectedFileId",
+                        getSelectedFileDriveId(selectedFile, false).orElse(""),
+                        "isPlannedSelectedFile",
+                        false));
+                plannedList.clearSelection();
+              }
+            });
+
     plannedList.addListSelectionListener(
         e -> {
-          if (e.getValueIsAdjusting() || plannedList.getSelectedValue() == null) {
-            return;
+          if (!e.getValueIsAdjusting()) {
+            plannedDebouncer.restart();
           }
-
-          var selectedFile = plannedList.getSelectedValue();
-          this.state.update(
-              Map.of(
-                  "selectedFile",
-                  selectedFile,
-                  "selectedCasSetFile",
-                  getPlannedCasSetFile(),
-                  "selectedFileId",
-                  getSelectedFileDriveId(selectedFile, true).orElse(""),
-                  "isPlannedSelectedFile",
-                  true));
-          doneList.clearSelection();
         });
 
     doneList.addListSelectionListener(
         e -> {
-          if (e.getValueIsAdjusting() || doneList.getSelectedValue() == null) {
-            return;
+          if (!e.getValueIsAdjusting()) {
+            doneDebouncer.restart();
           }
-
-          var selectedFile = doneList.getSelectedValue();
-          this.state.update(
-              Map.of(
-                  "selectedFile",
-                  selectedFile,
-                  "selectedCasSetFile",
-                  getDoneCasSetFile(),
-                  "selectedFileId",
-                  getSelectedFileDriveId(selectedFile, false).orElse(""),
-                  "isPlannedSelectedFile",
-                  false));
-          plannedList.clearSelection();
         });
 
     var panel = new JPanel();
