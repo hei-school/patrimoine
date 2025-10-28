@@ -40,38 +40,36 @@ public class FileSideBar extends JPanel {
         new Debouncer(
             () -> {
               var selectedFile = plannedList.getSelectedValue();
-              if (selectedFile != null) {
-                this.state.update(
-                    Map.of(
-                        "selectedFile",
-                        selectedFile,
-                        "selectedCasSetFile",
-                        getPlannedCasSetFile(),
-                        "selectedFileId",
-                        getSelectedFileDriveId(selectedFile, true).orElse(""),
-                        "isPlannedSelectedFile",
-                        true));
-                doneList.clearSelection();
-              }
+              if (selectedFile == null) return;
+              this.state.update(
+                  Map.of(
+                      "selectedFile",
+                      selectedFile,
+                      "selectedCasSetFile",
+                      getPlannedCasSetFile(),
+                      "selectedFileId",
+                      getSelectedFileDriveId(selectedFile, true).orElse(""),
+                      "isPlannedSelectedFile",
+                      true));
+              doneList.clearSelection();
             });
 
     var doneDebouncer =
         new Debouncer(
             () -> {
               var selectedFile = doneList.getSelectedValue();
-              if (selectedFile != null) {
-                this.state.update(
-                    Map.of(
-                        "selectedFile",
-                        selectedFile,
-                        "selectedCasSetFile",
-                        getDoneCasSetFile(),
-                        "selectedFileId",
-                        getSelectedFileDriveId(selectedFile, false).orElse(""),
-                        "isPlannedSelectedFile",
-                        false));
-                plannedList.clearSelection();
-              }
+              if (selectedFile == null) return;
+              this.state.update(
+                  Map.of(
+                      "selectedFile",
+                      selectedFile,
+                      "selectedCasSetFile",
+                      getDoneCasSetFile(),
+                      "selectedFileId",
+                      getSelectedFileDriveId(selectedFile, false).orElse(""),
+                      "isPlannedSelectedFile",
+                      false));
+              plannedList.clearSelection();
             });
 
     plannedList.addListSelectionListener(
