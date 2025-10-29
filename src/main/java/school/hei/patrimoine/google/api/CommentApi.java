@@ -1,7 +1,5 @@
 package school.hei.patrimoine.google.api;
 
-import static java.util.function.Predicate.not;
-
 import com.google.api.services.drive.model.Reply;
 import java.io.IOException;
 import java.time.Instant;
@@ -74,7 +72,6 @@ public class CommentApi {
     var nextPageToken = commentList.getNextPageToken();
     var results =
         comments.stream()
-            .filter(not(c -> c.getResolved() != null && c.getResolved()))
             .map(commentMapper::toDomain)
             .sorted(Comparator.comparing(Comment::createdAt).reversed())
             .toList();
