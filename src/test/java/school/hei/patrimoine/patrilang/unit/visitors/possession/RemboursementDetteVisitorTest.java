@@ -1,6 +1,7 @@
 package school.hei.patrimoine.patrilang.unit.visitors.possession;
 
 import static java.time.Month.JUNE;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static school.hei.patrimoine.modele.Argent.ariary;
 import static school.hei.patrimoine.patrilang.modele.variable.VariableType.*;
 
@@ -55,7 +56,7 @@ class RemboursementDetteVisitorTest {
 
     var actual = visitor.visit(input, PatriLangParser::rembourserDette);
 
-    assert expected.equals(actual);
+    assertEquals(expected, actual);
   }
 
   @Test
@@ -71,6 +72,6 @@ class RemboursementDetteVisitorTest {
 
     var actual = visitor.visit(input, PatriLangParser::rembourserDette);
 
-    assert expected.equals(actual);
+    assertEquals(expected, actual);
   }
 }

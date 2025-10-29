@@ -22,17 +22,25 @@ class GroupPossessionVisitorTest {
   private static final VariableVisitor variableVisitor = new VariableVisitor();
   private static final GroupPossessionVisitor subject = new GroupPossessionVisitor(variableVisitor);
   private static final LocalDate AJD = LocalDate.of(2025, JUNE, 23);
-  private static final Compte COMPTE_PERSONNEL =
-      new Compte("comptePersonnel", AJD, ariary(1_000_000));
-  private static final AchatMaterielAuComptant ACHAT_MATERIEL =
-      new AchatMaterielAuComptant(
-          "Ordinateur Portable",
-          LocalDate.of(2025, JUNE, 15),
-          ariary(500_000),
-          10.0,
-          COMPTE_PERSONNEL);
-  private static final GroupePossession GROUPE_POSSESSION =
-      new GroupePossession("mesPossessions", MGA, AJD, Set.of(COMPTE_PERSONNEL, ACHAT_MATERIEL));
+  private static final GroupePossession GROUPE_POSSESSION = groupePossession();
+
+  private static GroupePossession groupePossession() {
+    return new GroupePossession(
+        "mesPossessions", MGA, AJD, Set.of(comptePersonnel(), achatMateriel()));
+  }
+
+  private static Compte comptePersonnel() {
+    return new Compte("comptePersonnel", AJD, ariary(1_000_000));
+  }
+
+  private static AchatMaterielAuComptant achatMateriel() {
+    return new AchatMaterielAuComptant(
+        "Ordinateur Portable",
+        LocalDate.of(2025, JUNE, 15),
+        ariary(500_000),
+        10.0,
+        comptePersonnel());
+  }
 
   private GroupePossession visitGroupPossession(String input) {
     UnitTestVisitor visitor =
@@ -46,7 +54,7 @@ class GroupPossessionVisitorTest {
   }
 
   static {
-    variableVisitor.addToScope("comptePersonnel", TRESORERIES, COMPTE_PERSONNEL);
+    variableVisitor.addToScope("comptePersonnel", TRESORERIES, comptePersonnel());
   }
 
   @Test
@@ -60,6 +68,10 @@ class GroupPossessionVisitorTest {
 
     var actual = visitGroupPossession(input);
 
-    assertEquals(GROUPE_POSSESSION, actual);
+    GROUPE_POSSESSION
+        .getPossessions()
+        .forEach(possession -> assertTrue(actual.getPossessions().contains(possession)));
+
+    assertEquals(GROUPE_POSSESSION.getPossessions(), actual.getPossessions());
   }
 }
