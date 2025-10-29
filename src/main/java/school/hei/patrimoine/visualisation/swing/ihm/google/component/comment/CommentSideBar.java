@@ -90,7 +90,7 @@ public class CommentSideBar extends JPanel {
   }
 
   private void addCommentFooter() {
-      add(footer, BorderLayout.SOUTH);
+    add(footer, BorderLayout.SOUTH);
   }
 
   private void update() {
@@ -129,12 +129,12 @@ public class CommentSideBar extends JPanel {
   }
 
   private void initFilePagination(String fileId) {
-    paginationByFile.putIfAbsent(fileId, new Pagination(5, null));
+    paginationByFile.putIfAbsent(fileId, new Pagination(50, null));
     previousTokensByFile.putIfAbsent(fileId, new ArrayList<>(List.of("firstPage")));
   }
 
   private void resetPaginationForCurrentFile(String fileId) {
-    paginationByFile.put(fileId, new Pagination(5, null));
+    paginationByFile.put(fileId, new Pagination(50, null));
     previousTokensByFile.put(fileId, new ArrayList<>(List.of("firstPage")));
   }
 
@@ -166,7 +166,7 @@ public class CommentSideBar extends JPanel {
       fileTokens.removeLast();
       String previousToken = fileTokens.getLast();
       paginationByFile.put(
-          fileId, new Pagination(5, previousToken.equals("firstPage") ? null : previousToken));
+          fileId, new Pagination(50, previousToken.equals("firstPage") ? null : previousToken));
       loadComments(fileId, datePickerToInstant(datePicker));
     }
   }
