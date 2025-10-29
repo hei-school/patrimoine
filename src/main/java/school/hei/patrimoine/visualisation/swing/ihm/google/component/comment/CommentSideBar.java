@@ -8,13 +8,14 @@ import java.awt.*;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.*;
 import java.util.List;
-import java.util.Set;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import school.hei.patrimoine.google.api.CommentApi;
 import school.hei.patrimoine.google.cache.ApiCache;
 import school.hei.patrimoine.google.model.Comment;
+import school.hei.patrimoine.google.model.PaginatedResult;
 import school.hei.patrimoine.google.model.Pagination;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.DatePicker;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.AppContext;
@@ -27,7 +28,11 @@ public class CommentSideBar extends JPanel {
   private final ApiCache apiCache;
   private final CommentApi commentApi;
   private final CommentListPanel commentListPanel;
+  private final CommentFooter footer;
   private DatePicker datePicker;
+
+  private final Map<String, Pagination> paginationByFile = new HashMap<>();
+  private final Map<String, List<String>> previousTokensByFile = new HashMap<>();
 
   public CommentSideBar(State state) {
     super(new BorderLayout());
@@ -36,9 +41,11 @@ public class CommentSideBar extends JPanel {
     this.apiCache = ApiCache.getInstance();
     this.commentApi = AppContext.getDefault().getData("comment-api");
     this.commentListPanel = new CommentListPanel(this, true, this::refreshCurrentFileCommentsCache);
+    this.footer = new CommentFooter(this::goToPreviousPage, this::goToNextPage);
 
     addTopPanel();
     addCommentList();
+    addCommentFooter();
 
     state.subscribe(Set.of("selectedFile", "selectedFileId"), this::update);
   }
@@ -82,26 +89,86 @@ public class CommentSideBar extends JPanel {
     add(commentListPanel.toScrollPane(), BorderLayout.CENTER);
   }
 
+  private void addCommentFooter() {
+      add(footer, BorderLayout.SOUTH);
+  }
+
   private void update() {
-    AsyncTask.<List<Comment>>builder()
-        .task(
-            () -> {
-              if (state.get("selectedFile") == null) {
-                return List.of();
-              }
+    String fileId = state.get("selectedFileId");
+    if (fileId == null) return;
 
-              Instant startDate = datePickerToInstant(datePicker);
+    resetPaginationForCurrentFile(fileId);
+    loadComments(fileId, datePickerToInstant(datePicker));
+  }
 
-              var paginatedResult =
-                  commentApi.getByFileId(
-                      state.get("selectedFileId"), new Pagination(20, null), startDate);
-              return paginatedResult.data();
+  private void loadComments(String fileId, Instant startDate) {
+    if (fileId == null) return;
+
+    initFilePagination(fileId);
+
+    Pagination filePagination = paginationByFile.get(fileId);
+    List<String> fileTokens = previousTokensByFile.get(fileId);
+
+    AsyncTask.<PaginatedResult<List<Comment>>>builder()
+        .task(() -> commentApi.getByFileId(fileId, filePagination, startDate))
+        .onSuccess(
+            result -> {
+              commentListPanel.update(fileId, result.data());
+
+              paginationByFile.put(fileId, result.getNextPagination());
+
+              previousTokensByFile.put(fileId, fileTokens);
+
+              footer.updateButtons(
+                  fileTokens.size() > 1, result.getNextPagination().pageToken() != null);
             })
-        .onSuccess(newComments -> commentListPanel.update(state.get("selectedFileId"), newComments))
         .withDialogLoading(false)
         .onError(e -> showError("Error", "Erreur lors de la récupération des commentaires"))
         .build()
         .execute();
+  }
+
+  private void initFilePagination(String fileId) {
+    paginationByFile.putIfAbsent(fileId, new Pagination(5, null));
+    previousTokensByFile.putIfAbsent(fileId, new ArrayList<>(List.of("firstPage")));
+  }
+
+  private void resetPaginationForCurrentFile(String fileId) {
+    paginationByFile.put(fileId, new Pagination(5, null));
+    previousTokensByFile.put(fileId, new ArrayList<>(List.of("firstPage")));
+  }
+
+  private void goToNextPage() {
+    String fileId = state.get("selectedFileId");
+    if (fileId == null) return;
+
+    initFilePagination(fileId);
+    Pagination filePagination = paginationByFile.get(fileId);
+    List<String> fileTokens = previousTokensByFile.get(fileId);
+
+    if (filePagination.pageToken() != null) {
+      String token = filePagination.pageToken();
+      if (!fileTokens.contains(token)) {
+        fileTokens.add(token);
+      }
+      loadComments(fileId, datePickerToInstant(datePicker));
+    }
+  }
+
+  private void goToPreviousPage() {
+    String fileId = state.get("selectedFileId");
+    if (fileId == null) return;
+
+    initFilePagination(fileId);
+    List<String> fileTokens = previousTokensByFile.get(fileId);
+
+    if (fileTokens.size() > 1) {
+      fileTokens.removeLast();
+      String previousToken = fileTokens.getLast();
+      paginationByFile.put(
+          fileId, new Pagination(5, previousToken.equals("firstPage") ? null : previousToken));
+      loadComments(fileId, datePickerToInstant(datePicker));
+    }
   }
 
   private void refreshCurrentFileCommentsCache() {
