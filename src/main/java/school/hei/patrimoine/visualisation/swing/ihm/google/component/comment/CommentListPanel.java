@@ -38,6 +38,7 @@ public class CommentListPanel extends JPanel {
     scrollToTop();
   }
 
+  // reset scroll position to the top
   private void scrollToTop() {
     SwingUtilities.invokeLater(
         () -> {
