@@ -46,7 +46,7 @@ public class CommentApi {
   private PaginatedResult<List<Comment>> getByFileIdWithoutCache(
       String fileId, Pagination pagination, Instant startDate) throws IOException {
 
-    String startDateStr = DateTimeFormatter.ISO_INSTANT.format(startDate);
+    var startDateStr = DateTimeFormatter.ISO_INSTANT.format(startDate);
 
     var commentList =
         driveApi
