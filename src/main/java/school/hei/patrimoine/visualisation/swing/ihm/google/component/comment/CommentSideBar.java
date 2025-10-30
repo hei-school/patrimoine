@@ -7,7 +7,6 @@ import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.Messag
 import java.awt.*;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.*;
 import java.util.List;
 import javax.swing.*;
@@ -75,16 +74,6 @@ public class CommentSideBar extends JPanel {
     add(topPanel, BorderLayout.NORTH);
   }
 
-  public Instant datePickerToInstant(DatePicker startDatePicker) {
-    LocalDate date =
-        LocalDate.of(
-            startDatePicker.getModel().getYear(),
-            startDatePicker.getModel().getMonth() + 1,
-            startDatePicker.getModel().getDay());
-
-    return date.atStartOfDay(ZoneId.of("Indian/Antananarivo")).toInstant();
-  }
-
   private void addCommentList() {
     add(commentListPanel.toScrollPane(), BorderLayout.CENTER);
   }
@@ -98,7 +87,7 @@ public class CommentSideBar extends JPanel {
     if (fileId == null) return;
 
     resetPaginationForCurrentFile(fileId);
-    loadComments(fileId, datePickerToInstant(datePicker));
+    loadComments(fileId, datePicker.toInstant());
   }
 
   private void loadComments(String fileId, Instant startDate) {
@@ -151,7 +140,7 @@ public class CommentSideBar extends JPanel {
       if (!fileTokens.contains(token)) {
         fileTokens.add(token);
       }
-      loadComments(fileId, datePickerToInstant(datePicker));
+      loadComments(fileId, datePicker.toInstant());
     }
   }
 
@@ -167,7 +156,7 @@ public class CommentSideBar extends JPanel {
       String previousToken = fileTokens.getLast();
       paginationByFile.put(
           fileId, new Pagination(50, previousToken.equals("firstPage") ? null : previousToken));
-      loadComments(fileId, datePickerToInstant(datePicker));
+      loadComments(fileId, datePicker.toInstant());
     }
   }
 
