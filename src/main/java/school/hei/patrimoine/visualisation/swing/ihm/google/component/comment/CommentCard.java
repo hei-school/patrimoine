@@ -42,7 +42,7 @@ public class CommentCard extends JPanel {
     add(header());
     add(content());
 
-    if (withActions && !comment.resolved()) {
+    if (withActions) {
       add(actions());
     }
   }
@@ -97,13 +97,17 @@ public class CommentCard extends JPanel {
     buttons.setOpaque(false);
     buttons.setBorder(new EmptyBorder(10, 0, 0, 0));
     buttons.setAlignmentX(Component.LEFT_ALIGNMENT);
-    buttons.add(replyButton(fileId, comment, refresh));
+    if (!comment.resolved()) {
+      buttons.add(replyButton(fileId, comment, refresh));
+    }
 
     if (!comment.answers().isEmpty()) {
       buttons.add(showAnswersButton(fileId, comment, refresh));
     }
 
-    buttons.add(resolveButton(fileId, comment, refresh));
+    if (!comment.resolved()) {
+      buttons.add(resolveButton(fileId, comment, refresh));
+    }
     return buttons;
   }
 
