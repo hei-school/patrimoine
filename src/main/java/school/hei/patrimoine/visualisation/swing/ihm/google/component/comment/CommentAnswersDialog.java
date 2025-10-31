@@ -46,8 +46,10 @@ public class CommentAnswersDialog extends Dialog {
 
   private void addActions() {
     var buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-    buttonPanel.add(replyButton(fileId, parentComment, refresh));
-    buttonPanel.add(resolveButton(fileId, parentComment, refresh));
+    if (!parentComment.resolved()) {
+      buttonPanel.add(replyButton(fileId, parentComment, refresh));
+      buttonPanel.add(resolveButton(fileId, parentComment, refresh));
+    }
     buttonPanel.add(new Button("Fermer", e -> dispose()));
     add(buttonPanel, BorderLayout.SOUTH);
   }

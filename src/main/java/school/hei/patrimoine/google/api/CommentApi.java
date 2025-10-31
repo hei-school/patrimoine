@@ -1,9 +1,9 @@
 package school.hei.patrimoine.google.api;
 
-import static java.util.function.Predicate.not;
-
 import com.google.api.services.drive.model.Reply;
 import java.io.IOException;
+import java.time.Instant;
+import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.List;
 import school.hei.patrimoine.google.cache.ApiCache;
@@ -25,15 +25,16 @@ public class CommentApi {
     this.commentMapper = CommentMapper.getInstance();
   }
 
-  public PaginatedResult<List<Comment>> getByFileId(String fileId, Pagination pagination)
-      throws GoogleIntegrationException {
+  public PaginatedResult<List<Comment>> getByFileId(
+      String fileId, Pagination pagination, Instant startDate) throws GoogleIntegrationException {
+
     return apiCache
         .wrap(
             COMMENTS_CACHE_KEY,
-            pagination.createCacheKey(fileId),
+            pagination.createCacheKey(fileId + "_" + startDate),
             () -> {
               try {
-                return getByFileIdWithoutCache(fileId, pagination);
+                return getByFileIdWithoutCache(fileId, pagination, startDate);
               } catch (IOException e) {
                 throw new GoogleIntegrationException(
                     "Failed to get comments for fileId=" + fileId, e);
@@ -43,13 +44,17 @@ public class CommentApi {
   }
 
   private PaginatedResult<List<Comment>> getByFileIdWithoutCache(
-      String fileId, Pagination pagination) throws IOException {
+      String fileId, Pagination pagination, Instant startDate) throws IOException {
+
+    var startDateStr = DateTimeFormatter.ISO_INSTANT.format(startDate);
+
     var commentList =
         driveApi
             .driveService()
             .comments()
             .list(fileId)
             .setIncludeDeleted(false)
+            .setStartModifiedTime(startDateStr)
             .setPageSize(pagination.pageSize())
             .setPageToken(pagination.pageToken())
             .setFields(
@@ -67,7 +72,6 @@ public class CommentApi {
     var nextPageToken = commentList.getNextPageToken();
     var results =
         comments.stream()
-            .filter(not(c -> c.getResolved() != null && c.getResolved()))
             .map(commentMapper::toDomain)
             .sorted(Comparator.comparing(Comment::createdAt).reversed())
             .toList();

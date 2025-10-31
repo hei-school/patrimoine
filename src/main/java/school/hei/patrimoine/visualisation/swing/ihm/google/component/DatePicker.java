@@ -1,6 +1,7 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.component;
 
 import java.awt.*;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
@@ -28,6 +29,20 @@ public class DatePicker extends JDatePickerImpl {
     }
 
     setBackground(Color.WHITE);
+  }
+
+  public Instant getInstant() {
+    var date = getDate();
+    if (date == null) return null;
+
+    return getDate().atStartOfDay(ZoneId.of("Indian/Antananarivo")).toInstant();
+  }
+
+  private LocalDate getDate() {
+    var model = this.getModel();
+    if (model.getValue() == null) return null;
+
+    return LocalDate.of(model.getYear(), model.getMonth() + 1, model.getDay());
   }
 
   private static Properties getDefaultProperties() {

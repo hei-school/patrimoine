@@ -35,6 +35,18 @@ public class CommentListPanel extends JPanel {
 
     revalidate();
     repaint();
+    scrollToTop();
+  }
+
+  // reset scroll position to the top
+  private void scrollToTop() {
+    SwingUtilities.invokeLater(
+        () -> {
+          Container parent = getParent();
+          if (parent instanceof JViewport viewport) {
+            viewport.setViewPosition(new Point(0, 0));
+          }
+        });
   }
 
   public JScrollPane toScrollPane() {

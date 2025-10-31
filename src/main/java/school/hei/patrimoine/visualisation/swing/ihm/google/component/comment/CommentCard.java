@@ -17,6 +17,7 @@ public class CommentCard extends JPanel {
   private final Runnable refresh;
   private static final Color DEFAULT_BACKGROUND_COLOR = new Color(222, 221, 220);
   private static final Color APPROVED_BACKGROUND_COLOR = new Color(120, 220, 140);
+  private static final Color RESOLVED_BACKGROUND_COLOR = new Color(255, 251, 156);
   public static final DateTimeFormatter DATE_TIME_FORMATTER =
       DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm").withZone(ZoneId.systemDefault());
 
@@ -33,7 +34,9 @@ public class CommentCard extends JPanel {
     setBorder(new EmptyBorder(10, 10, 10, 10));
 
     var backgroundColor =
-        comment.isApproved() ? APPROVED_BACKGROUND_COLOR : DEFAULT_BACKGROUND_COLOR;
+        comment.resolved()
+            ? RESOLVED_BACKGROUND_COLOR
+            : comment.isApproved() ? APPROVED_BACKGROUND_COLOR : DEFAULT_BACKGROUND_COLOR;
     setBackground(backgroundColor);
 
     add(header());
@@ -94,13 +97,17 @@ public class CommentCard extends JPanel {
     buttons.setOpaque(false);
     buttons.setBorder(new EmptyBorder(10, 0, 0, 0));
     buttons.setAlignmentX(Component.LEFT_ALIGNMENT);
-    buttons.add(replyButton(fileId, comment, refresh));
+    if (!comment.resolved()) {
+      buttons.add(replyButton(fileId, comment, refresh));
+    }
 
     if (!comment.answers().isEmpty()) {
       buttons.add(showAnswersButton(fileId, comment, refresh));
     }
 
-    buttons.add(resolveButton(fileId, comment, refresh));
+    if (!comment.resolved()) {
+      buttons.add(resolveButton(fileId, comment, refresh));
+    }
     return buttons;
   }
 
