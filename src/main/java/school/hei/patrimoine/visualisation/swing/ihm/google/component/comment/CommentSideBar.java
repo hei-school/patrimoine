@@ -87,7 +87,7 @@ public class CommentSideBar extends JPanel {
     if (fileId == null) return;
 
     resetPaginationForCurrentFile(fileId);
-    loadComments(fileId, datePicker.toInstant());
+    loadComments(fileId, datePicker.getInstant());
   }
 
   private void loadComments(String fileId, Instant startDate) {
@@ -140,7 +140,7 @@ public class CommentSideBar extends JPanel {
       if (!fileTokens.contains(token)) {
         fileTokens.add(token);
       }
-      loadComments(fileId, datePicker.toInstant());
+      loadComments(fileId, datePicker.getInstant());
     }
   }
 
@@ -156,7 +156,7 @@ public class CommentSideBar extends JPanel {
       String previousToken = fileTokens.getLast();
       paginationByFile.put(
           fileId, new Pagination(50, previousToken.equals("firstPage") ? null : previousToken));
-      loadComments(fileId, datePicker.toInstant());
+      loadComments(fileId, datePicker.getInstant());
     }
   }
 

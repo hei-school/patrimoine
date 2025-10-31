@@ -31,7 +31,7 @@ public class DatePicker extends JDatePickerImpl {
     setBackground(Color.WHITE);
   }
 
-  public Instant toInstant() {
+  public Instant getInstant() {
     var date = getDate();
     if (date == null) return null;
 
