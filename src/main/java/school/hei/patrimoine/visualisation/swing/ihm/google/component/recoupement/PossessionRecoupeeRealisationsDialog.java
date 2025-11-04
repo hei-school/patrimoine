@@ -2,6 +2,7 @@ package school.hei.patrimoine.visualisation.swing.ihm.google.component.recoupeme
 
 import static java.util.stream.Collectors.joining;
 import static school.hei.patrimoine.modele.recouppement.RecoupementStatus.IMPREVU;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.component.app.ViewFactory.makeView;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.MessageDialog.*;
 
 import java.awt.*;
@@ -20,6 +21,7 @@ import school.hei.patrimoine.patrilang.files.PatriLangFileWritter.FileWritterInp
 import school.hei.patrimoine.patrilang.generator.PatriLangGeneratorFactory;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.Dialog;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.AppContext;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.MultiViews;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.FileSideBar;
 import school.hei.patrimoine.visualisation.swing.ihm.google.generator.PossessionGeneratorFactory;
@@ -37,6 +39,7 @@ public class PossessionRecoupeeRealisationsDialog extends Dialog {
 
   private DefaultListModel<Info> realisesModel;
   private final JPanel contentPanel;
+  private MultiViews pageManager;
 
   public PossessionRecoupeeRealisationsDialog(State state, PossessionRecoupee possessionRecoupee) {
     super("Exécutions d'opération", 700, 600, false);
@@ -55,14 +58,20 @@ public class PossessionRecoupeeRealisationsDialog extends Dialog {
     contentPanel = new JPanel(new BorderLayout());
     add(contentPanel, BorderLayout.CENTER);
 
-    showListView();
+    initPageManager();
 
     setVisible(true);
   }
 
-  private void showListView() {
-    contentPanel.removeAll();
+  private void initPageManager() {
+    var listView = makeView("list-view", buildListView());
+    var addFormView = makeView("add-form-view", buildAddFormView());
 
+    pageManager = new MultiViews("list-view", Set.of(listView, addFormView));
+    contentPanel.add(pageManager, BorderLayout.CENTER);
+  }
+
+  private JPanel buildListView() {
     realisesModel = new DefaultListModel<>();
     possessionRecoupee.realises().forEach(realisesModel::addElement);
 
@@ -84,30 +93,28 @@ public class PossessionRecoupeeRealisationsDialog extends Dialog {
     var panel = new JPanel(new BorderLayout());
     panel.setBorder(new EmptyBorder(10, 10, 10, 10));
     panel.add(new JScrollPane(realisesList), BorderLayout.CENTER);
-    contentPanel.add(panel, BorderLayout.CENTER);
 
     var buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
     if (!IMPREVU.equals(possessionRecoupee.status())) {
-      buttonPanel.add(new Button("Ajouter une exécution", e -> showAddFormView()));
+      buttonPanel.add(
+          new Button("Ajouter une exécution", e -> pageManager.navigate("add-form-view")));
       buttonPanel.add(new Button("Sauvegarder", e -> saveExecutions()));
     }
     buttonPanel.add(new Button("Annuler", e -> dispose()));
 
-    contentPanel.add(buttonPanel, BorderLayout.SOUTH);
-    revalidate();
-    repaint();
+    panel.add(buttonPanel, BorderLayout.SOUTH);
+    return panel;
   }
 
-  private void showAddFormView() {
-    contentPanel.removeAll();
-
+  private JPanel buildAddFormView() {
     var form =
         new AddRecoupementExecutionForm(
             possessionRecoupee.possession().nom(),
             possessionRecoupee.possession().devise(),
             possessionRecoupee.info().valeur());
 
-    contentPanel.add(form, BorderLayout.CENTER);
+    var panel = new JPanel(new BorderLayout());
+    panel.add(form, BorderLayout.CENTER);
 
     var buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
     buttonPanel.add(
@@ -117,16 +124,15 @@ public class PossessionRecoupeeRealisationsDialog extends Dialog {
               try {
                 var newInfo = buildInfoFromForm(form);
                 register(newInfo);
-                showListView();
+                pageManager.navigate("list-view");
               } catch (IllegalArgumentException ex) {
                 showError("Erreur", ex.getMessage());
               }
             }));
-    buttonPanel.add(new Button("Annuler", e -> showListView()));
+    buttonPanel.add(new Button("Annuler", e -> pageManager.navigate("list-view")));
 
-    contentPanel.add(buttonPanel, BorderLayout.SOUTH);
-    revalidate();
-    repaint();
+    panel.add(buttonPanel, BorderLayout.SOUTH);
+    return panel;
   }
 
   private Info buildInfoFromForm(AddRecoupementExecutionForm form) {
