@@ -7,11 +7,11 @@ import java.util.Map;
 import java.util.Set;
 import javax.swing.*;
 
-public class PageManager extends JPanel {
+public class MultipleView extends JPanel {
   private final CardLayout cardLayout;
   private final Map<String, Page> pages;
 
-  public PageManager(String defaultPage, Set<Page> pages) {
+  public MultipleView(String defaultPage, Set<Page> pages) {
     this.cardLayout = new CardLayout();
     this.pages = pages.stream().collect(toMap(Page::getName, p -> p));
 
@@ -23,7 +23,7 @@ public class PageManager extends JPanel {
   }
 
   public static void navigateTo(String name) {
-    AppContext.getDefault().app().getPageManager().navigate(name);
+    AppContext.getDefault().app().getPageView().navigate(name);
   }
 
   public void navigate(String name) {

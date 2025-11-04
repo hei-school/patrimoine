@@ -1,15 +1,15 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.component.button;
 
-import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.PageManager;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.MultipleView;
 
 public class NavigateButton extends Button {
   public NavigateButton(String text, String to) {
     super(text);
 
-    addActionListener(e -> PageManager.navigateTo(to));
+    addActionListener(e -> MultipleView.navigateTo(to));
   }
 
-  public NavigateButton(PageManager pageManager, String text, String to) {
+  public NavigateButton(MultipleView pageManager, String text, String to) {
     super(text);
     addActionListener(e -> pageManager.navigate(to));
   }
