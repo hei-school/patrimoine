@@ -18,8 +18,8 @@ public abstract class Page extends JPanel {
     globalState().subscribe("page-name", this::draw);
   }
 
-  public MultipleView pageManager() {
-    return AppContext.getDefault().app().getPageView();
+  public PageManager pageManager() {
+    return AppContext.getDefault().app().getPageManager();
   }
 
   public State globalState() {

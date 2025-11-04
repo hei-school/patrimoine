@@ -6,15 +6,15 @@ import lombok.Getter;
 @Getter
 public abstract class App extends Screen {
   private final AppContext context;
-  private final MultipleView pageView;
+  private final PageManager pageManager;
 
   public App(String contextId, String windowTitle, int width, int height) {
     super(windowTitle, width, height);
 
     context = AppContext.createAsDefault(contextId, this);
-    pageView = new MultipleView(defaultPageName(), pages());
+    pageManager = new PageManager(defaultPageName(), pages());
 
-    add(pageView);
+    add(pageManager);
   }
 
   protected abstract Set<Page> pages();
