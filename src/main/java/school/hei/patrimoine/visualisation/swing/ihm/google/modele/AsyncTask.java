@@ -25,7 +25,7 @@ public class AsyncTask<T> {
   }
 
   public void execute() {
-    Dialog dialog;
+    final Dialog dialog;
 
     if (withDialogLoading) {
       dialog = new Dialog(loadingMessage, dialogDimension.width, dialogDimension.height);
@@ -43,6 +43,10 @@ public class AsyncTask<T> {
           @Override
           protected void done() {
             try {
+              if (withDialogLoading) {
+                dialog.setVisible(false);
+                dialog.dispose();
+              }
               onSuccess.accept(get());
             } catch (Exception e) {
               Throwable cause =
@@ -54,16 +58,16 @@ public class AsyncTask<T> {
                         log.error(error.toString());
                       });
 
+              if (withDialogLoading) {
+                dialog.setVisible(false);
+                dialog.dispose();
+              }
+
               if (cause instanceof Exception exception) {
                 onError.accept(exception);
               } else {
                 onError.accept(new RuntimeException(cause));
               }
-            }
-
-            if (withDialogLoading) {
-              dialog.setVisible(false);
-              dialog.dispose();
             }
           }
         };
