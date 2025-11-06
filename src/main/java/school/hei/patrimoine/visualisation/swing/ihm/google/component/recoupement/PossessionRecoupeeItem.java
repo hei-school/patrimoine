@@ -30,13 +30,15 @@ public class PossessionRecoupeeItem extends JPanel {
   private void addTitle() {
     var titleString =
         String.format(
-            "<html>"
-                + "<div style='margin-bottom:6px;'><b>Nom:</b> %s</div>"
-                + "<div style='margin-bottom:6px;'><b>Type:</b> %s</div>"
-                + "<div style='margin-bottom:6px;'><b>Date:</b> %s</div>"
-                + "<div style='margin-bottom:6px;'><b>Valeur prévue:</b> %s</div>"
-                + "<div style='margin-bottom:6px;'><b>Valeur réalisée:</b> %s</div>"
-                + "</html>",
+            "<html>"  +
+                    "<div style='margin-bottom:6px;'><b>Nom:</b> %s</div>" +
+                    "<div style='margin-bottom:6px;'>" +
+                      "<b>Type:</b> %s, " +
+                      "<b>Date:</b> %s, " +
+                      "<b>Valeur prévue:</b> %s, " +
+                      "<b>Valeur réalisée:</b> %s" +
+                    "</div>" +
+            "</html>",
             possessionRecoupee.possession().nom(),
             possessionRecoupee.possession().getClass().getSimpleName(),
             DateFormatter.format(possessionRecoupee.possession().t()),
