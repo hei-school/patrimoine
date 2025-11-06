@@ -9,7 +9,7 @@ import java.awt.event.MouseEvent;
 import javax.swing.*;
 
 public class Button extends JButton {
-  private int borderRadius = 12;
+  private final int borderRadius = 12;
   private final AnimatedButtonColor colors;
   private final HoverAnimator animator;
 
@@ -28,8 +28,10 @@ public class Button extends JButton {
 
     colors =
         new AnimatedButtonColor(
-            new Color(66, 103, 178), new Color(43, 67, 117),
-            new Color(60, 100, 188), new Color(66, 103, 178));
+            new Color(66, 103, 178),
+            new Color(43, 67, 117),
+            new Color(60, 100, 188),
+            new Color(66, 103, 178));
 
     animator = new HoverAnimator(this::repaint);
 
