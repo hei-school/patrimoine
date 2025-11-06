@@ -5,7 +5,7 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 public final class ViewFactory {
-  public static JComponent makeView(String name, JComponent component) {
+  public static JComponent make(String name, JComponent component) {
     component.setName(name);
     return component;
   }

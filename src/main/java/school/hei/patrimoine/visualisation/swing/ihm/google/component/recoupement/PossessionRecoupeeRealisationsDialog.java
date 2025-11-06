@@ -2,7 +2,7 @@ package school.hei.patrimoine.visualisation.swing.ihm.google.component.recoupeme
 
 import static java.util.stream.Collectors.joining;
 import static school.hei.patrimoine.modele.recouppement.RecoupementStatus.IMPREVU;
-import static school.hei.patrimoine.visualisation.swing.ihm.google.component.app.ViewFactory.makeView;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.component.app.ViewFactory.make;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.MessageDialog.*;
 
 import java.awt.*;
@@ -64,8 +64,8 @@ public class PossessionRecoupeeRealisationsDialog extends Dialog {
   }
 
   private void initPageManager() {
-    var listView = makeView("list-view", buildListView());
-    var addFormView = makeView("add-form-view", buildAddFormView());
+    var listView = make("list-view", buildListView());
+    var addFormView = make("add-form-view", buildAddFormView());
 
     pageManager = new MultiViews("list-view", Set.of(listView, addFormView));
     contentPanel.add(pageManager, BorderLayout.CENTER);
