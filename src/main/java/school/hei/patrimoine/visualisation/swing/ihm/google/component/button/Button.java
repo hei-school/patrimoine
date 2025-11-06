@@ -1,6 +1,5 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.component.button;
 
-
 import static java.awt.Cursor.HAND_CURSOR;
 
 import java.awt.*;
