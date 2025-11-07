@@ -58,12 +58,20 @@ public class CommentCard extends JPanel {
   }
 
   public JLabel header() {
-    var dateStr = DATE_TIME_FORMATTER.format(comment.createdAt());
+    var createdStr = DATE_TIME_FORMATTER.format(comment.createdAt());
+    var lastModified = comment.getLastModifiedDate();
+
+    var modifiedStr = "";
+    if (lastModified != null && !lastModified.equals(comment.createdAt())) {
+      modifiedStr = " (modifié le " + DATE_TIME_FORMATTER.format(lastModified) + ")";
+    }
     var headerHtml =
         String.format(
             "<html><span style='font-size:16pt; font-weight:bold;'>%s</span><br>"
-                + "<span style='font-size:14pt; color:gray;'>%s</span></html>",
-            comment.author() != null ? comment.author().displayName() : "Inconnu", dateStr);
+                + "<span style='font-size:14pt; color:gray;'>%s%s</span></html>",
+            comment.author() != null ? comment.author().displayName() : "Inconnu",
+            createdStr,
+            modifiedStr);
 
     var header = new JLabel(headerHtml);
     header.setBorder(new EmptyBorder(0, 0, 5, 0));
