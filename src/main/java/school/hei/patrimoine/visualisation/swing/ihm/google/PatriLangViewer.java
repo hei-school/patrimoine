@@ -12,7 +12,7 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.pages.*;
 
 public class PatriLangViewer extends App {
   public PatriLangViewer() {
-    super("patrilang-app", "Patrimoine", 1_200, 700);
+    super("patrilang-app", "Patrimoine", 1_400, 900);
   }
 
   @Override

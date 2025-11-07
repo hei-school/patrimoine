@@ -8,9 +8,4 @@ public class NavigateButton extends Button {
 
     addActionListener(e -> PageManager.navigateTo(to));
   }
-
-  public NavigateButton(PageManager pageManager, String text, String to) {
-    super(text);
-    addActionListener(e -> pageManager.navigate(to));
-  }
 }
