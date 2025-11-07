@@ -136,6 +136,6 @@ public class CommentCard extends JPanel {
   }
 
   static Button resolveButton(String fileId, Comment parentComment, Runnable refresh) {
-    return new Button("Résolu", e -> resolveComment(fileId, parentComment, refresh));
+    return new Button("Résoudre", e -> resolveComment(fileId, parentComment, refresh));
   }
 }
