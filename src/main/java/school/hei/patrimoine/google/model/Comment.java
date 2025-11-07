@@ -2,6 +2,7 @@ package school.hei.patrimoine.google.model;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Objects;
 import lombok.Builder;
 
 @Builder(toBuilder = true)
@@ -21,5 +22,17 @@ public record Comment(
                 answer ->
                     answer.content() != null
                         && answer.content().equalsIgnoreCase(APPROVED_KEYWORD));
+  }
+
+  public Instant getLastModifiedDate() {
+    if (answers == null || answers.isEmpty()) {
+      return createdAt;
+    }
+
+    return answers.stream()
+        .map(Comment::createdAt)
+        .filter(Objects::nonNull)
+        .max(Instant::compareTo)
+        .orElse(createdAt);
   }
 }
