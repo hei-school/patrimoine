@@ -8,6 +8,7 @@ import java.time.format.DateTimeFormatter;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import school.hei.patrimoine.google.model.Comment;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.RoundedPanel;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
 
 public class CommentCard extends JPanel {
@@ -18,6 +19,7 @@ public class CommentCard extends JPanel {
   private static final Color DEFAULT_BACKGROUND_COLOR = new Color(222, 221, 220);
   private static final Color APPROVED_BACKGROUND_COLOR = new Color(120, 220, 140);
   private static final Color RESOLVED_BACKGROUND_COLOR = new Color(255, 251, 156);
+  private static final Color RESOLVED_FONT_COLOR = APPROVED_BACKGROUND_COLOR;
   public static final DateTimeFormatter DATE_TIME_FORMATTER =
       DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm").withZone(ZoneId.systemDefault());
 
@@ -57,7 +59,27 @@ public class CommentCard extends JPanel {
     super.paintComponent(g);
   }
 
-  public JLabel header() {
+  public JPanel header() {
+    var headerPanel = new JPanel();
+    headerPanel.setLayout(new BorderLayout());
+    headerPanel.setOpaque(false);
+    headerPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+    var headerLabel = headerLabel();
+    headerPanel.add(headerLabel, BorderLayout.WEST);
+
+    if (comment.resolved()) {
+      var status = new RoundedPanel("Résolu", RESOLVED_FONT_COLOR, Color.BLACK);
+      var statusPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+      statusPanel.setOpaque(false);
+      statusPanel.add(status);
+      headerPanel.add(statusPanel, BorderLayout.EAST);
+    }
+
+    return headerPanel;
+  }
+
+  public JLabel headerLabel() {
     var createdStr = DATE_TIME_FORMATTER.format(comment.createdAt());
     var lastModified = comment.getLastModifiedDate();
 
