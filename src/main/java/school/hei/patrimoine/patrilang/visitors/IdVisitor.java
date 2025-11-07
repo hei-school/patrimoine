@@ -20,6 +20,6 @@ public class IdVisitor implements SimpleVisitor<IdContext, String> {
     }
 
     var variableValue = this.variableVisitor.apply(ctx.variable());
-    return (baseId + variableValue.value()).replaceAll("-", "_");
+    return (baseId).replaceAll("-", "_") + variableValue.value();
   }
 }
