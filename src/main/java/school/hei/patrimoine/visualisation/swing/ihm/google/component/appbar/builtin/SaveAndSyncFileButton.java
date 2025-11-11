@@ -35,7 +35,17 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
                 "Synchroniser avec Drive",
                 e ->
                     syncSelectedFileWithDrive(
-                        state.get("selectedFile"), state.get("selectedFileId")))));
+                        state.get("selectedFile"), state.get("selectedFileId"))),
+            new PopupItem(
+                "Sauvegarder et synchroniser",
+                e -> {
+                  saveSelectedFileLocally(
+                      state.get("viewMode"),
+                      state.get("selectedFile"),
+                      state.get("selectedCasSetFile"),
+                      getNewContent.get());
+                  syncSelectedFileWithDrive(state.get("selectedFile"), state.get("selectedFileId"));
+                })));
   }
 
   private static void saveSelectedFileLocally(
