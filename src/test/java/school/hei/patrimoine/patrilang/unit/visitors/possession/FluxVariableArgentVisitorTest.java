@@ -10,7 +10,6 @@ import static school.hei.patrimoine.patrilang.utils.Comparator.assertFluxArgentE
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-
 import org.junit.jupiter.api.Test;
 import school.hei.patrimoine.modele.possession.Compte;
 import school.hei.patrimoine.modele.possession.FluxArgent;
@@ -68,7 +67,8 @@ class FluxVariableArgentVisitorTest {
     * `fluxArgentSortir + Dates:ajd` Dates:ajd, sortir 500000Ar depuis Trésoreries:comptePersonnel
 """;
     var expected =
-        new FluxArgent("fluxArgentSortir" + AJD.format(formatter), COMPTE_PERSONNEL, AJD, ariary(-500_000));
+        new FluxArgent(
+            "fluxArgentSortir" + AJD.format(formatter), COMPTE_PERSONNEL, AJD, ariary(-500_000));
 
     FluxArgent actual = visitor.visit(input, PatriLangParser::fluxArgentSortir);
 
@@ -84,7 +84,12 @@ class FluxVariableArgentVisitorTest {
 """;
     var expected =
         new FluxArgent(
-            "fluxArgentEntrer" + AJD.format(formatter), COMPTE_PERSONNEL, AJD, LocalDate.MAX, 2, ariary(500_000));
+            "fluxArgentEntrer" + AJD.format(formatter),
+            COMPTE_PERSONNEL,
+            AJD,
+            LocalDate.MAX,
+            2,
+            ariary(500_000));
 
     FluxArgent actual = visitor.visit(input, PatriLangParser::fluxArgentEntrer);
 
@@ -100,7 +105,12 @@ class FluxVariableArgentVisitorTest {
 """;
     var expected =
         new FluxArgent(
-            "fluxArgentSortir" + AJD.format(formatter), COMPTE_PERSONNEL, AJD, LocalDate.MAX, 2, ariary(-500_000));
+            "fluxArgentSortir" + AJD.format(formatter),
+            COMPTE_PERSONNEL,
+            AJD,
+            LocalDate.MAX,
+            2,
+            ariary(-500_000));
 
     FluxArgent actual = visitor.visit(input, PatriLangParser::fluxArgentSortir);
 

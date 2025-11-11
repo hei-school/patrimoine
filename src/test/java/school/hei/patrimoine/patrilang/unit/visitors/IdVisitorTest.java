@@ -6,7 +6,6 @@ import static school.hei.patrimoine.patrilang.modele.variable.VariableType.DATE;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-
 import org.junit.jupiter.api.Test;
 import school.hei.patrimoine.patrilang.antlr.PatriLangParser;
 import school.hei.patrimoine.patrilang.utils.UnitTestVisitor;

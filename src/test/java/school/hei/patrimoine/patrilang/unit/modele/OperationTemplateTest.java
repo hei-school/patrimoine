@@ -63,7 +63,13 @@ class OperationTemplateTest {
 
     var operations = subject.apply(parentScope, List.of(dateFin, comptePersonnel));
     var expected =
-        new FluxArgent("abonnementWifi" + ajd.format(formatter), comptePersonnel, ajd, dateFin, 15, ariary(-40_000));
+        new FluxArgent(
+            "abonnementWifi" + ajd.format(formatter),
+            comptePersonnel,
+            ajd,
+            dateFin,
+            15,
+            ariary(-40_000));
     for (var operation : operations) {
       var actual = (FluxArgent) operation;
       assertFluxArgentEquals(expected, actual);
