@@ -200,4 +200,38 @@ public class CommentSideBar extends JPanel {
         .build()
         .execute();
   }
+
+  static void removeComment(String fileId, Comment toRemove, Runnable refresh) {
+    int confirm =
+        JOptionPane.showConfirmDialog(
+            AppContext.getDefault().app(),
+            "Voulez-vous vraiment supprimer ce commentaire ?",
+            "Suppression de commentaire",
+            JOptionPane.YES_NO_OPTION);
+
+    if (confirm != JOptionPane.YES_OPTION) {
+      return;
+    }
+
+    CommentApi commentApi = AppContext.getDefault().getData("comment-api");
+    AsyncTask.<Void>builder()
+        .task(
+            () -> {
+              commentApi.delete(fileId, toRemove);
+              return null;
+            })
+        .loadingMessage("Suppression en cours...")
+        .onSuccess(
+            result -> {
+              showInfo("Succès", "Le commentaire a bien été supprimé.");
+              refresh.run();
+            })
+        .onError(
+            error ->
+                showError(
+                    "Erreur",
+                    "Le commentaire n'a pas pu être supprimé correctement. Veuillez réessayer."))
+        .build()
+        .execute();
+  }
 }
