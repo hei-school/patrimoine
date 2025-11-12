@@ -61,8 +61,9 @@ public class CommentSideBar extends JPanel {
 
     var addCommentBtn =
         new Button(
-            "Ajouter un commentaire",
+            "Ajouter",
             e -> new CommentAddDialog(state, this::refreshCurrentFileCommentsCache));
+    addCommentBtn.setToolTipText("Ajouter un commentaire");
     rightPanel.add(addCommentBtn);
 
     this.datePicker = new DatePicker(LocalDate.now().minusMonths(3));
