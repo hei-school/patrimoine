@@ -39,13 +39,62 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
             new PopupItem(
                 "Sauvegarder et synchroniser",
                 e -> {
-                  saveSelectedFileLocally(
+                  saveAndSyncSelectedFile(
                       state.get("viewMode"),
                       state.get("selectedFile"),
                       state.get("selectedCasSetFile"),
-                      getNewContent.get());
-                  syncSelectedFileWithDrive(state.get("selectedFile"), state.get("selectedFileId"));
+                      getNewContent.get(),
+                      state.get("selectedFileId"));
                 })));
+  }
+
+  private static void saveAndSyncSelectedFile(
+      AppBar.ViewMode currentMode,
+      File selectedFile,
+      File selectedCasSetFile,
+      String content,
+      String selectedFileId) {
+    if (!AppBar.ViewMode.EDIT.equals(currentMode)) {
+      showError("Erreur", "Vous devez être en mode édition pour sauvegarder.");
+      return;
+    }
+
+    if (selectedFile == null) {
+      showError("Erreur", "Veuillez sélectionner un fichier avant de sauvegarder.");
+      return;
+    }
+
+    AsyncTask.<Void>builder()
+        .loadingMessage("Validation, sauvegarde et synchronisation du fichier...")
+        .task(
+            () -> {
+              new PatriLangFileWritter()
+                  .write(
+                      FileWritterInput.builder()
+                          .casSet(selectedCasSetFile)
+                          .file(selectedFile)
+                          .content(content)
+                          .build());
+              driveApi().update(selectedFileId, MIME_TYPE, selectedFile);
+              return null;
+            })
+        .onSuccess(
+            result -> {
+              AppContext.getDefault().globalState().update("isAnyFileModified", true);
+              showInfo(
+                  "Succès",
+                  "Le fichier a été sauvegardé localement et synchronisé avec succès sur"
+                      + " Google Drive.");
+            })
+        .onError(
+            error -> {
+              if (showExceptionMessageIfRecognizedException(error)) {
+                return;
+              }
+              showError("Erreur", "Une erreur est survenue lors de l'enregistrement");
+            })
+        .build()
+        .execute();
   }
 
   private static void saveSelectedFileLocally(
