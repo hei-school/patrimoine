@@ -1,5 +1,7 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.component.comment;
 
+import static school.hei.patrimoine.visualisation.swing.ihm.google.component.comment.CommentCard.*;
+
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -7,8 +9,6 @@ import javax.swing.*;
 import school.hei.patrimoine.google.model.Comment;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.Dialog;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
-
-import static school.hei.patrimoine.visualisation.swing.ihm.google.component.comment.CommentCard.*;
 
 public class CommentAnswersDialog extends Dialog {
   private final String fileId;
@@ -51,7 +51,7 @@ public class CommentAnswersDialog extends Dialog {
     }
     buttonPanel.add(new Button("Fermer", e -> dispose()));
 
-    var removeBtn = removeButton(fileId,  parentComment, refresh);
+    var removeBtn = removeButton(fileId, parentComment, refresh);
     removeBtn.setMargin(new Insets(0, 50, 0, 50));
     buttonPanel.add(Box.createRigidArea(new Dimension(10, 0)));
     buttonPanel.add(removeBtn);

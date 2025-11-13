@@ -5,10 +5,12 @@ import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.Messag
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.MessageDialog.showInfo;
 
 import java.awt.*;
+import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.List;
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import school.hei.patrimoine.google.api.CommentApi;
@@ -17,8 +19,8 @@ import school.hei.patrimoine.google.model.Comment;
 import school.hei.patrimoine.google.model.PaginatedResult;
 import school.hei.patrimoine.google.model.Pagination;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.DatePicker;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.IconButton;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.AppContext;
-import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.AsyncTask;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
 
@@ -59,9 +61,9 @@ public class CommentSideBar extends JPanel {
 
     var rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
 
-    var addCommentBtn =
-        new Button(
-            "Ajouter", e -> new CommentAddDialog(state, this::refreshCurrentFileCommentsCache));
+    var addCommentBtn = new IconButton(loadAddIcon(), 24);
+    addCommentBtn.addActionListener(
+        e -> new CommentAddDialog(state, this::refreshCurrentFileCommentsCache));
     addCommentBtn.setToolTipText("Ajouter un commentaire");
     rightPanel.add(addCommentBtn);
 
@@ -233,5 +235,15 @@ public class CommentSideBar extends JPanel {
                     "Le commentaire n'a pas pu être supprimé correctement. Veuillez réessayer."))
         .build()
         .execute();
+  }
+
+  private static Image loadAddIcon() {
+    try {
+      var addIcon =
+          ImageIO.read(Objects.requireNonNull(CommentCard.class.getResource("/icons/plus.png")));
+      return addIcon.getScaledInstance(24, 24, Image.SCALE_SMOOTH);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
   }
 }
