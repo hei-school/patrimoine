@@ -1,13 +1,18 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.component.comment;
 
+import static school.hei.patrimoine.visualisation.swing.ihm.google.component.comment.CommentSideBar.removeComment;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.component.comment.CommentSideBar.resolveComment;
 
 import java.awt.*;
+import java.io.IOException;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.Objects;
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import school.hei.patrimoine.google.model.Comment;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.IconButton;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.RoundedPanel;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
 
@@ -24,7 +29,11 @@ public class CommentCard extends JPanel {
       DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm").withZone(ZoneId.systemDefault());
 
   public CommentCard(
-      Component parent, String fileId, Comment comment, boolean withActions, Runnable refresh) {
+      Component parent,
+      String fileId,
+      Comment comment,
+      boolean withActions,
+      Runnable refresh) {
     this.fileId = fileId;
     this.comment = comment;
     this.refresh = refresh;
@@ -60,22 +69,24 @@ public class CommentCard extends JPanel {
   }
 
   public JPanel header() {
-    var headerPanel = new JPanel();
-    headerPanel.setLayout(new BorderLayout());
+    var headerPanel = new JPanel(new BorderLayout());
     headerPanel.setOpaque(false);
     headerPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
     var headerLabel = headerLabel();
     headerPanel.add(headerLabel, BorderLayout.WEST);
 
+    var rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 5, 0));
+    rightPanel.setOpaque(false);
+
     if (comment.resolved()) {
       var status = new RoundedPanel("Résolu", RESOLVED_FONT_COLOR, Color.BLACK);
-      var statusPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-      statusPanel.setOpaque(false);
-      statusPanel.add(status);
-      headerPanel.add(statusPanel, BorderLayout.EAST);
+      rightPanel.add(status);
     }
 
+    rightPanel.add(removeButton(fileId, comment, refresh));
+
+    headerPanel.add(rightPanel, BorderLayout.EAST);
     return headerPanel;
   }
 
@@ -159,5 +170,27 @@ public class CommentCard extends JPanel {
 
   static Button resolveButton(String fileId, Comment parentComment, Runnable refresh) {
     return new Button("Résoudre", e -> resolveComment(fileId, parentComment, refresh));
+  }
+
+  static IconButton removeButton(String fileId, Comment parentComment, Runnable refresh) {
+    var button = new IconButton(loadRemoveIcon(), 18);
+    button.setToolTipText("Supprimer le commentaire");
+    button.setAlignmentY(Component.CENTER_ALIGNMENT);
+    button.addActionListener(
+        e -> {
+          removeComment(fileId, parentComment, refresh);
+        });
+
+    return button;
+  }
+
+  private static Image loadRemoveIcon() {
+    try {
+      var removeIcon =
+          ImageIO.read(Objects.requireNonNull(CommentCard.class.getResource("/icons/remove.png")));
+      return removeIcon.getScaledInstance(18, 18, Image.SCALE_SMOOTH);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
   }
 }
