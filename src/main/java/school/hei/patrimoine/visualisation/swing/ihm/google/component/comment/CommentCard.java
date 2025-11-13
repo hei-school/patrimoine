@@ -20,6 +20,7 @@ public class CommentCard extends JPanel {
   private final Component parent;
   private final String fileId;
   private final Comment comment;
+  private final boolean withRemoveBtn;
   private final Runnable refresh;
   private static final Color DEFAULT_BACKGROUND_COLOR = new Color(222, 221, 220);
   private static final Color APPROVED_BACKGROUND_COLOR = new Color(120, 220, 140);
@@ -32,10 +33,12 @@ public class CommentCard extends JPanel {
       Component parent,
       String fileId,
       Comment comment,
+      boolean withRemoveBtn,
       boolean withActions,
       Runnable refresh) {
     this.fileId = fileId;
     this.comment = comment;
+    this.withRemoveBtn = withRemoveBtn;
     this.refresh = refresh;
     this.parent = parent;
 
@@ -84,7 +87,9 @@ public class CommentCard extends JPanel {
       rightPanel.add(status);
     }
 
-    rightPanel.add(removeButton(fileId, comment, refresh));
+    if (withRemoveBtn) {
+      rightPanel.add(removeButton(fileId, comment, refresh));
+    }
 
     headerPanel.add(rightPanel, BorderLayout.EAST);
     return headerPanel;

@@ -58,6 +58,6 @@ public class CommentAnswersDialog extends Dialog {
     var comments = new ArrayList<>(List.of(parentComment));
     comments.addAll(parentComment.answers());
 
-    commentListPanel.update(fileId, comments);
+    commentListPanel.update(fileId, comments, false);
   }
 }
