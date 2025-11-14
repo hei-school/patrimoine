@@ -12,9 +12,9 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import school.hei.patrimoine.google.model.Comment;
-import school.hei.patrimoine.visualisation.swing.ihm.google.component.IconButton;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.RoundedPanel;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.IconButton;
 
 public class CommentCard extends JPanel {
   private final Component parent;
