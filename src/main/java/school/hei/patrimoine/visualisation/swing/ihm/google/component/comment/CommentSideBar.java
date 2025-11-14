@@ -20,8 +20,8 @@ import school.hei.patrimoine.google.model.Comment;
 import school.hei.patrimoine.google.model.PaginatedResult;
 import school.hei.patrimoine.google.model.Pagination;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.DatePicker;
-import school.hei.patrimoine.visualisation.swing.ihm.google.component.IconButton;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.AppContext;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.AsyncTask;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
 
@@ -62,11 +62,7 @@ public class CommentSideBar extends JPanel {
 
     var rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
 
-    var addCommentBtn = new IconButton(loadAddIcon(), 24);
-    addCommentBtn.addActionListener(
-        e -> new CommentAddDialog(state, this::refreshCurrentFileCommentsCache));
-    addCommentBtn.setToolTipText("Ajouter un commentaire");
-    rightPanel.add(addCommentBtn);
+    rightPanel.add(addCommentButton());
 
     this.datePicker = new DatePicker(LocalDate.now().minusMonths(3));
     this.datePicker.setPreferredSize(new Dimension(200, 35));
@@ -75,6 +71,23 @@ public class CommentSideBar extends JPanel {
 
     topPanel.add(rightPanel, BorderLayout.EAST);
     add(topPanel, BorderLayout.NORTH);
+  }
+
+  private Button addCommentButton() {
+    String buttonLabel =
+        "<html><table>"
+            + "<tr>"
+            + "<td style='padding:0; margin:0;'><span style='font-size:25pt;'>+</span></td>"
+            + "<td style='padding:0; margin:0; padding-left:5'>Ajouter</td>"
+            + "</tr>"
+            + "</table></html>";
+    var button = new Button(buttonLabel);
+    button.setPreferredSize(new Dimension(110, 35));
+    button.addActionListener(
+        e -> new CommentAddDialog(state, this::refreshCurrentFileCommentsCache));
+    button.setToolTipText("Ajouter un commentaire");
+
+    return button;
   }
 
   private void addCommentList() {
@@ -254,7 +267,7 @@ public class CommentSideBar extends JPanel {
     try {
       var addIcon =
           ImageIO.read(Objects.requireNonNull(CommentCard.class.getResource("/icons/plus.png")));
-      return addIcon.getScaledInstance(24, 24, Image.SCALE_SMOOTH);
+      return addIcon.getScaledInstance(15, 15, Image.SCALE_SMOOTH);
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
