@@ -125,4 +125,12 @@ public class CommentApi {
       throw new GoogleIntegrationException("Failed to resolve comment " + comment.id(), e);
     }
   }
+
+  public void delete(String fileId, Comment comment) throws GoogleIntegrationException {
+    try {
+      driveApi.driveService().comments().delete(fileId, comment.id()).execute();
+    } catch (IOException e) {
+      throw new GoogleIntegrationException("Failed to delete comment " + comment.id(), e);
+    }
+  }
 }

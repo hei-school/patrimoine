@@ -1,7 +1,6 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.component.comment;
 
-import static school.hei.patrimoine.visualisation.swing.ihm.google.component.comment.CommentCard.replyButton;
-import static school.hei.patrimoine.visualisation.swing.ihm.google.component.comment.CommentCard.resolveButton;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.component.comment.CommentCard.*;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -51,6 +50,13 @@ public class CommentAnswersDialog extends Dialog {
       buttonPanel.add(resolveButton(fileId, parentComment, refresh));
     }
     buttonPanel.add(new Button("Fermer", e -> dispose()));
+
+    var removeBtn = removeButton(fileId, parentComment, refresh);
+    removeBtn.setMargin(new Insets(0, 50, 0, 50));
+    buttonPanel.add(Box.createRigidArea(new Dimension(10, 0)));
+    buttonPanel.add(removeBtn);
+    buttonPanel.add(Box.createRigidArea(new Dimension(10, 0)));
+
     add(buttonPanel, BorderLayout.SOUTH);
   }
 
@@ -58,6 +64,6 @@ public class CommentAnswersDialog extends Dialog {
     var comments = new ArrayList<>(List.of(parentComment));
     comments.addAll(parentComment.answers());
 
-    commentListPanel.update(fileId, comments);
+    commentListPanel.update(fileId, comments, false);
   }
 }

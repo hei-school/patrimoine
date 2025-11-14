@@ -26,10 +26,14 @@ public class CommentListPanel extends JPanel {
   }
 
   public void update(String fileId, List<Comment> comments) {
+    update(fileId, comments, true);
+  }
+
+  public void update(String fileId, List<Comment> comments, boolean withRemoveBtn) {
     removeAll();
 
     for (var comment : comments) {
-      add(new CommentCard(parent, fileId, comment, withActions, refresh));
+      add(new CommentCard(parent, fileId, comment, withActions, withRemoveBtn, refresh));
       add(Box.createVerticalStrut(10));
     }
 
