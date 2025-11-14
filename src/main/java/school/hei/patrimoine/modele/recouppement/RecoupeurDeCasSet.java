@@ -5,11 +5,13 @@ import static school.hei.patrimoine.modele.recouppement.RecoupeurDePossessions.w
 
 import java.util.HashSet;
 import java.util.Set;
+import lombok.extern.slf4j.Slf4j;
 import school.hei.patrimoine.cas.Cas;
 import school.hei.patrimoine.cas.CasSet;
 import school.hei.patrimoine.modele.Devise;
 import school.hei.patrimoine.modele.possession.Possession;
 
+@Slf4j
 public record RecoupeurDeCasSet(CasSet planned, CasSet done) {
   public CasSet getRecouped() {
     return new CasSet(
@@ -30,14 +32,18 @@ public record RecoupeurDeCasSet(CasSet planned, CasSet done) {
             .findFirst()
             .orElseThrow();
 
+    var possessions =
+        new HashSet<>(withoutCompteCorrections(doneCas.patrimoine().getPossessions()));
+
     var corrections =
         RecoupeurDePossessions.of(
                 doneCas.getFinSimulation(), plannedCas.patrimoine(), doneCas.patrimoine())
             .getCorrections();
 
-    Set<Possession> possessions = new HashSet<>(corrections);
-    possessions.addAll(withoutCompteCorrections(doneCas.patrimoine().getPossessions()));
-
+    log.info(
+        "Recoupement: Patrimoine.nom={}, Corrections.size={}",
+        plannedCas.patrimoine().nom(),
+        corrections.size());
     return new Cas(
         doneCas.getAjd(), doneCas.getFinSimulation(), doneCas.patrimoine().getPossesseurs()) {
       @Override

@@ -21,11 +21,10 @@ public class FluxArgentRecoupeurDePossession extends RecoupeurDePossessionBase<F
     var corrections =
         Set.of(
             new Correction(
-                new FluxArgent(
-                    nommeAsImprevu(imprevu, imprevu.t(), correctionValeur),
-                    imprevu.getCompte(),
-                    getDate(imprevu),
-                    getCorrectionValeur(null, Set.of(imprevu)))));
+                imprevu.getCompte(),
+                nommeAsImprevu(imprevu, imprevu.t(), correctionValeur),
+                getDate(imprevu),
+                getCorrectionValeur(null, Set.of(imprevu))));
 
     return PossessionRecoupee.builder()
         .status(IMPREVU)
@@ -41,11 +40,10 @@ public class FluxArgentRecoupeurDePossession extends RecoupeurDePossessionBase<F
     var corrections =
         Set.of(
             new Correction(
-                new FluxArgent(
-                    nommerAsNonExecute(nonExecute, nonExecute.t(), correctionValeur),
-                    getNonExecuteCompte(nonExecute.getCompte().nom(), possessions),
-                    getDate(nonExecute),
-                    correctionValeur)));
+                getNonExecuteCompte(nonExecute.getCompte().nom(), possessions),
+                nommerAsNonExecute(nonExecute, nonExecute.t(), correctionValeur),
+                getDate(nonExecute),
+                correctionValeur));
 
     return PossessionRecoupee.builder()
         .status(NON_EXECUTE)
@@ -104,7 +102,7 @@ public class FluxArgentRecoupeurDePossession extends RecoupeurDePossessionBase<F
       nom = nommerAsValeurDifferentes(prevu, t, correctionValeur);
     }
 
-    return Optional.of(new Correction(new FluxArgent(nom, compte, t, correctionValeur)));
+    return Optional.of(new Correction(compte, nom, t, correctionValeur));
   }
 
   @Override
