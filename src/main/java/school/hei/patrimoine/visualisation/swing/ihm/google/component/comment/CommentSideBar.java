@@ -4,6 +4,7 @@ import static school.hei.patrimoine.google.api.CommentApi.COMMENTS_CACHE_KEY;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.MessageDialog.showError;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.MessageDialog.showInfo;
 
+import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import java.awt.*;
 import java.io.IOException;
 import java.time.Instant;
@@ -229,10 +230,22 @@ public class CommentSideBar extends JPanel {
               refresh.run();
             })
         .onError(
-            error ->
-                showError(
-                    "Erreur",
-                    "Le commentaire n'a pas pu être supprimé correctement. Veuillez réessayer."))
+            error -> {
+              String userMessage;
+
+              Throwable cause = error.getCause();
+              if (cause instanceof GoogleJsonResponseException gje
+                  && gje.getStatusCode() == 403
+                  && gje.getDetails() != null
+                  && gje.getDetails().getErrors().stream()
+                      .anyMatch(err -> "insufficientFilePermissions".equals(err.getReason()))) {
+                userMessage = "Vous ne pouvez supprimer que vos propres commentaires.";
+              } else {
+                userMessage =
+                    "Le commentaire n'a pas pu être supprimé correctement. Veuillez réessayer.";
+              }
+              showError("Erreur", userMessage);
+            })
         .build()
         .execute();
   }
