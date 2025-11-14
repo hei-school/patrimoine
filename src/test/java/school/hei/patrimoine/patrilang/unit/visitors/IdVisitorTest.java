@@ -5,6 +5,7 @@ import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.IdContext;
 import static school.hei.patrimoine.patrilang.modele.variable.VariableType.DATE;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import org.junit.jupiter.api.Test;
 import school.hei.patrimoine.patrilang.antlr.PatriLangParser;
 import school.hei.patrimoine.patrilang.utils.UnitTestVisitor;
@@ -34,9 +35,10 @@ class IdVisitorTest {
 
   @Test
   void parse_id_with_variable() {
+    var formatter = DateTimeFormatter.ofPattern("yyyy_MM_dd");
     var ajd = LocalDate.of(2025, 6, 23);
     var input = "`id_value + Dates:ajd`";
-    var expected = "id_value" + ajd;
+    var expected = "id_value" + ajd.format(formatter);
 
     variableVisitor.addToScope("ajd", DATE, ajd);
     var actual = visitor.visit(input, PatriLangParser::id);

@@ -75,7 +75,8 @@ public class OperationVisitor
     }
 
     if (nonNull(ctx.correction())) {
-      return Set.of(this.correctionVisitor.apply(ctx.correction()));
+      this.correctionVisitor.apply(ctx.correction());
+      return Set.of();
     }
 
     if (nonNull(ctx.operationTemplateCall())) {

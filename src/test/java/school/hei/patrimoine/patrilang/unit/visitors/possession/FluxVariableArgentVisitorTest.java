@@ -9,6 +9,7 @@ import static school.hei.patrimoine.patrilang.modele.variable.VariableType.TRESO
 import static school.hei.patrimoine.patrilang.utils.Comparator.assertFluxArgentEquals;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import org.junit.jupiter.api.Test;
 import school.hei.patrimoine.modele.possession.Compte;
 import school.hei.patrimoine.modele.possession.FluxArgent;
@@ -60,12 +61,14 @@ class FluxVariableArgentVisitorTest {
 
   @Test
   void parse_sortir_flux_argent_without_date_fin() {
+    var formatter = DateTimeFormatter.ofPattern("yyyy_MM_dd");
     var input =
         """
     * `fluxArgentSortir + Dates:ajd` Dates:ajd, sortir 500000Ar depuis Trésoreries:comptePersonnel
 """;
     var expected =
-        new FluxArgent("fluxArgentSortir" + AJD, COMPTE_PERSONNEL, AJD, ariary(-500_000));
+        new FluxArgent(
+            "fluxArgentSortir" + AJD.format(formatter), COMPTE_PERSONNEL, AJD, ariary(-500_000));
 
     FluxArgent actual = visitor.visit(input, PatriLangParser::fluxArgentSortir);
 
@@ -74,13 +77,19 @@ class FluxVariableArgentVisitorTest {
 
   @Test
   void parse_entrer_flux_argent_with_date_fin() {
+    var formatter = DateTimeFormatter.ofPattern("yyyy_MM_dd");
     var input =
         """
     * `fluxArgentEntrer + Dates:ajd` Dates:ajd, entrer 500000Ar vers Trésoreries:comptePersonnel, jusqu'à DATE_MAX tous les 2 du mois
 """;
     var expected =
         new FluxArgent(
-            "fluxArgentEntrer" + AJD, COMPTE_PERSONNEL, AJD, LocalDate.MAX, 2, ariary(500_000));
+            "fluxArgentEntrer" + AJD.format(formatter),
+            COMPTE_PERSONNEL,
+            AJD,
+            LocalDate.MAX,
+            2,
+            ariary(500_000));
 
     FluxArgent actual = visitor.visit(input, PatriLangParser::fluxArgentEntrer);
 
@@ -89,13 +98,19 @@ class FluxVariableArgentVisitorTest {
 
   @Test
   void parse_sortir_flux_argent_with_date_fin() {
+    var formatter = DateTimeFormatter.ofPattern("yyyy_MM_dd");
     var input =
         """
     * `fluxArgentSortir + Dates:ajd` Dates:ajd, sortir 500000Ar depuis Trésoreries:comptePersonnel, jusqu'à DATE_MAX tous les 2 du mois
 """;
     var expected =
         new FluxArgent(
-            "fluxArgentSortir" + AJD, COMPTE_PERSONNEL, AJD, LocalDate.MAX, 2, ariary(-500_000));
+            "fluxArgentSortir" + AJD.format(formatter),
+            COMPTE_PERSONNEL,
+            AJD,
+            LocalDate.MAX,
+            2,
+            ariary(-500_000));
 
     FluxArgent actual = visitor.visit(input, PatriLangParser::fluxArgentSortir);
 

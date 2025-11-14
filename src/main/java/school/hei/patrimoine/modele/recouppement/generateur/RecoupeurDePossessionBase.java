@@ -1,9 +1,12 @@
 package school.hei.patrimoine.modele.recouppement.generateur;
 
+import static java.lang.Double.parseDouble;
 import static java.util.stream.Collectors.toSet;
 import static school.hei.patrimoine.modele.Argent.ariary;
 import static school.hei.patrimoine.modele.recouppement.RecoupementStatus.EXECUTE_SANS_CORRECTION;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.time.LocalDate;
 import java.util.*;
 import school.hei.patrimoine.modele.Argent;
@@ -13,24 +16,28 @@ import school.hei.patrimoine.modele.recouppement.PossessionRecoupee.Info;
 
 public class RecoupeurDePossessionBase<T extends Possession> implements RecoupeurDePossession<T> {
   protected String nommeAsImprevu(T possession, LocalDate t, Argent valeur) {
-    return String.format("Imprevu[date=%s, nom=%s, valeur=%s]", t, possession.nom(), valeur);
+    return String.format(
+        "Imprevu[date=%s, nom=%s, valeur=%s]", t, possession.nom(), format(valeur));
   }
 
   protected String nommerAsNonExecute(T possession, LocalDate t, Argent valeur) {
-    return String.format("NonExecuté[date=%s, nom=%s, valeur=%s]", t, possession.nom(), valeur);
+    return String.format(
+        "NonExecuté[date=%s, nom=%s, valeur=%s]", t, possession.nom(), format(valeur));
   }
 
   protected String nommerAsEnRetard(T possession, LocalDate t, Argent valeur) {
-    return String.format("EnRetard[date=%s, nom=%s, valeur=%s]", t, possession.nom(), valeur);
+    return String.format(
+        "EnRetard[date=%s, nom=%s, valeur=%s]", t, possession.nom(), format(valeur));
   }
 
   protected String nommerAsEnAvance(T possession, LocalDate t, Argent valeur) {
-    return String.format("EnAvance[date=%s, nom=%s, valeur=%s]", t, possession.nom(), valeur);
+    return String.format(
+        "EnAvance[date=%s, nom=%s, valeur=%s]", t, possession.nom(), format(valeur));
   }
 
   protected String nommerAsValeurDifferentes(T possession, LocalDate t, Argent valeur) {
     return String.format(
-        "ValeurDifferentes[date=%s, nom=%s, valeur=%s]", t, possession.nom(), valeur);
+        "ValeurDifferentes[date=%s, nom=%s, valeur=%s]", t, possession.nom(), format(valeur));
   }
 
   protected LocalDate getDate(T possession) {
@@ -109,5 +116,16 @@ public class RecoupeurDePossessionBase<T extends Possession> implements Recoupeu
         .status(EXECUTE_SANS_CORRECTION)
         .corrections(Set.of())
         .build();
+  }
+
+  private static String format(Argent argent) {
+    var symbols = new DecimalFormatSymbols(Locale.FRANCE);
+    symbols.setGroupingSeparator('_');
+    symbols.setDecimalSeparator('.');
+
+    var df = new DecimalFormat("#,##0.##", symbols);
+    df.setGroupingUsed(true);
+
+    return String.format("%s%s", df.format(parseDouble(argent.ppMontant())), argent.devise());
   }
 }

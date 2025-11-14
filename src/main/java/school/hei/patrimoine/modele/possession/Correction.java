@@ -3,6 +3,7 @@ package school.hei.patrimoine.modele.possession;
 import static school.hei.patrimoine.modele.possession.TypeAgregat.CORRECTION;
 
 import java.time.LocalDate;
+import school.hei.patrimoine.modele.Argent;
 
 public final class Correction extends Possession {
 
@@ -25,6 +26,22 @@ public final class Correction extends Possession {
         fluxArgent.getFin(),
         fluxArgent.getDateOperation(),
         fluxArgent.getFluxMensuel());
+  }
+
+  public Correction(Possession possession, String raison, LocalDate t, Argent valeur) {
+    super(
+        String.format("Correction[p=%s,%s]", possession.nom, raison),
+        t,
+        new Argent(0, possession.getCompteCorrection().devise()));
+
+    this.possession = possession;
+    this.compteCorrection = possession.getCompteCorrection();
+
+    new FluxArgent(
+        String.format("Correction.Flux[compteCorrection=%s,%s]", compteCorrection.nom, raison),
+        compteCorrection.getCompte(),
+        t,
+        valeur);
   }
 
   private Correction(Possession possession, CompteCorrection compteCorrection) {

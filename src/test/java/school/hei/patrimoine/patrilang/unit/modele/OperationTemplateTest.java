@@ -10,6 +10,7 @@ import static school.hei.patrimoine.patrilang.utils.Comparator.assertFluxArgentE
 import static school.hei.patrimoine.patrilang.utils.UnitTestVisitor.createParser;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import school.hei.patrimoine.modele.Personne;
@@ -39,6 +40,8 @@ class OperationTemplateTest {
 
   @Test
   void apply_correct_arguments() {
+    var formatter = DateTimeFormatter.ofPattern("yyyy_MM_dd");
+
     var ajd = LocalDate.of(2025, 2, 5);
     var dateFin = LocalDate.of(2025, 5, 24);
     var comptePersonnel = new Compte("comptePersonnel", ajd, ariary(200_000));
@@ -60,7 +63,13 @@ class OperationTemplateTest {
 
     var operations = subject.apply(parentScope, List.of(dateFin, comptePersonnel));
     var expected =
-        new FluxArgent("abonnementWifi" + ajd, comptePersonnel, ajd, dateFin, 15, ariary(-40_000));
+        new FluxArgent(
+            "abonnementWifi" + ajd.format(formatter),
+            comptePersonnel,
+            ajd,
+            dateFin,
+            15,
+            ariary(-40_000));
     for (var operation : operations) {
       var actual = (FluxArgent) operation;
       assertFluxArgentEquals(expected, actual);
