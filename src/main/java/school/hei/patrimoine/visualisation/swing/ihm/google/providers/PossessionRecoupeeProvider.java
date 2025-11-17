@@ -5,13 +5,19 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.Builder;
+import lombok.RequiredArgsConstructor;
 import school.hei.patrimoine.cas.Cas;
+import school.hei.patrimoine.modele.possession.Compte;
+import school.hei.patrimoine.modele.recouppement.CompteGetterFactory;
 import school.hei.patrimoine.modele.recouppement.PossessionRecoupee;
 import school.hei.patrimoine.modele.recouppement.RecoupementStatus;
 import school.hei.patrimoine.modele.recouppement.RecoupeurDePossessions;
 import school.hei.patrimoine.visualisation.swing.ihm.google.providers.model.Pagination;
 
+@RequiredArgsConstructor
 public class PossessionRecoupeeProvider {
+  private final Set<Compte> casSetComptes;
+
   @Builder
   public record Meta(Cas planned, Cas done) {}
 
@@ -25,7 +31,8 @@ public class PossessionRecoupeeProvider {
         RecoupeurDePossessions.of(
             meta.planned().getFinSimulation(),
             meta.planned().patrimoine(),
-            meta.done().patrimoine());
+            meta.done().patrimoine(),
+            CompteGetterFactory.make(meta.done(), casSetComptes));
 
     var all = recoupeur.getPossessionsRecoupees();
     var filterName = filter.filterName() == null ? "" : filter.filterName().trim().toLowerCase();

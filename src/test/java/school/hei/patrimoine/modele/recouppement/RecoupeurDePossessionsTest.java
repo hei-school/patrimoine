@@ -247,8 +247,8 @@ class RecoupeurDePossessionsTest {
     var fluxPrevu = new FluxArgent("salaire", compte, datePrevu, ariary(100));
     var fluxRealise = new FluxArgent("salaire", compte, dateRealise, ariary(100));
 
-    var prevu = Patrimoine.of("zety", MGA, datePrevu, Map.of(), Set.of(fluxPrevu));
-    var realise = Patrimoine.of("zety", MGA, datePrevu, Map.of(), Set.of(fluxRealise));
+    var prevu = Patrimoine.of("zety", MGA, datePrevu, Map.of(), Set.of(compte, fluxPrevu));
+    var realise = Patrimoine.of("zety", MGA, datePrevu, Map.of(), Set.of(compte, fluxRealise));
 
     var subject = RecoupeurDePossessions.of(LocalDate.MAX, prevu, realise);
 

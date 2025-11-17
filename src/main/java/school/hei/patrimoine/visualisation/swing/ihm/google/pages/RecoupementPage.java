@@ -10,6 +10,7 @@ import java.util.*;
 import java.util.List;
 import javax.swing.*;
 import org.jetbrains.annotations.NotNull;
+import school.hei.patrimoine.modele.possession.Compte;
 import school.hei.patrimoine.modele.recouppement.PossessionRecoupee;
 import school.hei.patrimoine.modele.recouppement.RecoupementStatus;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.Footer;
@@ -153,6 +154,7 @@ public class RecoupementPage extends LazyPage {
   private List<PossessionRecoupee> getFilteredPossessionRecoupees() {
     var plannedCas = casSetSetter.getCas(state.get("selectedFile"), casSetSetter.plannedCasSet());
     var doneCas = casSetSetter.getCas(state.get("selectedFile"), casSetSetter.doneCasSet());
+    Set<Compte> casSetComptes = globalState().get("casSetComptes");
     var filteredStatus = (PossessionRecoupeeFilterStatus) state.get("filterStatus");
 
     state.update(Map.of("plannedCas", plannedCas, "doneCas", doneCas));
@@ -166,7 +168,7 @@ public class RecoupementPage extends LazyPage {
       case EXECUTE_SANS_CORRECTION -> statusToKeep.add(RecoupementStatus.EXECUTE_SANS_CORRECTION);
     }
 
-    var provider = new PossessionRecoupeeProvider();
+    var provider = new PossessionRecoupeeProvider(casSetComptes);
     var meta = new PossessionRecoupeeProvider.Meta(plannedCas, doneCas);
     var filter =
         new PossessionRecoupeeProvider.Filter(
