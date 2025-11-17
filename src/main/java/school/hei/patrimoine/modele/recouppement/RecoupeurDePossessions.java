@@ -12,27 +12,42 @@ import school.hei.patrimoine.modele.Patrimoine;
 import school.hei.patrimoine.modele.possession.CompteCorrection;
 import school.hei.patrimoine.modele.possession.Correction;
 import school.hei.patrimoine.modele.possession.Possession;
+import school.hei.patrimoine.modele.recouppement.CompteGetterFactory.CompteGetter;
 import school.hei.patrimoine.modele.recouppement.decomposeur.PossessionDecomposeurFactory;
-import school.hei.patrimoine.modele.recouppement.generateur.RecoupeurDePossessionFactory;
+import school.hei.patrimoine.modele.recouppement.generateur.RecoupeurDePossessionFacade;
 
-public record RecoupeurDePossessions(
-    LocalDate finSimulation, Set<Possession> prevus, Set<Possession> realises) {
+public class RecoupeurDePossessions {
+  private final LocalDate finSimulation;
+  private final Set<Possession> prevus;
+  private final Set<Possession> realises;
+
   public static final Pattern MULTIPLE_REALISATION_PATTERN = Pattern.compile("\\[(.*)\\]__(.*)");
+
+  private final RecoupeurDePossessionFacade recoupeurFacade;
 
   public static RecoupeurDePossessions of(
       LocalDate finSimulation, Patrimoine prevu, Patrimoine realise) {
+    return RecoupeurDePossessions.of(
+        finSimulation, prevu, realise, CompteGetterFactory.make(realise));
+  }
+
+  public static RecoupeurDePossessions of(
+      LocalDate finSimulation, Patrimoine prevu, Patrimoine realise, CompteGetter compteGetter) {
     return new RecoupeurDePossessions(
-        finSimulation, prevu.getPossessions(), realise.getPossessions());
+        finSimulation, prevu.getPossessions(), realise.getPossessions(), compteGetter);
   }
 
   public RecoupeurDePossessions(
-      LocalDate finSimulation, Set<Possession> prevus, Set<Possession> realises) {
+      LocalDate finSimulation,
+      Set<Possession> prevus,
+      Set<Possession> realises,
+      CompteGetter compteGetter) {
     this.finSimulation = finSimulation;
     this.prevus =
         withoutCompteCorrections(prevus).stream()
             .map(
                 p -> {
-                  var decomposeur = PossessionDecomposeurFactory.make(p, finSimulation);
+                  var decomposeur = PossessionDecomposeurFactory.make(p, this.finSimulation);
                   return decomposeur.apply(p);
                 })
             .flatMap(Collection::stream)
@@ -47,6 +62,8 @@ public record RecoupeurDePossessions(
                 })
             .flatMap(Collection::stream)
             .collect(toSet());
+
+    this.recoupeurFacade = new RecoupeurDePossessionFacade(compteGetter);
   }
 
   public Set<Possession> getPossessionsExecutes() {
@@ -67,14 +84,14 @@ public record RecoupeurDePossessions(
     getPossessionsNonExecutes()
         .forEach(
             p -> {
-              var possessionRecoupeur = RecoupeurDePossessionFactory.make(p);
-              possessionRecoupees.add(possessionRecoupeur.nonExecute(p, realises));
+              var possessionRecoupeur = recoupeurFacade.getRecoupeur(p);
+              possessionRecoupees.add(possessionRecoupeur.nonExecute(p));
             });
 
     getPossessionsNonPrevus()
         .forEach(
             p -> {
-              var possessionRecoupeur = RecoupeurDePossessionFactory.make(p);
+              var possessionRecoupeur = recoupeurFacade.getRecoupeur(p);
               possessionRecoupees.add(possessionRecoupeur.imprevu(p));
             });
 
@@ -82,7 +99,7 @@ public record RecoupeurDePossessions(
         .forEach(
             prevu -> {
               var realises = getRealises(prevu);
-              var possessionRecoupeur = RecoupeurDePossessionFactory.make(prevu);
+              var possessionRecoupeur = recoupeurFacade.getRecoupeur(prevu);
               var possessionRecoupee = possessionRecoupeur.comparer(prevu, realises);
               possessionRecoupees.add(possessionRecoupee);
             });
@@ -102,7 +119,7 @@ public record RecoupeurDePossessions(
         .filter(
             prevu -> {
               var realises = getRealises(prevu);
-              var possessionRecoupeur = RecoupeurDePossessionFactory.make(prevu);
+              var possessionRecoupeur = recoupeurFacade.getRecoupeur(prevu);
               var possessionRecoupee = possessionRecoupeur.comparer(prevu, realises);
               return possessionRecoupee.status().equals(EXECUTE_AVEC_CORRECTION);
             })
@@ -114,7 +131,7 @@ public record RecoupeurDePossessions(
         .filter(
             prevu -> {
               var realises = getRealises(prevu);
-              var possessionRecoupeur = RecoupeurDePossessionFactory.make(prevu);
+              var possessionRecoupeur = recoupeurFacade.getRecoupeur(prevu);
               var possessionRecoupee = possessionRecoupeur.comparer(prevu, realises);
               return possessionRecoupee.status().equals(EXECUTE_SANS_CORRECTION);
             })

@@ -5,6 +5,7 @@ import static school.hei.patrimoine.modele.recouppement.decomposeur.PossessionDe
 import java.time.LocalDate;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
+import school.hei.patrimoine.modele.possession.Compte;
 import school.hei.patrimoine.modele.possession.FluxArgent;
 
 @Slf4j
@@ -33,6 +34,7 @@ public class FluxArgentDecomposeur extends PossessionDecomposeurBase<FluxArgent,
       return List.of(fluxArgent);
     }
 
+    var compte = fluxArgent.getCompte();
     return fluxArgent
         .getDebut()
         .datesUntil(fin.plusDays(1))
@@ -41,7 +43,8 @@ public class FluxArgentDecomposeur extends PossessionDecomposeurBase<FluxArgent,
             date ->
                 new FluxArgent(
                     normalize(fluxArgent.nom() + FLUX_ARGENT_DATE_SEPARATEUR + date),
-                    fluxArgent.getCompte(),
+                    new Compte(
+                        compte.nom(), date, compte.valeurComptable()), // to avoid side effect
                     date,
                     fluxArgent.getFluxMensuel()))
         .toList();

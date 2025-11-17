@@ -9,11 +9,13 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.time.LocalDate;
 import java.util.*;
+import lombok.RequiredArgsConstructor;
 import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.possession.Possession;
 import school.hei.patrimoine.modele.recouppement.PossessionRecoupee;
 import school.hei.patrimoine.modele.recouppement.PossessionRecoupee.Info;
 
+@RequiredArgsConstructor
 public class RecoupeurDePossessionBase<T extends Possession> implements RecoupeurDePossession<T> {
   protected String nommeAsImprevu(T possession, LocalDate t, Argent valeur) {
     return String.format(
@@ -99,7 +101,7 @@ public class RecoupeurDePossessionBase<T extends Possession> implements Recoupeu
   }
 
   @Override
-  public PossessionRecoupee nonExecute(T nonExecute, Set<Possession> possessions) {
+  public PossessionRecoupee nonExecute(T nonExecute) {
     return PossessionRecoupee.builder()
         .prevu(Info.of(nonExecute))
         .realises(Set.of(Info.of(nonExecute)))

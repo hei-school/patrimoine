@@ -6,22 +6,27 @@ import static school.hei.patrimoine.modele.recouppement.RecoupementStatus.*;
 import java.time.LocalDate;
 import java.util.Optional;
 import java.util.Set;
+import lombok.RequiredArgsConstructor;
 import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.possession.Compte;
 import school.hei.patrimoine.modele.possession.Correction;
 import school.hei.patrimoine.modele.possession.FluxArgent;
-import school.hei.patrimoine.modele.possession.Possession;
+import school.hei.patrimoine.modele.recouppement.CompteGetterFactory.CompteGetter;
 import school.hei.patrimoine.modele.recouppement.PossessionRecoupee;
 import school.hei.patrimoine.modele.recouppement.PossessionRecoupee.Info;
 
+@RequiredArgsConstructor
 public class FluxArgentRecoupeurDePossession extends RecoupeurDePossessionBase<FluxArgent> {
+  private final CompteGetter compteGetter;
+
   @Override
   public PossessionRecoupee imprevu(FluxArgent imprevu) {
+    var compte = compteGetter.apply(imprevu.getCompte().nom());
     var correctionValeur = getCorrectionValeur(null, Set.of(imprevu));
     var corrections =
         Set.of(
             new Correction(
-                imprevu.getCompte(),
+                compte,
                 nommeAsImprevu(imprevu, imprevu.t(), correctionValeur),
                 getDate(imprevu),
                 getCorrectionValeur(null, Set.of(imprevu))));
@@ -35,12 +40,13 @@ public class FluxArgentRecoupeurDePossession extends RecoupeurDePossessionBase<F
   }
 
   @Override
-  public PossessionRecoupee nonExecute(FluxArgent nonExecute, Set<Possession> possessions) {
+  public PossessionRecoupee nonExecute(FluxArgent nonExecute) {
+    var compte = compteGetter.apply(nonExecute.getCompte().nom());
     var correctionValeur = getCorrectionValeur(nonExecute, Set.of());
     var corrections =
         Set.of(
             new Correction(
-                getNonExecuteCompte(nonExecute.getCompte().nom(), possessions),
+                compte,
                 nommerAsNonExecute(nonExecute, nonExecute.t(), correctionValeur),
                 getDate(nonExecute),
                 correctionValeur));
@@ -55,12 +61,12 @@ public class FluxArgentRecoupeurDePossession extends RecoupeurDePossessionBase<F
 
   @Override
   public PossessionRecoupee comparer(FluxArgent prevu, Set<FluxArgent> realises) {
+    var compte = compteGetter.apply(prevu.getCompte().nom());
     var groupedByDate = groupByDate(realises);
     if (!groupedByDate.containsKey(getDate(prevu))) {
       groupedByDate.put(getDate(prevu), Set.of());
     }
 
-    var compte = realises.stream().findFirst().orElseThrow().getCompte();
     var corrections =
         groupedByDate.entrySet().stream()
             .map(entry -> getCorrectionForDateT(entry.getKey(), prevu, entry.getValue(), compte))
@@ -108,13 +114,5 @@ public class FluxArgentRecoupeurDePossession extends RecoupeurDePossessionBase<F
   @Override
   protected Argent getValeur(FluxArgent possession) {
     return possession.getFluxMensuel();
-  }
-
-  private static Compte getNonExecuteCompte(String compteNom, Set<Possession> possessions) {
-    return (Compte)
-        possessions.stream()
-            .filter(p -> p instanceof Compte && p.nom().equals(compteNom))
-            .findFirst()
-            .orElseThrow();
   }
 }
