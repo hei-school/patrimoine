@@ -6,6 +6,7 @@ import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.Messag
 import java.io.File;
 import java.util.List;
 import java.util.function.Supplier;
+import lombok.SneakyThrows;
 import school.hei.patrimoine.patrilang.files.PatriLangFileWritter;
 import school.hei.patrimoine.patrilang.files.PatriLangFileWritter.FileWritterInput;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.AppContext;
@@ -13,7 +14,6 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.App
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.popup.PopupItem;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.popup.PopupMenuButton;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.AsyncTask;
-import school.hei.patrimoine.visualisation.swing.ihm.google.modele.ConfirmDialog;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
 
 public class SaveAndSyncFileButton extends PopupMenuButton {
@@ -48,56 +48,18 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
                 })));
   }
 
-  private static void saveAndSyncSelectedFile(
-      AppBar.ViewMode currentMode,
-      File selectedFile,
-      File selectedCasSetFile,
-      String content,
-      String selectedFileId) {
-    if (!AppBar.ViewMode.EDIT.equals(currentMode)) {
-      showError("Erreur", "Vous devez être en mode édition pour sauvegarder.");
-      return;
-    }
-
+  @SneakyThrows
+  private static void syncFile(File selectedFile, String selectedFileId) {
     if (selectedFile == null) {
-      showError("Erreur", "Veuillez sélectionner un fichier avant de sauvegarder.");
+      showError("Erreur", "Veuillez sélectionner un fichier avant de synchroniser.");
       return;
     }
 
-    AsyncTask.<Void>builder()
-        .loadingMessage("Validation, sauvegarde et synchronisation du fichier...")
-        .task(
-            () -> {
-              new PatriLangFileWritter()
-                  .write(
-                      FileWritterInput.builder()
-                          .casSet(selectedCasSetFile)
-                          .file(selectedFile)
-                          .content(content)
-                          .build());
-              driveApi().update(selectedFileId, MIME_TYPE, selectedFile);
-              return null;
-            })
-        .onSuccess(
-            result -> {
-              AppContext.getDefault().globalState().update("isAnyFileModified", true);
-              showInfo(
-                  "Succès",
-                  "Le fichier a été sauvegardé localement et synchronisé avec succès sur"
-                      + " Google Drive.");
-            })
-        .onError(
-            error -> {
-              if (showExceptionMessageIfRecognizedException(error)) {
-                return;
-              }
-              showError("Erreur", "Une erreur est survenue lors de l'enregistrement");
-            })
-        .build()
-        .execute();
+    driveApi().update(selectedFileId, MIME_TYPE, selectedFile);
   }
 
-  private static void saveSelectedFileLocally(
+  @SneakyThrows
+  private static void saveFile(
       AppBar.ViewMode currentMode, File selectedFile, File selectedCasSetFile, String content) {
     if (!AppBar.ViewMode.EDIT.equals(currentMode)) {
       showError("Erreur", "Vous devez être en mode édition pour sauvegarder.");
@@ -109,17 +71,23 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
       return;
     }
 
+    new PatriLangFileWritter()
+        .write(
+            FileWritterInput.builder()
+                .casSet(selectedCasSetFile)
+                .file(selectedFile)
+                .content(content)
+                .build());
+  }
+
+  private static void saveSelectedFileLocally(
+      AppBar.ViewMode currentMode, File selectedFile, File selectedCasSetFile, String content) {
+
     AsyncTask.<Void>builder()
         .loadingMessage("Validation et sauvegarde du fichier...")
         .task(
             () -> {
-              new PatriLangFileWritter()
-                  .write(
-                      FileWritterInput.builder()
-                          .casSet(selectedCasSetFile)
-                          .file(selectedFile)
-                          .content(content)
-                          .build());
+              saveFile(currentMode, selectedFile, selectedCasSetFile, content);
               return null;
             })
         .onSuccess(
@@ -139,26 +107,10 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
   }
 
   private static void syncSelectedFileWithDrive(File selectedFile, String selectedFileId) {
-    if (selectedFile == null) {
-      showError("Erreur", "Veuillez sélectionner un fichier avant de synchroniser avec Drive.");
-      return;
-    }
-
-    var confirmed =
-        ConfirmDialog.ask(
-            "Vérification de sauvegarde",
-            "Vous devez d'abord sauvegarder votre fichier localement avant de le synchroniser avec"
-                + " Drive.\n"
-                + "Avez-vous sauvegardé les modifications ?");
-
-    if (!confirmed) {
-      return;
-    }
-
     AsyncTask.<Void>builder()
         .task(
             () -> {
-              driveApi().update(selectedFileId, MIME_TYPE, selectedFile);
+              syncFile(selectedFile, selectedFileId);
               return null;
             })
         .loadingMessage("Synchronisation avec Drive...")
@@ -166,6 +118,39 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
             ignored ->
                 showInfo("Succès", "Le fichier a été synchronisé avec succès sur Google Drive."))
         .onError(error -> showError("Erreur", "Échec de la synchronisation"))
+        .build()
+        .execute();
+  }
+
+  private static void saveAndSyncSelectedFile(
+      AppBar.ViewMode currentMode,
+      File selectedFile,
+      File selectedCasSetFile,
+      String content,
+      String selectedFileId) {
+
+    AsyncTask.<Void>builder()
+        .task(
+            () -> {
+              saveFile(currentMode, selectedFile, selectedCasSetFile, content);
+              syncFile(selectedFile, selectedFileId);
+              return null;
+            })
+        .onSuccess(
+            result -> {
+              AppContext.getDefault().globalState().update("isAnyFileModified", true);
+              showInfo(
+                  "Succès",
+                  "Le fichier a été sauvegardé localement et synchronisé avec succès sur"
+                      + " Google Drive.");
+            })
+        .onError(
+            error -> {
+              if (showExceptionMessageIfRecognizedException(error)) {
+                return;
+              }
+              showError("Erreur", "Une erreur est survenue lors de l'enregistrement");
+            })
         .build()
         .execute();
   }
