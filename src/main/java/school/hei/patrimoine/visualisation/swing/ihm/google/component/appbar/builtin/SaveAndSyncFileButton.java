@@ -14,6 +14,7 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.App
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.popup.PopupItem;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.popup.PopupMenuButton;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.AsyncTask;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.ConfirmDialog;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
 
 public class SaveAndSyncFileButton extends PopupMenuButton {
@@ -128,6 +129,16 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
       File selectedCasSetFile,
       String content,
       String selectedFileId) {
+
+    var confirmed =
+        ConfirmDialog.ask(
+            "Confirmer la sauvegarde et la synchronisation",
+            "Sauvegarder les modifications localement et les synchroniser avec Google"
+                + " Drive.\n"
+                + "Voulez-vous continuer ?");
+    if (!confirmed) {
+      return;
+    }
 
     AsyncTask.<Void>builder()
         .task(
