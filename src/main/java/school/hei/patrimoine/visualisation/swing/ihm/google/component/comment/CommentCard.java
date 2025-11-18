@@ -178,8 +178,7 @@ public class CommentCard extends JPanel {
   }
 
   static IconButton removeButton(String fileId, Comment parentComment, Runnable refresh) {
-    var button = new IconButton(loadRemoveIcon(), 18);
-    button.setToolTipText("Supprimer le commentaire");
+    var button = new IconButton(loadRemoveIcon(), 18, "Supprimer le commentaire");
     button.setAlignmentY(Component.CENTER_ALIGNMENT);
     button.addActionListener(
         e -> {

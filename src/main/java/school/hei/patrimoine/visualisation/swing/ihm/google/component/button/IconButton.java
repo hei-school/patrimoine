@@ -7,7 +7,7 @@ public class IconButton extends JButton {
   private final Image icon;
   private final int iconSize;
 
-  public IconButton(Image icon, int iconSize) {
+  public IconButton(Image icon, int iconSize, String tooltipText) {
     this.icon = icon;
     this.iconSize = iconSize;
 
@@ -16,6 +16,7 @@ public class IconButton extends JButton {
     setFocusPainted(false);
     setOpaque(false);
     setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+    setToolTipText(tooltipText);
   }
 
   @Override
