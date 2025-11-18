@@ -3,8 +3,8 @@ package school.hei.patrimoine.visualisation.swing.ihm.google.component;
 import java.awt.*;
 import javax.swing.*;
 
-public class RoundedPanel extends JPanel {
-  public RoundedPanel(String text, Color backgroundColor, Color textColor) {
+public class ChipPanel extends JPanel {
+  public ChipPanel(String text, Color backgroundColor, Color textColor) {
     setOpaque(false);
     setLayout(new BorderLayout());
 

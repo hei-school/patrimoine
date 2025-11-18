@@ -12,7 +12,7 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import school.hei.patrimoine.google.model.Comment;
-import school.hei.patrimoine.visualisation.swing.ihm.google.component.RoundedPanel;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.ChipPanel;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.IconButton;
 
@@ -83,7 +83,7 @@ public class CommentCard extends JPanel {
     rightPanel.setOpaque(false);
 
     if (comment.resolved()) {
-      var status = new RoundedPanel("Résolu", RESOLVED_FONT_COLOR, Color.BLACK);
+      var status = new ChipPanel("Résolu", RESOLVED_FONT_COLOR, Color.BLACK);
       rightPanel.add(status);
     }
 
