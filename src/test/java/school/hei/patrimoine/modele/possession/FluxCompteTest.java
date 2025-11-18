@@ -57,17 +57,9 @@ class FluxCompteTest {
     var debut = LocalDate.of(2025, JANUARY, 1);
     var fin = LocalDate.of(2025, APRIL, 30);
 
-    new FluxArgent(
-            "Flux mensuel comptePersonnel",
-            compte,
-            debut,
-            fin,
-            31,
-            ariary(-100_000)
-    );
+    new FluxArgent("Flux mensuel comptePersonnel", compte, debut, fin, 31, ariary(-100_000));
 
     var actual = compte.projectionFuture(LocalDate.of(2025, APRIL, 30));
     assertEquals(ariary(-400_000), actual.valeurComptable);
   }
-
 }
