@@ -15,7 +15,7 @@ public class AsyncTask<T> {
   private final Task<T> task;
 
   @Builder.Default private final String loadingMessage = "Chargement en cours...";
-  @Builder.Default private final Dimension dialogDimension = new Dimension(300, 100);
+  @Builder.Default private final Dimension dialogDimension = new Dimension(400, 100);
   @Builder.Default private final Consumer<T> onSuccess = (data) -> {};
   @Builder.Default private final Consumer<Exception> onError = (e) -> {};
   @Builder.Default private final boolean withDialogLoading = true;
