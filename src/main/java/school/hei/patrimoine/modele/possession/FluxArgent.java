@@ -51,7 +51,9 @@ public final class FluxArgent extends Possession {
     var valeurFutur =
         debutOperationMinoréParDebut
             .datesUntil(tFuturMajoréParFin.plusDays(1))
-            .filter(d -> d.getDayOfMonth() == dateOperation)
+            .filter(
+                d -> d.getDayOfMonth() == Math.min(dateOperation, d.lengthOfMonth())
+            )
             .sorted()
             .map(d -> Pair.of(fluxMensuel, d))
             // Addition must be done at a given time since Devise fluctuates
