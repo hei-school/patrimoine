@@ -1,9 +1,6 @@
 package school.hei.patrimoine.modele.possession;
 
-import static java.time.Month.DECEMBER;
-import static java.time.Month.JUNE;
-import static java.time.Month.MAY;
-import static java.time.Month.OCTOBER;
+import static java.time.Month.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static school.hei.patrimoine.modele.Argent.ariary;
 
@@ -51,4 +48,26 @@ class FluxCompteTest {
         ariary(-2_900_000),
         compteCourant.projectionFuture(aLaDiplomation.plusDays(100)).valeurComptable);
   }
+
+  @Test
+  void dateOperation_superieur_a_lastDayOfMonth_est_corrigee() {
+    var t0 = LocalDate.of(2025, JANUARY, 15);
+    var compte = new Compte("comptePersonne", t0, ariary(0));
+
+    var debut = LocalDate.of(2025, JANUARY, 1);
+    var fin = LocalDate.of(2025, APRIL, 30);
+
+    new FluxArgent(
+            "Flux mensuel comptePersonnel",
+            compte,
+            debut,
+            fin,
+            31,
+            ariary(-100_000)
+    );
+
+    var actual = compte.projectionFuture(LocalDate.of(2025, APRIL, 30));
+    assertEquals(ariary(-400_000), actual.valeurComptable);
+  }
+
 }
