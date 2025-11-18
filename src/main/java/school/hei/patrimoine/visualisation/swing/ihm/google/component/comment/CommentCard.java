@@ -1,30 +1,44 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.component.comment;
 
+import static school.hei.patrimoine.visualisation.swing.ihm.google.component.comment.CommentSideBar.removeComment;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.component.comment.CommentSideBar.resolveComment;
 
 import java.awt.*;
+import java.io.IOException;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.Objects;
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import school.hei.patrimoine.google.model.Comment;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.ChipPanel;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.IconButton;
 
 public class CommentCard extends JPanel {
   private final Component parent;
   private final String fileId;
   private final Comment comment;
+  private final boolean withRemoveBtn;
   private final Runnable refresh;
   private static final Color DEFAULT_BACKGROUND_COLOR = new Color(222, 221, 220);
   private static final Color APPROVED_BACKGROUND_COLOR = new Color(120, 220, 140);
   private static final Color RESOLVED_BACKGROUND_COLOR = new Color(255, 251, 156);
+  private static final Color RESOLVED_FONT_COLOR = APPROVED_BACKGROUND_COLOR;
   public static final DateTimeFormatter DATE_TIME_FORMATTER =
       DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm").withZone(ZoneId.systemDefault());
 
   public CommentCard(
-      Component parent, String fileId, Comment comment, boolean withActions, Runnable refresh) {
+      Component parent,
+      String fileId,
+      Comment comment,
+      boolean withRemoveBtn,
+      boolean withActions,
+      Runnable refresh) {
     this.fileId = fileId;
     this.comment = comment;
+    this.withRemoveBtn = withRemoveBtn;
     this.refresh = refresh;
     this.parent = parent;
 
@@ -57,13 +71,45 @@ public class CommentCard extends JPanel {
     super.paintComponent(g);
   }
 
-  public JLabel header() {
-    var dateStr = DATE_TIME_FORMATTER.format(comment.createdAt());
+  public JPanel header() {
+    var headerPanel = new JPanel(new BorderLayout());
+    headerPanel.setOpaque(false);
+    headerPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+    var headerLabel = headerLabel();
+    headerPanel.add(headerLabel, BorderLayout.WEST);
+
+    var rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 5, 0));
+    rightPanel.setOpaque(false);
+
+    if (comment.resolved()) {
+      var status = new ChipPanel("Résolu", RESOLVED_FONT_COLOR, Color.BLACK);
+      rightPanel.add(status);
+    }
+
+    if (withRemoveBtn) {
+      rightPanel.add(removeButton(fileId, comment, refresh));
+    }
+
+    headerPanel.add(rightPanel, BorderLayout.EAST);
+    return headerPanel;
+  }
+
+  public JLabel headerLabel() {
+    var createdStr = DATE_TIME_FORMATTER.format(comment.createdAt());
+    var lastModified = comment.getLastModifiedDate();
+
+    var modifiedStr = "";
+    if (lastModified != null && !lastModified.equals(comment.createdAt())) {
+      modifiedStr = " (modifié le " + DATE_TIME_FORMATTER.format(lastModified) + ")";
+    }
     var headerHtml =
         String.format(
             "<html><span style='font-size:16pt; font-weight:bold;'>%s</span><br>"
-                + "<span style='font-size:14pt; color:gray;'>%s</span></html>",
-            comment.author() != null ? comment.author().displayName() : "Inconnu", dateStr);
+                + "<span style='font-size:14pt; color:gray;'>%s%s</span></html>",
+            comment.author() != null ? comment.author().displayName() : "Inconnu",
+            createdStr,
+            modifiedStr);
 
     var header = new JLabel(headerHtml);
     header.setBorder(new EmptyBorder(0, 0, 5, 0));
@@ -128,6 +174,27 @@ public class CommentCard extends JPanel {
   }
 
   static Button resolveButton(String fileId, Comment parentComment, Runnable refresh) {
-    return new Button("Résolu", e -> resolveComment(fileId, parentComment, refresh));
+    return new Button("Résoudre", e -> resolveComment(fileId, parentComment, refresh));
+  }
+
+  static IconButton removeButton(String fileId, Comment parentComment, Runnable refresh) {
+    var button = new IconButton(loadRemoveIcon(), 18, "Supprimer le commentaire");
+    button.setAlignmentY(Component.CENTER_ALIGNMENT);
+    button.addActionListener(
+        e -> {
+          removeComment(fileId, parentComment, refresh);
+        });
+
+    return button;
+  }
+
+  private static Image loadRemoveIcon() {
+    try {
+      var removeIcon =
+          ImageIO.read(Objects.requireNonNull(CommentCard.class.getResource("/icons/remove.png")));
+      return removeIcon.getScaledInstance(18, 18, Image.SCALE_SMOOTH);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
   }
 }
