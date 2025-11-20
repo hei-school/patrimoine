@@ -6,6 +6,8 @@ import static school.hei.patrimoine.visualisation.swing.ihm.google.component.fil
 import static school.hei.patrimoine.visualisation.swing.ihm.google.component.files.FileSideBar.getPatriLangPlannedFiles;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.Api.driveApi;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.MessageDialog.*;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.PatriLangStagedFileManager.clearAllStaged;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.PatriLangStagedFileManager.saveToStaged;
 
 import java.io.File;
 import java.util.List;
@@ -38,6 +40,7 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
                         state.get("viewMode"),
                         state.get("selectedFile"),
                         state.get("selectedCasSetFile"),
+                        state.get("isPlannedSelectedFile"),
                         getNewContent.get())),
             new PopupItem(
                 "Synchroniser avec Drive",
@@ -49,6 +52,7 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
                       state.get("viewMode"),
                       state.get("selectedFile"),
                       state.get("selectedCasSetFile"),
+                      state.get("isPlannedSelectedFile"),
                       getNewContent.get(),
                       getPatriLangPlannedFiles(),
                       getPatriLangDoneFiles());
@@ -67,7 +71,7 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
                   throw new RuntimeException(e);
                 }
               },
-              () -> System.out.println("⚠ Aucun ID Drive trouvé pour planned : " + file.getName()));
+              () -> System.out.println("Aucun ID Drive trouvé pour planned : " + file.getName()));
     }
 
     for (File file : doneFiles) {
@@ -80,7 +84,7 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
                   throw new RuntimeException(e);
                 }
               },
-              () -> System.out.println("⚠ Aucun ID Drive trouvé pour done : " + file.getName()));
+              () -> System.out.println("Aucun ID Drive trouvé pour done : " + file.getName()));
     }
   }
 
@@ -99,7 +103,11 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
   }
 
   private static void saveSelectedFileLocally(
-      AppBar.ViewMode currentMode, File selectedFile, File selectedCasSetFile, String content) {
+      AppBar.ViewMode currentMode,
+      File selectedFile,
+      File selectedCasSetFile,
+      boolean isPlanned,
+      String content) {
 
     if (validateBeforeSave(currentMode, selectedFile)) {
       return;
@@ -116,6 +124,7 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
                           .file(selectedFile)
                           .content(content)
                           .build());
+              saveToStaged(selectedFile, isPlanned);
               return null;
             })
         .onSuccess(
@@ -143,10 +152,12 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
             })
         .loadingMessage("Synchronisation avec Drive...")
         .onSuccess(
-            ignored ->
-                showInfo("Succès", "Le fichier a été synchronisé avec succès sur Google Drive."))
-        .onError(error -> showError("Erreur", "Échec de la synchronisation"))
-        .build()
+            ignored ->{
+                clearAllStaged();
+                showInfo("Succès", "Le fichier a été synchronisé avec succès sur Google Drive.");
+            })
+                    .onError(error -> showError("Erreur", "Échec de la synchronisation"))
+                    .build()
         .execute();
   }
 
@@ -154,6 +165,7 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
       AppBar.ViewMode currentMode,
       File selectedFile,
       File selectedCasSetFile,
+      boolean isPlanned,
       String content,
       List<File> plannedFiles,
       List<File> doneFiles) {
@@ -182,12 +194,14 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
                           .file(selectedFile)
                           .content(content)
                           .build());
+              saveToStaged(selectedFile, isPlanned);
               syncAllFilesWithDrive(plannedFiles, doneFiles);
               return null;
             })
         .onSuccess(
             result -> {
               AppContext.getDefault().globalState().update("isAnyFileModified", true);
+              clearAllStaged();
               showInfo(
                   "Succès",
                   "Le fichier a été sauvegardé localement et synchronisé avec succès sur"
