@@ -12,7 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import school.hei.patrimoine.google.GoogleApiUtilities;
 
 @Slf4j
-public class PatriLangStagedFileManager {
+public class PatriLangStagingFileManager {
 
   public static String getStagedPlannedDir() {
     return GoogleApiUtilities.getStagingDirectoryPath() + "/planifies";
@@ -67,28 +67,28 @@ public class PatriLangStagedFileManager {
     return Arrays.asList(files);
   }
 
-    public static void clearStagedPlanned() {
-        deleteAllFilesIn(getStagedPlannedDir());
-    }
+  public static void clearStagedPlanned() {
+    deleteAllFilesIn(getStagedPlannedDir());
+  }
 
-    public static void clearStagedDone() {
-        deleteAllFilesIn(getStagedDoneDir());
-    }
+  public static void clearStagedDone() {
+    deleteAllFilesIn(getStagedDoneDir());
+  }
 
-    public static void clearAllStaged() {
-        clearStagedPlanned();
-        clearStagedDone();
-    }
+  public static void clearAllStaged() {
+    clearStagedPlanned();
+    clearStagedDone();
+  }
 
-    private static void deleteAllFilesIn(String folder) {
-        File dir = new File(folder);
-        File[] files = dir.listFiles();
-        if (files == null) return;
+  private static void deleteAllFilesIn(String folder) {
+    File dir = new File(folder);
+    File[] files = dir.listFiles();
+    if (files == null) return;
 
-        for (File f : files) {
-            if (f.exists() && !f.delete()) {
-                log.warn("Impossible de supprimer le fichier staged : {}", f.getName());
-            }
-        }
+    for (File f : files) {
+      if (f.exists() && !f.delete()) {
+        log.warn("Impossible de supprimer le fichier staged : {}", f.getName());
+      }
     }
+  }
 }

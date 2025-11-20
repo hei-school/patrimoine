@@ -2,12 +2,9 @@ package school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.bu
 
 import static school.hei.patrimoine.patrilang.PatriLangTranspiler.CAS_FILE_EXTENSION;
 import static school.hei.patrimoine.patrilang.PatriLangTranspiler.TOUT_CAS_FILE_EXTENSION;
-import static school.hei.patrimoine.visualisation.swing.ihm.google.component.files.FileSideBar.getPatriLangDoneFiles;
-import static school.hei.patrimoine.visualisation.swing.ihm.google.component.files.FileSideBar.getPatriLangPlannedFiles;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.Api.driveApi;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.MessageDialog.*;
-import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.PatriLangStagedFileManager.clearAllStaged;
-import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.PatriLangStagedFileManager.saveToStaged;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.PatriLangStagingFileManager.*;
 
 import java.io.File;
 import java.util.List;
@@ -44,7 +41,7 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
                         getNewContent.get())),
             new PopupItem(
                 "Synchroniser avec Drive",
-                e -> syncAllFilesWithDrive(getPatriLangPlannedFiles(), getPatriLangDoneFiles())),
+                e -> syncFilesWithDrive(getStagedPlannedFiles(), getStagedDoneFiles())),
             new PopupItem(
                 "Sauvegarder et synchroniser",
                 e -> {
@@ -53,9 +50,7 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
                       state.get("selectedFile"),
                       state.get("selectedCasSetFile"),
                       state.get("isPlannedSelectedFile"),
-                      getNewContent.get(),
-                      getPatriLangPlannedFiles(),
-                      getPatriLangDoneFiles());
+                      getNewContent.get());
                 })));
   }
 
@@ -143,7 +138,7 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
         .execute();
   }
 
-  private static void syncAllFilesWithDrive(List<File> plannedFiles, List<File> doneFiles) {
+  private static void syncFilesWithDrive(List<File> plannedFiles, List<File> doneFiles) {
     AsyncTask.<Void>builder()
         .task(
             () -> {
@@ -152,12 +147,12 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
             })
         .loadingMessage("Synchronisation avec Drive...")
         .onSuccess(
-            ignored ->{
-                clearAllStaged();
-                showInfo("Succès", "Le fichier a été synchronisé avec succès sur Google Drive.");
+            ignored -> {
+              clearAllStaged();
+              showInfo("Succès", "Le fichier a été synchronisé avec succès sur Google Drive.");
             })
-                    .onError(error -> showError("Erreur", "Échec de la synchronisation"))
-                    .build()
+        .onError(error -> showError("Erreur", "Échec de la synchronisation"))
+        .build()
         .execute();
   }
 
@@ -166,9 +161,7 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
       File selectedFile,
       File selectedCasSetFile,
       boolean isPlanned,
-      String content,
-      List<File> plannedFiles,
-      List<File> doneFiles) {
+      String content) {
 
     if (validateBeforeSave(currentMode, selectedFile)) {
       return;
@@ -185,6 +178,7 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
     }
 
     AsyncTask.<Void>builder()
+        .loadingMessage("Sauvegarde et synchronisation en cours...")
         .task(
             () -> {
               new PatriLangFileWritter()
@@ -195,7 +189,10 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
                           .content(content)
                           .build());
               saveToStaged(selectedFile, isPlanned);
-              syncAllFilesWithDrive(plannedFiles, doneFiles);
+
+              List<File> stagedPlanned = getStagedPlannedFiles();
+              List<File> stagedDone = getStagedDoneFiles();
+              syncFiles(stagedPlanned, stagedDone);
               return null;
             })
         .onSuccess(
