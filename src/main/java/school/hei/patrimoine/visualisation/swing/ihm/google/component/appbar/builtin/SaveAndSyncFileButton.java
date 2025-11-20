@@ -59,36 +59,38 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
     driveApi().update(selectedFileId, MIME_TYPE, selectedFile);
   }
 
-  @SneakyThrows
-  private static void saveFile(
-      AppBar.ViewMode currentMode, File selectedFile, File selectedCasSetFile, String content) {
-    if (!AppBar.ViewMode.EDIT.equals(currentMode)) {
-      showError("Erreur", "Vous devez être en mode édition pour sauvegarder.");
-      return;
-    }
-
+  private static boolean validateBeforeSave(AppBar.ViewMode currentMode, File selectedFile) {
     if (selectedFile == null) {
       showError("Erreur", "Veuillez sélectionner un fichier avant de sauvegarder.");
-      return;
+      return true;
     }
 
-    new PatriLangFileWritter()
-        .write(
-            FileWritterInput.builder()
-                .casSet(selectedCasSetFile)
-                .file(selectedFile)
-                .content(content)
-                .build());
+    if (!AppBar.ViewMode.EDIT.equals(currentMode)) {
+      showError("Erreur", "Vous devez être en mode édition pour sauvegarder.");
+      return true;
+    }
+
+    return false;
   }
 
   private static void saveSelectedFileLocally(
       AppBar.ViewMode currentMode, File selectedFile, File selectedCasSetFile, String content) {
 
+    if (validateBeforeSave(currentMode, selectedFile)) {
+      return;
+    }
+
     AsyncTask.<Void>builder()
         .loadingMessage("Validation et sauvegarde du fichier...")
         .task(
             () -> {
-              saveFile(currentMode, selectedFile, selectedCasSetFile, content);
+              new PatriLangFileWritter()
+                  .write(
+                      FileWritterInput.builder()
+                          .casSet(selectedCasSetFile)
+                          .file(selectedFile)
+                          .content(content)
+                          .build());
               return null;
             })
         .onSuccess(
@@ -130,6 +132,10 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
       String content,
       String selectedFileId) {
 
+    if (validateBeforeSave(currentMode, selectedFile)) {
+      return;
+    }
+
     var confirmed =
         ConfirmDialog.ask(
             "Confirmer la sauvegarde et la synchronisation",
@@ -143,7 +149,13 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
     AsyncTask.<Void>builder()
         .task(
             () -> {
-              saveFile(currentMode, selectedFile, selectedCasSetFile, content);
+              new PatriLangFileWritter()
+                  .write(
+                      FileWritterInput.builder()
+                          .casSet(selectedCasSetFile)
+                          .file(selectedFile)
+                          .content(content)
+                          .build());
               syncFile(selectedFile, selectedFileId);
               return null;
             })
