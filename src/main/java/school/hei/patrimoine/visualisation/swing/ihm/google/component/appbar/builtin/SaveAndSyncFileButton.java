@@ -1,12 +1,18 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.builtin;
 
+import static school.hei.patrimoine.patrilang.PatriLangTranspiler.CAS_FILE_EXTENSION;
+import static school.hei.patrimoine.patrilang.PatriLangTranspiler.TOUT_CAS_FILE_EXTENSION;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.component.files.FileSideBar.getPatriLangDoneFiles;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.component.files.FileSideBar.getPatriLangPlannedFiles;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.Api.driveApi;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.MessageDialog.*;
 
 import java.io.File;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Supplier;
 import lombok.SneakyThrows;
+import school.hei.patrimoine.google.exception.GoogleIntegrationException;
 import school.hei.patrimoine.patrilang.files.PatriLangFileWritter;
 import school.hei.patrimoine.patrilang.files.PatriLangFileWritter.FileWritterInput;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.AppContext;
@@ -15,6 +21,7 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.component.popup.Popu
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.popup.PopupMenuButton;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.AsyncTask;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.ConfirmDialog;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.GoogleLinkList;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
 
 public class SaveAndSyncFileButton extends PopupMenuButton {
@@ -34,9 +41,7 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
                         getNewContent.get())),
             new PopupItem(
                 "Synchroniser avec Drive",
-                e ->
-                    syncSelectedFileWithDrive(
-                        state.get("selectedFile"), state.get("selectedFileId"))),
+                e -> syncAllFilesWithDrive(getPatriLangPlannedFiles(), getPatriLangDoneFiles())),
             new PopupItem(
                 "Sauvegarder et synchroniser",
                 e -> {
@@ -45,18 +50,38 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
                       state.get("selectedFile"),
                       state.get("selectedCasSetFile"),
                       getNewContent.get(),
-                      state.get("selectedFileId"));
+                      getPatriLangPlannedFiles(),
+                      getPatriLangDoneFiles());
                 })));
   }
 
   @SneakyThrows
-  private static void syncFile(File selectedFile, String selectedFileId) {
-    if (selectedFile == null) {
-      showError("Erreur", "Veuillez sélectionner un fichier avant de synchroniser.");
-      return;
+  private static void syncFiles(List<File> plannedFiles, List<File> doneFiles) {
+    for (File file : plannedFiles) {
+      getDriveIdOf(file, true)
+          .ifPresentOrElse(
+              id -> {
+                try {
+                  driveApi().update(id, MIME_TYPE, file);
+                } catch (GoogleIntegrationException e) {
+                  throw new RuntimeException(e);
+                }
+              },
+              () -> System.out.println("⚠ Aucun ID Drive trouvé pour planned : " + file.getName()));
     }
 
-    driveApi().update(selectedFileId, MIME_TYPE, selectedFile);
+    for (File file : doneFiles) {
+      getDriveIdOf(file, false)
+          .ifPresentOrElse(
+              id -> {
+                try {
+                  driveApi().update(id, MIME_TYPE, file);
+                } catch (GoogleIntegrationException e) {
+                  throw new RuntimeException(e);
+                }
+              },
+              () -> System.out.println("⚠ Aucun ID Drive trouvé pour done : " + file.getName()));
+    }
   }
 
   private static boolean validateBeforeSave(AppBar.ViewMode currentMode, File selectedFile) {
@@ -109,11 +134,11 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
         .execute();
   }
 
-  private static void syncSelectedFileWithDrive(File selectedFile, String selectedFileId) {
+  private static void syncAllFilesWithDrive(List<File> plannedFiles, List<File> doneFiles) {
     AsyncTask.<Void>builder()
         .task(
             () -> {
-              syncFile(selectedFile, selectedFileId);
+              syncFiles(plannedFiles, doneFiles);
               return null;
             })
         .loadingMessage("Synchronisation avec Drive...")
@@ -130,7 +155,8 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
       File selectedFile,
       File selectedCasSetFile,
       String content,
-      String selectedFileId) {
+      List<File> plannedFiles,
+      List<File> doneFiles) {
 
     if (validateBeforeSave(currentMode, selectedFile)) {
       return;
@@ -156,7 +182,7 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
                           .file(selectedFile)
                           .content(content)
                           .build());
-              syncFile(selectedFile, selectedFileId);
+              syncAllFilesWithDrive(plannedFiles, doneFiles);
               return null;
             })
         .onSuccess(
@@ -176,5 +202,20 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
             })
         .build()
         .execute();
+  }
+
+  private static Optional<String> getDriveIdOf(File file, boolean isPlanned) {
+    GoogleLinkList<GoogleLinkList.NamedID> ids = AppContext.getDefault().getData("named-ids");
+    if (file == null) return Optional.empty();
+
+    String filename =
+        file.getName().replace(TOUT_CAS_FILE_EXTENSION, "").replace(CAS_FILE_EXTENSION, "");
+
+    var listToSearch = isPlanned ? ids.planned() : ids.done();
+
+    return listToSearch.stream()
+        .filter(n -> n.name().equals(filename))
+        .map(GoogleLinkList.NamedID::id)
+        .findFirst();
   }
 }
