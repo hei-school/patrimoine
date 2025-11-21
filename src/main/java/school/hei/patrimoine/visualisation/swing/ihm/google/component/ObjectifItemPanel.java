@@ -3,9 +3,6 @@ package school.hei.patrimoine.visualisation.swing.ihm.google.component;
 import java.awt.*;
 import java.util.Objects;
 import javax.swing.*;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.SimpleAttributeSet;
-import javax.swing.text.StyleConstants;
 import school.hei.patrimoine.modele.objectif.ObjectifNonAtteint;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.formatter.ArgentFormatter;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.formatter.DateFormatter;
@@ -16,70 +13,68 @@ public class ObjectifItemPanel extends JPanel {
     setOpaque(false);
     setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
+    add(buildIconPanel(), BorderLayout.WEST);
+    add(buildTextPanel(obj), BorderLayout.CENTER);
+  }
+
+  private JPanel buildIconPanel() {
     var icon = new JLabel(loadIcon("/icons/goal.png"));
     icon.setAlignmentX(Component.CENTER_ALIGNMENT);
 
     var iconPanel = new JPanel();
-    iconPanel.setLayout(new BoxLayout(iconPanel, BoxLayout.Y_AXIS));
     iconPanel.setOpaque(false);
-
+    iconPanel.setLayout(new BoxLayout(iconPanel, BoxLayout.Y_AXIS));
     iconPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 10));
-
-    iconPanel.setPreferredSize(new Dimension(50, 0));
-    iconPanel.setMaximumSize(new Dimension(50, Integer.MAX_VALUE));
 
     iconPanel.add(Box.createVerticalGlue());
     iconPanel.add(icon);
     iconPanel.add(Box.createVerticalGlue());
 
-    add(iconPanel, BorderLayout.WEST);
-
-    var text = new JTextPane();
-
-    text.setBorder(
-        CustomBorder.builder()
-            .borderColor(new Color(141, 141, 141))
-            .thickness(1)
-            .radius(10)
-            .padding(10, 10)
-            .build());
-
-    var doc = text.getStyledDocument();
-    append(doc, "Nom : ", true);
-    append(doc, obj.objectivable().nom() + ", ", false);
-
-    append(doc, "Date : ", true);
-    append(doc, DateFormatter.format(obj.objectif().t()) + "\n\n", false);
-
-    append(doc, "Objectif : ", true);
-    append(doc, ArgentFormatter.format(obj.objectif().valeurComptable()) + ", ", false);
-
-    append(doc, "Atteint : ", true);
-    append(
-        doc,
-        ArgentFormatter.format(
-                obj.objectivable()
-                    .valeurAObjectifT(obj.objectif().t())
-                    .convertir(obj.objectif().valeurComptable().devise(), obj.objectif().t()))
-            + "\n\n",
-        false);
-
-    append(doc, "Différence : ", true);
-    append(doc, computeDiff(obj), false);
-
-    add(text, BorderLayout.CENTER);
+    return iconPanel;
   }
 
-  private static void append(javax.swing.text.Document doc, String txt, boolean bold) {
-    var attrs = new SimpleAttributeSet();
-    StyleConstants.setBold(attrs, bold);
-    StyleConstants.setFontSize(attrs, 14);
+  private JComponent buildTextPanel(ObjectifNonAtteint obj) {
+    var editor = new JEditorPane();
 
-    try {
-      doc.insertString(doc.getLength(), txt, attrs);
-    } catch (BadLocationException e) {
-      throw new RuntimeException(e);
-    }
+    editor.setContentType("text/html");
+    editor.setEditable(false);
+    editor.setOpaque(false);
+    editor.setText(buildHtml(obj));
+    editor.setCaretPosition(0);
+
+    editor.setBorder(
+        CustomBorder.builder()
+            .borderColor(new Color(255, 108, 108))
+            .thickness(1)
+            .radius(10)
+            .padding(0, 0)
+            .build());
+
+    return editor;
+  }
+
+  private String buildHtml(ObjectifNonAtteint obj) {
+    return """
+<html>
+<body style='background-color:rgb(255, 250, 250); font-family:SansSerif; font-size:12px; margin:0; padding:15px;'>
+    <b>Nom :</b> <i>%s</i>,
+    <b> Date :</b> <i>%s</i><br/><br/>
+    <b>Objectif :</b> <i>%s</i>,
+    <b> Atteint :</b> <i>%s</i>,
+    <b> Différence :</b> <i>%s</i>
+</body>
+</html>
+"""
+        .formatted(
+            escape(obj.objectivable().nom()),
+            escape(DateFormatter.format(obj.objectif().t())),
+            escape(ArgentFormatter.format(obj.objectif().valeurComptable())),
+            escape(
+                ArgentFormatter.format(
+                    obj.objectivable()
+                        .valeurAObjectifT(obj.objectif().t())
+                        .convertir(obj.objectif().valeurComptable().devise(), obj.objectif().t()))),
+            escape(computeDiff(obj)));
   }
 
   private static String computeDiff(ObjectifNonAtteint obj) {
@@ -88,8 +83,12 @@ public class ObjectifItemPanel extends JPanel {
         obj.objectivable()
             .valeurAObjectifT(obj.objectif().t())
             .convertir(objectif.devise(), obj.objectif().t());
-    var diff = objectif.minus(atteint, obj.objectif().t());
-    return ArgentFormatter.format(diff);
+    return ArgentFormatter.format(objectif.minus(atteint, obj.objectif().t()));
+  }
+
+  private static String escape(String s) {
+    if (s == null) return "";
+    return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;");
   }
 
   private static ImageIcon loadIcon(String path) {

@@ -31,7 +31,13 @@ public class ObjectifNonAtteintsDialog extends JDialog {
 
   private void setupLayout(JPanel listPanel) {
     var scrollPane = new JScrollPane(listPanel);
-    scrollPane.setBorder(null);
+    scrollPane.setBorder(
+        CustomBorder.builder()
+            .borderColor(new Color(166, 166, 166))
+            .thickness(1)
+            .radius(0)
+            .padding(0, 0)
+            .build());
 
     var closeBtn = new Button("Fermer");
     closeBtn.addActionListener(e -> dispose());
@@ -44,7 +50,7 @@ public class ObjectifNonAtteintsDialog extends JDialog {
   }
 
   private void finalizeDialog() {
-    setSize(600, 600);
+    setSize(700, 500);
     setLocationRelativeTo(null);
     setVisible(true);
   }
