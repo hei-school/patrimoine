@@ -7,18 +7,18 @@ import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.Messag
 
 import java.awt.*;
 import java.io.File;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
 import javax.swing.*;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import school.hei.patrimoine.cas.CasSet;
 import school.hei.patrimoine.cas.CasSetAnalyzer;
 import school.hei.patrimoine.google.model.Pagination;
+import school.hei.patrimoine.modele.objectif.ObjectifExeption;
 import school.hei.patrimoine.modele.recouppement.RecoupeurDeCasSet;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.HtmlViewer;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.ObjectifNonAtteintsDialog;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.LazyPage;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.AppBar;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.builtin.SaveAndSyncFileButton;
@@ -167,9 +167,13 @@ public class PatriLangFilesPage extends LazyPage {
         .onSuccess(recoupedCasSet -> new CasSetAnalyzer(DISPOSE_ON_CLOSE).accept(recoupedCasSet))
         .onError(
             error -> {
-              if (error.getMessage().contains("Objectif")) {
-                showError("Erreur", "Certains objectifs ne sont pas atteints");
-                return;
+              while (error != null) {
+                if (error instanceof ObjectifExeption exeption) {
+                  var objectifs = exeption.getObjectifNonAtteints();
+                  SwingUtilities.invokeLater(() -> new ObjectifNonAtteintsDialog(objectifs));
+                  return;
+                }
+                error = (Exception) error.getCause();
               }
 
               showError(

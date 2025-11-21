@@ -6,11 +6,11 @@ import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 
 import java.util.Set;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import school.hei.patrimoine.modele.Patrimoine;
-import school.hei.patrimoine.modele.objectif.ObjectifNonAtteint;
+import school.hei.patrimoine.modele.objectif.ObjectifExeption;
 import school.hei.patrimoine.visualisation.swing.ihm.MainIHM;
 
 @RequiredArgsConstructor
@@ -33,21 +33,11 @@ public class CasSetAnalyzer implements Consumer<CasSet> {
     visualise(casSet.set(), patrimoineTout);
   }
 
+  @SneakyThrows
   private static void verifie(ToutCas patrimoineTout) {
     var objectifsNonAtteints = patrimoineTout.verifier();
     if (!objectifsNonAtteints.isEmpty()) {
-      throw new RuntimeException(
-          "Objectifs non atteints : "
-              + objectifsNonAtteints.stream()
-                  .sorted(
-                      (lhs, rhs) -> {
-                        if (lhs.objectif().t().equals(rhs.objectif().t())) {
-                          return 0;
-                        }
-                        return lhs.objectif().t().isBefore(rhs.objectif().t()) ? -1 : 1;
-                      })
-                  .map(ObjectifNonAtteint::prettyPrint)
-                  .collect(Collectors.joining("\n")));
+      throw new ObjectifExeption(objectifsNonAtteints);
     }
   }
 
