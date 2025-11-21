@@ -101,7 +101,7 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
       AppBar.ViewMode currentMode,
       File selectedFile,
       File selectedCasSetFile,
-      boolean isPlanned,
+      Boolean isPlanned,
       String content) {
 
     if (validateBeforeSave(currentMode, selectedFile)) {
@@ -139,6 +139,11 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
   }
 
   private static void syncFilesWithDrive(List<File> plannedFiles, List<File> doneFiles) {
+    boolean confirmed = SyncConfirmDialog.showDialog();
+    if (!confirmed) {
+      return;
+    }
+
     AsyncTask.<Void>builder()
         .task(
             () -> {
@@ -160,36 +165,51 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
       AppBar.ViewMode currentMode,
       File selectedFile,
       File selectedCasSetFile,
-      boolean isPlanned,
+      Boolean isPlanned,
       String content) {
 
     if (validateBeforeSave(currentMode, selectedFile)) {
       return;
     }
 
-    var confirmed =
+    var saveConfirmed =
         ConfirmDialog.ask(
-            "Confirmer la sauvegarde et la synchronisation",
-            "Sauvegarder les modifications localement et les synchroniser avec Google"
-                + " Drive.\n"
+            "Confirmer la sauvegarde",
+            "Sauvegarder les modifications localement avant la synchronisation.\n"
                 + "Voulez-vous continuer ?");
-    if (!confirmed) {
+    if (!saveConfirmed) {
+      return;
+    }
+
+    try {
+      new PatriLangFileWritter()
+          .write(
+              FileWritterInput.builder()
+                  .casSet(selectedCasSetFile)
+                  .file(selectedFile)
+                  .content(content)
+                  .build());
+      saveToStaged(selectedFile, isPlanned != null ? isPlanned : false);
+    } catch (Exception e) {
+      if (showExceptionMessageIfRecognizedException(e)) {
+        return;
+      }
+      showError("Erreur", "Une erreur est survenue lors de l'enregistrement");
+      return;
+    }
+
+    var syncConfirmed = SyncConfirmDialog.showDialog();
+    if (!syncConfirmed) {
+      showInfo(
+          "Sauvegarde effectuée",
+          "Le fichier a été sauvegardé localement. Vous pouvez le synchroniser plus tard.");
       return;
     }
 
     AsyncTask.<Void>builder()
-        .loadingMessage("Sauvegarde et synchronisation en cours...")
+        .loadingMessage("Synchronisation avec Drive...")
         .task(
             () -> {
-              new PatriLangFileWritter()
-                  .write(
-                      FileWritterInput.builder()
-                          .casSet(selectedCasSetFile)
-                          .file(selectedFile)
-                          .content(content)
-                          .build());
-              saveToStaged(selectedFile, isPlanned);
-
               List<File> stagedPlanned = getStagedPlannedFiles();
               List<File> stagedDone = getStagedDoneFiles();
               syncFiles(stagedPlanned, stagedDone);
