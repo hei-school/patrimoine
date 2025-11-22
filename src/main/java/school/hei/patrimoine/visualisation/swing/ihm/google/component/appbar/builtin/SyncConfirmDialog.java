@@ -78,34 +78,42 @@ public class SyncConfirmDialog extends JDialog {
   }
 
   private void initInfoComponents() {
-    setLayout(new BorderLayout(10, 10));
+    setLayout(new BorderLayout());
+    setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
-    JPanel messagePanel = new JPanel(new BorderLayout(5, 5));
-    messagePanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 10, 15));
+    JPanel messagePanel = new JPanel(new BorderLayout(15, 0));
+    messagePanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+    Icon infoIcon = UIManager.getIcon("OptionPane.informationIcon");
+    JLabel iconLabel = new JLabel(infoIcon);
 
     JLabel messageLabel = new JLabel("Aucun fichier en attente de synchronisation.");
     messageLabel.setFont(UIManager.getFont("Label.font"));
+
+    messagePanel.add(iconLabel, BorderLayout.WEST);
     messagePanel.add(messageLabel, BorderLayout.CENTER);
 
     add(messagePanel, BorderLayout.CENTER);
 
-    JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 10));
-    buttonPanel.setBorder(BorderFactory.createEmptyBorder(0, 15, 15, 15));
+    JPanel buttonPanel = new JPanel(new BorderLayout());
+    buttonPanel.setBorder(BorderFactory.createEmptyBorder(5, 15, 15, 15));
 
     JButton okButton = new JButton("OK");
+    okButton.setPreferredSize(new Dimension(70, okButton.getPreferredSize().height));
     okButton.addActionListener(
         e -> {
           confirmed = false;
           dispose();
         });
-    okButton.setPreferredSize(new Dimension(100, okButton.getPreferredSize().height));
 
-    buttonPanel.add(okButton);
+    JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
+    rightPanel.add(okButton);
+
+    buttonPanel.add(rightPanel, BorderLayout.EAST);
 
     add(buttonPanel, BorderLayout.SOUTH);
 
-    setMinimumSize(new Dimension(350, 120));
-    setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+    setMinimumSize(new Dimension(300, 100));
   }
 
   private static String formatStagedFilesMessage(List<File> planned, List<File> done) {
