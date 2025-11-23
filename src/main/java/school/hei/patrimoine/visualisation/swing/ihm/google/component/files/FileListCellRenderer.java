@@ -1,18 +1,17 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.component.files;
 
-import static javax.swing.filechooser.FileSystemView.getFileSystemView;
 
 import java.awt.*;
 import java.io.File;
+import java.util.Objects;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.filechooser.FileSystemView;
 
 public class FileListCellRenderer extends DefaultListCellRenderer {
-  private final FileSystemView fileSystemView;
+  private final ImageIcon icon;
 
   public FileListCellRenderer() {
-    this.fileSystemView = getFileSystemView();
+    this.icon = loadFileIcon();
   }
 
   @Override
@@ -25,7 +24,7 @@ public class FileListCellRenderer extends DefaultListCellRenderer {
       return label;
     }
 
-    label.setIcon(fileSystemView.getSystemIcon(file));
+    label.setIcon(icon);
     label.setText(file.getName());
     label.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
@@ -48,5 +47,13 @@ public class FileListCellRenderer extends DefaultListCellRenderer {
     }
 
     return label;
+  }
+
+  private ImageIcon loadFileIcon() {
+    var url = getClass().getResource("/icons/file.png");
+    var icon = new ImageIcon(Objects.requireNonNull(url));
+    Image scaled = icon.getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH);
+
+    return new ImageIcon(scaled);
   }
 }
