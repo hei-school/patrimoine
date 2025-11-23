@@ -41,7 +41,7 @@ public class EvolutionPatrimoine {
   }
 
   private static boolean estDateDOperation(FluxArgent f, LocalDate t) {
-    return f.getDateOperation() == t.getDayOfMonth()
+    return t.getDayOfMonth() == Math.min(f.getDateOperation(), t.lengthOfMonth())
         && (f.getDebut().isBefore(t) || f.getDebut().isEqual(t))
         && (f.getFin().isAfter(t) || f.getFin().isEqual(t));
   }
