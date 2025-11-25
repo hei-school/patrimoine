@@ -36,7 +36,6 @@ public class SyncConfirmDialog extends JDialog {
     setLayout(new BorderLayout());
     setDefaultCloseOperation(DISPOSE_ON_CLOSE);
     setResizable(false);
-    setType(Type.UTILITY);
 
     var messagePanel = new JPanel(new BorderLayout(15, 0));
     messagePanel.setBorder(BorderFactory.createEmptyBorder(10, 15, 10, 15));

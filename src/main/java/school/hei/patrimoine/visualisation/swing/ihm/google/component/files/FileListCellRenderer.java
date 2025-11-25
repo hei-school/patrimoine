@@ -1,6 +1,5 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.component.files;
 
-
 import java.awt.*;
 import java.io.File;
 import java.util.Objects;
