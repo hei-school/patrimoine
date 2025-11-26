@@ -90,6 +90,11 @@ public class CustomBorder extends AbstractBorder {
       return this;
     }
 
+    public Builder padding(int top, int left, int bottom, int right) {
+      this.padding = new Insets(top, left, bottom, right);
+      return this;
+    }
+
     public CustomBorder build() {
       return new CustomBorder(this);
     }

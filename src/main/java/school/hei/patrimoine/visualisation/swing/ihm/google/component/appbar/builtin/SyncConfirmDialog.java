@@ -48,8 +48,7 @@ public class SyncConfirmDialog extends JDialog {
     setResizable(false);
 
     var messagePanel = new JPanel(new BorderLayout(15, 0));
-    messagePanel.setBorder(BorderFactory.createEmptyBorder(10, 15, 10, 15));
-
+    messagePanel.setBorder(CustomBorder.builder().thickness(0).padding(10, 15).build());
     var filesPanel = new JPanel();
     filesPanel.setLayout(new BoxLayout(filesPanel, BoxLayout.Y_AXIS));
 
@@ -57,7 +56,7 @@ public class SyncConfirmDialog extends JDialog {
     addFileSection(filesPanel, "Réalisés", doneFiles, loadFileIcon());
 
     var scrollPane = new JScrollPane(filesPanel);
-    scrollPane.setBorder(BorderFactory.createEmptyBorder());
+    scrollPane.setBorder(CustomBorder.builder().thickness(0).padding(0, 0).build());
     int maxHeight = 600;
     int computedHeight = Math.min(filesPanel.getPreferredSize().height, maxHeight);
     scrollPane.setPreferredSize(new Dimension(450, computedHeight));
@@ -65,7 +64,7 @@ public class SyncConfirmDialog extends JDialog {
     messagePanel.add(scrollPane, BorderLayout.CENTER);
 
     var questionLabel = new JLabel(messageText);
-    questionLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
+    questionLabel.setBorder(CustomBorder.builder().thickness(0).padding(10, 0, 0, 0).build());
 
     messagePanel.add(questionLabel, BorderLayout.SOUTH);
 
@@ -80,7 +79,7 @@ public class SyncConfirmDialog extends JDialog {
     setResizable(false);
 
     var messagePanel = new JPanel(new BorderLayout(15, 0));
-    messagePanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+    messagePanel.setBorder(CustomBorder.builder().thickness(0).padding(10, 10).build());
 
     Icon infoIcon = UIManager.getIcon("OptionPane.informationIcon");
     var iconLabel = new JLabel(infoIcon);
@@ -94,7 +93,7 @@ public class SyncConfirmDialog extends JDialog {
     add(messagePanel, BorderLayout.CENTER);
 
     var buttonPanel = new JPanel(new BorderLayout());
-    buttonPanel.setBorder(BorderFactory.createEmptyBorder(5, 15, 15, 15));
+    buttonPanel.setBorder(CustomBorder.builder().thickness(0).padding(5, 15, 15, 15).build());
 
     var okButton = new JButton("OK");
     okButton.setPreferredSize(new Dimension(70, okButton.getPreferredSize().height));
@@ -116,7 +115,7 @@ public class SyncConfirmDialog extends JDialog {
 
   private void addButtons(String confirmButtonText) {
     var buttonPanel = new JPanel(new BorderLayout());
-    buttonPanel.setBorder(BorderFactory.createEmptyBorder(5, 15, 15, 15));
+    buttonPanel.setBorder(CustomBorder.builder().thickness(0).padding(5, 15, 15, 15).build());
 
     var cancelButton = new JButton("Annuler");
     cancelButton.addActionListener(
@@ -149,7 +148,7 @@ public class SyncConfirmDialog extends JDialog {
     var label = new JLabel(title);
     label.setFont(new Font("Arial", Font.BOLD, 15));
     label.setAlignmentX(Component.LEFT_ALIGNMENT);
-    label.setBorder(BorderFactory.createEmptyBorder(0, 0, 3, 0));
+    label.setBorder(CustomBorder.builder().thickness(0).padding(0, 0, 3, 0).build());
 
     container.add(label);
 
