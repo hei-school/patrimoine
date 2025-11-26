@@ -38,6 +38,11 @@ public final class GroupePossession extends Possession {
     return typeAgregat(possessions);
   }
 
+  @Override
+  public TypeFEC getTypeFEC() {
+    return TypeFEC.AUTRE;
+  }
+
   private TypeAgregat typeAgregat(Set<Possession> possessions) {
     var typeAgregatSet = possessions.stream().map(Possession::typeAgregat).collect(toSet());
     if (typeAgregatSet.size() > 2) {

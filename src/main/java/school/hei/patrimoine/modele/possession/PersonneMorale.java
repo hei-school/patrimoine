@@ -32,4 +32,9 @@ public final class PersonneMorale extends Possession {
   public TypeAgregat typeAgregat() {
     return PATRIMOINE;
   }
+
+  @Override
+  public TypeFEC getTypeFEC() {
+    return TypeFEC.AUTRE;
+  }
 }

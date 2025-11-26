@@ -43,4 +43,9 @@ public final class RemboursementDette extends Possession {
   public TypeAgregat typeAgregat() {
     return FLUX;
   }
+
+  @Override
+  public TypeFEC getTypeFEC() {
+    return TypeFEC.CHARGE;
+  }
 }

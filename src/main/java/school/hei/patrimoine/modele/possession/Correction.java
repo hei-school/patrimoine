@@ -59,4 +59,9 @@ public final class Correction extends Possession {
   public TypeAgregat typeAgregat() {
     return CORRECTION;
   }
+
+  @Override
+  public TypeFEC getTypeFEC() {
+    return TypeFEC.AUTRE;
+  }
 }
