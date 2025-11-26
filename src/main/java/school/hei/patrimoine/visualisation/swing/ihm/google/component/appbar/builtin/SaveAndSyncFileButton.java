@@ -139,7 +139,7 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
   }
 
   private static void syncFilesWithDrive(List<File> plannedFiles, List<File> doneFiles) {
-    boolean confirmed = SyncConfirmDialog.showDialog();
+    boolean confirmed = SyncConfirmDialog.forSync();
     if (!confirmed) {
       return;
     }
@@ -198,7 +198,7 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
       return;
     }
 
-    var syncConfirmed = SyncConfirmDialog.showDialog();
+    var syncConfirmed = SyncConfirmDialog.forSync();
     if (!syncConfirmed) {
       showInfo(
           "Sauvegarde effectuée",
