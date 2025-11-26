@@ -91,6 +91,27 @@ MOT_OBJECTIF_DE
     |   'Objectif de'
     ;
 
+/* --------------------  Types de Flux d'argent  --------------------  */
+TYPE_IMMOBILISATION
+    :   'Immobilisation'
+    |   'immobilisation'
+    ;
+
+TYPE_CHARGE
+    :   'Charge'
+    |   'charge'
+    ;
+
+TYPE_PRODUIT
+    :   'Produit'
+    |   'produit'
+    ;
+
+TYPE_CCA
+    :   'CCA'
+    |   'cca'
+    ;
+
 /* --------------------  Possessions --------------------  */
 /* Trésorerie */
 ENTETE_TRESORERIES
