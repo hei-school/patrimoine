@@ -266,7 +266,7 @@ jourPart
     ;
 
 id
-    : BACKTICK (typageFlux)? text (PLUS variable)? BACKTICK
+    : BACKTICK (LCROCHET typageFlux RCROCHET)? text (PLUS variable)? BACKTICK
     ;
 
 typageFlux

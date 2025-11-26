@@ -95,16 +95,19 @@ MOT_OBJECTIF_DE
 TYPE_IMMOBILISATION
     :   'Immobilisation'
     |   'immobilisation'
+    |   'IMMO'
     ;
 
 TYPE_CHARGE
     :   'Charge'
     |   'charge'
+    |   'CHG'
     ;
 
 TYPE_PRODUIT
     :   'Produit'
     |   'produit'
+    |   'PRD'
     ;
 
 TYPE_CCA
@@ -309,6 +312,14 @@ RPAREN
 
 COLON
     :   ':'
+    ;
+
+LCROCHET
+    :   '['
+    ;
+
+RCROCHET
+    :   ']'
     ;
 
 /* Valeurs */
