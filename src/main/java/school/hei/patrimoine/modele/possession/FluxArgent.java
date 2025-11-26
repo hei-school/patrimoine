@@ -21,21 +21,8 @@ public final class FluxArgent extends Possession {
 
   private TypeFEC typeComptableFEC;
 
-  public FluxArgent(
-      String nom,
-      int dateOperation,
-      Argent fluxMensuel,
-      LocalDate fin,
-      LocalDate debut,
-      Compte compte,
-      TypeFEC typeComptableFEC) {
-    super(nom, debut, new Argent(0, fluxMensuel.devise()));
-    this.dateOperation = dateOperation;
-    this.fluxMensuel = fluxMensuel;
-    this.fin = fin;
-    this.debut = debut;
-    this.compte = compte;
-    this.compte.addFinancés(this);
+  public FluxArgent(String nom, Compte compte, LocalDate date, Argent montant, TypeFEC typeComptableFEC) {
+    this(nom, compte, date, date, date.getDayOfMonth(), montant);
     this.typeComptableFEC = typeComptableFEC;
   }
 
