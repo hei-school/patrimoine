@@ -5,4 +5,5 @@ public enum TypeFEC {
   PRODUIT,
   IMMOBILISATION,
   CHARGE,
+  AUTRE
 }
