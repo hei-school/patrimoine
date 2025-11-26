@@ -9,7 +9,7 @@ public class Screen extends JFrame {
 
     setTitle(title);
     setLocationRelativeTo(null);
-    setDefaultCloseOperation(EXIT_ON_CLOSE);
+    setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
     setPreferredSize(new Dimension(width, height));
 
     pack();

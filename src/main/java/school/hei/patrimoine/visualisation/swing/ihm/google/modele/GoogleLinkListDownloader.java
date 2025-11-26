@@ -38,9 +38,19 @@ public record GoogleLinkListDownloader(FileNameExtractor fileNameExtractor, Driv
     return GoogleApiUtilities.getDownloadDirectoryPath() + "/realises";
   }
 
+  public static String getPlannedStagedDirectoryPath() {
+    return GoogleApiUtilities.getStagingDirectoryPath() + "/realises";
+  }
+
+  public static String getDoneStagedDirectoryPath() {
+    return GoogleApiUtilities.getStagingDirectoryPath() + "/planifies";
+  }
+
   public static void setup() {
     resetDirectory(getPlannedDirectoryPath());
     resetDirectory(getDoneDirectoryPath());
+    resetDirectory(getPlannedStagedDirectoryPath());
+    resetDirectory(getDoneStagedDirectoryPath());
   }
 
   @SuppressWarnings("all")

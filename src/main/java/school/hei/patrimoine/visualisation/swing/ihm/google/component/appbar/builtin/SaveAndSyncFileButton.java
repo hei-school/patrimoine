@@ -1,12 +1,17 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.builtin;
 
+import static school.hei.patrimoine.patrilang.PatriLangTranspiler.CAS_FILE_EXTENSION;
+import static school.hei.patrimoine.patrilang.PatriLangTranspiler.TOUT_CAS_FILE_EXTENSION;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.Api.driveApi;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.MessageDialog.*;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.PatriLangStagingFileManager.*;
 
 import java.io.File;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Supplier;
 import lombok.SneakyThrows;
+import school.hei.patrimoine.google.exception.GoogleIntegrationException;
 import school.hei.patrimoine.patrilang.files.PatriLangFileWritter;
 import school.hei.patrimoine.patrilang.files.PatriLangFileWritter.FileWritterInput;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.AppContext;
@@ -15,6 +20,7 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.component.popup.Popu
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.popup.PopupMenuButton;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.AsyncTask;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.ConfirmDialog;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.GoogleLinkList;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
 
 public class SaveAndSyncFileButton extends PopupMenuButton {
@@ -31,12 +37,11 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
                         state.get("viewMode"),
                         state.get("selectedFile"),
                         state.get("selectedCasSetFile"),
+                        state.get("isPlannedSelectedFile"),
                         getNewContent.get())),
             new PopupItem(
                 "Synchroniser avec Drive",
-                e ->
-                    syncSelectedFileWithDrive(
-                        state.get("selectedFile"), state.get("selectedFileId"))),
+                e -> syncFilesWithDrive(getStagedPlannedFiles(), getStagedDoneFiles())),
             new PopupItem(
                 "Sauvegarder et synchroniser",
                 e -> {
@@ -44,51 +49,77 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
                       state.get("viewMode"),
                       state.get("selectedFile"),
                       state.get("selectedCasSetFile"),
-                      getNewContent.get(),
-                      state.get("selectedFileId"));
+                      state.get("isPlannedSelectedFile"),
+                      getNewContent.get());
                 })));
   }
 
   @SneakyThrows
-  private static void syncFile(File selectedFile, String selectedFileId) {
-    if (selectedFile == null) {
-      showError("Erreur", "Veuillez sélectionner un fichier avant de synchroniser.");
-      return;
+  private static void syncFiles(List<File> plannedFiles, List<File> doneFiles) {
+    for (File file : plannedFiles) {
+      getDriveIdOf(file, true)
+          .ifPresentOrElse(
+              id -> {
+                try {
+                  driveApi().update(id, MIME_TYPE, file);
+                } catch (GoogleIntegrationException e) {
+                  throw new RuntimeException(e);
+                }
+              },
+              () -> System.out.println("Aucun ID Drive trouvé pour planned : " + file.getName()));
     }
 
-    driveApi().update(selectedFileId, MIME_TYPE, selectedFile);
+    for (File file : doneFiles) {
+      getDriveIdOf(file, false)
+          .ifPresentOrElse(
+              id -> {
+                try {
+                  driveApi().update(id, MIME_TYPE, file);
+                } catch (GoogleIntegrationException e) {
+                  throw new RuntimeException(e);
+                }
+              },
+              () -> System.out.println("Aucun ID Drive trouvé pour done : " + file.getName()));
+    }
   }
 
-  @SneakyThrows
-  private static void saveFile(
-      AppBar.ViewMode currentMode, File selectedFile, File selectedCasSetFile, String content) {
-    if (!AppBar.ViewMode.EDIT.equals(currentMode)) {
-      showError("Erreur", "Vous devez être en mode édition pour sauvegarder.");
-      return;
-    }
-
+  private static boolean validateBeforeSave(AppBar.ViewMode currentMode, File selectedFile) {
     if (selectedFile == null) {
       showError("Erreur", "Veuillez sélectionner un fichier avant de sauvegarder.");
-      return;
+      return true;
     }
 
-    new PatriLangFileWritter()
-        .write(
-            FileWritterInput.builder()
-                .casSet(selectedCasSetFile)
-                .file(selectedFile)
-                .content(content)
-                .build());
+    if (!AppBar.ViewMode.EDIT.equals(currentMode)) {
+      showError("Erreur", "Vous devez être en mode édition pour sauvegarder.");
+      return true;
+    }
+
+    return false;
   }
 
   private static void saveSelectedFileLocally(
-      AppBar.ViewMode currentMode, File selectedFile, File selectedCasSetFile, String content) {
+      AppBar.ViewMode currentMode,
+      File selectedFile,
+      File selectedCasSetFile,
+      Boolean isPlanned,
+      String content) {
+
+    if (validateBeforeSave(currentMode, selectedFile)) {
+      return;
+    }
 
     AsyncTask.<Void>builder()
         .loadingMessage("Validation et sauvegarde du fichier...")
         .task(
             () -> {
-              saveFile(currentMode, selectedFile, selectedCasSetFile, content);
+              new PatriLangFileWritter()
+                  .write(
+                      FileWritterInput.builder()
+                          .casSet(selectedCasSetFile)
+                          .file(selectedFile)
+                          .content(content)
+                          .build());
+              saveToStaged(selectedFile, isPlanned);
               return null;
             })
         .onSuccess(
@@ -107,17 +138,24 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
         .execute();
   }
 
-  private static void syncSelectedFileWithDrive(File selectedFile, String selectedFileId) {
+  private static void syncFilesWithDrive(List<File> plannedFiles, List<File> doneFiles) {
+    boolean confirmed = SyncConfirmDialog.forSync();
+    if (!confirmed) {
+      return;
+    }
+
     AsyncTask.<Void>builder()
         .task(
             () -> {
-              syncFile(selectedFile, selectedFileId);
+              syncFiles(plannedFiles, doneFiles);
               return null;
             })
         .loadingMessage("Synchronisation avec Drive...")
         .onSuccess(
-            ignored ->
-                showInfo("Succès", "Le fichier a été synchronisé avec succès sur Google Drive."))
+            ignored -> {
+              clearAllStaged();
+              showInfo("Succès", "Le fichier a été synchronisé avec succès sur Google Drive.");
+            })
         .onError(error -> showError("Erreur", "Échec de la synchronisation"))
         .build()
         .execute();
@@ -127,29 +165,60 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
       AppBar.ViewMode currentMode,
       File selectedFile,
       File selectedCasSetFile,
-      String content,
-      String selectedFileId) {
+      Boolean isPlanned,
+      String content) {
 
-    var confirmed =
+    if (validateBeforeSave(currentMode, selectedFile)) {
+      return;
+    }
+
+    var saveConfirmed =
         ConfirmDialog.ask(
-            "Confirmer la sauvegarde et la synchronisation",
-            "Sauvegarder les modifications localement et les synchroniser avec Google"
-                + " Drive.\n"
+            "Confirmer la sauvegarde",
+            "Sauvegarder les modifications localement avant la synchronisation.\n"
                 + "Voulez-vous continuer ?");
-    if (!confirmed) {
+    if (!saveConfirmed) {
+      return;
+    }
+
+    try {
+      new PatriLangFileWritter()
+          .write(
+              FileWritterInput.builder()
+                  .casSet(selectedCasSetFile)
+                  .file(selectedFile)
+                  .content(content)
+                  .build());
+      saveToStaged(selectedFile, isPlanned != null ? isPlanned : false);
+    } catch (Exception e) {
+      if (showExceptionMessageIfRecognizedException(e)) {
+        return;
+      }
+      showError("Erreur", "Une erreur est survenue lors de l'enregistrement");
+      return;
+    }
+
+    var syncConfirmed = SyncConfirmDialog.forSync();
+    if (!syncConfirmed) {
+      showInfo(
+          "Sauvegarde effectuée",
+          "Le fichier a été sauvegardé localement. Vous pouvez le synchroniser plus tard.");
       return;
     }
 
     AsyncTask.<Void>builder()
+        .loadingMessage("Synchronisation avec Drive...")
         .task(
             () -> {
-              saveFile(currentMode, selectedFile, selectedCasSetFile, content);
-              syncFile(selectedFile, selectedFileId);
+              List<File> stagedPlanned = getStagedPlannedFiles();
+              List<File> stagedDone = getStagedDoneFiles();
+              syncFiles(stagedPlanned, stagedDone);
               return null;
             })
         .onSuccess(
             result -> {
               AppContext.getDefault().globalState().update("isAnyFileModified", true);
+              clearAllStaged();
               showInfo(
                   "Succès",
                   "Le fichier a été sauvegardé localement et synchronisé avec succès sur"
@@ -164,5 +233,20 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
             })
         .build()
         .execute();
+  }
+
+  private static Optional<String> getDriveIdOf(File file, boolean isPlanned) {
+    GoogleLinkList<GoogleLinkList.NamedID> ids = AppContext.getDefault().getData("named-ids");
+    if (file == null) return Optional.empty();
+
+    String filename =
+        file.getName().replace(TOUT_CAS_FILE_EXTENSION, "").replace(CAS_FILE_EXTENSION, "");
+
+    var listToSearch = isPlanned ? ids.planned() : ids.done();
+
+    return listToSearch.stream()
+        .filter(n -> n.name().equals(filename))
+        .map(GoogleLinkList.NamedID::id)
+        .findFirst();
   }
 }
