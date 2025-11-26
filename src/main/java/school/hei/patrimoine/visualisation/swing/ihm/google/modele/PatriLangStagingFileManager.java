@@ -22,22 +22,6 @@ public class PatriLangStagingFileManager {
     return GoogleApiUtilities.getStagingDirectoryPath() + "/realises";
   }
 
-  public static void setup() {
-    resetDirectory(getStagedPlannedDir());
-    resetDirectory(getStagedDoneDir());
-  }
-
-  private static void resetDirectory(String path) {
-    var dir = Paths.get(path);
-    try {
-      if (!Files.exists(dir)) {
-        Files.createDirectories(dir);
-      }
-    } catch (IOException e) {
-      throw new RuntimeException("Staged directory creation error: " + path, e);
-    }
-  }
-
   public static void saveToStaged(File file, boolean isPlanned) {
     try {
       String targetDir = isPlanned ? getStagedPlannedDir() : getStagedDoneDir();
