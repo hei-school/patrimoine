@@ -14,8 +14,11 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.component.CustomBord
 public class SyncConfirmDialog extends JDialog {
   @Getter private boolean confirmed = false;
 
-  public SyncConfirmDialog() {
-    super((Frame) null, "Confirmer la synchronisation", true);
+  public SyncConfirmDialog(boolean isQuitDialog) {
+    super(
+        (Frame) null,
+        isQuitDialog ? "Fichiers non synchronisés" : "Confirmer la synchronisation",
+        true);
 
     List<File> plannedFiles = getStagedPlannedFiles();
     List<File> doneFiles = getStagedDoneFiles();
@@ -23,7 +26,13 @@ public class SyncConfirmDialog extends JDialog {
     boolean hasFiles = !plannedFiles.isEmpty() || !doneFiles.isEmpty();
 
     if (hasFiles) {
-      initConfirmComponents(plannedFiles, doneFiles);
+      String messageText =
+          isQuitDialog
+              ? "Il reste des fichiers non synchronisés. Voulez-vous vraiment quitter ?"
+              : "Voulez-vous synchroniser ces fichiers avec Google Drive ?";
+
+      String confirmButtonText = isQuitDialog ? "Quitter" : "Synchroniser";
+      initConfirmComponents(plannedFiles, doneFiles, messageText, confirmButtonText);
     } else {
       initInfoComponents();
     }
@@ -32,7 +41,8 @@ public class SyncConfirmDialog extends JDialog {
     setLocationRelativeTo(null);
   }
 
-  private void initConfirmComponents(List<File> plannedFiles, List<File> doneFiles) {
+  private void initConfirmComponents(
+      List<File> plannedFiles, List<File> doneFiles, String messageText, String confirmButtonText) {
     setLayout(new BorderLayout());
     setDefaultCloseOperation(DISPOSE_ON_CLOSE);
     setResizable(false);
@@ -54,14 +64,14 @@ public class SyncConfirmDialog extends JDialog {
 
     messagePanel.add(scrollPane, BorderLayout.CENTER);
 
-    var questionLabel = new JLabel("Voulez-vous synchroniser ces fichiers avec Google Drive ?");
+    var questionLabel = new JLabel(messageText);
     questionLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
 
     messagePanel.add(questionLabel, BorderLayout.SOUTH);
 
     add(messagePanel, BorderLayout.CENTER);
 
-    addButtons();
+    addButtons(confirmButtonText);
   }
 
   private void initInfoComponents() {
@@ -104,7 +114,7 @@ public class SyncConfirmDialog extends JDialog {
     setMinimumSize(new Dimension(300, 100));
   }
 
-  private void addButtons() {
+  private void addButtons(String confirmButtonText) {
     var buttonPanel = new JPanel(new BorderLayout());
     buttonPanel.setBorder(BorderFactory.createEmptyBorder(5, 15, 15, 15));
 
@@ -115,7 +125,7 @@ public class SyncConfirmDialog extends JDialog {
           dispose();
         });
 
-    var confirmButton = new JButton("Synchroniser");
+    var confirmButton = new JButton(confirmButtonText);
     confirmButton.setPreferredSize(new Dimension(120, cancelButton.getPreferredSize().height));
     confirmButton.addActionListener(
         e -> {
@@ -180,8 +190,14 @@ public class SyncConfirmDialog extends JDialog {
     return new ImageIcon(scaled);
   }
 
-  public static boolean showDialog() {
-    SyncConfirmDialog dialog = new SyncConfirmDialog();
+  public static boolean forSync() {
+    var dialog = new SyncConfirmDialog(false);
+    dialog.setVisible(true);
+    return dialog.isConfirmed();
+  }
+
+  public static boolean forQuit() {
+    var dialog = new SyncConfirmDialog(true);
     dialog.setVisible(true);
     return dialog.isConfirmed();
   }
