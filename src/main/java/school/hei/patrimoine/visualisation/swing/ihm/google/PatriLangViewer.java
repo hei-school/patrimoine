@@ -1,5 +1,6 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google;
 
+import static java.awt.Toolkit.getDefaultToolkit;
 import static javax.swing.SwingUtilities.invokeLater;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.PatriLangStagingFileManager.getStagedDoneFiles;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.PatriLangStagingFileManager.getStagedPlannedFiles;
@@ -19,7 +20,11 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.pages.*;
 
 public class PatriLangViewer extends App {
   public PatriLangViewer() {
-    super("patrilang-app", "Patrimoine", 1_400, 900);
+    super(
+        "patrilang-app",
+        "Patrimoine",
+        getDefaultToolkit().getScreenSize().width,
+        getDefaultToolkit().getScreenSize().height);
 
     addWindowListener(
         new WindowAdapter() {
