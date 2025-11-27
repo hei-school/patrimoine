@@ -52,7 +52,7 @@ public class PatriLangFilesPage extends LazyPage {
                 "viewMode",
                 ViewMode.VIEW,
                 "fontSize",
-                14,
+                12,
                 "commentPagination",
                 new Pagination(COMMENT_PAGE_SIZE, null)));
 

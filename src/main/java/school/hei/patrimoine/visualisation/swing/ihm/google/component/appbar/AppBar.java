@@ -5,6 +5,7 @@ import java.util.List;
 import javax.swing.*;
 import lombok.Getter;
 import school.hei.patrimoine.google.model.User;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.CustomBorder;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.ImageComponent;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.AppContext;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
@@ -60,8 +61,12 @@ public class AppBar extends JPanel {
 
     var fontSizeField = new JTextField(String.valueOf((int) state.get("fontSize")), 3);
     fontSizeField.setBorder(
-        BorderFactory.createCompoundBorder(
-            fontSizeField.getBorder(), BorderFactory.createEmptyBorder(8, 6, 8, 6)));
+        CustomBorder.builder()
+            .padding(8, 8, 8, 8)
+            .borderColor(Color.LIGHT_GRAY)
+            .thickness(1)
+            .radius(8)
+            .build());
 
     increaseFontButton.addActionListener(e -> adjustControlledFontSize(state, 1, fontSizeField));
     decreaseFontButton.addActionListener(e -> adjustControlledFontSize(state, -1, fontSizeField));
