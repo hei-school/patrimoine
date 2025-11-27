@@ -94,19 +94,16 @@ MOT_OBJECTIF_DE
 /* --------------------  Types de Flux d'argent  --------------------  */
 TYPE_IMMOBILISATION
     :   'Immobilisation'
-    |   'immobilisation'
     |   'IMMO'
     ;
 
 TYPE_CHARGE
     :   'Charge'
-    |   'charge'
     |   'CHG'
     ;
 
 TYPE_PRODUIT
     :   'Produit'
-    |   'produit'
     |   'PRD'
     ;
 
