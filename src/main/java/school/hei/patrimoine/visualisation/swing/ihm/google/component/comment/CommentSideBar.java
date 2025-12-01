@@ -6,12 +6,10 @@ import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.Messag
 
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import java.awt.*;
-import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.List;
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import school.hei.patrimoine.google.api.CommentApi;
@@ -261,15 +259,5 @@ public class CommentSideBar extends JPanel {
             })
         .build()
         .execute();
-  }
-
-  private static Image loadAddIcon() {
-    try {
-      var addIcon =
-          ImageIO.read(Objects.requireNonNull(CommentCard.class.getResource("/icons/plus.png")));
-      return addIcon.getScaledInstance(15, 15, Image.SCALE_SMOOTH);
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
   }
 }
