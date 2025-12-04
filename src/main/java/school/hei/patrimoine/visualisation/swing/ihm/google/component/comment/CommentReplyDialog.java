@@ -1,7 +1,6 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.component.comment;
 
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.MessageDialog.showError;
-import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.MessageDialog.showInfo;
 
 import java.awt.*;
 import javax.swing.*;
@@ -78,10 +77,9 @@ public class CommentReplyDialog extends Dialog {
               commentApi.reply(fileId, parentComment.id(), textArea.getText().trim());
               return null;
             })
-        .loadingMessage("Envoi en cours...")
+        .withDialogLoading(false)
         .onSuccess(
             result -> {
-              showInfo("Succès", "Le commentaire a été ajouté avec succès.");
               dispose();
               refresh.run();
             })
