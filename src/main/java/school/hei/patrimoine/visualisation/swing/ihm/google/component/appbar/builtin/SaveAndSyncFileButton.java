@@ -11,11 +11,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 import lombok.SneakyThrows;
+import school.hei.patrimoine.google.api.CommentApi;
 import school.hei.patrimoine.google.exception.GoogleIntegrationException;
 import school.hei.patrimoine.patrilang.files.PatriLangFileWritter;
 import school.hei.patrimoine.patrilang.files.PatriLangFileWritter.FileWritterInput;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.AppContext;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.AppBar;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.comment.LocalCommentManager;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.popup.PopupItem;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.popup.PopupMenuButton;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.AsyncTask;
@@ -148,12 +150,14 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
         .task(
             () -> {
               syncFiles(plannedFiles, doneFiles);
+              syncAllPendingComments();
               return null;
             })
         .loadingMessage("Synchronisation avec Drive...")
         .onSuccess(
             ignored -> {
               clearAllStaged();
+              LocalCommentManager.getInstance().clearAllPendingComments();
               showInfo("Succès", "Le fichier a été synchronisé avec succès sur Google Drive.");
             })
         .onError(error -> showError("Erreur", "Échec de la synchronisation"))
@@ -213,6 +217,7 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
               List<File> stagedPlanned = getStagedPlannedFiles();
               List<File> stagedDone = getStagedDoneFiles();
               syncFiles(stagedPlanned, stagedDone);
+              syncAllPendingComments();
               return null;
             })
         .onSuccess(
@@ -233,6 +238,30 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
             })
         .build()
         .execute();
+  }
+
+  private static void syncAllPendingComments() {
+    CommentApi commentApi = AppContext.getDefault().getData("comment-api");
+    LocalCommentManager localManager = LocalCommentManager.getInstance();
+
+    List<String> filesWithPendingComments = localManager.getFilesWithPendingChanges();
+
+    if (filesWithPendingComments.isEmpty()) {
+      return;
+    }
+
+    boolean hasErrors = false;
+
+    for (String fileId : filesWithPendingComments) {
+      try {
+        commentApi.syncComments(fileId);
+      } catch (GoogleIntegrationException e) {
+        hasErrors = true;
+      }
+    }
+    if (hasErrors) {
+      throw new RuntimeException("Some comments could not be synchronized.");
+    }
   }
 
   private static Optional<String> getDriveIdOf(File file, boolean isPlanned) {
