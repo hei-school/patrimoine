@@ -16,6 +16,12 @@ fragment STRING
     :   ([\p{L}] | STRING_RAW_VALUE) (([\p{L}\p{N}_]) | STRING_RAW_VALUE)*
     ;
 
+fragment URL_CHAR : ~[ \t\r\n<>"'()];
+
+URL
+    :   ('http://' | 'https://') URL_CHAR+
+    ;
+
 /* -------------------- Base --------------------  */
 /* Cas */
 ENTETE_GENERAL
@@ -108,6 +114,15 @@ ENTETE_CREANCES
 /* Dettes */
 ENTETE_DETTES
     :   'Dettes'
+    ;
+
+/* Pièces justificative  */
+ENTETE_PIECES_JUSTIFICATIVES
+    :   'Pièces Justificatives'
+    ;
+
+LIEN_PIECE_JUSTIFICATIVE
+    :   'Operations lier'
     ;
 
 /* Opérations */
