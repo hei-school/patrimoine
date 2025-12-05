@@ -207,12 +207,19 @@ public class CommentSideBar extends JPanel {
             })
         .onError(
             error ->
-                showError("Erreur", "Impossible d'envoyer le commentaire. Veuillez réessayer."))
+                showError("Erreur", "Impossible de résoudre le commentaire. Veuillez réessayer."))
         .build()
         .execute();
   }
 
   static void removeComment(String fileId, Comment toRemove, Runnable refresh) {
+    boolean canDelete =
+        toRemove.id().startsWith("local_") || toRemove.author() != null && toRemove.author().me();
+    if (!canDelete) {
+      showError("Erreur", "Vous ne pouvez supprimer que vos propres commentaires.");
+      return;
+    }
+
     int confirm =
         JOptionPane.showConfirmDialog(
             AppContext.getDefault().app(),
