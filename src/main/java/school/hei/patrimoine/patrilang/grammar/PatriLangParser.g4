@@ -10,6 +10,7 @@ options { tokenVocab=PatriLangLexer; }
 document
     :   cas
     |   toutCas
+    |   pj
     ;
 
 /* ToutCas */
@@ -51,6 +52,14 @@ cas
 
 sectionCasGeneral
     :   HASHES ENTETE_GENERAL ligneDateSpecification ligneDateFinSimulation ligneCasNom ligneDevise
+    ;
+
+pj
+    :   docPj sectionPossesseurs? sectionPiecesJustificatives EOF
+    ;
+
+docPj
+    :   HASHES ENTETE_PIECES_JUSTIFICATIVES ligneDateSpecification ligneDateFinSimulation? ligneCasNom? ligneDevise?
     ;
 
 ligneCasNom
@@ -108,6 +117,11 @@ sectionDettes
     :   HASHES ENTETE_DETTES compteElement*
     ;
 
+/* Pieces justificatives */
+sectionPiecesJustificatives
+    :   HASHES LIEN_PIECE_JUSTIFICATIVE pieceJustificative*
+    ;
+
 compteElement
     :   compte
     |   MUL variable
@@ -162,6 +176,10 @@ operation
     |   ligneVariableDeclaration
     |   ligneCasOperations
 
+    ;
+
+pieceJustificative
+    :   MUL id COMMA? dateValue=variable COMMA? pjUrl=URL
     ;
 
 ligneCasOperations
