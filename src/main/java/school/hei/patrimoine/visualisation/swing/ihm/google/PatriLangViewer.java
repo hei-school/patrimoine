@@ -14,6 +14,7 @@ import school.hei.patrimoine.google.GoogleApiUtilities;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.App;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.Page;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.builtin.SyncConfirmDialog;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.comment.LocalCommentManager;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.GoogleLinkListDownloader;
 import school.hei.patrimoine.visualisation.swing.ihm.google.pages.*;
 
@@ -25,10 +26,13 @@ public class PatriLangViewer extends App {
         new WindowAdapter() {
           @Override
           public void windowClosing(WindowEvent e) {
+            LocalCommentManager localCommentManager = LocalCommentManager.getInstance();
+
             List<File> plannedFiles = getStagedPlannedFiles();
             List<File> doneFiles = getStagedDoneFiles();
+            boolean hasPendingComments = localCommentManager.hasAnyPendingComments();
 
-            if (plannedFiles.isEmpty() && doneFiles.isEmpty()) {
+            if (plannedFiles.isEmpty() && doneFiles.isEmpty() && !hasPendingComments) {
               dispose();
               return;
             }
