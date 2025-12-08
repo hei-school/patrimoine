@@ -245,7 +245,11 @@ public class CommentApi {
 
   public void delete(String fileId, Comment comment) throws GoogleIntegrationException {
     try {
-      localCommentManager.addPendingDeletion(fileId, comment.id());
+      if (comment.id().startsWith("local_")) {
+        localCommentManager.removePendingComment(fileId, comment.id());
+      } else {
+        localCommentManager.addPendingDeletion(fileId, comment.id());
+      }
       localCommentManager.cleanUpCommentActions(fileId, comment.id());
     } catch (Exception e) {
       throw new GoogleIntegrationException("Failed to delete comment locally " + comment.id(), e);
@@ -327,9 +331,14 @@ public class CommentApi {
         continue;
       }
 
-      if (parentCommentId.startsWith("local_")) {
-        continue;
-      }
+      var reply = new Reply().setContent(pendingReply.content());
+
+      driveApi
+          .driveService()
+          .replies()
+          .create(fileId, parentCommentId, reply)
+          .setFields("id")
+          .execute();
 
       localCommentManager.removePendingReply(fileId, pendingReply.localId());
     }
