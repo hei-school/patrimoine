@@ -53,6 +53,10 @@ public class LocalCommentManager {
     if (comments == null) return;
 
     comments.removeIf(comment -> comment.localId().equals(localId));
+
+    if (comments.isEmpty()) {
+      pendingCommentsByFile.remove(fileId);
+    }
   }
 
   public void addPendingReply(String fileId, String parentCommentId, String content, User author) {
@@ -79,6 +83,10 @@ public class LocalCommentManager {
     if (replies == null) return;
 
     replies.removeIf(reply -> reply.localId().equals(localId));
+
+    if (replies.isEmpty()) {
+      pendingRepliesByFile.remove(fileId);
+    }
   }
 
   public void addPendingResolution(String fileId, String commentId) {
@@ -97,6 +105,10 @@ public class LocalCommentManager {
     if (resolutions == null) return;
 
     resolutions.removeIf(resolution -> resolution.commentId().equals(commentId));
+
+    if (resolutions.isEmpty()) {
+      pendingResolutionsByFile.remove(fileId);
+    }
   }
 
   public void addPendingDeletion(String fileId, String commentId) {
@@ -115,6 +127,10 @@ public class LocalCommentManager {
     if (deletions == null) return;
 
     deletions.removeIf(deletion -> deletion.commentId().equals(commentId));
+
+    if (deletions.isEmpty()) {
+      pendingDeletionsByFile.remove(fileId);
+    }
   }
 
   public void remapPendingActions(String fileId, Map<String, String> newMappings) {
@@ -203,10 +219,18 @@ public class LocalCommentManager {
 
     if (replies != null) {
       replies.removeIf(reply -> reply.parentCommentId().equals(commentId));
+
+      if (replies.isEmpty()) {
+        pendingRepliesByFile.remove(fileId);
+      }
     }
 
     if (resolutions != null) {
       resolutions.removeIf(resolution -> resolution.commentId().equals(commentId));
+
+      if (resolutions.isEmpty()) {
+        pendingResolutionsByFile.remove(fileId);
+      }
     }
   }
 
