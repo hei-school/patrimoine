@@ -38,7 +38,7 @@ public class CommentSideBar extends JPanel {
     this.state = state;
     this.apiCache = ApiCache.getInstance();
     this.commentApi = AppContext.getDefault().getData("comment-api");
-    this.commentListPanel = new CommentListPanel(this, true, this::refreshCurrentFileCommentsCache);
+    this.commentListPanel = new CommentListPanel(this, true, this::refreshCommentsCache);
     this.footer = new CommentFooter(this::goToPreviousPage, this::goToNextPage);
 
     addTopPanel();
@@ -79,8 +79,7 @@ public class CommentSideBar extends JPanel {
             + "</table></html>";
     var button = new Button(buttonLabel);
     button.setPreferredSize(new Dimension(110, 35));
-    button.addActionListener(
-        e -> new CommentAddDialog(state, this::refreshCurrentFileCommentsCache));
+    button.addActionListener(e -> new CommentAddDialog(state, this::refreshCommentsCache));
     button.setToolTipText("Ajouter un commentaire");
 
     return button;
@@ -172,11 +171,8 @@ public class CommentSideBar extends JPanel {
     }
   }
 
-  private void refreshCurrentFileCommentsCache() {
-    if (state.get("selectedFile") != null) {
-      this.apiCache.invalidate(
-          COMMENTS_CACHE_KEY, cacheKey -> cacheKey.startsWith(state.get("selectedFileId")));
-    }
+  public void refreshCommentsCache() {
+    this.apiCache.invalidate(COMMENTS_CACHE_KEY);
 
     this.update();
   }
