@@ -39,7 +39,14 @@ public class LocalCommentManager {
   public void addPendingComment(String fileId, String content, User author) {
     String localId = generateLocalId();
     var pendingComment =
-        new PendingComment(localId, fileId, content, Instant.now(), author, SyncStatus.PENDING_ADD);
+        PendingComment.builder()
+            .localId(localId)
+            .fileId(fileId)
+            .content(content)
+            .createdAt(Instant.now())
+            .author(author)
+            .status(SyncStatus.PENDING_ADD)
+            .build();
 
     pendingCommentsByFile.computeIfAbsent(fileId, k -> new ArrayList<>()).add(pendingComment);
   }
@@ -62,14 +69,14 @@ public class LocalCommentManager {
   public void addPendingReply(String fileId, String parentCommentId, String content, User author) {
     String localId = generateLocalId();
     var pendingReply =
-        new PendingReply(
-            localId,
-            fileId,
-            parentCommentId,
-            content,
-            Instant.now(),
-            author,
-            SyncStatus.PENDING_REPLY);
+        PendingReply.builder()
+            .localId(localId)
+            .parentCommentId(parentCommentId)
+            .content(content)
+            .createdAt(Instant.now())
+            .author(author)
+            .status(SyncStatus.PENDING_ADD)
+            .build();
 
     pendingRepliesByFile.computeIfAbsent(fileId, k -> new ArrayList<>()).add(pendingReply);
   }
@@ -91,7 +98,12 @@ public class LocalCommentManager {
 
   public void addPendingResolution(String fileId, String commentId) {
     var pendingResolution =
-        new PendingResolution(fileId, commentId, Instant.now(), SyncStatus.PENDING_RESOLVE);
+        PendingResolution.builder()
+            .fileId(fileId)
+            .commentId(commentId)
+            .resolvedAt(Instant.now())
+            .status(SyncStatus.PENDING_RESOLVE)
+            .build();
 
     pendingResolutionsByFile.computeIfAbsent(fileId, k -> new ArrayList<>()).add(pendingResolution);
   }
@@ -113,7 +125,12 @@ public class LocalCommentManager {
 
   public void addPendingDeletion(String fileId, String commentId) {
     var pendingDeletion =
-        new PendingDeletion(fileId, commentId, Instant.now(), SyncStatus.PENDING_DELETE);
+        PendingDeletion.builder()
+            .fileId(fileId)
+            .commentId(commentId)
+            .deletedAt(Instant.now())
+            .status(SyncStatus.PENDING_DELETE)
+            .build();
 
     pendingDeletionsByFile.computeIfAbsent(fileId, k -> new ArrayList<>()).add(pendingDeletion);
   }
@@ -146,14 +163,14 @@ public class LocalCommentManager {
           String remoteId = fileMappings.get(reply.parentCommentId());
           if (remoteId != null) {
             PendingReply remapped =
-                new PendingReply(
-                    reply.localId(),
-                    reply.fileId(),
-                    remoteId,
-                    reply.content(),
-                    reply.createdAt(),
-                    reply.author(),
-                    reply.status());
+                PendingReply.builder()
+                    .localId(reply.localId())
+                    .fileId(reply.fileId())
+                    .parentCommentId(remoteId)
+                    .content(reply.content())
+                    .author(reply.author())
+                    .status(reply.status())
+                    .build();
             remappedReplies.add(remapped);
           } else {
             remappedReplies.add(reply);
@@ -173,8 +190,12 @@ public class LocalCommentManager {
           String remoteId = fileMappings.get(resolution.commentId());
           if (remoteId != null) {
             PendingResolution remapped =
-                new PendingResolution(
-                    resolution.fileId(), remoteId, resolution.resolvedAt(), resolution.status());
+                PendingResolution.builder()
+                    .fileId(resolution.fileId())
+                    .commentId(remoteId)
+                    .resolvedAt(resolution.resolvedAt())
+                    .status(resolution.status())
+                    .build();
             remappedResolutions.add(remapped);
           } else {
             remappedResolutions.add(resolution);
@@ -194,8 +215,12 @@ public class LocalCommentManager {
           String remoteId = fileMappings.get(deletion.commentId());
           if (remoteId != null) {
             PendingDeletion remapped =
-                new PendingDeletion(
-                    deletion.fileId(), remoteId, deletion.deletedAt(), deletion.status());
+                PendingDeletion.builder()
+                    .fileId(deletion.fileId())
+                    .commentId(remoteId)
+                    .deletedAt(deletion.deletedAt())
+                    .status(deletion.status())
+                    .build();
             remappedDeletions.add(remapped);
           } else {
             remappedDeletions.add(deletion);
