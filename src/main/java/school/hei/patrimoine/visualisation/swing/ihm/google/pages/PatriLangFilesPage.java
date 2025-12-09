@@ -41,6 +41,7 @@ public class PatriLangFilesPage extends LazyPage {
 
   private HtmlViewer htmlViewer;
   private Button addImprevuButton;
+  private CommentSideBar commentSideBar;
 
   public PatriLangFilesPage() {
     super(PAGE_NAME);
@@ -95,7 +96,13 @@ public class PatriLangFilesPage extends LazyPage {
         new AppBar(
             List.of(
                 builtInViewModeSelect(state),
-                new SaveAndSyncFileButton(state, () -> getHtmlViewer().getText()),
+                new SaveAndSyncFileButton(
+                    state,
+                    () -> getHtmlViewer().getText(),
+                    () -> {
+                      getCommentSideBar().refreshCommentsCache();
+                      return null;
+                    }),
                 evolutionGraphicButton(),
                 recoupementButton(),
                 addImprevuButton),
@@ -109,9 +116,10 @@ public class PatriLangFilesPage extends LazyPage {
     horizontalSplit.setLeftComponent(new FileSideBar(state));
 
     this.htmlViewer = new HtmlViewer(state);
+    this.commentSideBar = new CommentSideBar(state);
     var rightSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
     rightSplit.setLeftComponent(htmlViewer.toScrollPane());
-    rightSplit.setRightComponent(new CommentSideBar(state));
+    rightSplit.setRightComponent(commentSideBar);
     rightSplit.setDividerLocation(700);
 
     horizontalSplit.setRightComponent(rightSplit);

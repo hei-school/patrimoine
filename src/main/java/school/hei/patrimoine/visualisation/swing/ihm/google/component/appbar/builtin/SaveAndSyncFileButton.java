@@ -9,6 +9,7 @@ import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.PatriL
 import java.io.File;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.Callable;
 import java.util.function.Supplier;
 import lombok.SneakyThrows;
 import school.hei.patrimoine.google.api.CommentApi;
@@ -28,7 +29,8 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
 public class SaveAndSyncFileButton extends PopupMenuButton {
   private static final String MIME_TYPE = "application/octet-stream";
 
-  public SaveAndSyncFileButton(State state, Supplier<String> getNewContent) {
+  public SaveAndSyncFileButton(
+      State state, Supplier<String> getNewContent, Callable<Void> onSuccess) {
     super(
         "Sauvegarder / Synchroniser",
         List.of(
@@ -43,7 +45,7 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
                         getNewContent.get())),
             new PopupItem(
                 "Synchroniser avec Drive",
-                e -> syncFilesWithDrive(getStagedPlannedFiles(), getStagedDoneFiles())),
+                e -> syncFilesWithDrive(getStagedPlannedFiles(), getStagedDoneFiles(), onSuccess)),
             new PopupItem(
                 "Sauvegarder et synchroniser",
                 e -> {
@@ -52,7 +54,8 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
                       state.get("selectedFile"),
                       state.get("selectedCasSetFile"),
                       state.get("isPlannedSelectedFile"),
-                      getNewContent.get());
+                      getNewContent.get(),
+                      onSuccess);
                 })));
   }
 
@@ -140,7 +143,8 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
         .execute();
   }
 
-  private static void syncFilesWithDrive(List<File> plannedFiles, List<File> doneFiles) {
+  private static void syncFilesWithDrive(
+      List<File> plannedFiles, List<File> doneFiles, Callable<Void> onSuccess) {
     boolean confirmed = SyncConfirmDialog.forSync();
     if (!confirmed) {
       return;
@@ -159,6 +163,11 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
               clearAllStaged();
               LocalCommentManager.getInstance().clearAllPendingComments();
               showInfo("Succès", "Le fichier a été synchronisé avec succès sur Google Drive.");
+              try {
+                onSuccess.call();
+              } catch (Exception e) {
+                throw new RuntimeException(e);
+              }
             })
         .onError(error -> showError("Erreur", "Échec de la synchronisation"))
         .build()
@@ -170,7 +179,8 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
       File selectedFile,
       File selectedCasSetFile,
       Boolean isPlanned,
-      String content) {
+      String content,
+      Callable<Void> onSuccess) {
 
     if (validateBeforeSave(currentMode, selectedFile)) {
       return;
@@ -228,6 +238,11 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
                   "Succès",
                   "Le fichier a été sauvegardé localement et synchronisé avec succès sur"
                       + " Google Drive.");
+              try {
+                onSuccess.call();
+              } catch (Exception e) {
+                throw new RuntimeException(e);
+              }
             })
         .onError(
             error -> {
