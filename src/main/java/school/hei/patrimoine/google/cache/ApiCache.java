@@ -32,8 +32,8 @@ public class ApiCache {
     };
   }
 
-  public void invalidate(String type, String key) {
-    caches.getOrDefault(type, Map.of()).remove(key);
+  public void invalidate(String type) {
+    caches.keySet().removeIf(k -> k.equals(type));
   }
 
   public void invalidate(String type, Predicate<String> predicate) {
