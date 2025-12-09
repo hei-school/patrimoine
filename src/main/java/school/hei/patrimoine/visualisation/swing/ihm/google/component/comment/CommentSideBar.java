@@ -2,16 +2,12 @@ package school.hei.patrimoine.visualisation.swing.ihm.google.component.comment;
 
 import static school.hei.patrimoine.google.api.CommentApi.COMMENTS_CACHE_KEY;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.MessageDialog.showError;
-import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.MessageDialog.showInfo;
 
-import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import java.awt.*;
-import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.List;
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import school.hei.patrimoine.google.api.CommentApi;
@@ -204,15 +200,14 @@ public class CommentSideBar extends JPanel {
               commentApi.resolve(fileId, toResolve);
               return null;
             })
-        .loadingMessage("Envoi en cours...")
+        .withDialogLoading(false)
         .onSuccess(
             result -> {
-              showInfo("Succès", "Le commentaire a été envoyé avec succès.");
               refresh.run();
             })
         .onError(
             error ->
-                showError("Erreur", "Impossible d'envoyer le commentaire. Veuillez réessayer."))
+                showError("Erreur", "Impossible de résoudre le commentaire. Veuillez réessayer."))
         .build()
         .execute();
   }
@@ -236,40 +231,16 @@ public class CommentSideBar extends JPanel {
               commentApi.delete(fileId, toRemove);
               return null;
             })
-        .loadingMessage("Suppression en cours...")
+        .withDialogLoading(false)
         .onSuccess(
             result -> {
-              showInfo("Succès", "Le commentaire a bien été supprimé.");
               refresh.run();
             })
         .onError(
             error -> {
-              String userMessage;
-
-              Throwable cause = error.getCause();
-              if (cause instanceof GoogleJsonResponseException gje
-                  && gje.getStatusCode() == 403
-                  && gje.getDetails() != null
-                  && gje.getDetails().getErrors().stream()
-                      .anyMatch(err -> "insufficientFilePermissions".equals(err.getReason()))) {
-                userMessage = "Vous ne pouvez supprimer que vos propres commentaires.";
-              } else {
-                userMessage =
-                    "Le commentaire n'a pas pu être supprimé correctement. Veuillez réessayer.";
-              }
-              showError("Erreur", userMessage);
+              showError("Erreur", "Impossible de supprimer le commentaire. Veuillez réessayer.");
             })
         .build()
         .execute();
-  }
-
-  private static Image loadAddIcon() {
-    try {
-      var addIcon =
-          ImageIO.read(Objects.requireNonNull(CommentCard.class.getResource("/icons/plus.png")));
-      return addIcon.getScaledInstance(15, 15, Image.SCALE_SMOOTH);
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
   }
 }
