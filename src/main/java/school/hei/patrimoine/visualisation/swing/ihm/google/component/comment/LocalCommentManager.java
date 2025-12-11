@@ -73,11 +73,12 @@ public class LocalCommentManager {
     var pendingReply =
         PendingReply.builder()
             .localId(localId)
+            .fileId(fileId)
             .parentCommentId(parentCommentId)
             .content(content)
             .createdAt(Instant.now())
             .author(author)
-            .status(SyncStatus.PENDING_ADD)
+            .status(SyncStatus.PENDING_REPLY)
             .build();
 
     pendingRepliesByFile.computeIfAbsent(fileId, k -> new ArrayList<>()).add(pendingReply);
