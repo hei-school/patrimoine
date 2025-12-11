@@ -15,6 +15,9 @@ import school.hei.patrimoine.google.model.User;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.AppContext;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.comment.LocalCommentManager;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.comment.pending.PendingComment;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.comment.pending.PendingDeletion;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.comment.pending.PendingReply;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.comment.pending.PendingResolution;
 
 public class CommentApi {
   private final DriveApi driveApi;
@@ -101,36 +104,50 @@ public class CommentApi {
     Map<String, String> idMapping = localCommentManager.getIdMappingsForFile(fileId);
     User currentUser = AppContext.getDefault().getData("connected-user");
 
+    removePendingDeletions(allComments, pendingDeletions, idMapping);
+
+    addPendingComments(allComments, pendingComments, pendingDeletions, idMapping, currentUser);
+
+    applyPendingResolutions(allComments, pendingResolutions, pendingDeletions, idMapping);
+
+    addPendingReplies(allComments, pendingReplies, pendingDeletions, idMapping, currentUser);
+
+    return allComments.stream()
+        .sorted(Comparator.comparing(Comment::createdAt).reversed())
+        .toList();
+  }
+
+  private void removePendingDeletions(
+      List<Comment> allComments,
+      List<PendingDeletion> pendingDeletions,
+      Map<String, String> idMapping) {
+
     allComments.removeIf(
         comment -> {
           String commentId = comment.id();
-
           return pendingDeletions.stream()
               .anyMatch(
                   deletion -> {
                     String deletionId = deletion.commentId();
                     String normalizedDeletionId = idMapping.getOrDefault(deletionId, deletionId);
-
                     return normalizedDeletionId.equals(commentId);
                   });
         });
+  }
+
+  private void addPendingComments(
+      List<Comment> allComments,
+      List<PendingComment> pendingComments,
+      List<PendingDeletion> pendingDeletions,
+      Map<String, String> idMapping,
+      User currentUser) {
 
     for (var pending : pendingComments) {
-      boolean isDeleted =
-          pendingDeletions.stream()
-              .anyMatch(
-                  deletion -> {
-                    String deletionId = deletion.commentId();
-                    String normalizedDeletionId = idMapping.getOrDefault(deletionId, deletionId);
-                    String normalizedLocalId =
-                        idMapping.getOrDefault(pending.localId(), pending.localId());
-
-                    return normalizedDeletionId.equals(normalizedLocalId);
-                  });
-      if (isDeleted) continue;
+      if (isCommentDeleted(pending.localId(), pendingDeletions, idMapping)) {
+        continue;
+      }
 
       String commentId = idMapping.getOrDefault(pending.localId(), pending.localId());
-
       var localComment =
           Comment.builder()
               .id(commentId)
@@ -140,21 +157,24 @@ public class CommentApi {
               .resolved(false)
               .answers(new ArrayList<>())
               .build();
+
       allComments.add(localComment);
     }
+  }
+
+  private void applyPendingResolutions(
+      List<Comment> allComments,
+      List<PendingResolution> pendingResolutions,
+      List<PendingDeletion> pendingDeletions,
+      Map<String, String> idMapping) {
 
     for (var resolution : pendingResolutions) {
       String commentIdToResolve =
           idMapping.getOrDefault(resolution.commentId(), resolution.commentId());
 
-      boolean isDeleted =
-          pendingDeletions.stream()
-              .anyMatch(
-                  deletion ->
-                      idMapping
-                          .getOrDefault(deletion.commentId(), deletion.commentId())
-                          .equals(commentIdToResolve));
-      if (isDeleted) continue;
+      if (isCommentDeleted(commentIdToResolve, pendingDeletions, idMapping)) {
+        continue;
+      }
 
       allComments.stream()
           .filter(comment -> comment.id().equals(commentIdToResolve))
@@ -167,19 +187,22 @@ public class CommentApi {
                 }
               });
     }
+  }
+
+  private void addPendingReplies(
+      List<Comment> allComments,
+      List<PendingReply> pendingReplies,
+      List<PendingDeletion> pendingDeletions,
+      Map<String, String> idMapping,
+      User currentUser) {
 
     for (var pendingReply : pendingReplies) {
       String parentCommentId =
           idMapping.getOrDefault(pendingReply.parentCommentId(), pendingReply.parentCommentId());
 
-      boolean isParentDeleted =
-          pendingDeletions.stream()
-              .anyMatch(
-                  deletion ->
-                      idMapping
-                          .getOrDefault(deletion.commentId(), deletion.commentId())
-                          .equals(parentCommentId));
-      if (isParentDeleted) continue;
+      if (isCommentDeleted(parentCommentId, pendingDeletions, idMapping)) {
+        continue;
+      }
 
       allComments.stream()
           .filter(comment -> comment.id().equals(parentCommentId))
@@ -211,9 +234,20 @@ public class CommentApi {
                 }
               });
     }
-    return allComments.stream()
-        .sorted(Comparator.comparing(Comment::createdAt).reversed())
-        .toList();
+  }
+
+  private boolean isCommentDeleted(
+      String commentId, List<PendingDeletion> pendingDeletions, Map<String, String> idMapping) {
+
+    String normalizedCommentId = idMapping.getOrDefault(commentId, commentId);
+
+    return pendingDeletions.stream()
+        .anyMatch(
+            deletion -> {
+              String deletionId = deletion.commentId();
+              String normalizedDeletionId = idMapping.getOrDefault(deletionId, deletionId);
+              return normalizedDeletionId.equals(normalizedCommentId);
+            });
   }
 
   public void add(String fileId, String content) throws GoogleIntegrationException {
@@ -271,28 +305,26 @@ public class CommentApi {
     var pendingComments = new ArrayList<>(localCommentManager.getPendingComments(fileId));
     var pendingDeletions = new ArrayList<>(localCommentManager.getPendingDeletions(fileId));
 
-    var commentsToAdd = new ArrayList<PendingComment>();
-    var commentsCancelled = new ArrayList<PendingComment>();
+    createPendingCommentsOnDrive(fileId, pendingComments, localToRemoteIdMap);
 
-    for (var pendingComment : pendingComments) {
-      boolean isDeleted =
-          pendingDeletions.stream()
-              .anyMatch(deletion -> deletion.commentId().equals(pendingComment.localId()));
+    localCommentManager.remapPendingActions(fileId, localToRemoteIdMap);
 
-      if (isDeleted) {
-        commentsCancelled.add(pendingComment);
-      } else {
-        commentsToAdd.add(pendingComment);
-      }
-    }
+    createPendingRepliesOnDrive(fileId, localToRemoteIdMap, pendingDeletions);
 
-    for (var cancelled : commentsCancelled) {
-      localCommentManager.removePendingComment(fileId, cancelled.localId());
-      localCommentManager.removePendingDeletion(fileId, cancelled.localId());
-    }
+    resolvePendingCommentsOnDrive(fileId, pendingDeletions);
+
+    deletePendingCommentsOnDrive(fileId);
+
+    apiCache.invalidate(COMMENTS_CACHE_KEY, key -> key.startsWith(fileId));
+  }
+
+  private void createPendingCommentsOnDrive(
+      String fileId, List<PendingComment> commentsToAdd, Map<String, String> localToRemoteIdMap)
+      throws IOException {
 
     for (var pendingComment : commentsToAdd) {
       var newComment = Comment.builder().content(pendingComment.content()).build();
+
       var createdComment =
           driveApi
               .driveService()
@@ -306,8 +338,11 @@ public class CommentApi {
 
       localCommentManager.removePendingComment(fileId, pendingComment.localId());
     }
+  }
 
-    localCommentManager.remapPendingActions(fileId, localToRemoteIdMap);
+  private void createPendingRepliesOnDrive(
+      String fileId, Map<String, String> localToRemoteIdMap, List<PendingDeletion> pendingDeletions)
+      throws IOException {
 
     var pendingReplies = new ArrayList<>(localCommentManager.getPendingReplies(fileId));
 
@@ -332,7 +367,6 @@ public class CommentApi {
       }
 
       var reply = new Reply().setContent(pendingReply.content());
-
       driveApi
           .driveService()
           .replies()
@@ -342,6 +376,10 @@ public class CommentApi {
 
       localCommentManager.removePendingReply(fileId, pendingReply.localId());
     }
+  }
+
+  private void resolvePendingCommentsOnDrive(String fileId, List<PendingDeletion> pendingDeletions)
+      throws IOException {
 
     var pendingResolutions = new ArrayList<>(localCommentManager.getPendingResolutions(fileId));
 
@@ -361,6 +399,7 @@ public class CommentApi {
       }
 
       var resolveReply = new Reply().setContent("A résolu ce commentaire.").setAction("resolve");
+
       driveApi
           .driveService()
           .replies()
@@ -370,6 +409,9 @@ public class CommentApi {
 
       localCommentManager.removePendingResolution(fileId, pendingResolution.commentId());
     }
+  }
+
+  private void deletePendingCommentsOnDrive(String fileId) throws IOException {
     var remappedPendingDeletions = new ArrayList<>(localCommentManager.getPendingDeletions(fileId));
 
     for (var pendingDeletion : remappedPendingDeletions) {
@@ -381,7 +423,5 @@ public class CommentApi {
 
       localCommentManager.removePendingDeletion(fileId, pendingDeletion.commentId());
     }
-
-    apiCache.invalidate(COMMENTS_CACHE_KEY, key -> key.startsWith(fileId));
   }
 }
