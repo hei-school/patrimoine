@@ -212,30 +212,29 @@ public class LocalCommentManager {
       return;
     }
 
-    List<T> remapped =
-        items.stream()
-            .map(item -> remapItemIfNeeded(item, fileMappings, idExtractor, remapper))
-            .toList();
-    storage.put(fileId, remapped);
-  }
+    List<T> remappedItems = new ArrayList<>();
+    boolean hasChanges = false;
 
-  private <T> T remapItemIfNeeded(
-      T item,
-      Map<String, String> fileMappings,
-      Function<T, String> idExtractor,
-      BiFunction<T, String, T> remapper) {
+    for (T item : items) {
+      String currentId = idExtractor.apply(item);
 
-    String currentId = idExtractor.apply(item);
+      if (!currentId.startsWith("local_")) {
+        remappedItems.add(item);
+        continue;
+      }
 
-    if (!currentId.startsWith("local_")) {
-      return item;
+      String remoteId = fileMappings.get(currentId);
+      if (remoteId != null) {
+        remappedItems.add(remapper.apply(item, remoteId));
+        hasChanges = true;
+      } else {
+        remappedItems.add(item);
+      }
     }
 
-    String remoteId = fileMappings.get(currentId);
-    if (remoteId != null) {
-      return remapper.apply(item, remoteId);
+    if (hasChanges) {
+      storage.put(fileId, remappedItems);
     }
-    return item;
   }
 
   private String generateLocalId() {
