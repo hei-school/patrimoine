@@ -200,7 +200,6 @@ MOIS
     | 'decembre'
     | 'Decembre'
     ;
-
 MOT_DATE_INDETERMINER
     :   'date indéterminée'
     |   'date indéterminer'
@@ -225,7 +224,10 @@ MOT_JUSQUA
     |   'jusqu\'a'
     |   'Jusqu\'a'
     ;
-MOT_TOUT_LES
+MOT_FIN_DU_MOIS
+    :   'fin du mois'
+    ;
+MOT_TOUS_LES
     :   'Tous les'
     |   'tous les'
     ;
