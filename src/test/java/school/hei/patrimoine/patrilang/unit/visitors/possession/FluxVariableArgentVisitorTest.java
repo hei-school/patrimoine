@@ -116,4 +116,25 @@ class FluxVariableArgentVisitorTest {
 
     assertFluxArgentEquals(expected, actual);
   }
+
+  @Test
+  void parse_sortir_flux_argent_with_date_fin_du_mois() {
+    var formatter = DateTimeFormatter.ofPattern("yyyy_MM_dd");
+    var input =
+        """
+    * `fluxArgentSortir + Dates:ajd` Dates:ajd, sortir 500000Ar depuis Trésoreries:comptePersonnel, jusqu'à DATE_MAX tous les fin du mois
+""";
+    var expected =
+        new FluxArgent(
+            "fluxArgentSortir" + AJD.format(formatter),
+            COMPTE_PERSONNEL,
+            AJD,
+            LocalDate.MAX,
+            31,
+            ariary(-500_000));
+
+    FluxArgent actual = visitor.visit(input, PatriLangParser::fluxArgentSortir);
+
+    assertFluxArgentEquals(expected, actual);
+  }
 }

@@ -38,7 +38,10 @@ public class FluxArgentDecomposeur extends PossessionDecomposeurBase<FluxArgent,
     return fluxArgent
         .getDebut()
         .datesUntil(fin.plusDays(1))
-        .filter(date -> date.getDayOfMonth() == fluxArgent.getDateOperation())
+        .filter(
+            date ->
+                date.getDayOfMonth()
+                    == Math.min(fluxArgent.getDateOperation(), date.lengthOfMonth()))
         .map(
             date ->
                 new FluxArgent(

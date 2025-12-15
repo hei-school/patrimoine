@@ -207,7 +207,12 @@ sousTitre
     ;
 
 dateFin
-    :   COMMA? MOT_JUSQUA dateValue=variable MOT_TOUT_LES jourOperation=variable MOT_DU MOT_MOIS
+    :   COMMA? MOT_JUSQUA dateValue=variable dateFinOperation?
+    ;
+
+dateFinOperation
+    :   MOT_TOUS_LES MOT_FIN_DU_MOIS
+    |   MOT_TOUS_LES jourOperation=variable MOT_DU MOT_MOIS
     ;
 
 ligneNom

@@ -12,6 +12,8 @@ import school.hei.patrimoine.patrilang.modele.DateFin;
 import school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor;
 
 public class BaseVisitor {
+  private static final int MAX_MONTH_DATE_OPERATION = 31;
+
   public static Personne visitPersonne(TextContext ctx) {
     return new Personne(parseNodeValue(ctx.TEXT()));
   }
@@ -21,7 +23,10 @@ public class BaseVisitor {
   }
 
   public static DateFin visitDateFin(DateFinContext ctx, VariableVisitor variableVisitor) {
-    int dateDOpération = variableVisitor.asInt(ctx.jourOperation);
+    int dateDOpération =
+        ctx.dateFinOperation().MOT_FIN_DU_MOIS() != null
+            ? MAX_MONTH_DATE_OPERATION
+            : variableVisitor.asInt(ctx.dateFinOperation().variable());
     var dateFinValue = variableVisitor.asDate(ctx.dateValue);
 
     return new DateFin(dateDOpération, dateFinValue);
