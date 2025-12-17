@@ -8,14 +8,17 @@ import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.PatriL
 
 import java.io.File;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.function.Supplier;
 import lombok.SneakyThrows;
 import school.hei.patrimoine.google.api.CommentApi;
 import school.hei.patrimoine.google.exception.GoogleIntegrationException;
+import school.hei.patrimoine.patrilang.files.PatriLangFileContext;
 import school.hei.patrimoine.patrilang.files.PatriLangFileWritter;
 import school.hei.patrimoine.patrilang.files.PatriLangFileWritter.FileWritterInput;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.HtmlViewer;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.AppContext;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.AppBar;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.comment.LocalCommentManager;
@@ -30,19 +33,18 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
   private static final String MIME_TYPE = "application/octet-stream";
 
   public SaveAndSyncFileButton(
-      State state, Supplier<String> getNewContent, Callable<Void> onSuccess) {
+      State state,
+      HtmlViewer htmlViewer,
+      Supplier<String> getNewContent,
+      Callable<Void> onSuccess) {
     super(
         "Sauvegarder / Synchroniser",
         List.of(
             new PopupItem(
                 "Sauvegarder localement",
                 e ->
-                    saveSelectedFileLocally(
-                        state.get("viewMode"),
-                        state.get("selectedFile"),
-                        state.get("selectedCasSetFile"),
-                        state.get("isPlannedSelectedFile"),
-                        getNewContent.get())),
+                    saveAllModifiedFiles(
+                        state.get("viewMode"), htmlViewer, state.get("selectedFile"))),
             new PopupItem(
                 "Synchroniser avec Drive",
                 e -> syncFilesWithDrive(getStagedPlannedFiles(), getStagedDoneFiles(), onSuccess)),
@@ -102,41 +104,42 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
     return false;
   }
 
-  private static void saveSelectedFileLocally(
-      AppBar.ViewMode currentMode,
-      File selectedFile,
-      File selectedCasSetFile,
-      Boolean isPlanned,
-      String content) {
+  private static void saveAllModifiedFiles(
+      AppBar.ViewMode currentMode, HtmlViewer htmlViewer, File selectedFile) {
 
-    if (validateBeforeSave(currentMode, selectedFile)) {
+    if (validateBeforeSave(currentMode, selectedFile)) return;
+
+    htmlViewer.saveCurrentContentToMemory();
+
+    Map<File, FileWritterInput> modifiedFilesData = htmlViewer.getModifiedFilesData();
+
+    if (modifiedFilesData.isEmpty()) {
+      showInfo("Information", "Aucune modification à sauvegarder.");
       return;
     }
 
     AsyncTask.<Void>builder()
-        .loadingMessage("Validation et sauvegarde du fichier...")
+        .loadingMessage("Validation et sauvegarde des modifications...")
         .task(
             () -> {
-              new PatriLangFileWritter()
-                  .write(
-                      FileWritterInput.builder()
-                          .casSet(selectedCasSetFile)
-                          .file(selectedFile)
-                          .content(content)
-                          .build());
-              saveToStaged(selectedFile, isPlanned);
+              for (FileWritterInput input : modifiedFilesData.values()) {
+
+                new PatriLangFileWritter().write(input);
+
+                var file = new PatriLangFileContext(input);
+                saveToStaged(input.file(), file.isPlanned());
+              }
               return null;
             })
         .onSuccess(
             result -> {
               AppContext.getDefault().globalState().update("isAnyFileModified", true);
-              showInfo("Succès", "Vous pouvez maintenant le synchroniser avec Google Drive.");
+              htmlViewer.clearModifiedFiles();
+              showInfo("Succès", "Vous pouvez maintenant synchroniser avec Google Drive.");
             })
         .onError(
             error -> {
-              if (showExceptionMessageIfRecognizedException(error)) {
-                return;
-              }
+              if (showExceptionMessageIfRecognizedException(error)) return;
               showError("Erreur", "Une erreur est survenue lors de l'enregistrement");
             })
         .build()
@@ -146,9 +149,7 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
   private static void syncFilesWithDrive(
       List<File> plannedFiles, List<File> doneFiles, Callable<Void> onSuccess) {
     boolean confirmed = SyncConfirmDialog.forSync();
-    if (!confirmed) {
-      return;
-    }
+    if (!confirmed) return;
 
     AsyncTask.<Void>builder()
         .task(
@@ -182,18 +183,14 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
       String content,
       Callable<Void> onSuccess) {
 
-    if (validateBeforeSave(currentMode, selectedFile)) {
-      return;
-    }
+    if (validateBeforeSave(currentMode, selectedFile)) return;
 
     var saveConfirmed =
         ConfirmDialog.ask(
             "Confirmer la sauvegarde",
             "Sauvegarder les modifications localement avant la synchronisation.\n"
                 + "Voulez-vous continuer ?");
-    if (!saveConfirmed) {
-      return;
-    }
+    if (!saveConfirmed) return;
 
     try {
       new PatriLangFileWritter()
@@ -205,9 +202,7 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
                   .build());
       saveToStaged(selectedFile, isPlanned != null ? isPlanned : false);
     } catch (Exception e) {
-      if (showExceptionMessageIfRecognizedException(e)) {
-        return;
-      }
+      if (showExceptionMessageIfRecognizedException(e)) return;
       showError("Erreur", "Une erreur est survenue lors de l'enregistrement");
       return;
     }
@@ -226,9 +221,7 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
             "Sauvegarder les modifications localement et les synchroniser avec Google"
                 + " Drive.\n"
                 + "Voulez-vous continuer ?");
-    if (!confirmed) {
-      return;
-    }
+    if (!confirmed) return;
 
     AsyncTask.<Void>builder()
         .loadingMessage("Synchronisation avec Drive...")
@@ -256,9 +249,7 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
             })
         .onError(
             error -> {
-              if (showExceptionMessageIfRecognizedException(error)) {
-                return;
-              }
+              if (showExceptionMessageIfRecognizedException(error)) return;
               showError("Erreur", "Une erreur est survenue lors de l'enregistrement");
             })
         .build()
@@ -271,9 +262,7 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
 
     List<String> filesWithPendingComments = localManager.getFilesWithPendingChanges();
 
-    if (filesWithPendingComments.isEmpty()) {
-      return;
-    }
+    if (filesWithPendingComments.isEmpty()) return;
 
     boolean hasErrors = false;
 
