@@ -142,7 +142,7 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
                   String savedContent = Files.readString(selectedFile.toPath());
                   htmlViewer.getOriginalContents().put(selectedFile, savedContent);
                 } catch (IOException e) {
-
+                  throw new RuntimeException(e);
                 }
               }
 
