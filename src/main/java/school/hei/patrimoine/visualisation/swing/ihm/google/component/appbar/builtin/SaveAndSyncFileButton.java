@@ -27,7 +27,6 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.component.comment.Lo
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.popup.PopupItem;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.popup.PopupMenuButton;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.AsyncTask;
-import school.hei.patrimoine.visualisation.swing.ihm.google.modele.ConfirmDialog;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.GoogleLinkList;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
 
@@ -54,12 +53,7 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
                 "Sauvegarder et synchroniser",
                 e -> {
                   saveAndSyncSelectedFile(
-                      state.get("viewMode"),
-                      state.get("selectedFile"),
-                      state.get("selectedCasSetFile"),
-                      state.get("isPlannedSelectedFile"),
-                      getNewContent.get(),
-                      onSuccess);
+                      state.get("viewMode"), htmlViewer, state.get("selectedFile"), onSuccess);
                 })));
   }
 
@@ -137,16 +131,7 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
             result -> {
               AppContext.getDefault().globalState().update("isAnyFileModified", true);
 
-              for (File file : modifiedFilesData.keySet()) {
-                if (file != null && file.exists()) {
-                  try {
-                    String savedContent = Files.readString(file.toPath());
-                    htmlViewer.getOriginalContents().put(file, savedContent);
-                  } catch (IOException e) {
-                    throw new RuntimeException(e);
-                  }
-                }
-              }
+              reloadOriginalContents(modifiedFilesData, htmlViewer);
 
               htmlViewer.clearModifiedFiles();
               showInfo("Succès", "Vous pouvez maintenant synchroniser avec Google Drive.");
@@ -177,7 +162,7 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
             ignored -> {
               clearAllStaged();
               LocalCommentManager.getInstance().clearAllPendingComments();
-              showInfo("Succès", "Le fichier a été synchronisé avec succès sur Google Drive.");
+              showInfo("Succès", "Les fichiers ont été synchronisés avec succès sur Google Drive.");
               try {
                 onSuccess.call();
               } catch (Exception e) {
@@ -191,30 +176,27 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
 
   private static void saveAndSyncSelectedFile(
       AppBar.ViewMode currentMode,
+      HtmlViewer htmlViewer,
       File selectedFile,
-      File selectedCasSetFile,
-      Boolean isPlanned,
-      String content,
       Callable<Void> onSuccess) {
 
     if (validateBeforeSave(currentMode, selectedFile)) return;
 
-    var saveConfirmed =
-        ConfirmDialog.ask(
-            "Confirmer la sauvegarde",
-            "Sauvegarder les modifications localement avant la synchronisation.\n"
-                + "Voulez-vous continuer ?");
-    if (!saveConfirmed) return;
+    htmlViewer.saveCurrentContentToMemory();
+
+    Map<File, FileWritterInput> modifiedFilesData = htmlViewer.getModifiedFilesData();
+
+    if (modifiedFilesData.isEmpty()) {
+      showInfo("Information", "Aucune modification à sauvegarder.");
+      return;
+    }
 
     try {
-      new PatriLangFileWritter()
-          .write(
-              FileWritterInput.builder()
-                  .casSet(selectedCasSetFile)
-                  .file(selectedFile)
-                  .content(content)
-                  .build());
-      saveToStaged(selectedFile, isPlanned != null ? isPlanned : false);
+      for (FileWritterInput input : modifiedFilesData.values()) {
+        new PatriLangFileWritter().write(input);
+        var file = new PatriLangFileContext(input);
+        saveToStaged(input.file(), file.isPlanned());
+      }
     } catch (Exception e) {
       if (showExceptionMessageIfRecognizedException(e)) return;
       showError("Erreur", "Une erreur est survenue lors de l'enregistrement");
@@ -223,19 +205,15 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
 
     var syncConfirmed = SyncConfirmDialog.forSync();
     if (!syncConfirmed) {
+
+      reloadOriginalContents(modifiedFilesData, htmlViewer);
+
+      htmlViewer.clearModifiedFiles();
       showInfo(
           "Sauvegarde effectuée",
-          "Le fichier a été sauvegardé localement. Vous pouvez le synchroniser plus tard.");
+          "Les fichiers ont été sauvegardés localement. Vous pouvez les synchroniser plus tard.");
       return;
     }
-
-    var confirmed =
-        ConfirmDialog.ask(
-            "Confirmer la sauvegarde et la synchronisation",
-            "Sauvegarder les modifications localement et les synchroniser avec Google"
-                + " Drive.\n"
-                + "Voulez-vous continuer ?");
-    if (!confirmed) return;
 
     AsyncTask.<Void>builder()
         .loadingMessage("Synchronisation avec Drive...")
@@ -250,10 +228,15 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
         .onSuccess(
             result -> {
               AppContext.getDefault().globalState().update("isAnyFileModified", true);
+
+              reloadOriginalContents(modifiedFilesData, htmlViewer);
+
+              htmlViewer.clearModifiedFiles();
+
               clearAllStaged();
               showInfo(
                   "Succès",
-                  "Le fichier a été sauvegardé localement et synchronisé avec succès sur"
+                  "Les fichiers ont été sauvegardés localement et synchronisés avec succès sur"
                       + " Google Drive.");
               try {
                 onSuccess.call();
@@ -289,6 +272,20 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
     }
     if (hasErrors) {
       throw new RuntimeException("Some comments could not be synchronized.");
+    }
+  }
+
+  private static void reloadOriginalContents(
+      Map<File, FileWritterInput> modifiedFilesData, HtmlViewer htmlViewer) {
+    for (File file : modifiedFilesData.keySet()) {
+      if (file != null && file.exists()) {
+        try {
+          String savedContent = Files.readString(file.toPath());
+          htmlViewer.getOriginalContents().put(file, savedContent);
+        } catch (IOException e) {
+          throw new RuntimeException(e);
+        }
+      }
     }
   }
 
