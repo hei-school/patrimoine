@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import javax.swing.*;
+import lombok.Getter;
 import school.hei.patrimoine.patrilang.files.PatriLangFileWritter.FileWritterInput;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.MarkdownToHtmlConverter;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
@@ -18,7 +19,7 @@ public class HtmlViewer extends JEditorPane {
   private final MarkdownToHtmlConverter markdownToHtmlConverter;
   private File lastEditedFile = null;
 
-  private final Map<File, String> originalContents = new HashMap<>();
+  @Getter private final Map<File, String> originalContents = new HashMap<>();
   private final Map<File, FileWritterInput> modifiedFilesData = new HashMap<>();
 
   public HtmlViewer(State state) {
@@ -123,6 +124,5 @@ public class HtmlViewer extends JEditorPane {
 
   public void clearModifiedFiles() {
     modifiedFilesData.clear();
-    originalContents.clear();
   }
 }

@@ -7,6 +7,8 @@ import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.Messag
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.PatriLangStagingFileManager.*;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -134,6 +136,16 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
         .onSuccess(
             result -> {
               AppContext.getDefault().globalState().update("isAnyFileModified", true);
+
+              if (selectedFile != null && selectedFile.exists()) {
+                try {
+                  String savedContent = Files.readString(selectedFile.toPath());
+                  htmlViewer.getOriginalContents().put(selectedFile, savedContent);
+                } catch (IOException e) {
+
+                }
+              }
+
               htmlViewer.clearModifiedFiles();
               showInfo("Succès", "Vous pouvez maintenant synchroniser avec Google Drive.");
             })
