@@ -12,7 +12,6 @@ import school.hei.patrimoine.modele.possession.FluxArgent;
 import school.hei.patrimoine.patrilang.generator.possession.FluxArgentPatriLangGenerator;
 
 class PatriLangGeneratorFactoryTest {
-  private static final PatriLangGeneratorFactory subject = new PatriLangGeneratorFactory();
   private static final LocalDate date = LocalDate.of(2025, JANUARY, 1);
   private static final Argent argent = ariary(1000);
   private static final Compte compte = new Compte("comptePersonnel", date, argent);
