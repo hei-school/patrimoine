@@ -137,12 +137,14 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
             result -> {
               AppContext.getDefault().globalState().update("isAnyFileModified", true);
 
-              if (selectedFile != null && selectedFile.exists()) {
-                try {
-                  String savedContent = Files.readString(selectedFile.toPath());
-                  htmlViewer.getOriginalContents().put(selectedFile, savedContent);
-                } catch (IOException e) {
-                  throw new RuntimeException(e);
+              for (File file : modifiedFilesData.keySet()) {
+                if (file != null && file.exists()) {
+                  try {
+                    String savedContent = Files.readString(file.toPath());
+                    htmlViewer.getOriginalContents().put(file, savedContent);
+                  } catch (IOException e) {
+                    throw new RuntimeException(e);
+                  }
                 }
               }
 
