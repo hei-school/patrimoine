@@ -5,14 +5,22 @@ import static school.hei.patrimoine.visualisation.swing.ihm.google.component.app
 import java.awt.*;
 import java.io.File;
 import java.nio.file.Files;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import javax.swing.*;
+import lombok.Getter;
+import school.hei.patrimoine.patrilang.files.PatriLangFileWritter.FileWritterInput;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.MarkdownToHtmlConverter;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
 
 public class HtmlViewer extends JEditorPane {
   private final State state;
   private final MarkdownToHtmlConverter markdownToHtmlConverter;
+  private File lastEditedFile = null;
+
+  @Getter private final Map<File, String> originalContents = new HashMap<>();
+  private final Map<File, FileWritterInput> modifiedFilesData = new HashMap<>();
 
   public HtmlViewer(State state) {
     this.state = state;
@@ -37,9 +45,13 @@ public class HtmlViewer extends JEditorPane {
   }
 
   public void update() {
+    saveCurrentContentToMemory();
+
     ViewMode currentMode = state.get("viewMode");
     File currentFile = state.get("selectedFile");
     int currentFontSize = state.get("fontSize");
+
+    lastEditedFile = currentFile;
 
     if (currentFile == null || !currentFile.exists()) {
       addEmptyContent();
@@ -47,7 +59,16 @@ public class HtmlViewer extends JEditorPane {
     }
 
     try {
-      var content = Files.readString(currentFile.toPath());
+      String content;
+      if (modifiedFilesData.containsKey(currentFile)) {
+        content = modifiedFilesData.get(currentFile).content();
+      } else {
+        content = Files.readString(currentFile.toPath());
+        if (ViewMode.EDIT.equals(currentMode)) {
+          originalContents.putIfAbsent(currentFile, content);
+        }
+      }
+
       setFont(new Font(Font.MONOSPACED, Font.PLAIN, currentFontSize));
 
       if (ViewMode.EDIT.equals(currentMode)) {
@@ -69,5 +90,39 @@ public class HtmlViewer extends JEditorPane {
     } catch (Exception ex) {
       setText("<html><body style='color:red;'>Erreur lors de la lecture du fichier.</body></html>");
     }
+  }
+
+  public void saveCurrentContentToMemory() {
+    if (lastEditedFile == null || !lastEditedFile.exists()) return;
+
+    ViewMode currentMode = state.get("viewMode");
+    if (!ViewMode.EDIT.equals(currentMode) || !isEditable()) return;
+
+    String originalContent = originalContents.get(lastEditedFile);
+    if (originalContent == null) return;
+
+    String currentContent = getText();
+    if (currentContent.equals(originalContent)) {
+      modifiedFilesData.remove(lastEditedFile);
+      return;
+    }
+
+    File currentCasSet = state.get("selectedCasSetFile");
+
+    modifiedFilesData.put(
+        lastEditedFile,
+        FileWritterInput.builder()
+            .file(lastEditedFile)
+            .casSet(currentCasSet)
+            .content(currentContent)
+            .build());
+  }
+
+  public Map<File, FileWritterInput> getModifiedFilesData() {
+    return new HashMap<>(modifiedFilesData);
+  }
+
+  public void clearModifiedFiles() {
+    modifiedFilesData.clear();
   }
 }

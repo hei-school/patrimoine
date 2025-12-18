@@ -39,7 +39,7 @@ public class PatriLangFilesPage extends LazyPage {
   private final State state;
   private final CasSetSetter casSetSetter;
 
-  private HtmlViewer htmlViewer;
+  private final HtmlViewer htmlViewer;
   private Button addImprevuButton;
   private CommentSideBar commentSideBar;
 
@@ -57,6 +57,8 @@ public class PatriLangFilesPage extends LazyPage {
                 "commentPagination",
                 new Pagination(COMMENT_PAGE_SIZE, null)));
 
+    this.htmlViewer = new HtmlViewer(state);
+
     state.subscribe(
         "selectedFile",
         () -> {
@@ -66,9 +68,7 @@ public class PatriLangFilesPage extends LazyPage {
 
     casSetSetter.addObserver(
         () -> {
-          if (this.htmlViewer != null) {
-            this.htmlViewer.update();
-          }
+          this.htmlViewer.update();
 
           this.updateCas();
 
@@ -98,6 +98,7 @@ public class PatriLangFilesPage extends LazyPage {
                 builtInViewModeSelect(state),
                 new SaveAndSyncFileButton(
                     state,
+                    htmlViewer,
                     () -> getHtmlViewer().getText(),
                     () -> {
                       getCommentSideBar().refreshCommentsCache();
@@ -115,7 +116,6 @@ public class PatriLangFilesPage extends LazyPage {
     var horizontalSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
     horizontalSplit.setLeftComponent(new FileSideBar(state));
 
-    this.htmlViewer = new HtmlViewer(state);
     this.commentSideBar = new CommentSideBar(state);
     var rightSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
     rightSplit.setLeftComponent(htmlViewer.toScrollPane());
