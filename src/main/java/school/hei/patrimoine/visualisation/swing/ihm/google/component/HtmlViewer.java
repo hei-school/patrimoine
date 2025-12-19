@@ -18,6 +18,7 @@ public class HtmlViewer extends JEditorPane {
   private final State state;
   private final MarkdownToHtmlConverter markdownToHtmlConverter;
   private File lastEditedFile = null;
+  private ViewMode lastViewMode = null;
 
   @Getter private final Map<File, String> originalContents = new HashMap<>();
   private final Map<File, FileWritterInput> modifiedFilesData = new HashMap<>();
@@ -45,13 +46,16 @@ public class HtmlViewer extends JEditorPane {
   }
 
   public void update() {
-    saveCurrentContentToMemory();
+    if (ViewMode.EDIT.equals(lastViewMode)) {
+      saveCurrentContentToMemory();
+    }
 
     ViewMode currentMode = state.get("viewMode");
     File currentFile = state.get("selectedFile");
     int currentFontSize = state.get("fontSize");
 
     lastEditedFile = currentFile;
+    lastViewMode = currentMode;
 
     if (currentFile == null || !currentFile.exists()) {
       addEmptyContent();
@@ -93,10 +97,7 @@ public class HtmlViewer extends JEditorPane {
   }
 
   public void saveCurrentContentToMemory() {
-    if (lastEditedFile == null || !lastEditedFile.exists()) return;
-
-    ViewMode currentMode = state.get("viewMode");
-    if (!ViewMode.EDIT.equals(currentMode) || !isEditable()) return;
+    if (lastEditedFile == null || !lastEditedFile.exists() || !isEditable()) return;
 
     String originalContent = originalContents.get(lastEditedFile);
     if (originalContent == null) return;
