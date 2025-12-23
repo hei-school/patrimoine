@@ -16,6 +16,8 @@ fragment STRING
     :   ([\p{L}] | STRING_RAW_VALUE) (([\p{L}\p{N}_]) | STRING_RAW_VALUE)*
     ;
 
+URL_START : '"' -> pushMode(URL);
+
 /* -------------------- Base --------------------  */
 /* Cas */
 ENTETE_GENERAL
@@ -23,17 +25,14 @@ ENTETE_GENERAL
     ;
 
 MOT_SPECIFIER
-    :   'Spécifié'
-    |   'Spécifier'
+    :   'Spécifi'[é|er]
     ;
 
 MOT_CAS_DE
-    :   'Cas de'
-    |   'cas de'
+    :   [c|C]'as de'
     ;
 MOT_FIN_SIMULATION
-    :   'Fin de simulation'
-    |   'fin de simulation'
+    :   [f|F]'in de simulation'
     ;
 ENTETE_POSSESSEURS
     :   'Possesseurs'
@@ -48,8 +47,7 @@ ENTETE_SUIVI
     ;
 
 MOT_CORRIGER
-    :   'Corriger'
-    |   'corriger'
+    :   [c|C]'orriger'
     ;
 
 MOT_DANS
@@ -57,8 +55,7 @@ MOT_DANS
     ;
 /* ToutCas */
 MOT_OBJECTIF_FINAL
-    :   'Objectif final'
-    |   'Objectif Final'
+    :   [o|O]'Objectif '[f|F]'inal'
     ;
 
 ENTETE_CAS
@@ -78,8 +75,7 @@ ENTETE_PERSONNES
     ;
 
 ENTETE_PERSONNES_MORALES
-    :   'Personnes Morales'
-    |   'Personnes morales'
+    :   [j|J]'ersonnes '[m|M]'orales'
     ;
 
 MOT_POUR
@@ -87,8 +83,7 @@ MOT_POUR
     ;
 
 MOT_OBJECTIF_DE
-    :   'objectif de'
-    |   'Objectif de'
+    :   [o|O]'bjectif de'
     ;
 
 /* --------------------  Possessions --------------------  */
@@ -110,18 +105,25 @@ ENTETE_DETTES
     :   'Dettes'
     ;
 
+/* Pièces justificative  */
+ENTETE_PIECES_JUSTIFICATIVES
+    :   'Pièces Justificatives'
+    ;
+
+LIEN_PIECE_JUSTIFICATIVE
+    :   'Opérations lier'
+    ;
+
 /* Opérations */
 ENTETE_CONTSTRUCTEUR_D_OPERATIONS
     :   'Constructeurs'
-    |   'Constructeurs d\'opérations'
-    |   'Constructeurs d\'Opérations'
+    |   'Constructeurs d\''[o|O]'pérations'
     ;
 ENTETE_OPERATIONS
     :   'Opérations'
     ;
 MOT_REMBOURSER
-    :   'Rembourser'
-    |   'rembourser'
+    :   [r|R]'Rembourser'
     ;
 MOT_POSSEDER
     :   'posséder'
@@ -161,50 +163,29 @@ PERCENT
 /* -------------------- Commun --------------------  */
 /* Date */
 MOT_LE
-    :   'Le'
-    |   'le'
+    :  [L|l]'e'
     ;
 MOT_DU
     :   'du'
     ;
 
 MOIS
-    : 'janvier'
-    | 'Janvier'
-    | 'février'
-    | 'Février'
-    | 'fevrier'
-    | 'Fevrier'
-    | 'mars'
-    | 'Mars'
-    | 'avril'
-    | 'Avril'
-    | 'mai'
-    | 'Mai'
-    | 'juin'
-    | 'Juin'
-    | 'juillet'
-    | 'Juillet'
-    | 'août'
-    | 'Août'
-    | 'aout'
-    | 'Aout'
-    | 'septembre'
-    | 'Septembre'
-    | 'octobre'
-    | 'Octobre'
-    | 'novembre'
-    | 'Novembre'
-    | 'décembre'
-    | 'Décembre'
-    | 'decembre'
-    | 'Decembre'
+    : [j|J]'anvier'
+    | [f|F][e|é]'vrier'
+    | [m|M]'ars'
+    | [a|A]'vril'
+    | [m|M]'ai'
+    | [j|J]'uin'
+    | [j|J]'uillet'
+    | [a|A]'o'[û|u]'t'
+    | [s|S]'eptembre'
+    | [o|O]'ctobre'
+    | [n|N]'ovembre'
+    | [d|D][e|é]'cembre'
     ;
+
 MOT_DATE_INDETERMINER
-    :   'date indéterminée'
-    |   'date indéterminer'
-    |   'Date indéterminée'
-    |   'Date indéterminer'
+    :   [d|D]'date indétermin'[e|é][e|r]
     ;
 MOT_DATE_MINIMUM
     :   'DATE_MIN'
@@ -219,22 +200,17 @@ MOT_DATE_MAXIMUM
     |   'FIN_DU_TEMPS'
     ;
 MOT_JUSQUA
-    :   'Jusqu\'à'
-    |   'jusqu\'à'
-    |   'jusqu\'a'
-    |   'Jusqu\'a'
+    :   [j|J]'usqu\''[a|à]
     ;
+MOT_TOUS_LES
+     :   [t|T]'ous les'
+     ;
 MOT_FIN_DU_MOIS
     :   'fin du mois'
     ;
-MOT_TOUS_LES
-    :   'Tous les'
-    |   'tous les'
-    ;
 /* Mots */
 MOT_DEVISE_EN
-    :   'Devise en'
-    |   'devise en'
+    :   [d|D]'evise en'
     ;
 MOT_VALANT
     :   'valant'
@@ -245,25 +221,15 @@ MOT_EVALUER
     :  'évalué'
     ;
 UNITE_DATE_DE
-    : 'années de'
-    | 'année de'
-    | 'Année de'
-    | 'Années de'
-    | 'mois de'
-    | 'Mois de'
-    | 'jour de'
-    | 'Jour de'
-    | 'jours de'
-    | 'Jours de'
+    : [a|A]'nnée'[|s]' de'
+    | [m|M]'ois de'
+    | [j|J]'our'[|s]' de'
     ;
 
 DUREE_UNITE
-    :   'en jours'
-    |   'en Jours'
-    |   'en mois'
-    |   'en Mois'
-    |   'en années'
-    |   'en Années'
+    :   'en '[j|J]'ours'
+    |   'en '[m|M]'ois'
+    |   'en '[a|A]'nnées'
     ;
 DEVISE
     :   'Ar'
@@ -370,4 +336,11 @@ NEWLINE
 
 COMMENTAIRE
     :   BACKTICK DIV MUL .*? MUL DIV BACKTICK -> skip
+    ;
+
+//
+mode URL;
+URL_END: '"' -> popMode;
+URL_CONTENT
+    :   ~[^" \t\r\n]+
     ;
