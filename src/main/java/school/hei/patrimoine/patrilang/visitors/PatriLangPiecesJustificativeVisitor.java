@@ -29,5 +29,3 @@ public class PatriLangPiecesJustificativeVisitor
     return new PiecesJustificative(id, date, link);
   }
 }
-
-// Ctrl + Alt + Shift + L = formatter
