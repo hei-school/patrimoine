@@ -7,11 +7,17 @@ import javax.swing.border.EmptyBorder;
 import school.hei.patrimoine.google.model.Comment;
 
 public class CommentListPanel extends JPanel {
+  private final LocalCommentActions localCommentActions;
   private final Component parent;
   private final boolean withActions;
   private final Runnable refresh;
 
-  public CommentListPanel(Component parent, boolean withActions, Runnable refresh) {
+  public CommentListPanel(
+      LocalCommentActions localCommentActions,
+      Component parent,
+      boolean withActions,
+      Runnable refresh) {
+    this.localCommentActions = localCommentActions;
     this.parent = parent;
     this.refresh = refresh;
     this.withActions = withActions;
@@ -33,7 +39,9 @@ public class CommentListPanel extends JPanel {
     removeAll();
 
     for (var comment : comments) {
-      add(new CommentCard(parent, fileId, comment, withActions, withRemoveBtn, refresh));
+      add(
+          new CommentCard(
+              localCommentActions, parent, fileId, comment, withActions, withRemoveBtn, refresh));
       add(Box.createVerticalStrut(10));
     }
 
