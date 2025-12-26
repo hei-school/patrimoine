@@ -25,14 +25,14 @@ ENTETE_GENERAL
     ;
 
 MOT_SPECIFIER
-    :   'Spécifi'[é|er]
+    :   'Spécifi'('é'|'er')
     ;
 
 MOT_CAS_DE
-    :   [c|C]'as de'
+    :   ('c'|'C')'as de'
     ;
 MOT_FIN_SIMULATION
-    :   [f|F]'in de simulation'
+    :   ('f'|'F')'in de simulation'
     ;
 ENTETE_POSSESSEURS
     :   'Possesseurs'
@@ -47,7 +47,7 @@ ENTETE_SUIVI
     ;
 
 MOT_CORRIGER
-    :   [c|C]'orriger'
+    :   ('c'|'C')'orriger'
     ;
 
 MOT_DANS
@@ -55,7 +55,7 @@ MOT_DANS
     ;
 /* ToutCas */
 MOT_OBJECTIF_FINAL
-    :   [o|O]'Objectif '[f|F]'inal'
+    :   ('o'|'O')'bjectif '('f'|'F')'inal'
     ;
 
 ENTETE_CAS
@@ -75,7 +75,7 @@ ENTETE_PERSONNES
     ;
 
 ENTETE_PERSONNES_MORALES
-    :   [j|J]'ersonnes '[m|M]'orales'
+    :   ('p'|'P')'ersonnes '('m'|'M')'orales'
     ;
 
 MOT_POUR
@@ -83,7 +83,7 @@ MOT_POUR
     ;
 
 MOT_OBJECTIF_DE
-    :   [o|O]'bjectif de'
+    :   ('o'|'O')'bjectif de'
     ;
 
 /* --------------------  Possessions --------------------  */
@@ -117,13 +117,13 @@ LIEN_PIECE_JUSTIFICATIVE
 /* Opérations */
 ENTETE_CONTSTRUCTEUR_D_OPERATIONS
     :   'Constructeurs'
-    |   'Constructeurs d\''[o|O]'pérations'
+    |   'Constructeurs d\''('o'|'O')'pérations'
     ;
 ENTETE_OPERATIONS
     :   'Opérations'
     ;
 MOT_REMBOURSER
-    :   [r|R]'Rembourser'
+    :   ('r'|'R')'embourser'
     ;
 MOT_POSSEDER
     :   'posséder'
@@ -163,29 +163,30 @@ PERCENT
 /* -------------------- Commun --------------------  */
 /* Date */
 MOT_LE
-    :  [L|l]'e'
+    :  ('l'|'L')'e'
     ;
 MOT_DU
     :   'du'
     ;
 
 MOIS
-    : [j|J]'anvier'
-    | [f|F][e|é]'vrier'
-    | [m|M]'ars'
-    | [a|A]'vril'
-    | [m|M]'ai'
-    | [j|J]'uin'
-    | [j|J]'uillet'
-    | [a|A]'o'[û|u]'t'
-    | [s|S]'eptembre'
-    | [o|O]'ctobre'
-    | [n|N]'ovembre'
-    | [d|D][e|é]'cembre'
+    : ('j'|'J')'anvier'
+    | ('f'|'F')('e'|'é')'vrier'
+    | ('m'|'M')'ars'
+    | ('a'|'A')'vril'
+    | ('m'|'M')'ai'
+    | ('j'|'J')'uin'
+    | ('j'|'J')'uillet'
+    | ('a'|'A')'o'('û'|'u')'t'
+    | ('s'|'S')'eptembre'
+    | ('o'|'O')'ctobre'
+    | ('n'|'N')'ovembre'
+    | ('d'|'D')('e'|'é')'cembre'
     ;
 
 MOT_DATE_INDETERMINER
-    :   [d|D]'date indétermin'[e|é][e|r]
+    :   ('d'|'D')'ate indéterminée'
+    |   ('d'|'D')'ate indéterminer'
     ;
 MOT_DATE_MINIMUM
     :   'DATE_MIN'
@@ -200,17 +201,17 @@ MOT_DATE_MAXIMUM
     |   'FIN_DU_TEMPS'
     ;
 MOT_JUSQUA
-    :   [j|J]'usqu\''[a|à]
+    :   ('j'|'J')'usqu\''('a'|'à')
     ;
 MOT_TOUS_LES
-     :   [t|T]'ous les'
+     :   ('t'|'T')'ous les'
      ;
 MOT_FIN_DU_MOIS
     :   'fin du mois'
     ;
 /* Mots */
 MOT_DEVISE_EN
-    :   [d|D]'evise en'
+    :   ('d'|'D')'evise en'
     ;
 MOT_VALANT
     :   'valant'
@@ -221,15 +222,15 @@ MOT_EVALUER
     :  'évalué'
     ;
 UNITE_DATE_DE
-    : [a|A]'nnée'[|s]' de'
-    | [m|M]'ois de'
-    | [j|J]'our'[|s]' de'
+    : ('a'|'A')'nnée'(|'s')' de'
+    | ('m'|'M')'ois de'
+    | ('j'|'J')'our'(|'s')' de'
     ;
 
 DUREE_UNITE
-    :   'en '[j|J]'ours'
-    |   'en '[m|M]'ois'
-    |   'en '[a|A]'nnées'
+    :   'en '('j'|'J')'ours'
+    |   'en '('m'|'M')'ois'
+    |   'en '('a'|'A')'nnées'
     ;
 DEVISE
     :   'Ar'
@@ -338,7 +339,6 @@ COMMENTAIRE
     :   BACKTICK DIV MUL .*? MUL DIV BACKTICK -> skip
     ;
 
-//
 mode URL;
 URL_END: '"' -> popMode;
 URL_CONTENT
