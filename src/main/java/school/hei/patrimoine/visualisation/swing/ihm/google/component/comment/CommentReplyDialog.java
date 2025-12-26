@@ -5,28 +5,30 @@ import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.Messag
 import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import school.hei.patrimoine.google.api.CommentApi;
 import school.hei.patrimoine.google.model.Comment;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.Dialog;
-import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.AppContext;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.AsyncTask;
 
 public class CommentReplyDialog extends Dialog {
+  private final LocalCommentActions localCommentActions;
   private final String fileId;
   private final Comment parentComment;
   private final JTextArea textArea;
-  private final CommentApi commentApi;
   private final Runnable refresh;
 
-  public CommentReplyDialog(String fileId, Comment parentComment, Runnable refresh) {
+  public CommentReplyDialog(
+      LocalCommentActions localCommentActions,
+      String fileId,
+      Comment parentComment,
+      Runnable refresh) {
     super("Répondre au commentaire", 500, 300, false);
 
+    this.localCommentActions = localCommentActions;
     this.fileId = fileId;
     this.refresh = refresh;
     this.textArea = new JTextArea();
     this.parentComment = parentComment;
-    this.commentApi = AppContext.getDefault().getData("comment-api");
 
     setModal(true);
     setLayout(new BorderLayout());
@@ -74,7 +76,7 @@ public class CommentReplyDialog extends Dialog {
     AsyncTask.<Void>builder()
         .task(
             () -> {
-              commentApi.reply(fileId, parentComment.id(), textArea.getText().trim());
+              localCommentActions.reply(fileId, parentComment.id(), textArea.getText().trim());
               return null;
             })
         .withDialogLoading(false)

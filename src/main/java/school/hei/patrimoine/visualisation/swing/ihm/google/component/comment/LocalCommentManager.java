@@ -9,7 +9,7 @@ import school.hei.patrimoine.google.model.User;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.comment.pending.*;
 
 public class LocalCommentManager {
-  private static LocalCommentManager INSTANCE;
+  private static final LocalCommentManager INSTANCE = new LocalCommentManager();
 
   private final Map<String, List<PendingComment>> pendingCommentsByFile;
   private final Map<String, List<PendingReply>> pendingRepliesByFile;
@@ -25,9 +25,6 @@ public class LocalCommentManager {
   }
 
   public static LocalCommentManager getInstance() {
-    if (INSTANCE == null) {
-      INSTANCE = new LocalCommentManager();
-    }
     return INSTANCE;
   }
 
