@@ -9,6 +9,7 @@ import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.ToutCasConte
 import java.io.IOException;
 import org.antlr.v4.runtime.CommonTokenStream;
 import school.hei.patrimoine.patrilang.antlr.PatriLangLexer;
+import school.hei.patrimoine.patrilang.antlr.PatriLangParser.PiecesJustificativesContext;
 import school.hei.patrimoine.patrilang.listener.PatrilangErrorListener;
 
 public class PatriLangParser {
@@ -26,10 +27,21 @@ public class PatriLangParser {
     var document = parse(casSetPath);
 
     if (isNull(document.cas())) {
-      throw new IllegalArgumentException("Fichier Cas attendu, mais fichier CasSet trouvé.");
+      throw new IllegalArgumentException("Fichier Cas attendu, mais fichier Cas trouvé.");
     }
 
     return document.cas();
+  }
+
+  public static PiecesJustificativesContext parsePieceJustificative(String casSetPath) {
+    var document = parse(casSetPath);
+
+    if (isNull(document.piecesJustificatives())) {
+      throw new IllegalArgumentException(
+          "Fichier Pièces justificative attendu, mais fichier CasSet trouvé.");
+    }
+
+    return document.piecesJustificatives();
   }
 
   public static DocumentContext parse(String filePath) {
