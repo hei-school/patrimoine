@@ -17,9 +17,11 @@ import lombok.Getter;
 import school.hei.patrimoine.cas.Cas;
 import school.hei.patrimoine.modele.Personne;
 import school.hei.patrimoine.modele.possession.*;
+import school.hei.patrimoine.modele.possession.pj.PiecesJustificative;
 import school.hei.patrimoine.patrilang.modele.variable.VariableType;
 import school.hei.patrimoine.patrilang.visitors.factory.SectionVisitorFactory;
 import school.hei.patrimoine.patrilang.visitors.possession.*;
+import school.hei.patrimoine.patrilang.visitors.possession.pj.PieceJustfificativeLinkVisitor;
 import school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor;
 
 @Builder
@@ -32,6 +34,7 @@ public class SectionVisitor {
   private final DetteVisitor detteVisitor;
   private final OperationVisitor operationVisitor;
   private final OperationTemplateVisitor operationTemplateVisitor;
+  private final PieceJustfificativeLinkVisitor pieceJustfificativeVisitor;
 
   public SectionVisitor createChildSectionVisitor() {
     return SectionVisitorFactory.make(
@@ -120,6 +123,11 @@ public class SectionVisitor {
 
   public Set<Possession> visitSectionOperations(SectionOperationsContext ctx) {
     return this.operationVisitor.apply(ctx.operations(), variableVisitor);
+  }
+
+  public List<PiecesJustificative> visitSectionPiecesJustificative(
+      SectionPiecesJustificativesContext ctx) {
+    return this.pieceJustfificativeVisitor.apply(ctx.piecesJustificativeItem());
   }
 
   private <T extends Possession> Set<T> visitCompteElements(

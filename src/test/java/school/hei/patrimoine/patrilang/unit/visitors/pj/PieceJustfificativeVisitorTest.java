@@ -35,12 +35,13 @@ public class PieceJustfificativeVisitorTest {
     exprRef.set(expressionVisitor);
     dateRef.set(dateVisitor);
 
-    variableVisitor.addToScope("ajd", DATE, LocalDate.now());
+    variableVisitor.addToScope("ajd", DATE, LocalDate.of(2025, 12, 24));
   }
 
   private static final IdVisitor idVisitor = new IdVisitor(variableVisitor);
 
-  private final PatriLangPiecesJustificativeVisitor subject = new PatriLangPiecesJustificativeVisitor(idVisitor, dateVisitor);
+  private final PatriLangPiecesJustificativeVisitor subject =
+      new PatriLangPiecesJustificativeVisitor(idVisitor, dateVisitor);
 
   private final UnitTestVisitor visitor =
       new UnitTestVisitor() {
@@ -69,14 +70,14 @@ public class PieceJustfificativeVisitorTest {
 
     var pj1 = result.get(0);
 
-    assertEquals("assuranceChauffeur2025_12_23", pj1.id());
+    assertEquals("assuranceChauffeur2025_12_24", pj1.id());
     assertEquals(LocalDate.of(2025, 12, 25), pj1.date());
     assertEquals(
         "https://docs.google.com/document/d/1602Ett7xFepplxuCau_9aRGCRcDNwE5TLx7W3FuXyXI/edit?tab=t.0",
         pj1.link());
 
     var pj2 = result.get(1);
-    assertEquals("assuranceVoiture2025_12_23", pj2.id());
+    assertEquals("assuranceVoiture2025_12_24", pj2.id());
     assertEquals(LocalDate.of(2025, 12, 24), pj2.date());
     assertTrue(pj2.link().contains("https://docs.google.com/document"));
   }
