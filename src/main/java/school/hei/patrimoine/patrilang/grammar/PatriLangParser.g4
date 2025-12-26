@@ -54,12 +54,13 @@ sectionCasGeneral
     :   HASHES ENTETE_GENERAL ligneDateSpecification ligneDateFinSimulation ligneCasNom ligneDevise
     ;
 
+/* Pieces justificatives */
 piecesJustificatives
     :   entetePiecesJustificatives NEWLINE? sectionPiecesJustificatives EOF
     ;
 
 entetePiecesJustificatives
-    :   HASHES ENTETE_PIECES_JUSTIFICATIVES ligneDateSpecification ligneCasNom?
+    :   HASHES ENTETE_GENERAL ligneDateSpecification ligneCasNom? NEWLINE?
     ;
 
 ligneCasNom

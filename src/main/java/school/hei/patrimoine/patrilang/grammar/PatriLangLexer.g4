@@ -106,12 +106,8 @@ ENTETE_DETTES
     ;
 
 /* Pièces justificative  */
-ENTETE_PIECES_JUSTIFICATIVES
-    :   'Pièces Justificatives'
-    ;
-
 LIEN_PIECE_JUSTIFICATIVE
-    :   'Opérations lier'
+    :   'Pièces Justificatives'
     ;
 
 /* Opérations */

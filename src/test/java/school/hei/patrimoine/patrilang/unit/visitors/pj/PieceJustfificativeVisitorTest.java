@@ -56,10 +56,11 @@ public class PieceJustfificativeVisitorTest {
   void parse_pieces_justificatives() {
     var input =
         """
-# Pièces Justificatives
+# Général
 * Spécifier Dates:ajd
 * Cas de Taxi
-# Opérations lier
+
+# Pièces Justificatives
 * `assuranceChauffeur + Dates:ajd`, le 25 décembre 2025, "https://docs.google.com/document/d/1602Ett7xFepplxuCau_9aRGCRcDNwE5TLx7W3FuXyXI/edit?tab=t.0"
 * `assuranceVoiture + Dates:ajd`, le 24 décembre 2025, "https://docs.google.com/document/d/1602Ett7xFepplxuCau_9aRGCRcDNwE5TLx7W3FuXyXI/edit?tab=t.0"
 """;
@@ -68,7 +69,7 @@ public class PieceJustfificativeVisitorTest {
 
     assertEquals(2, result.size());
 
-    var pj1 = result.get(0);
+    var pj1 = result.getFirst();
 
     assertEquals("assuranceChauffeur2025_12_24", pj1.id());
     assertEquals(LocalDate.of(2025, 12, 25), pj1.date());
