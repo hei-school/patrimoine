@@ -27,7 +27,7 @@ public class PatriLangParser {
     var document = parse(casSetPath);
 
     if (isNull(document.cas())) {
-      throw new IllegalArgumentException("Fichier Cas attendu, mais fichier Cas trouvé.");
+      throw new IllegalArgumentException("Fichier Cas attendu, mais fichier CasSet trouvé.");
     }
 
     return document.cas();
