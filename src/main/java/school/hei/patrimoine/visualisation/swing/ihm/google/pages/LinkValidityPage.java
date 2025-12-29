@@ -25,21 +25,26 @@ public class LinkValidityPage extends Page {
 
   private final DefaultListModel<NamedLink> doneNamedLinksModel;
   private final DefaultListModel<NamedLink> plannedNamedLinksModel;
+  private final DefaultListModel<NamedLink> justificativeLinksModel;
 
   private final JList<NamedLink> plannedNamedLinksList;
   private final JList<NamedLink> doneNamedLinksList;
+  private final JList<NamedLink> justificativeLinksList;
 
   public LinkValidityPage() {
     super(LinkValidityPage.PAGE_NAME);
 
     this.plannedNamedLinksModel = new DefaultListModel<>();
     this.doneNamedLinksModel = new DefaultListModel<>();
+    this.justificativeLinksModel = new DefaultListModel<>();
 
     this.plannedNamedLinksList = new JList<>(plannedNamedLinksModel);
     this.doneNamedLinksList = new JList<>(doneNamedLinksModel);
+    this.justificativeLinksList = new JList<>(justificativeLinksModel);
 
     this.plannedNamedLinksList.setCellRenderer(new NameLinkRenderer());
     this.doneNamedLinksList.setCellRenderer(new NameLinkRenderer());
+    this.justificativeLinksList.setCellRenderer(new NameLinkRenderer());
 
     setLayout(new BorderLayout());
     setBorder(BorderFactory.createEmptyBorder(10, 50, 10, 50));
@@ -87,6 +92,16 @@ public class LinkValidityPage extends Page {
     doneScroll.setAlignmentX(Component.LEFT_ALIGNMENT);
     panel.add(doneScroll);
 
+    var justificativeLabel = new JLabel("Liens vers les pièces justificatives :");
+    justificativeLabel.setFont(new Font("Arial", BOLD, 18));
+    justificativeLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+    panel.add(justificativeLabel);
+
+    var justificativeScroll = new JScrollPane(justificativeLinksList);
+    justificativeScroll.setPreferredSize(new Dimension(400, 150));
+    justificativeScroll.setAlignmentX(Component.LEFT_ALIGNMENT);
+    panel.add(justificativeScroll);
+
     add(panel, BorderLayout.CENTER);
   }
 
@@ -120,9 +135,11 @@ public class LinkValidityPage extends Page {
 
     plannedNamedLinksModel.clear();
     doneNamedLinksModel.clear();
+    justificativeLinksModel.clear();
 
     links.planned().forEach(plannedNamedLinksModel::addElement);
     links.done().forEach(doneNamedLinksModel::addElement);
+    links.justificative().forEach(justificativeLinksModel::addElement);
     super.update();
   }
 
@@ -131,6 +148,7 @@ public class LinkValidityPage extends Page {
 
     List<NamedID> plannedIds = new ArrayList<>();
     List<NamedID> doneIds = new ArrayList<>();
+    List<NamedID> justificativeIds = new ArrayList<>();
     DriveLinkIdParser idParser = new DriveLinkIdParser();
 
     for (var namedLink : namedLinks.planned()) {
@@ -143,7 +161,12 @@ public class LinkValidityPage extends Page {
       doneIds.add(new NamedID(namedLink.name(), parsedId));
     }
 
-    return new GoogleLinkList<>(plannedIds, doneIds);
+    for (var namedLink : namedLinks.justificative()) {
+      var parsedId = idParser.apply(namedLink.link());
+      justificativeIds.add(new NamedID(namedLink.name(), parsedId));
+    }
+
+    return new GoogleLinkList<>(plannedIds, doneIds, justificativeIds);
   }
 
   private void downloadFilesInBackground() {
