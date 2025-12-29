@@ -18,7 +18,7 @@ import school.hei.patrimoine.patrilang.visitors.variable.VariableDateVisitor;
 import school.hei.patrimoine.patrilang.visitors.variable.VariableExpressionVisitor;
 import school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor;
 
-public class PieceJustfificativeVisitorTest {
+public class PieceJustficativeVisitorTest {
   private static final VariableVisitor variableVisitor = new VariableVisitor();
   private static final VariableScope variableScope = variableVisitor.getVariableScope();
 
