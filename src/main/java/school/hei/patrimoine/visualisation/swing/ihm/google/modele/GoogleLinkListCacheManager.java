@@ -10,11 +10,12 @@ import school.hei.patrimoine.google.GoogleApiUtilities;
 @Slf4j
 public record GoogleLinkListCacheManager() {
   public void save(GoogleLinkList<GoogleLinkList.NamedLink> links) {
-    if (links.planned().isEmpty() && links.done().isEmpty()) {
+    if (links.planned().isEmpty() && links.done().isEmpty() && links.justificative().isEmpty()) {
       return;
     }
     writeLinksToFile(getPlannedFilePath(), links.planned());
     writeLinksToFile(getDoneFilePath(), links.done());
+    writeLinksToFile(getJustificativeFilePath(), links.justificative());
 
     log.info("Links saved in {}", GoogleApiUtilities.getCacheDirectoryPath());
   }
@@ -27,12 +28,20 @@ public record GoogleLinkListCacheManager() {
     return GoogleApiUtilities.getCacheDirectoryPath() + "/realises.txt";
   }
 
+  public static String getJustificativeFilePath() {
+    return GoogleApiUtilities.getCacheDirectoryPath() + "/justificatifs.txt";
+  }
+
   public String loadPlannedLinks() {
     return loadLinksFromFile(getPlannedFilePath());
   }
 
   public String loadDoneLinks() {
     return loadLinksFromFile(getDoneFilePath());
+  }
+
+  public String loadJustificativeLinks() {
+    return loadLinksFromFile(getJustificativeFilePath());
   }
 
   private String loadLinksFromFile(String filePath) {
