@@ -21,12 +21,14 @@ public class SubmitLinkPage extends Page {
   public static final String PAGE_NAME = "submit-file-url";
   private final JTextArea doneInput;
   private final JTextArea plannedInput;
+  private final JTextArea justificativeInput;
   private final DriveLinkVerifier linkVerifier;
 
   public SubmitLinkPage() {
     super(PAGE_NAME);
     this.doneInput = new JTextArea();
     this.plannedInput = new JTextArea();
+    this.justificativeInput = new JTextArea();
     this.linkVerifier = new DriveLinkVerifier();
 
     setLayout(new BorderLayout());
@@ -80,6 +82,21 @@ public class SubmitLinkPage extends Page {
     doneScroll.setMaximumSize(new Dimension(Integer.MAX_VALUE, 300));
     formPanel.add(doneScroll);
 
+    var justificativeLabel = new JLabel("Liens vers les pièces justificatives :");
+    justificativeLabel.setFont(new Font("Arial", Font.BOLD, 18));
+    justificativeLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+    formPanel.add(justificativeLabel);
+
+    justificativeInput.setLineWrap(true);
+    justificativeInput.setWrapStyleWord(true);
+    justificativeInput.setFont(new Font("Arial", Font.PLAIN, 16));
+
+    var justificativeScroll = new JScrollPane(justificativeInput);
+    justificativeScroll.setBorder(BorderFactory.createEmptyBorder(5, 0, 20, 0));
+    justificativeScroll.setAlignmentX(Component.LEFT_ALIGNMENT);
+    justificativeScroll.setMaximumSize(new Dimension(Integer.MAX_VALUE, 300));
+    formPanel.add(justificativeScroll);
+
     var mainScroll = new JScrollPane(formPanel);
     mainScroll.setBorder(BorderFactory.createEmptyBorder());
 
@@ -105,6 +122,7 @@ public class SubmitLinkPage extends Page {
     var saver = new GoogleLinkListCacheManager();
     plannedInput.setText(saver.loadPlannedLinks());
     doneInput.setText(saver.loadDoneLinks());
+    justificativeInput.setText(saver.loadJustificativeLinks());
   }
 
   private void submitLink() {
@@ -113,7 +131,8 @@ public class SubmitLinkPage extends Page {
             () -> {
               var plannedLinks = extractDriveLinks(plannedInput.getText());
               var doneLinks = extractDriveLinks(doneInput.getText());
-              return new GoogleLinkList<>(plannedLinks, doneLinks);
+              var justificativeLinks = extractDriveLinks(justificativeInput.getText());
+              return new GoogleLinkList<>(plannedLinks, doneLinks, justificativeLinks);
             })
         .onSuccess(
             links -> {
