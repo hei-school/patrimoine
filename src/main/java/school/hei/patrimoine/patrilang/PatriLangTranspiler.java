@@ -51,7 +51,7 @@ public class PatriLangTranspiler implements Function<String, CasSet> {
         new PatriLangVisitor(
             null,
             null,
-            new PatriLangPiecesJustificativeVisitor(
+            new PatriLangPieceJustificativeVisitor(
                 new IdVisitor(null), new VariableDateVisitor(new VariableScope(), null)));
     return patrilangVisitor.visitPiecesJustificatives(tree);
   }

@@ -13,12 +13,12 @@ import school.hei.patrimoine.patrilang.antlr.PatriLangParser;
 import school.hei.patrimoine.patrilang.modele.variable.VariableScope;
 import school.hei.patrimoine.patrilang.utils.UnitTestVisitor;
 import school.hei.patrimoine.patrilang.visitors.IdVisitor;
-import school.hei.patrimoine.patrilang.visitors.PatriLangPiecesJustificativeVisitor;
+import school.hei.patrimoine.patrilang.visitors.PatriLangPieceJustificativeVisitor;
 import school.hei.patrimoine.patrilang.visitors.variable.VariableDateVisitor;
 import school.hei.patrimoine.patrilang.visitors.variable.VariableExpressionVisitor;
 import school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor;
 
-public class PieceJustficativeVisitorTest {
+public class PieceJustificativeVisitorTest {
   private static final VariableVisitor variableVisitor = new VariableVisitor();
   private static final VariableScope variableScope = variableVisitor.getVariableScope();
 
@@ -40,8 +40,8 @@ public class PieceJustficativeVisitorTest {
 
   private static final IdVisitor idVisitor = new IdVisitor(variableVisitor);
 
-  private final PatriLangPiecesJustificativeVisitor subject =
-      new PatriLangPiecesJustificativeVisitor(idVisitor, dateVisitor);
+  private final PatriLangPieceJustificativeVisitor subject =
+      new PatriLangPieceJustificativeVisitor(idVisitor, dateVisitor);
 
   private final UnitTestVisitor visitor =
       new UnitTestVisitor() {

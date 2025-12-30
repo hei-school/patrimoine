@@ -9,7 +9,7 @@ import school.hei.patrimoine.patrilang.antlr.PatriLangParser.PiecesJustificative
 import school.hei.patrimoine.patrilang.visitors.variable.VariableDateVisitor;
 
 @RequiredArgsConstructor
-public class PatriLangPiecesJustificativeVisitor
+public class PatriLangPieceJustificativeVisitor
     implements Function<PiecesJustificativesContext, List<PieceJustificative>> {
   private final IdVisitor idVisitor;
   private final VariableDateVisitor dateVisitor;

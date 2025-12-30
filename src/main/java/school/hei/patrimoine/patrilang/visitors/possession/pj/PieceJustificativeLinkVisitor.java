@@ -9,7 +9,7 @@ import school.hei.patrimoine.patrilang.visitors.IdVisitor;
 import school.hei.patrimoine.patrilang.visitors.variable.VariableDateVisitor;
 
 @RequiredArgsConstructor
-public class PieceJustfificativeLinkVisitor {
+public class PieceJustificativeLinkVisitor {
   private final VariableDateVisitor variableDateVisitor;
   private final IdVisitor idVisitor;
 

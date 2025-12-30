@@ -21,7 +21,7 @@ import school.hei.patrimoine.modele.possession.pj.PieceJustificative;
 import school.hei.patrimoine.patrilang.modele.variable.VariableType;
 import school.hei.patrimoine.patrilang.visitors.factory.SectionVisitorFactory;
 import school.hei.patrimoine.patrilang.visitors.possession.*;
-import school.hei.patrimoine.patrilang.visitors.possession.pj.PieceJustfificativeLinkVisitor;
+import school.hei.patrimoine.patrilang.visitors.possession.pj.PieceJustificativeLinkVisitor;
 import school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor;
 
 @Builder
@@ -34,7 +34,7 @@ public class SectionVisitor {
   private final DetteVisitor detteVisitor;
   private final OperationVisitor operationVisitor;
   private final OperationTemplateVisitor operationTemplateVisitor;
-  private final PieceJustfificativeLinkVisitor pieceJustfificativeVisitor;
+  private final PieceJustificativeLinkVisitor pieceJustfificativeVisitor;
 
   public SectionVisitor createChildSectionVisitor() {
     return SectionVisitorFactory.make(
