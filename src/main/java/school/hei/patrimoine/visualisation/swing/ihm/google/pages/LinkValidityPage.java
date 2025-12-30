@@ -5,8 +5,6 @@ import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.Google
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.MessageDialog.showError;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
 import javax.swing.*;
 import lombok.extern.slf4j.Slf4j;
 import school.hei.patrimoine.google.DriveLinkIdParser;
@@ -145,26 +143,22 @@ public class LinkValidityPage extends Page {
 
   private GoogleLinkList<NamedID> parseNamedIds() {
     GoogleLinkList<NamedLink> namedLinks = globalState().get("named-links");
-
-    List<NamedID> plannedIds = new ArrayList<>();
-    List<NamedID> doneIds = new ArrayList<>();
-    List<NamedID> justificativeIds = new ArrayList<>();
     DriveLinkIdParser idParser = new DriveLinkIdParser();
 
-    for (var namedLink : namedLinks.planned()) {
-      var parsedId = idParser.apply(namedLink.link());
-      plannedIds.add(new NamedID(namedLink.name(), parsedId));
-    }
+    var plannedIds =
+        namedLinks.planned().stream()
+            .map(l -> new NamedID(l.name(), idParser.apply(l.link())))
+            .toList();
 
-    for (var namedLink : namedLinks.done()) {
-      var parsedId = idParser.apply(namedLink.link());
-      doneIds.add(new NamedID(namedLink.name(), parsedId));
-    }
+    var doneIds =
+        namedLinks.done().stream()
+            .map(l -> new NamedID(l.name(), idParser.apply(l.link())))
+            .toList();
 
-    for (var namedLink : namedLinks.justificative()) {
-      var parsedId = idParser.apply(namedLink.link());
-      justificativeIds.add(new NamedID(namedLink.name(), parsedId));
-    }
+    var justificativeIds =
+        namedLinks.justificative().stream()
+            .map(l -> new NamedID(l.name(), idParser.apply(l.link())))
+            .toList();
 
     return new GoogleLinkList<>(plannedIds, doneIds, justificativeIds);
   }
