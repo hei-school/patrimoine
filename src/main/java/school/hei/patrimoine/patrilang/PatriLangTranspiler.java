@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.function.Function;
 import school.hei.patrimoine.cas.Cas;
 import school.hei.patrimoine.cas.CasSet;
-import school.hei.patrimoine.modele.possession.pj.PiecesJustificative;
+import school.hei.patrimoine.modele.possession.pj.PieceJustificative;
 import school.hei.patrimoine.patrilang.modele.variable.VariableScope;
 import school.hei.patrimoine.patrilang.visitors.*;
 import school.hei.patrimoine.patrilang.visitors.factory.SectionVisitorFactory;
@@ -44,7 +44,7 @@ public class PatriLangTranspiler implements Function<String, CasSet> {
     return patrilangVisitor.visitToutCas(tree);
   }
 
-  public static List<PiecesJustificative> transpilePiecesJustificative(
+  public static List<PieceJustificative> transpilePiecesJustificative(
       String pieceJustificativePath) {
     var tree = parsePieceJustificative(pieceJustificativePath);
     var patrilangVisitor =

@@ -17,7 +17,7 @@ import lombok.Getter;
 import school.hei.patrimoine.cas.Cas;
 import school.hei.patrimoine.modele.Personne;
 import school.hei.patrimoine.modele.possession.*;
-import school.hei.patrimoine.modele.possession.pj.PiecesJustificative;
+import school.hei.patrimoine.modele.possession.pj.PieceJustificative;
 import school.hei.patrimoine.patrilang.modele.variable.VariableType;
 import school.hei.patrimoine.patrilang.visitors.factory.SectionVisitorFactory;
 import school.hei.patrimoine.patrilang.visitors.possession.*;
@@ -125,9 +125,9 @@ public class SectionVisitor {
     return this.operationVisitor.apply(ctx.operations(), variableVisitor);
   }
 
-  public List<PiecesJustificative> visitSectionPiecesJustificative(
+  public List<PieceJustificative> visitSectionPiecesJustificative(
       SectionPiecesJustificativesContext ctx) {
-    return this.pieceJustfificativeVisitor.apply(ctx.piecesJustificativeItem());
+    return this.pieceJustfificativeVisitor.apply(ctx.piecesJustificativesItem());
   }
 
   private <T extends Possession> Set<T> visitCompteElements(

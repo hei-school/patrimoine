@@ -107,7 +107,7 @@ ENTETE_DETTES
 
 /* Pièces justificative  */
 LIEN_PIECE_JUSTIFICATIVE
-    :   ('p'|'P')'ièces' ('j'|'J')'ustificatives'
+    :   'Pièces Justificatives'
     ;
 
 /* Opérations */

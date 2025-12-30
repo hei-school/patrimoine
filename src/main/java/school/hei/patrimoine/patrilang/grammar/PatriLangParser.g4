@@ -120,10 +120,10 @@ sectionDettes
 
 /* Pieces justificatives */
 sectionPiecesJustificatives
-    :  HASHES LIEN_PIECE_JUSTIFICATIVE piecesJustificativeItem*
+    :  HASHES LIEN_PIECE_JUSTIFICATIVE piecesJustificativesItem*
     ;
 
-piecesJustificativeItem
+piecesJustificativesItem
     :   MUL id COMMA? dateValue=date COMMA? URL_START URL_CONTENT URL_END
     ;
 

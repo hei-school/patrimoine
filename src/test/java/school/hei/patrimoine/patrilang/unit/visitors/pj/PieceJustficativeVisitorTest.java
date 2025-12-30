@@ -8,7 +8,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.Test;
-import school.hei.patrimoine.modele.possession.pj.PiecesJustificative;
+import school.hei.patrimoine.modele.possession.pj.PieceJustificative;
 import school.hei.patrimoine.patrilang.antlr.PatriLangParser;
 import school.hei.patrimoine.patrilang.modele.variable.VariableScope;
 import school.hei.patrimoine.patrilang.utils.UnitTestVisitor;
@@ -46,7 +46,7 @@ public class PieceJustficativeVisitorTest {
   private final UnitTestVisitor visitor =
       new UnitTestVisitor() {
         @Override
-        public List<PiecesJustificative> visitPiecesJustificatives(
+        public List<PieceJustificative> visitPiecesJustificatives(
             PatriLangParser.PiecesJustificativesContext ctx) {
           return subject.apply(ctx);
         }
@@ -65,7 +65,7 @@ public class PieceJustficativeVisitorTest {
 * `assuranceVoiture + Dates:ajd`, le 24 décembre 2025, "https://docs.google.com/document/d/1602Ett7xFepplxuCau_9aRGCRcDNwE5TLx7W3FuXyXI/edit?tab=t.0"
 """;
 
-    List<PiecesJustificative> result = visitor.visit(input, PatriLangParser::piecesJustificatives);
+    List<PieceJustificative> result = visitor.visit(input, PatriLangParser::piecesJustificatives);
 
     assertEquals(2, result.size());
 
