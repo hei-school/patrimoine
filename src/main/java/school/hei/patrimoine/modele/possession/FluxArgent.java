@@ -8,6 +8,7 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import school.hei.patrimoine.Pair;
 import school.hei.patrimoine.modele.Argent;
+import school.hei.patrimoine.modele.possession.pj.PieceJustificative;
 
 @ToString(callSuper = true)
 @Slf4j
@@ -18,6 +19,7 @@ public final class FluxArgent extends Possession {
   private final LocalDate fin;
   private final Argent fluxMensuel;
   private final int dateOperation;
+  private final PieceJustificative pieceJustificative;
 
   public FluxArgent(
       String nom,
@@ -25,7 +27,8 @@ public final class FluxArgent extends Possession {
       LocalDate debut,
       LocalDate fin,
       int dateOperation,
-      Argent fluxMensuel) {
+      Argent fluxMensuel,
+      PieceJustificative pieceJustificative) {
     super(nom, debut, new Argent(0, fluxMensuel.devise()));
     this.compte = compte;
     this.compte.addFinancés(this);
@@ -34,10 +37,16 @@ public final class FluxArgent extends Possession {
     this.fin = fin;
     this.fluxMensuel = fluxMensuel;
     this.dateOperation = dateOperation;
+    this.pieceJustificative = pieceJustificative;
   }
 
-  public FluxArgent(String nom, Compte compte, LocalDate date, Argent montant) {
-    this(nom, compte, date, date, date.getDayOfMonth(), montant);
+  public FluxArgent(
+      String nom,
+      Compte compte,
+      LocalDate date,
+      Argent montant,
+      PieceJustificative pieceJustificative) {
+    this(nom, compte, date, date, date.getDayOfMonth(), montant, pieceJustificative);
   }
 
   @Override
@@ -60,7 +69,8 @@ public final class FluxArgent extends Possession {
             .first();
     var argentFutur =
         new Compte(compte.nom + " réduit au financement de " + this, tFutur, valeurFutur);
-    return new FluxArgent(nom, argentFutur, debut, tFuturMajoréParFin, dateOperation, fluxMensuel);
+    return new FluxArgent(
+        nom, argentFutur, debut, tFuturMajoréParFin, dateOperation, fluxMensuel, null);
   }
 
   private static Pair<Argent, LocalDate> add(
