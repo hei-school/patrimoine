@@ -69,7 +69,8 @@ class OperationTemplateTest {
             ajd,
             dateFin,
             15,
-            ariary(-40_000));
+            ariary(-40_000),
+            null);
     for (var operation : operations) {
       var actual = (FluxArgent) operation;
       assertFluxArgentEquals(expected, actual);

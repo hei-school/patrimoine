@@ -43,18 +43,20 @@ public class EtudiantCas extends Cas {
 
   @Override
   protected void init() {
-    new FluxArgent("Init compte Espèces", financeur, startDate, ariary(700_000));
+    new FluxArgent("Init compte Espèces", financeur, startDate, ariary(700_000), null);
   }
 
   @Override
   public Set<Possession> possessions() {
-    var trainDeVie = new FluxArgent("Vie courante", financeur, startDate, endDate, 15, ariary(0));
+    var trainDeVie =
+        new FluxArgent("Vie courante", financeur, startDate, endDate, 15, ariary(0), null);
     var mac = new Materiel("MacBook Pro", startDate.minusDays(3), startDate, ariary(500_000), 0);
     return Set.of(financeur, trainDeVie, mac);
   }
 
   @Override
   protected void suivi() {
-    new Correction(new FluxArgent("Correction à la hausse", financeur, LocalDate.now(), ariary(0)));
+    new Correction(
+        new FluxArgent("Correction à la hausse", financeur, LocalDate.now(), ariary(0), null));
   }
 }

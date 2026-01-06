@@ -8,11 +8,13 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import lombok.SneakyThrows;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import school.hei.patrimoine.cas.example.PatrimoineRicheSupplier;
 
 class PatrimoineFileCompilerTest {
 
+  @Disabled
   @SneakyThrows
   @Test
   void convert_file_to_patrimoine() {

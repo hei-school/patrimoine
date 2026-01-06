@@ -37,7 +37,7 @@ class RecoupeurDeCasSetTest {
           @Override
           public Set<Possession> possessions() {
             return Set.of(
-                plannedCompte, new FluxArgent("salaire", plannedCompte, fin, ariary(200)));
+                plannedCompte, new FluxArgent("salaire", plannedCompte, fin, ariary(200), null));
           }
 
           @Override
@@ -61,7 +61,8 @@ class RecoupeurDeCasSetTest {
 
           @Override
           public Set<Possession> possessions() {
-            return Set.of(doneCompte, new FluxArgent("salaire", doneCompte, fin, ariary(200)));
+            return Set.of(
+                doneCompte, new FluxArgent("salaire", doneCompte, fin, ariary(200), null));
           }
 
           @Override
@@ -106,7 +107,7 @@ class RecoupeurDeCasSetTest {
           @Override
           public Set<Possession> possessions() {
             return Set.of(
-                plannedCompte, new FluxArgent("salaire", plannedCompte, fin, ariary(300)));
+                plannedCompte, new FluxArgent("salaire", plannedCompte, fin, ariary(300), null));
           }
 
           @Override
@@ -130,7 +131,8 @@ class RecoupeurDeCasSetTest {
 
           @Override
           public Set<Possession> possessions() {
-            return Set.of(doneCompte, new FluxArgent("salaire", doneCompte, fin, ariary(200)));
+            return Set.of(
+                doneCompte, new FluxArgent("salaire", doneCompte, fin, ariary(200), null));
           }
 
           @Override
@@ -175,7 +177,8 @@ class RecoupeurDeCasSetTest {
 
           @Override
           public Set<Possession> possessions() {
-            return Set.of(plannedCompte, new FluxArgent("prime", plannedCompte, fin, ariary(100)));
+            return Set.of(
+                plannedCompte, new FluxArgent("prime", plannedCompte, fin, ariary(100), null));
           }
 
           @Override
@@ -232,8 +235,8 @@ class RecoupeurDeCasSetTest {
     var fin = LocalDate.of(2025, MARCH, 1);
 
     var compte = new Compte("comptePersonnel", debut, ariary(0));
-    var flux1 = new FluxArgent("prime", compte, fin, ariary(100));
-    var flux2 = new FluxArgent("bonus", compte, fin, ariary(50));
+    var flux1 = new FluxArgent("prime", compte, fin, ariary(100), null);
+    var flux2 = new FluxArgent("bonus", compte, fin, ariary(50), null);
 
     var plannedCas =
         new Cas(debut, fin, Map.of()) {
@@ -365,8 +368,8 @@ class RecoupeurDeCasSetTest {
     var fin = LocalDate.of(2025, MARCH, 1);
 
     var compte = new Compte("comptePersonnel", debut, ariary(0));
-    var flux1 = new FluxArgent("prime", compte, fin, ariary(100));
-    var flux2 = new FluxArgent("bonus", compte, fin, ariary(50));
+    var flux1 = new FluxArgent("prime", compte, fin, ariary(100), null);
+    var flux2 = new FluxArgent("bonus", compte, fin, ariary(50), null);
 
     var plannedCas =
         new Cas(debut, fin, Map.of()) {

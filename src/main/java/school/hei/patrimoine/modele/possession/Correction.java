@@ -25,7 +25,8 @@ public final class Correction extends Possession {
         fluxArgent.getDebut(),
         fluxArgent.getFin(),
         fluxArgent.getDateOperation(),
-        fluxArgent.getFluxMensuel());
+        fluxArgent.getFluxMensuel(),
+        null);
   }
 
   public Correction(Possession possession, String raison, LocalDate t, Argent valeur) {
@@ -41,7 +42,8 @@ public final class Correction extends Possession {
         String.format("Correction.Flux[compteCorrection=%s,%s]", compteCorrection.nom, raison),
         compteCorrection.getCompte(),
         t,
-        valeur);
+        valeur,
+        null);
   }
 
   private Correction(Possession possession, CompteCorrection compteCorrection) {

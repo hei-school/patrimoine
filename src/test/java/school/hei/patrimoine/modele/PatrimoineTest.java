@@ -60,7 +60,8 @@ class PatrimoineTest {
             au13mai24.minusDays(100),
             au13mai24.plusDays(100),
             15,
-            ariary(-100_000));
+            ariary(-100_000),
+            null);
 
     var patrimoineIloAu13mai24 =
         Patrimoine.of("patrimoineIloAu13mai24", MGA, au13mai24, ilo, Set.of(financeur, trainDeVie));
@@ -99,11 +100,12 @@ class PatrimoineTest {
             au13mai24.minusDays(100),
             au13mai24.plusDays(100),
             15,
-            ariary(-100_000));
+            ariary(-100_000),
+            null);
 
     new Correction(
         new FluxArgent(
-            "Correction à la baisse", financeur, au13mai24.plusDays(99), ariary(-10_000)));
+            "Correction à la baisse", financeur, au13mai24.plusDays(99), ariary(-10_000), null));
     var patrimoineIloAu13mai24 =
         Patrimoine.of("patrimoineIloAu13mai24", MGA, au13mai24, ilo, Set.of(financeur, trainDeVie));
 
@@ -130,7 +132,8 @@ class PatrimoineTest {
             au13mai24.minusDays(100),
             au13mai24.plusDays(100),
             15,
-            ariary(-100_000));
+            ariary(-100_000),
+            null);
 
     var patrimoineIloAu13mai24 =
         Patrimoine.of(

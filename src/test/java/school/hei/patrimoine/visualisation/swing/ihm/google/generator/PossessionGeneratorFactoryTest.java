@@ -17,7 +17,8 @@ class PossessionGeneratorFactoryTest {
   @Test
   void make_returns_FluxArgentExecutionGenerator_when_type_is_FluxArgent() {
     var compte = new Compte("CompteEpargne", LocalDate.of(2025, MAY, 10), ariary(1_000_000));
-    var flux = new FluxArgent("Salaire", compte, LocalDate.of(2025, JULY, 31), ariary(50_000));
+    var flux =
+        new FluxArgent("Salaire", compte, LocalDate.of(2025, JULY, 31), ariary(50_000), null);
 
     ExecutionGenerator<FluxArgent> actual = PossessionGeneratorFactory.make(flux);
 

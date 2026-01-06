@@ -38,8 +38,8 @@ public class FluxArgentVisitor {
         .map(
             dateFin ->
                 new FluxArgent(
-                    id, compte, t, dateFin.value(), dateFin.dateOperation(), valeurComptable))
-        .orElseGet(() -> new FluxArgent(id, compte, t, valeurComptable));
+                    id, compte, t, dateFin.value(), dateFin.dateOperation(), valeurComptable, null))
+        .orElseGet(() -> new FluxArgent(id, compte, t, valeurComptable, null));
   }
 
   public FluxArgent apply(FluxArgentSortirContext ctx) {
@@ -63,7 +63,7 @@ public class FluxArgentVisitor {
         .map(
             dateFin ->
                 new FluxArgent(
-                    id, compte, t, dateFin.value(), dateFin.dateOperation(), valeurComptable))
-        .orElseGet(() -> new FluxArgent(id, compte, t, valeurComptable));
+                    id, compte, t, dateFin.value(), dateFin.dateOperation(), valeurComptable, null))
+        .orElseGet(() -> new FluxArgent(id, compte, t, valeurComptable, null));
   }
 }

@@ -36,7 +36,7 @@ class RecoupeurDePossessionsTest {
             Map.of(),
             Set.of(
                 comptePersonnelPrevu,
-                new FluxArgent("salaire", comptePersonnelPrevu, au02Mars2025, ariary(200))));
+                new FluxArgent("salaire", comptePersonnelPrevu, au02Mars2025, ariary(200), null)));
 
     var realise =
         Patrimoine.of(
@@ -46,7 +46,8 @@ class RecoupeurDePossessionsTest {
             Map.of(),
             Set.of(
                 comptePersonnelrealise,
-                new FluxArgent("salaire", comptePersonnelrealise, au02Mars2025, ariary(200))));
+                new FluxArgent(
+                    "salaire", comptePersonnelrealise, au02Mars2025, ariary(200), null)));
 
     var subject = RecoupeurDePossessions.of(LocalDate.MAX, prevu, realise);
 
@@ -78,7 +79,7 @@ class RecoupeurDePossessionsTest {
             Map.of(),
             Set.of(
                 comptePersonnelPrevu,
-                new FluxArgent("salaire", comptePersonnelPrevu, au02Mars2025, ariary(300))));
+                new FluxArgent("salaire", comptePersonnelPrevu, au02Mars2025, ariary(300), null)));
 
     var realise =
         Patrimoine.of(
@@ -88,7 +89,8 @@ class RecoupeurDePossessionsTest {
             Map.of(),
             Set.of(
                 comptePersonnelrealise,
-                new FluxArgent("salaire", comptePersonnelrealise, au02Mars2025, ariary(200))));
+                new FluxArgent(
+                    "salaire", comptePersonnelrealise, au02Mars2025, ariary(200), null)));
 
     var subject = RecoupeurDePossessions.of(LocalDate.MAX, prevu, realise);
 
@@ -123,7 +125,13 @@ class RecoupeurDePossessionsTest {
             Set.of(
                 comptePersonnelPrevu,
                 new FluxArgent(
-                    "salaire", comptePersonnelPrevu, au02Mars2025, au02Juin2025, 2, ariary(200))));
+                    "salaire",
+                    comptePersonnelPrevu,
+                    au02Mars2025,
+                    au02Juin2025,
+                    2,
+                    ariary(200),
+                    null)));
 
     var realise =
         Patrimoine.of(
@@ -137,12 +145,14 @@ class RecoupeurDePossessionsTest {
                     String.format("salaire__du_%s", au02Mars2025).replaceAll("-", "_"),
                     comptePersonnelrealise,
                     au02Mars2025,
-                    ariary(200)),
+                    ariary(200),
+                    null),
                 new FluxArgent(
                     String.format("salaire__du_%s", au02Mai2025).replaceAll("-", "_"),
                     comptePersonnelrealise,
                     au02Mai2025,
-                    ariary(200))));
+                    ariary(200),
+                    null)));
 
     var subject = RecoupeurDePossessions.of(LocalDate.MAX, prevu, realise);
 
@@ -156,9 +166,9 @@ class RecoupeurDePossessionsTest {
   void detecte_possession_en_trop_dans_reel() {
     var date = LocalDate.of(2025, JANUARY, 1);
     var compte = new Compte("comptePersonnel", date, ariary(0));
-    var fluxPrevu = new FluxArgent("prime", compte, date, ariary(100));
-    var fluxDeBonus = new FluxArgent("bonus", compte, date, ariary(50));
-    var fluxEnTrop = new FluxArgent("cadeau", compte, date, ariary(20));
+    var fluxPrevu = new FluxArgent("prime", compte, date, ariary(100), null);
+    var fluxDeBonus = new FluxArgent("bonus", compte, date, ariary(50), null);
+    var fluxEnTrop = new FluxArgent("cadeau", compte, date, ariary(20), null);
 
     var prevu = Patrimoine.of("zety", MGA, date, Map.of(), Set.of(compte, fluxPrevu));
     var realise =
@@ -177,8 +187,8 @@ class RecoupeurDePossessionsTest {
   void detecte_possession_manquante_dans_reel() {
     var date = LocalDate.of(2025, JANUARY, 1);
     var compte = new Compte("comptePersonnel", date, ariary(0));
-    var fluxPrevuPrime = new FluxArgent("prime", compte, date, ariary(100));
-    var fluxPrevuBonus = new FluxArgent("bonus", compte, date, ariary(50));
+    var fluxPrevuPrime = new FluxArgent("prime", compte, date, ariary(100), null);
+    var fluxPrevuBonus = new FluxArgent("bonus", compte, date, ariary(50), null);
 
     var prevu =
         Patrimoine.of("zety", MGA, date, Map.of(), Set.of(compte, fluxPrevuPrime, fluxPrevuBonus));
@@ -223,7 +233,9 @@ class RecoupeurDePossessionsTest {
             MGA,
             date,
             Map.of(),
-            Set.of(compteOwner, new FluxArgent("comptePersonnel", compteOwner, date, ariary(100))));
+            Set.of(
+                compteOwner,
+                new FluxArgent("comptePersonnel", compteOwner, date, ariary(100), null)));
 
     var subject = RecoupeurDePossessions.of(LocalDate.MAX, prevu, realise);
 
@@ -244,8 +256,8 @@ class RecoupeurDePossessionsTest {
 
     var compte = new Compte("comptePersonnel", datePrevu, ariary(0));
 
-    var fluxPrevu = new FluxArgent("salaire", compte, datePrevu, ariary(100));
-    var fluxRealise = new FluxArgent("salaire", compte, dateRealise, ariary(100));
+    var fluxPrevu = new FluxArgent("salaire", compte, datePrevu, ariary(100), null);
+    var fluxRealise = new FluxArgent("salaire", compte, dateRealise, ariary(100), null);
 
     var prevu = Patrimoine.of("zety", MGA, datePrevu, Map.of(), Set.of(compte, fluxPrevu));
     var realise = Patrimoine.of("zety", MGA, datePrevu, Map.of(), Set.of(compte, fluxRealise));
@@ -274,7 +286,7 @@ class RecoupeurDePossessionsTest {
             Map.of(),
             Set.of(
                 comptePersonnelPrevu,
-                new FluxArgent("salaire", comptePersonnelPrevu, au02Mars2025, ariary(300))));
+                new FluxArgent("salaire", comptePersonnelPrevu, au02Mars2025, ariary(300), null)));
 
     var realise =
         Patrimoine.of(
@@ -284,7 +296,8 @@ class RecoupeurDePossessionsTest {
             Map.of(),
             Set.of(
                 comptePersonnelrealise,
-                new FluxArgent("salaire", comptePersonnelrealise, au02Mars2025, ariary(100))));
+                new FluxArgent(
+                    "salaire", comptePersonnelrealise, au02Mars2025, ariary(100), null)));
 
     var subject = RecoupeurDePossessions.of(LocalDate.MAX, prevu, realise);
 

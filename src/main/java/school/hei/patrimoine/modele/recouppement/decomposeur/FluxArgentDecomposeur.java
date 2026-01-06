@@ -49,7 +49,8 @@ public class FluxArgentDecomposeur extends PossessionDecomposeurBase<FluxArgent,
                     new Compte(
                         compte.nom(), date, compte.valeurComptable()), // to avoid side effect
                     date,
-                    fluxArgent.getFluxMensuel()))
+                    fluxArgent.getFluxMensuel(),
+                    null))
         .toList();
   }
 }

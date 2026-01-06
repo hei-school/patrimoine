@@ -111,7 +111,7 @@ class FluxArgentExecutionGeneratorTest {
 
   @Test
   void apply_creates_flux_argent_with_formatted_name_when_prevu_exists() {
-    var prevu = new FluxArgent("Revenus", compte, date, valeur);
+    var prevu = new FluxArgent("Revenus", compte, date, valeur, null);
 
     Map<String, Object> args =
         Map.of(

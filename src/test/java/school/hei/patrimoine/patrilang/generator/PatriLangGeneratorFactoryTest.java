@@ -18,7 +18,7 @@ class PatriLangGeneratorFactoryTest {
 
   @Test
   void make() {
-    var fluxArgent = new FluxArgent("id", compte, date, ariary(900));
+    var fluxArgent = new FluxArgent("id", compte, date, ariary(900), null);
     var generator = PatriLangGeneratorFactory.make(fluxArgent);
     assertInstanceOf(FluxArgentPatriLangGenerator.class, generator);
   }

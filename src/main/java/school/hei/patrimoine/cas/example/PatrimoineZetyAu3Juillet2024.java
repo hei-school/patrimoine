@@ -41,14 +41,16 @@ public class PatrimoineZetyAu3Juillet2024 implements Supplier<Patrimoine> {
         LocalDate.of(2023, NOVEMBER, 1),
         LocalDate.of(2024, AUGUST, 28),
         27,
-        ariary(-200_000));
+        ariary(-200_000),
+        null);
     new FluxArgent(
         "frais de tenue de compte",
         compteBancaire,
         AU_3_JUILLET_2024,
         LocalDate.MAX,
         25,
-        ariary(-20_000));
+        ariary(-20_000),
+        null);
     return Set.of(ordinateur, vêtements, espèces, compteBancaire);
   }
 
@@ -63,7 +65,8 @@ public class PatrimoineZetyAu3Juillet2024 implements Supplier<Patrimoine> {
         dateDeRemboursementDette,
         dateDeRemboursementDette,
         dateDeRemboursementDette.getDayOfMonth(),
-        ariary(valeurDetteARembourser));
+        ariary(valeurDetteARembourser),
+        null);
     int valeurDetteRajoutéeAuCompte = 10_000_000;
     new FluxArgent(
         "flux de la dette",
@@ -71,7 +74,8 @@ public class PatrimoineZetyAu3Juillet2024 implements Supplier<Patrimoine> {
         dateDePriseDeffetDette,
         dateDePriseDeffetDette,
         dateDePriseDeffetDette.getDayOfMonth(),
-        ariary(valeurDetteRajoutéeAuCompte));
+        ariary(valeurDetteRajoutéeAuCompte),
+        null);
     return Set.of(dette);
   }
 
@@ -85,21 +89,24 @@ public class PatrimoineZetyAu3Juillet2024 implements Supplier<Patrimoine> {
             au21Septembre2024,
             au21Septembre2024,
             au21Septembre2024.getDayOfMonth(),
-            ariary(-2_500_000)),
+            ariary(-2_500_000),
+            null),
         new FluxArgent(
             "dons parentaux",
             espèces,
             LocalDate.of(2024, JANUARY, 1),
             LocalDate.MAX,
             15,
-            ariary(100_000)),
+            ariary(100_000),
+            null),
         new FluxArgent(
             "train de vie mensuel",
             espèces,
             LocalDate.of(2024, OCTOBER, 1),
             LocalDate.of(2025, FEBRUARY, 13),
             1,
-            ariary(-250_000)));
+            ariary(-250_000),
+            null));
   }
 
   private static Set<Possession> possessionsRajoutéesAprèsLe14Février2025() {
@@ -113,7 +120,8 @@ public class PatrimoineZetyAu3Juillet2024 implements Supplier<Patrimoine> {
         datePriseDette,
         datePriseDette,
         datePriseDette.getDayOfMonth(),
-        euro(montantPositifDette));
+        euro(montantPositifDette),
+        null);
     LocalDate dateRemboursementDette = AU_15_FEVRIER_2025.plusYears(1);
     new FluxArgent(
         "remboursement dette dans 1 an",
@@ -121,7 +129,8 @@ public class PatrimoineZetyAu3Juillet2024 implements Supplier<Patrimoine> {
         dateRemboursementDette,
         dateRemboursementDette,
         dateRemboursementDette.getDayOfMonth(),
-        euro(-montantPositifDette));
+        euro(-montantPositifDette),
+        null);
     return Set.of(compteAllemand, dette);
   }
 
