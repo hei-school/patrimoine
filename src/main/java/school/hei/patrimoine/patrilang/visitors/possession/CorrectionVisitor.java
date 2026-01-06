@@ -24,6 +24,6 @@ public class CorrectionVisitor implements SimpleVisitor<CorrectionContext, Corre
     LocalDate t = this.variableVisitor.asDate(ctx.dateValue);
     Compte compte = this.variableVisitor.asCompte(ctx.compteNom);
 
-    return new Correction(new FluxArgent(id, compte, t, valeurComptable));
+    return new Correction(new FluxArgent(id, compte, t, valeurComptable, null));
   }
 }

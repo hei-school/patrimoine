@@ -52,7 +52,7 @@ class FluxVariableArgentVisitorTest {
         """
             * `fluxArgentEntrer` Dates:ajd, entrer 500000Ar vers Trésoreries:comptePersonnel
         """;
-    var expected = new FluxArgent("fluxArgentEntrer", COMPTE_PERSONNEL, AJD, ariary(500_000));
+    var expected = new FluxArgent("fluxArgentEntrer", COMPTE_PERSONNEL, AJD, ariary(500_000), null);
 
     FluxArgent actual = visitor.visit(input, PatriLangParser::fluxArgentEntrer);
 
@@ -68,7 +68,11 @@ class FluxVariableArgentVisitorTest {
 """;
     var expected =
         new FluxArgent(
-            "fluxArgentSortir" + AJD.format(formatter), COMPTE_PERSONNEL, AJD, ariary(-500_000));
+            "fluxArgentSortir" + AJD.format(formatter),
+            COMPTE_PERSONNEL,
+            AJD,
+            ariary(-500_000),
+            null);
 
     FluxArgent actual = visitor.visit(input, PatriLangParser::fluxArgentSortir);
 
@@ -89,7 +93,8 @@ class FluxVariableArgentVisitorTest {
             AJD,
             LocalDate.MAX,
             2,
-            ariary(500_000));
+            ariary(500_000),
+            null);
 
     FluxArgent actual = visitor.visit(input, PatriLangParser::fluxArgentEntrer);
 
@@ -110,7 +115,8 @@ class FluxVariableArgentVisitorTest {
             AJD,
             LocalDate.MAX,
             2,
-            ariary(-500_000));
+            ariary(-500_000),
+            null);
 
     FluxArgent actual = visitor.visit(input, PatriLangParser::fluxArgentSortir);
 
@@ -131,7 +137,8 @@ class FluxVariableArgentVisitorTest {
             AJD,
             LocalDate.MAX,
             31,
-            ariary(-500_000));
+            ariary(-500_000),
+            null);
 
     FluxArgent actual = visitor.visit(input, PatriLangParser::fluxArgentSortir);
 

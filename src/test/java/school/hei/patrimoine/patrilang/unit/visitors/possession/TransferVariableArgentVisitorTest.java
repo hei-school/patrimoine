@@ -52,9 +52,10 @@ class TransferVariableArgentVisitorTest {
 
     visitor.visit(input, PatriLangParser::fluxArgentTransferer);
 
-    var expectedFluxEntrer = new FluxArgent(fluxEntrerName, COMPTE_DÉBITEUR, AJD, ariary(200_000));
+    var expectedFluxEntrer =
+        new FluxArgent(fluxEntrerName, COMPTE_DÉBITEUR, AJD, ariary(200_000), null);
     var expectedFluxSortir =
-        new FluxArgent(fluxSortirName, COMPTE_CRÉDITEUR, AJD, ariary(-200_000));
+        new FluxArgent(fluxSortirName, COMPTE_CRÉDITEUR, AJD, ariary(-200_000), null);
 
     var actualFluxEntrer =
         COMPTE_DÉBITEUR.getFluxArgents().stream()
@@ -84,9 +85,11 @@ class TransferVariableArgentVisitorTest {
     visitor.visit(input, PatriLangParser::fluxArgentTransferer);
 
     var expectedFluxEntrer =
-        new FluxArgent(fluxEntrerName, COMPTE_DÉBITEUR, AJD, LocalDate.MAX, 1, ariary(200_000));
+        new FluxArgent(
+            fluxEntrerName, COMPTE_DÉBITEUR, AJD, LocalDate.MAX, 1, ariary(200_000), null);
     var expectedFluxSortir =
-        new FluxArgent(fluxSortirName, COMPTE_CRÉDITEUR, AJD, LocalDate.MAX, 1, ariary(-200_000));
+        new FluxArgent(
+            fluxSortirName, COMPTE_CRÉDITEUR, AJD, LocalDate.MAX, 1, ariary(-200_000), null);
 
     var actualFluxEntrer =
         COMPTE_DÉBITEUR.getFluxArgents().stream()

@@ -21,21 +21,24 @@ class FluxCompteTest {
         aLOuvertureDeITM,
         aLaDiplomation,
         1,
-        ariary(-500_000));
+        ariary(-500_000),
+        null);
     new FluxArgent(
         "La générosité des parents au début",
         compteCourant,
         aLOuvertureDeITM,
         aLOuvertureDeITM.plusDays(100),
         30,
-        ariary(400_000));
+        ariary(400_000),
+        null);
     new FluxArgent(
         "La générosité des parents à la fin",
         compteCourant,
         aLaDiplomation,
         aLaDiplomation.minusDays(100),
         30,
-        ariary(400_000));
+        ariary(400_000),
+        null);
 
     assertEquals(
         ariary(0), compteCourant.projectionFuture(au13mai24.minusDays(100)).valeurComptable);
@@ -57,7 +60,7 @@ class FluxCompteTest {
     var debut = LocalDate.of(2025, JANUARY, 1);
     var fin = LocalDate.of(2025, APRIL, 30);
 
-    new FluxArgent("Flux mensuel comptePersonnel", compte, debut, fin, 31, ariary(-100_000));
+    new FluxArgent("Flux mensuel comptePersonnel", compte, debut, fin, 31, ariary(-100_000), null);
 
     var actual = compte.projectionFuture(LocalDate.of(2025, APRIL, 30));
     assertEquals(ariary(-400_000), actual.valeurComptable);

@@ -25,8 +25,9 @@ public final class RemboursementDette extends Possession {
             t,
             Set.of(
                 new TransfertArgent(nom + " (transfert)", rembourseur, remboursé, t, montant),
-                new FluxArgent(nom + " (annulation dette)", dette, t, montant),
-                new FluxArgent(nom + " (annulation créance)", creance, t, montant.mult(-1)))));
+                new FluxArgent(nom + " (annulation dette)", dette, t, montant, null),
+                new FluxArgent(
+                    nom + " (annulation créance)", creance, t, montant.mult(-1), null))));
   }
 
   private RemboursementDette(GroupePossession commeGroupe) {

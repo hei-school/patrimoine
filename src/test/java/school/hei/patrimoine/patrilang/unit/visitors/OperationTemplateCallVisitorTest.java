@@ -54,7 +54,8 @@ class OperationTemplateCallVisitorTest {
 
     var input = "* `myTemplate()`";
     var expected =
-        new FluxArgent("salaireMensuel", COMPTE_PERSONNEL, AJD, LocalDate.MAX, 31, ariary(4_000));
+        new FluxArgent(
+            "salaireMensuel", COMPTE_PERSONNEL, AJD, LocalDate.MAX, 31, ariary(4_000), null);
     Set<FluxArgent> operations = visitor.visit(input, PatriLangParser::operationTemplateCall);
 
     var actual = operations.iterator().next();
@@ -77,7 +78,7 @@ class OperationTemplateCallVisitorTest {
 
     var input = "* `charges(Trésoreries:comptePersonnel, le 23 du 12-2025)`";
     var expected =
-        new FluxArgent("salaireMensuel", COMPTE_PERSONNEL, AJD, DATE_FIN, 31, ariary(4_000));
+        new FluxArgent("salaireMensuel", COMPTE_PERSONNEL, AJD, DATE_FIN, 31, ariary(4_000), null);
     Set<FluxArgent> operations = visitor.visit(input, PatriLangParser::operationTemplateCall);
 
     var actual = operations.iterator().next();

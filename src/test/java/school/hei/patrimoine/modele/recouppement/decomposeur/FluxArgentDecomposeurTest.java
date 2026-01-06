@@ -24,7 +24,8 @@ public class FluxArgentDecomposeurTest {
             LocalDate.of(2025, JANUARY, 12),
             LocalDate.of(2025, JANUARY, 12),
             12,
-            ariary(500));
+            ariary(500),
+            null);
 
     var actual = subject.apply(flux);
 
@@ -44,7 +45,8 @@ public class FluxArgentDecomposeurTest {
             LocalDate.of(2025, JANUARY, 1),
             LocalDate.of(2025, MARCH, 31),
             12,
-            ariary(1000));
+            ariary(1000),
+            null);
 
     var actual = subject.apply(flux);
 
@@ -64,7 +66,8 @@ public class FluxArgentDecomposeurTest {
             LocalDate.of(2025, JANUARY, 1),
             LocalDate.of(2025, JANUARY, 10),
             12,
-            ariary(1000));
+            ariary(1000),
+            null);
 
     var actual = subject.apply(flux);
 

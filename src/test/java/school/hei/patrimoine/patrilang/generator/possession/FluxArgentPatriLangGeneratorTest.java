@@ -16,7 +16,7 @@ class FluxArgentPatriLangGeneratorTest {
 
   @Test
   void test_entree() {
-    var flux = new FluxArgent("flux1", compte, date, ariary(1000));
+    var flux = new FluxArgent("flux1", compte, date, ariary(1000), null);
     var actual = subject.apply(flux);
 
     var expected = "* `flux1`, le 1 janvier 2025 entrer 1_000Ar vers Trésoreries:comptePersonnel";
@@ -25,7 +25,7 @@ class FluxArgentPatriLangGeneratorTest {
 
   @Test
   void test_sortie() {
-    var flux = new FluxArgent("flux1", compte, date, ariary(-1000));
+    var flux = new FluxArgent("flux1", compte, date, ariary(-1000), null);
     var actual = subject.apply(flux);
 
     var expected = "* `flux1`, le 1 janvier 2025 sortir 1_000Ar depuis Trésoreries:comptePersonnel";
@@ -34,7 +34,7 @@ class FluxArgentPatriLangGeneratorTest {
 
   @Test
   void test_zero_flux() {
-    var flux = new FluxArgent("flux1", compte, date, ariary(0));
+    var flux = new FluxArgent("flux1", compte, date, ariary(0), null);
     var actual = subject.apply(flux);
 
     var expected = "* `flux1`, le 1 janvier 2025 entrer 0Ar vers Trésoreries:comptePersonnel";

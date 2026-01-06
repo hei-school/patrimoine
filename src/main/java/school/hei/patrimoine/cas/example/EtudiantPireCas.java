@@ -39,7 +39,7 @@ public class EtudiantPireCas extends Cas {
   @Override
   protected void init() {
     new FluxArgent(
-        "Init compte Espèces", financeur, LocalDate.of(2024, FEBRUARY, 1), ariary(700_000));
+        "Init compte Espèces", financeur, LocalDate.of(2024, FEBRUARY, 1), ariary(700_000), null);
   }
 
   @Override
@@ -52,13 +52,14 @@ public class EtudiantPireCas extends Cas {
             au13mai24.minusDays(100),
             au13mai24.plusDays(100),
             15,
-            ariary(-100_000));
+            ariary(-100_000),
+            null);
     var mac = new Materiel("MacBook Pro", au13mai24.minusDays(3), au13mai24, ariary(500_000), -0.9);
     return Set.of(financeur, trainDeVie, mac);
   }
 
   @Override
   protected void suivi() {
-    new Correction(new FluxArgent("Correction à la hausse", financeur, ajd, ariary(50_000)));
+    new Correction(new FluxArgent("Correction à la hausse", financeur, ajd, ariary(50_000), null));
   }
 }

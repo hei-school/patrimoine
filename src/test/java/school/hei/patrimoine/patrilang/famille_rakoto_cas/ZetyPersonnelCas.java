@@ -47,7 +47,7 @@ public class ZetyPersonnelCas extends Cas {
   @Override
   protected void init() {
     new Objectif(zetyPersonnel, ajd, ariary(1_000_000));
-    new FluxArgent("initComptePersonnel", zetyPersonnel, ajd, ariary(1_000_000));
+    new FluxArgent("initComptePersonnel", zetyPersonnel, ajd, ariary(1_000_000), null);
   }
 
   @Override
@@ -58,9 +58,11 @@ public class ZetyPersonnelCas extends Cas {
         ajd,
         Set.of(
             new FluxArgent(
-                "abonnementWifi", zetyPersonnel, ajd, LocalDate.MAX, 15, ariary(-40_000)),
-            new FluxArgent("nourriture", zetyLoyerMaison, ajd, LocalDate.MAX, 1, ariary(-12_000)),
-            new FluxArgent("JIRAMA", zetyLoyerMaison, ajd, LocalDate.MAX, 5, ariary(-100_000))));
+                "abonnementWifi", zetyPersonnel, ajd, LocalDate.MAX, 15, ariary(-40_000), null),
+            new FluxArgent(
+                "nourriture", zetyLoyerMaison, ajd, LocalDate.MAX, 1, ariary(-12_000), null),
+            new FluxArgent(
+                "JIRAMA", zetyLoyerMaison, ajd, LocalDate.MAX, 5, ariary(-100_000), null)));
 
     new GroupePossession(
         "SalaireMensuel",
@@ -68,7 +70,7 @@ public class ZetyPersonnelCas extends Cas {
         ajd,
         Set.of(
             new FluxArgent(
-                "salaireMensuel", zetyPersonnel, ajd, LocalDate.MAX, 31, ariary(500_000))));
+                "salaireMensuel", zetyPersonnel, ajd, LocalDate.MAX, 31, ariary(500_000), null)));
 
     return Set.of(zetyPersonnel, zetyLoyerMaison, zetyCreance, zetyDette);
   }
@@ -77,6 +79,6 @@ public class ZetyPersonnelCas extends Cas {
   protected void suivi() {
     var t1 = LocalDate.of(2025, FEBRUARY, 2);
     new Objectif(zetyPersonnel, t1, ariary(2_000_000));
-    new Correction(new FluxArgent("correction1", zetyPersonnel, t1, ariary(540_000)));
+    new Correction(new FluxArgent("correction1", zetyPersonnel, t1, ariary(540_000), null));
   }
 }

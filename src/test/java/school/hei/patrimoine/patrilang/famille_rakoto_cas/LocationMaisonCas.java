@@ -49,7 +49,7 @@ public class LocationMaisonCas extends Cas {
   @Override
   protected void init() {
     new Objectif(loyerMaison, ajd, ariary(500_000));
-    new FluxArgent("initCompteLoyerMaison", loyerMaison, ajd, ariary(500_000));
+    new FluxArgent("initCompteLoyerMaison", loyerMaison, ajd, ariary(500_000), null);
   }
 
   @Override
@@ -64,11 +64,11 @@ public class LocationMaisonCas extends Cas {
         ajd,
         Set.of(
             new FluxArgent(
-                "remZety2025", zetyLoyerMaison, ajd, au31Décembre2025, 1, ariary(400_000)),
+                "remZety2025", zetyLoyerMaison, ajd, au31Décembre2025, 1, ariary(400_000), null),
             new FluxArgent(
-                "remRasoa2025", rasoaPersonnel, ajd, au31Décembre2025, 1, ariary(500_000)),
+                "remRasoa2025", rasoaPersonnel, ajd, au31Décembre2025, 1, ariary(500_000), null),
             new FluxArgent(
-                "remLita2025", litaPersonnel, ajd, au31Décembre2025, 1, ariary(100_000))));
+                "remLita2025", litaPersonnel, ajd, au31Décembre2025, 1, ariary(100_000), null)));
 
     new GroupePossession(
         "RevenusLoyer",
@@ -76,7 +76,13 @@ public class LocationMaisonCas extends Cas {
         ajd,
         Set.of(
             new FluxArgent(
-                "receptionLoyer" + ajd, loyerMaison, ajd, LocalDate.MAX, 29, ariary(1_000_000))));
+                "receptionLoyer" + ajd,
+                loyerMaison,
+                ajd,
+                LocalDate.MAX,
+                29,
+                ariary(1_000_000),
+                null)));
 
     new GroupePossession(
         "ChargesLoyer",
@@ -84,8 +90,15 @@ public class LocationMaisonCas extends Cas {
         ajd,
         Set.of(
             new FluxArgent(
-                "paiementCommune" + ajd, loyerMaison, ajd, LocalDate.MAX, 1, ariary(-200_000)),
-            new FluxArgent("JIRAMA" + ajd, loyerMaison, ajd, LocalDate.MAX, 1, ariary(-100_000))));
+                "paiementCommune" + ajd,
+                loyerMaison,
+                ajd,
+                LocalDate.MAX,
+                1,
+                ariary(-200_000),
+                null),
+            new FluxArgent(
+                "JIRAMA" + ajd, loyerMaison, ajd, LocalDate.MAX, 1, ariary(-100_000), null)));
 
     return Set.of(loyerMaison);
   }

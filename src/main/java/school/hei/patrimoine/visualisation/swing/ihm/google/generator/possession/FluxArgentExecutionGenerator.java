@@ -41,6 +41,7 @@ public class FluxArgentExecutionGenerator implements ExecutionGenerator<FluxArge
         realisationNom,
         (Compte) args.get("compte"),
         (LocalDate) args.get("date"),
-        (Argent) args.get("valeur"));
+        (Argent) args.get("valeur"),
+        null);
   }
 }
