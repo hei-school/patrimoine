@@ -41,11 +41,20 @@ public record DriveApi(Drive driveService) {
     }
   }
 
-  public void download(String driveFileId, FileNameExtractor fileNameExtractor, String downloadPath)
+  public void download(
+      String driveFileId,
+      FileNameExtractor fileNameExtractor,
+      String downloadPath,
+      boolean allowPotentiallyUnsafeFiles)
       throws GoogleIntegrationException {
     var tempFile = new File(GoogleApiUtilities.getTempDirectory(), "prefix_" + randomUUID());
 
-    try (var inputStream = driveService.files().get(driveFileId).executeMediaAsInputStream();
+    try (var inputStream =
+            driveService
+                .files()
+                .get(driveFileId)
+                .setAcknowledgeAbuse(allowPotentiallyUnsafeFiles)
+                .executeMediaAsInputStream();
         var tempOutputStream = new FileOutputStream(tempFile)) {
 
       // Download content to a temporary file
