@@ -7,7 +7,7 @@ import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
 import school.hei.patrimoine.modele.possession.pj.PieceJustificative;
 
-public class PieceJustificativeDecomposeurTest {
+class PieceJustificativeDecomposeurTest {
   PieceJustificativeDecomposeur subject = new PieceJustificativeDecomposeur(LocalDate.now());
 
   @Test

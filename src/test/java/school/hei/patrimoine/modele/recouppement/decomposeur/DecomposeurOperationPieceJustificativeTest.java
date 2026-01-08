@@ -11,7 +11,7 @@ import school.hei.patrimoine.modele.possession.FluxArgent;
 import school.hei.patrimoine.modele.possession.Possession;
 import school.hei.patrimoine.modele.possession.pj.PieceJustificative;
 
-public class DecomposeurOperationPieceJustificativeTest {
+class DecomposeurOperationPieceJustificativeTest {
   private final LocalDate finSimulation = LocalDate.of(2025, 12, 31);
   private final Compte compte =
       new Compte("compte courant", LocalDate.of(2020, 1, 1), ariary(1000));

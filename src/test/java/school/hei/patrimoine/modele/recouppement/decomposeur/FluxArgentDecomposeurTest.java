@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 import school.hei.patrimoine.modele.possession.Compte;
 import school.hei.patrimoine.modele.possession.FluxArgent;
 
-public class FluxArgentDecomposeurTest {
+class FluxArgentDecomposeurTest {
   FluxArgentDecomposeur subject = new FluxArgentDecomposeur(LocalDate.MAX);
 
   @Test
