@@ -13,7 +13,7 @@ import school.hei.patrimoine.modele.possession.CompteCorrection;
 import school.hei.patrimoine.modele.possession.Correction;
 import school.hei.patrimoine.modele.possession.Possession;
 import school.hei.patrimoine.modele.recouppement.CompteGetterFactory.CompteGetter;
-import school.hei.patrimoine.modele.recouppement.decomposeur.PossessionDecomposeurFactory;
+import school.hei.patrimoine.modele.decomposeur.PossessionDecomposeurFactory;
 import school.hei.patrimoine.modele.recouppement.generateur.RecoupeurDePossessionFacade;
 
 public class RecoupeurDePossessions {
