@@ -22,11 +22,11 @@ public record GoogleLinkListDownloader(FileNameExtractor fileNameExtractor, Driv
 
   public void download(GoogleLinkList<NamedID> ids) throws GoogleIntegrationException {
     for (var namedId : ids.planned()) {
-      driveApi.download(namedId.id(), fileNameExtractor, getPlannedDirectoryPath());
+      driveApi.download(namedId.id(), fileNameExtractor, getPlannedDirectoryPath(), true);
     }
 
     for (var namedId : ids.done()) {
-      driveApi.download(namedId.id(), fileNameExtractor, getDoneDirectoryPath());
+      driveApi.download(namedId.id(), fileNameExtractor, getDoneDirectoryPath(), true);
     }
   }
 
