@@ -16,6 +16,10 @@ public class PatriLangPieceJustificativeVisitor
 
   @Override
   public List<PieceJustificative> apply(PiecesJustificativesContext context) {
+    if (context == null || context.sectionPiecesJustificatives() == null) {
+      return List.of();
+    }
+
     return context.sectionPiecesJustificatives().piecesJustificativesItem().stream()
         .map(this::visitPieceJustificative)
         .toList();

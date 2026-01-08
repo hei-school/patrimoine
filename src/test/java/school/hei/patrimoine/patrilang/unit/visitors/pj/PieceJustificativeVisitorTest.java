@@ -6,11 +6,10 @@ import static school.hei.patrimoine.patrilang.modele.variable.VariableType.DATE;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import school.hei.patrimoine.modele.possession.pj.PieceJustificative;
 import school.hei.patrimoine.patrilang.antlr.PatriLangParser;
-import school.hei.patrimoine.patrilang.modele.variable.VariableScope;
 import school.hei.patrimoine.patrilang.utils.UnitTestVisitor;
 import school.hei.patrimoine.patrilang.visitors.IdVisitor;
 import school.hei.patrimoine.patrilang.visitors.PatriLangPieceJustificativeVisitor;
@@ -19,38 +18,40 @@ import school.hei.patrimoine.patrilang.visitors.variable.VariableExpressionVisit
 import school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor;
 
 public class PieceJustificativeVisitorTest {
-  private static final VariableVisitor variableVisitor = new VariableVisitor();
-  private static final VariableScope variableScope = variableVisitor.getVariableScope();
+  private PatriLangPieceJustificativeVisitor subject;
+  private UnitTestVisitor visitor;
 
-  private static final AtomicReference<VariableDateVisitor> dateRef = new AtomicReference<>();
-  private static final AtomicReference<VariableExpressionVisitor> exprRef = new AtomicReference<>();
-
-  private static final VariableExpressionVisitor expressionVisitor =
-      new VariableExpressionVisitor(variableScope, dateRef::get);
-
-  private static final VariableDateVisitor dateVisitor =
-      new VariableDateVisitor(variableScope, exprRef::get);
-
-  static {
-    exprRef.set(expressionVisitor);
-    dateRef.set(dateVisitor);
-
+  @BeforeEach
+  void setup() {
+    var variableVisitor = new VariableVisitor();
+    var variableScope = variableVisitor.getVariableScope();
     variableVisitor.addToScope("ajd", DATE, LocalDate.of(2025, 12, 24));
+
+    final class Holder<T> {
+      T value;
+    }
+    final Holder<VariableDateVisitor> dateHolder = new Holder<>();
+    final Holder<VariableExpressionVisitor> exprHolder = new Holder<>();
+
+    var expressionVisitor = new VariableExpressionVisitor(variableScope, () -> dateHolder.value);
+    var dateVisitor = new VariableDateVisitor(variableScope, () -> exprHolder.value);
+
+    dateHolder.value = dateVisitor;
+    exprHolder.value = expressionVisitor;
+
+    var idVisitor = new IdVisitor(variableVisitor);
+
+    subject = new PatriLangPieceJustificativeVisitor(idVisitor, dateVisitor);
+
+    visitor =
+        new UnitTestVisitor() {
+          @Override
+          public List<PieceJustificative> visitPiecesJustificatives(
+              PatriLangParser.PiecesJustificativesContext ctx) {
+            return subject.apply(ctx);
+          }
+        };
   }
-
-  private static final IdVisitor idVisitor = new IdVisitor(variableVisitor);
-
-  private final PatriLangPieceJustificativeVisitor subject =
-      new PatriLangPieceJustificativeVisitor(idVisitor, dateVisitor);
-
-  private final UnitTestVisitor visitor =
-      new UnitTestVisitor() {
-        @Override
-        public List<PieceJustificative> visitPiecesJustificatives(
-            PatriLangParser.PiecesJustificativesContext ctx) {
-          return subject.apply(ctx);
-        }
-      };
 
   @Test
   void parse_pieces_justificatives() {
@@ -81,5 +82,19 @@ public class PieceJustificativeVisitorTest {
     assertEquals("assuranceVoiture2025_12_24", pj2.id());
     assertEquals(LocalDate.of(2025, 12, 24), pj2.date());
     assertTrue(pj2.link().contains("https://docs.google.com/document"));
+  }
+
+  @Test
+  void parse_empty_pieces_justificatives_returns_empty_list() {
+    var input =
+        """
+        # Général
+        * Spécifier Dates:ajd
+        * Cas de Taxi
+        """;
+
+    List<PieceJustificative> result = visitor.visit(input, PatriLangParser::piecesJustificatives);
+
+    assertTrue(result.isEmpty());
   }
 }
