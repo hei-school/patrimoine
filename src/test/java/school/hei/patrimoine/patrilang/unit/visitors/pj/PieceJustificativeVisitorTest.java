@@ -6,6 +6,7 @@ import static school.hei.patrimoine.patrilang.modele.variable.VariableType.DATE;
 
 import java.time.LocalDate;
 import java.util.List;
+import lombok.Getter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import school.hei.patrimoine.modele.possession.pj.PieceJustificative;
@@ -17,9 +18,12 @@ import school.hei.patrimoine.patrilang.visitors.variable.VariableDateVisitor;
 import school.hei.patrimoine.patrilang.visitors.variable.VariableExpressionVisitor;
 import school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor;
 
-public class PieceJustificativeVisitorTest {
+class PieceJustificativeVisitorTest {
   private PatriLangPieceJustificativeVisitor subject;
   private UnitTestVisitor visitor;
+
+  @Getter private VariableExpressionVisitor expressionVisitor;
+  @Getter private VariableDateVisitor variableDateVisitor;
 
   @BeforeEach
   void setup() {
@@ -27,22 +31,11 @@ public class PieceJustificativeVisitorTest {
     var variableScope = variableVisitor.getVariableScope();
     variableVisitor.addToScope("ajd", DATE, LocalDate.of(2025, 12, 24));
 
-    final class Holder<T> {
-      T value;
-    }
-    final Holder<VariableDateVisitor> dateHolder = new Holder<>();
-    final Holder<VariableExpressionVisitor> exprHolder = new Holder<>();
-
-    var expressionVisitor = new VariableExpressionVisitor(variableScope, () -> dateHolder.value);
-    var dateVisitor = new VariableDateVisitor(variableScope, () -> exprHolder.value);
-
-    dateHolder.value = dateVisitor;
-    exprHolder.value = expressionVisitor;
-
     var idVisitor = new IdVisitor(variableVisitor);
+    expressionVisitor = new VariableExpressionVisitor(variableScope, this::getVariableDateVisitor);
+    variableDateVisitor = new VariableDateVisitor(variableScope, this::getExpressionVisitor);
 
-    subject = new PatriLangPieceJustificativeVisitor(idVisitor, dateVisitor);
-
+    subject = new PatriLangPieceJustificativeVisitor(idVisitor, this.getVariableDateVisitor());
     visitor =
         new UnitTestVisitor() {
           @Override
