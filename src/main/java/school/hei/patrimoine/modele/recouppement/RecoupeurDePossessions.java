@@ -9,11 +9,11 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.regex.Pattern;
 import school.hei.patrimoine.modele.Patrimoine;
+import school.hei.patrimoine.modele.decomposeur.PossessionDecomposeurFactory;
 import school.hei.patrimoine.modele.possession.CompteCorrection;
 import school.hei.patrimoine.modele.possession.Correction;
 import school.hei.patrimoine.modele.possession.Possession;
 import school.hei.patrimoine.modele.recouppement.CompteGetterFactory.CompteGetter;
-import school.hei.patrimoine.modele.decomposeur.PossessionDecomposeurFactory;
 import school.hei.patrimoine.modele.recouppement.generateur.RecoupeurDePossessionFacade;
 
 public class RecoupeurDePossessions {
