@@ -8,6 +8,7 @@ import static school.hei.patrimoine.modele.Argent.ariary;
 
 import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
+import school.hei.patrimoine.modele.decomposeur.FluxArgentDecomposeur;
 import school.hei.patrimoine.modele.possession.Compte;
 import school.hei.patrimoine.modele.possession.FluxArgent;
 
