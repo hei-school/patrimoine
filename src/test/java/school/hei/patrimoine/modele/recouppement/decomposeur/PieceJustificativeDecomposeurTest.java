@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import school.hei.patrimoine.modele.decomposeur.PieceJustificativeDecomposeur;
 import school.hei.patrimoine.modele.possession.pj.PieceJustificative;
 
-class PieceJustificativeDecomposeueTest {
+class PieceJustificativeDecomposeurTest {
   PieceJustificativeDecomposeur subject = new PieceJustificativeDecomposeur(LocalDate.now());
 
   @Test
