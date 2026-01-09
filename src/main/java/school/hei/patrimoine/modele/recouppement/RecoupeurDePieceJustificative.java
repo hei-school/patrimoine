@@ -43,7 +43,7 @@ public class RecoupeurDePieceJustificative {
         .collect(Collectors.toSet());
   }
 
-  private List<Possession> getPossessionsWithoutPj() {
+  public List<Possession> getPossessionsWithoutPj() {
     var possessionsWithPj =
         getPossessionWithPj().stream()
             .map(PossessionWithPieceJustificative::possession)
@@ -52,7 +52,7 @@ public class RecoupeurDePieceJustificative {
     return possessions.stream().filter(p -> !possessionsWithPj.contains(p)).toList();
   }
 
-  private <T extends Possession> PieceJustificative getPieceJustificativeFor(T possession) {
+  public <T extends Possession> PieceJustificative getPieceJustificativeFor(T possession) {
     return getPossessionWithPj().stream()
         .filter(possessionWithPj -> possessionWithPj.possession().equals(possession))
         .map(PossessionWithPieceJustificative::pieceJustificative)
