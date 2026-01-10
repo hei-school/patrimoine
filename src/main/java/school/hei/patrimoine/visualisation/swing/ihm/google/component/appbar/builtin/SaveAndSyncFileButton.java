@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.Callable;
-import java.util.function.Supplier;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import school.hei.patrimoine.google.api.CommentApi;
@@ -36,11 +35,7 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
 public class SaveAndSyncFileButton extends PopupMenuButton {
   private static final String MIME_TYPE = "application/octet-stream";
 
-  public SaveAndSyncFileButton(
-      State state,
-      HtmlViewer htmlViewer,
-      Supplier<String> getNewContent,
-      Callable<Void> onSuccess) {
+  public SaveAndSyncFileButton(State state, HtmlViewer htmlViewer, Callable<Void> onSuccess) {
     super(
         "Sauvegarder / Synchroniser",
         List.of(
