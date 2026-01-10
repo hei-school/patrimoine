@@ -1,5 +1,7 @@
 package school.hei.patrimoine.patrilang.files;
 
+import static school.hei.patrimoine.patrilang.PatriLangTranspiler.PJ_FILE_EXTENSION;
+
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -63,6 +65,9 @@ public class PatriLangFileWritter {
     var oldContent = Files.readString(input.file().toPath());
     try {
       runnable.run();
+
+      if (input.file.getAbsolutePath().endsWith(PJ_FILE_EXTENSION)) return;
+
       validator.accept(input.casSet().getAbsolutePath());
     } catch (ParseCancellationException | IllegalArgumentException e) {
       Files.writeString(input.file().toPath(), oldContent, StandardCharsets.UTF_8);

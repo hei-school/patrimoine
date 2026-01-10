@@ -1,5 +1,6 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.component;
 
+import static school.hei.patrimoine.patrilang.PatriLangTranspiler.PJ_FILE_EXTENSION;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.AppBar.ViewMode;
 
 import java.awt.*;
@@ -10,10 +11,12 @@ import java.util.Map;
 import java.util.Set;
 import javax.swing.*;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import school.hei.patrimoine.patrilang.files.PatriLangFileWritter.FileWritterInput;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.MarkdownToHtmlConverter;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
 
+@Slf4j
 public class HtmlViewer extends JEditorPane {
   private final State state;
   private final MarkdownToHtmlConverter markdownToHtmlConverter;
@@ -108,15 +111,19 @@ public class HtmlViewer extends JEditorPane {
       return;
     }
 
-    File currentCasSet = state.get("selectedCasSetFile");
-
-    modifiedFilesData.put(
-        lastEditedFile,
-        FileWritterInput.builder()
-            .file(lastEditedFile)
-            .casSet(currentCasSet)
-            .content(currentContent)
-            .build());
+    if (lastEditedFile.getAbsolutePath().endsWith(PJ_FILE_EXTENSION)) {
+      modifiedFilesData.put(
+          lastEditedFile,
+          FileWritterInput.builder().file(lastEditedFile).content(currentContent).build());
+    } else {
+      modifiedFilesData.put(
+          lastEditedFile,
+          FileWritterInput.builder()
+              .file(lastEditedFile)
+              .casSet(state.get("selectedCasSetFile"))
+              .content(currentContent)
+              .build());
+    }
   }
 
   public Map<File, FileWritterInput> getModifiedFilesData() {
