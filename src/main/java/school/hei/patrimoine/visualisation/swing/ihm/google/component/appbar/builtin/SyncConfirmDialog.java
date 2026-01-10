@@ -1,7 +1,6 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.builtin;
 
-import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.PatriLangStagingFileManager.getStagedDoneFiles;
-import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.PatriLangStagingFileManager.getStagedPlannedFiles;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.PatriLangStagingFileManager.*;
 
 import java.awt.*;
 import java.io.File;
@@ -28,11 +27,13 @@ public class SyncConfirmDialog extends JDialog {
 
     List<File> plannedFiles = getStagedPlannedFiles();
     List<File> doneFiles = getStagedDoneFiles();
+    List<File> justificativeFiles = getStagedJustificativeFiles();
 
     LocalCommentManager localManager = LocalCommentManager.getInstance();
     List<String> filesWithPendingComments = localManager.getFilesWithPendingChanges();
     Map<String, PendingCommentsInfo> pendingCommentsPlanned = new HashMap<>();
     Map<String, PendingCommentsInfo> pendingCommentsDone = new HashMap<>();
+    Map<String, PendingCommentsInfo> pendingJustificativeComments = new HashMap<>();
 
     for (String fileId : filesWithPendingComments) {
       int addCount = localManager.getPendingComments(fileId).size();
@@ -43,7 +44,9 @@ public class SyncConfirmDialog extends JDialog {
       if (addCount > 0 || replyCount > 0 || resolveCount > 0 || deleteCount > 0) {
         var info = new PendingCommentsInfo(fileId, addCount, replyCount, resolveCount, deleteCount);
 
-        if (isPlannedFile(fileId)) {
+        if (isJustificative(fileId)) {
+          pendingJustificativeComments.put(fileId, info);
+        } else if (isPlannedFile(fileId)) {
           pendingCommentsPlanned.put(fileId, info);
         } else {
           pendingCommentsDone.put(fileId, info);
@@ -51,8 +54,12 @@ public class SyncConfirmDialog extends JDialog {
       }
     }
 
-    boolean hasFiles = !plannedFiles.isEmpty() || !doneFiles.isEmpty();
-    boolean hasComments = !pendingCommentsPlanned.isEmpty() || !pendingCommentsDone.isEmpty();
+    boolean hasFiles =
+        !plannedFiles.isEmpty() || !doneFiles.isEmpty() || !justificativeFiles.isEmpty();
+    boolean hasComments =
+        !pendingCommentsPlanned.isEmpty()
+            || !pendingCommentsDone.isEmpty()
+            || !pendingJustificativeComments.isEmpty();
 
     if (hasFiles || hasComments) {
       String messageText =
@@ -64,8 +71,10 @@ public class SyncConfirmDialog extends JDialog {
       initConfirmComponents(
           plannedFiles,
           doneFiles,
+          justificativeFiles,
           pendingCommentsPlanned,
           pendingCommentsDone,
+          pendingJustificativeComments,
           messageText,
           confirmButtonText);
     } else {
@@ -86,11 +95,23 @@ public class SyncConfirmDialog extends JDialog {
     }
   }
 
+  private boolean isJustificative(String fileId) {
+    try {
+      GoogleLinkList<GoogleLinkList.NamedID> ids = AppContext.getDefault().getData("named-ids");
+
+      return ids.justificative().stream().anyMatch(n -> n.id().equals(fileId));
+    } catch (Exception e) {
+      return false;
+    }
+  }
+
   private void initConfirmComponents(
       List<File> plannedFiles,
       List<File> doneFiles,
+      List<File> justificativeFiles,
       Map<String, PendingCommentsInfo> pendingCommentsPlanned,
       Map<String, PendingCommentsInfo> pendingCommentsDone,
+      Map<String, PendingCommentsInfo> pendingJustificativeComments,
       String messageText,
       String confirmButtonText) {
     setLayout(new BorderLayout());
@@ -102,7 +123,7 @@ public class SyncConfirmDialog extends JDialog {
     var contentPanel = new JPanel();
     contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
 
-    if (!plannedFiles.isEmpty() || !doneFiles.isEmpty()) {
+    if (!plannedFiles.isEmpty() || !doneFiles.isEmpty() || !justificativeFiles.isEmpty()) {
       var filesLabel = new JLabel("Fichiers modifiés");
       filesLabel.setFont(new Font("Arial", Font.BOLD, 16));
       filesLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -111,13 +132,18 @@ public class SyncConfirmDialog extends JDialog {
 
       addFileSection(contentPanel, "Planifiés", plannedFiles, loadFileIcon());
       addFileSection(contentPanel, "Réalisés", doneFiles, loadFileIcon());
+      addFileSection(contentPanel, "Pièces justificatives", justificativeFiles, loadFileIcon());
 
-      if (!pendingCommentsPlanned.isEmpty() || !pendingCommentsDone.isEmpty()) {
+      if (!pendingCommentsPlanned.isEmpty()
+          || !pendingCommentsDone.isEmpty()
+          || !pendingJustificativeComments.isEmpty()) {
         contentPanel.add(Box.createVerticalStrut(15));
       }
     }
 
-    if (!pendingCommentsPlanned.isEmpty() || !pendingCommentsDone.isEmpty()) {
+    if (!pendingCommentsPlanned.isEmpty()
+        || !pendingCommentsDone.isEmpty()
+        || !pendingJustificativeComments.isEmpty()) {
       var commentsLabel = new JLabel("Commentaires modifiés");
       commentsLabel.setFont(new Font("Arial", Font.BOLD, 16));
       commentsLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -126,6 +152,8 @@ public class SyncConfirmDialog extends JDialog {
 
       addCommentsSection(contentPanel, "Planifiés", pendingCommentsPlanned, loadCommentIcon());
       addCommentsSection(contentPanel, "Réalisés", pendingCommentsDone, loadCommentIcon());
+      addCommentsSection(
+          contentPanel, "pièces justificatives", pendingJustificativeComments, loadCommentIcon());
     }
 
     var scrollPane = new JScrollPane(contentPanel);
@@ -344,6 +372,16 @@ public class SyncConfirmDialog extends JDialog {
 
       if (doneName.isPresent()) {
         return doneName.get();
+      }
+
+      var justificativeName =
+          ids.justificative().stream()
+              .filter(n -> n.id().equals(fileId))
+              .map(GoogleLinkList.NamedID::name)
+              .findFirst();
+
+      if (justificativeName.isPresent()) {
+        return justificativeName.get();
       }
     } catch (Exception ignored) {
     }
