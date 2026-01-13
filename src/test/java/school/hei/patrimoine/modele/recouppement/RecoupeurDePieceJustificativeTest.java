@@ -138,4 +138,37 @@ class RecoupeurDePieceJustificativeTest {
 
     assertTrue(exception.getMessage().contains("No PieceJustificative found for possession"));
   }
+
+  @Test
+  void getPossessionsWithoutPj_retourne_uniquement_les_possessions_sans_pj() {
+    var date = LocalDate.of(2025, JANUARY, 1);
+
+    var compte = new Compte("comptePersonnel", date, ariary(0));
+    var salaire = new FluxArgent("salaire", compte, date, ariary(200));
+
+    var pj = new PieceJustificative("salaire", date, "http://example.com/salaire.pdf");
+
+    var subject =
+        new RecoupeurDePieceJustificative(Set.of(pj), Set.of(compte, salaire), LocalDate.now());
+
+    var actual = subject.getPossessionsWithoutPj();
+
+    assertEquals(1, actual.size());
+    assertEquals("comptePersonnel", actual.getFirst().nom());
+  }
+
+  @Test
+  void getPossessionWithPj_ne_associe_pas_si_nom_different() {
+    var date = LocalDate.of(2025, JANUARY, 1);
+
+    var compte = new Compte("comptePersonnel", date, ariary(0));
+
+    var pj = new PieceJustificative("salaire", date, "http://example.com/autre.pdf");
+
+    var subject = new RecoupeurDePieceJustificative(Set.of(pj), Set.of(compte), LocalDate.now());
+
+    var actual = subject.getPossessionWithPj();
+
+    assertTrue(actual.isEmpty());
+  }
 }
