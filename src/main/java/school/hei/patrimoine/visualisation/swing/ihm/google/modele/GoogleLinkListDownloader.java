@@ -30,7 +30,7 @@ public record GoogleLinkListDownloader(FileNameExtractor fileNameExtractor, Driv
     }
 
     for (var namedId : ids.justificative()) {
-      driveApi.download(namedId.id(), fileNameExtractor, getJustificativeDirectoryPath());
+      driveApi.download(namedId.id(), fileNameExtractor, getJustificativeDirectoryPath(), true);
     }
   }
 
