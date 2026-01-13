@@ -17,6 +17,7 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.But
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.IconButton;
 
 public class CommentCard extends JPanel {
+  private final LocalCommentActions localCommentActions;
   private final Component parent;
   private final String fileId;
   private final Comment comment;
@@ -30,12 +31,15 @@ public class CommentCard extends JPanel {
       DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm").withZone(ZoneId.systemDefault());
 
   public CommentCard(
+      LocalCommentActions localCommentActions,
       Component parent,
       String fileId,
       Comment comment,
       boolean withRemoveBtn,
       boolean withActions,
       Runnable refresh) {
+
+    this.localCommentActions = localCommentActions;
     this.fileId = fileId;
     this.comment = comment;
     this.withRemoveBtn = withRemoveBtn;
@@ -88,7 +92,7 @@ public class CommentCard extends JPanel {
     }
 
     if (withRemoveBtn) {
-      rightPanel.add(removeButton(fileId, comment, refresh));
+      rightPanel.add(removeButton(localCommentActions, fileId, comment, refresh));
     }
 
     headerPanel.add(rightPanel, BorderLayout.EAST);
@@ -144,15 +148,15 @@ public class CommentCard extends JPanel {
     buttons.setBorder(new EmptyBorder(10, 0, 0, 0));
     buttons.setAlignmentX(Component.LEFT_ALIGNMENT);
     if (!comment.resolved()) {
-      buttons.add(replyButton(fileId, comment, refresh));
+      buttons.add(replyButton(localCommentActions, fileId, comment, refresh));
     }
 
     if (!comment.answers().isEmpty()) {
-      buttons.add(showAnswersButton(fileId, comment, refresh));
+      buttons.add(showAnswersButton(localCommentActions, fileId, comment, refresh));
     }
 
     if (!comment.resolved()) {
-      buttons.add(resolveButton(fileId, comment, refresh));
+      buttons.add(resolveButton(localCommentActions, fileId, comment, refresh));
     }
     return buttons;
   }
@@ -163,26 +167,45 @@ public class CommentCard extends JPanel {
     return new Dimension(parent.getWidth() - 15, pref.height);
   }
 
-  static Button showAnswersButton(String fileId, Comment parentComment, Runnable refresh) {
+  static Button showAnswersButton(
+      LocalCommentActions localCommentActions,
+      String fileId,
+      Comment parentComment,
+      Runnable refresh) {
     return new Button(
         "Réponses (" + parentComment.answers().size() + ")",
-        e -> new CommentAnswersDialog(fileId, parentComment, refresh));
+        e -> new CommentAnswersDialog(localCommentActions, fileId, parentComment, refresh));
   }
 
-  static Button replyButton(String fileId, Comment parentComment, Runnable refresh) {
-    return new Button("Répondre", e -> new CommentReplyDialog(fileId, parentComment, refresh));
+  static Button replyButton(
+      LocalCommentActions localCommentActions,
+      String fileId,
+      Comment parentComment,
+      Runnable refresh) {
+    return new Button(
+        "Répondre",
+        e -> new CommentReplyDialog(localCommentActions, fileId, parentComment, refresh));
   }
 
-  static Button resolveButton(String fileId, Comment parentComment, Runnable refresh) {
-    return new Button("Résoudre", e -> resolveComment(fileId, parentComment, refresh));
+  static Button resolveButton(
+      LocalCommentActions localCommentActions,
+      String fileId,
+      Comment parentComment,
+      Runnable refresh) {
+    return new Button(
+        "Résoudre", e -> resolveComment(localCommentActions, fileId, parentComment, refresh));
   }
 
-  static IconButton removeButton(String fileId, Comment parentComment, Runnable refresh) {
+  static IconButton removeButton(
+      LocalCommentActions localCommentActions,
+      String fileId,
+      Comment parentComment,
+      Runnable refresh) {
     var button = new IconButton(loadRemoveIcon(), 18, "Supprimer le commentaire");
     button.setAlignmentY(Component.CENTER_ALIGNMENT);
     button.addActionListener(
         e -> {
-          removeComment(fileId, parentComment, refresh);
+          removeComment(localCommentActions, fileId, parentComment, refresh);
         });
 
     return button;

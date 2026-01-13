@@ -13,9 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.Callable;
-import java.util.function.Supplier;
 import lombok.SneakyThrows;
-import school.hei.patrimoine.google.api.CommentApi;
 import school.hei.patrimoine.google.exception.GoogleIntegrationException;
 import school.hei.patrimoine.patrilang.files.PatriLangFileContext;
 import school.hei.patrimoine.patrilang.files.PatriLangFileWritter;
@@ -23,6 +21,7 @@ import school.hei.patrimoine.patrilang.files.PatriLangFileWritter.FileWritterInp
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.HtmlViewer;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.AppContext;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.AppBar;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.comment.CommentSynchronizer;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.comment.LocalCommentManager;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.popup.PopupItem;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.popup.PopupMenuButton;
@@ -33,11 +32,7 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
 public class SaveAndSyncFileButton extends PopupMenuButton {
   private static final String MIME_TYPE = "application/octet-stream";
 
-  public SaveAndSyncFileButton(
-      State state,
-      HtmlViewer htmlViewer,
-      Supplier<String> getNewContent,
-      Callable<Void> onSuccess) {
+  public SaveAndSyncFileButton(State state, HtmlViewer htmlViewer, Callable<Void> onSuccess) {
     super(
         "Sauvegarder / Synchroniser",
         List.of(
@@ -254,7 +249,7 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
   }
 
   private static void syncAllPendingComments() {
-    CommentApi commentApi = AppContext.getDefault().getData("comment-api");
+    CommentSynchronizer commentSynchronizer = new CommentSynchronizer(driveApi());
     LocalCommentManager localManager = LocalCommentManager.getInstance();
 
     List<String> filesWithPendingComments = localManager.getFilesWithPendingChanges();
@@ -265,7 +260,7 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
 
     for (String fileId : filesWithPendingComments) {
       try {
-        commentApi.syncComments(fileId);
+        commentSynchronizer.syncComments(fileId);
       } catch (GoogleIntegrationException e) {
         hasErrors = true;
       }
