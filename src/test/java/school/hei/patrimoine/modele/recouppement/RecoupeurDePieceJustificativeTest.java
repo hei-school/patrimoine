@@ -14,20 +14,6 @@ import school.hei.patrimoine.modele.possession.Possession;
 import school.hei.patrimoine.modele.possession.pj.PieceJustificative;
 
 class RecoupeurDePieceJustificativeTest {
-  @Test
-  void associe_possession_et_piece_justificative_quand_id_correspond_au_nom() {
-    var date = LocalDate.of(2025, JANUARY, 1);
-
-    var compte = new Compte("comptePersonnel", date, ariary(0));
-    var salaire = new FluxArgent("salaire", compte, date, ariary(200));
-
-    var pj = new PieceJustificative("salaire", date, "http://example.com/salaire.pdf");
-
-    var subject =
-        new RecoupeurDePieceJustificative(Set.of(pj), Set.of(compte, salaire), LocalDate.now());
-
-    var possessionsAvecPj = subject.getClass().getDeclaredMethods();
-  }
 
   @Test
   void trouve_piece_justificative_pour_possession() {
@@ -42,10 +28,7 @@ class RecoupeurDePieceJustificativeTest {
         new RecoupeurDePieceJustificative(
             Set.of(pj), Set.of(compte, salaire), LocalDate.of(2026, JANUARY, 9));
 
-    System.out.println(salaire);
-    System.out.println(pj);
     var actual = subject.getPossessionWithPj();
-    System.out.println(actual);
 
     assertEquals(13, actual.size());
 
@@ -105,7 +88,7 @@ class RecoupeurDePieceJustificativeTest {
 
     Set<PossessionWithPieceJustificative<? extends Possession>> actual =
         subject.getPossessionWithPj();
-    System.out.println(actual);
+
     assertEquals(26, actual.size());
 
     var salaireMatched =
