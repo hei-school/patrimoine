@@ -54,6 +54,11 @@ public sealed class Compte extends Possession permits Dette, Creance {
     return TRESORERIE;
   }
 
+  @Override
+  public TypeFEC getTypeFEC() {
+    return TypeFEC.AUTRE;
+  }
+
   private Argent financementsFuturs(LocalDate tFutur) {
     return fluxArgents.stream()
         .map(

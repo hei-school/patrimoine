@@ -289,7 +289,14 @@ jourPart
     ;
 
 id
-    : BACKTICK text (PLUS variable)? BACKTICK
+    : BACKTICK (LCROCHET typageFlux RCROCHET)? text (PLUS variable)? BACKTICK
+    ;
+
+typageFlux
+    :   TYPE_IMMOBILISATION
+    |   TYPE_CHARGE
+    |   TYPE_PRODUIT
+    |   TYPE_CCA
     ;
 
 date

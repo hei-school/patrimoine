@@ -62,6 +62,8 @@ public abstract sealed class Possession extends Objectivable
 
   public abstract TypeAgregat typeAgregat();
 
+  public abstract TypeFEC getTypeFEC();
+
   @Override
   public String nom() {
     return nom;

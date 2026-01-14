@@ -86,6 +86,27 @@ MOT_OBJECTIF_DE
     :   ('o'|'O')'bjectif de'
     ;
 
+/* --------------------  Types de Flux d'argent  --------------------  */
+TYPE_IMMOBILISATION
+    :   'Immobilisation'
+    |   'IMMO'
+    ;
+
+TYPE_CHARGE
+    :   'Charge'
+    |   'CHG'
+    ;
+
+TYPE_PRODUIT
+    :   'Produit'
+    |   'PRD'
+    ;
+
+TYPE_CCA
+    :   'CCA'
+    |   'cca'
+    ;
+
 /* --------------------  Possessions --------------------  */
 /* Trésorerie */
 ENTETE_TRESORERIES
@@ -253,6 +274,14 @@ RPAREN
 
 COLON
     :   ':'
+    ;
+
+LCROCHET
+    :   '['
+    ;
+
+RCROCHET
+    :   ']'
     ;
 
 /* Valeurs */

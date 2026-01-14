@@ -19,6 +19,13 @@ public final class FluxArgent extends Possession {
   private final Argent fluxMensuel;
   private final int dateOperation;
 
+  private TypeFEC typeComptableFEC;
+
+  public FluxArgent(String nom, Compte compte, LocalDate date, Argent montant, TypeFEC typeComptableFEC) {
+    this(nom, compte, date, date, date.getDayOfMonth(), montant);
+    this.typeComptableFEC = typeComptableFEC;
+  }
+
   public FluxArgent(
       String nom,
       Compte compte,
@@ -71,5 +78,10 @@ public final class FluxArgent extends Possession {
   @Override
   public TypeAgregat typeAgregat() {
     return FLUX;
+  }
+
+  @Override
+  public TypeFEC getTypeFEC() {
+    return typeComptableFEC;
   }
 }

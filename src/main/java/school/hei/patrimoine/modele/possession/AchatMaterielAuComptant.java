@@ -43,4 +43,9 @@ public final class AchatMaterielAuComptant extends Possession {
   public TypeAgregat typeAgregat() {
     return IMMOBILISATION;
   }
+
+  @Override
+  public TypeFEC getTypeFEC() {
+    return TypeFEC.IMMOBILISATION;
+  }
 }
