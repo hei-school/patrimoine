@@ -99,7 +99,6 @@ public class PatriLangFilesPage extends LazyPage {
                 new SaveAndSyncFileButton(
                     state,
                     htmlViewer,
-                    () -> getHtmlViewer().getText(),
                     () -> {
                       getCommentSideBar().refreshCommentsCache();
                       return null;

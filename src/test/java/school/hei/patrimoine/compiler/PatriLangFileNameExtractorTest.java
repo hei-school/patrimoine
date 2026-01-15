@@ -85,6 +85,24 @@ class PatriLangFileNameExtractorTest {
   }
 
   @Test
+  void extract_pj_filename_from_string_ok() {
+    String code =
+        """
+# Général
+* Spécifier Dates:ajd
+* Cas de Taxi
+
+# Pièces Justificatives
+* `assuranceChauffeur + Dates:ajd`, le 25 décembre 2025, "https://docs.google.com/document/d/1602Ett7xFepplxuCau_9aRGCRcDNwE5TLx7W3FuXyXI/edit?tab=t.0"
+* `assuranceVoiture + Dates:ajd`, le 24 décembre 2025, "https://docs.google.com/document/d/1602Ett7xFepplxuCau_9aRGCRcDNwE5TLx7W3FuXyXI/edit?tab=t.0"
+""";
+
+    var subject = new PatriLangFileNameExtractor();
+
+    assertEquals("Taxi.pj.md", subject.apply(code));
+  }
+
+  @Test
   void extract_filename_name_from_string_ko() {
     PatriLangFileNameExtractor subject = new PatriLangFileNameExtractor();
     String invalidCode = "int x = 42";

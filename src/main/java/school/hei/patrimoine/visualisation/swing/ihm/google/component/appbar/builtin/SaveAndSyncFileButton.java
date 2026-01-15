@@ -1,8 +1,8 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.builtin;
 
-import static school.hei.patrimoine.patrilang.PatriLangTranspiler.CAS_FILE_EXTENSION;
-import static school.hei.patrimoine.patrilang.PatriLangTranspiler.TOUT_CAS_FILE_EXTENSION;
+import static school.hei.patrimoine.patrilang.PatriLangTranspiler.*;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.Api.driveApi;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.FileCategory.*;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.MessageDialog.*;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.PatriLangStagingFileManager.*;
 
@@ -13,8 +13,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.Callable;
-import java.util.function.Supplier;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import school.hei.patrimoine.google.api.CommentApi;
 import school.hei.patrimoine.google.exception.GoogleIntegrationException;
 import school.hei.patrimoine.patrilang.files.PatriLangFileContext;
@@ -27,17 +27,15 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.component.comment.Lo
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.popup.PopupItem;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.popup.PopupMenuButton;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.AsyncTask;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.FileCategory;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.GoogleLinkList;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
 
+@Slf4j
 public class SaveAndSyncFileButton extends PopupMenuButton {
   private static final String MIME_TYPE = "application/octet-stream";
 
-  public SaveAndSyncFileButton(
-      State state,
-      HtmlViewer htmlViewer,
-      Supplier<String> getNewContent,
-      Callable<Void> onSuccess) {
+  public SaveAndSyncFileButton(State state, HtmlViewer htmlViewer, Callable<Void> onSuccess) {
     super(
         "Sauvegarder / Synchroniser",
         List.of(
@@ -48,7 +46,12 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
                         state.get("viewMode"), htmlViewer, state.get("selectedFile"))),
             new PopupItem(
                 "Synchroniser avec Drive",
-                e -> syncFilesWithDrive(getStagedPlannedFiles(), getStagedDoneFiles(), onSuccess)),
+                e ->
+                    syncFilesWithDrive(
+                        getStagedPlannedFiles(),
+                        getStagedDoneFiles(),
+                        getStagedJustificativeFiles(),
+                        onSuccess)),
             new PopupItem(
                 "Sauvegarder et synchroniser",
                 e -> {
@@ -58,9 +61,10 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
   }
 
   @SneakyThrows
-  private static void syncFiles(List<File> plannedFiles, List<File> doneFiles) {
+  private static void syncFiles(
+      List<File> plannedFiles, List<File> doneFiles, List<File> justificativeFiles) {
     for (File file : plannedFiles) {
-      getDriveIdOf(file, true)
+      getDriveIdOf(file, PLANNED)
           .ifPresentOrElse(
               id -> {
                 try {
@@ -73,7 +77,7 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
     }
 
     for (File file : doneFiles) {
-      getDriveIdOf(file, false)
+      getDriveIdOf(file, DONE)
           .ifPresentOrElse(
               id -> {
                 try {
@@ -83,6 +87,21 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
                 }
               },
               () -> System.out.println("Aucun ID Drive trouvé pour done : " + file.getName()));
+    }
+
+    for (File file : justificativeFiles) {
+      getDriveIdOf(file, JUSTIFICATIVE)
+          .ifPresentOrElse(
+              id -> {
+                try {
+                  driveApi().update(id, MIME_TYPE, file);
+                } catch (GoogleIntegrationException e) {
+                  throw new RuntimeException(e);
+                }
+              },
+              () ->
+                  System.out.println(
+                      "Aucun ID Drive trouvé pour justificative : " + file.getName()));
     }
   }
 
@@ -123,7 +142,7 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
                 new PatriLangFileWritter().write(input);
 
                 var file = new PatriLangFileContext(input);
-                saveToStaged(input.file(), file.isPlanned());
+                saveToStaged(input.file(), file.getCategory());
               }
               return null;
             })
@@ -146,14 +165,17 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
   }
 
   private static void syncFilesWithDrive(
-      List<File> plannedFiles, List<File> doneFiles, Callable<Void> onSuccess) {
+      List<File> plannedFiles,
+      List<File> doneFiles,
+      List<File> justificativeFiles,
+      Callable<Void> onSuccess) {
     boolean confirmed = SyncConfirmDialog.forSync();
     if (!confirmed) return;
 
     AsyncTask.<Void>builder()
         .task(
             () -> {
-              syncFiles(plannedFiles, doneFiles);
+              syncFiles(plannedFiles, doneFiles, justificativeFiles);
               syncAllPendingComments();
               return null;
             })
@@ -195,7 +217,7 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
       for (FileWritterInput input : modifiedFilesData.values()) {
         new PatriLangFileWritter().write(input);
         var file = new PatriLangFileContext(input);
-        saveToStaged(input.file(), file.isPlanned());
+        saveToStaged(input.file(), file.getCategory());
       }
     } catch (Exception e) {
       if (showExceptionMessageIfRecognizedException(e)) return;
@@ -221,7 +243,8 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
             () -> {
               List<File> stagedPlanned = getStagedPlannedFiles();
               List<File> stagedDone = getStagedDoneFiles();
-              syncFiles(stagedPlanned, stagedDone);
+              List<File> stagedJustificative = getStagedJustificativeFiles();
+              syncFiles(stagedPlanned, stagedDone, stagedJustificative);
               syncAllPendingComments();
               return null;
             })
@@ -289,14 +312,22 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
     }
   }
 
-  private static Optional<String> getDriveIdOf(File file, boolean isPlanned) {
+  private static Optional<String> getDriveIdOf(File file, FileCategory category) {
     GoogleLinkList<GoogleLinkList.NamedID> ids = AppContext.getDefault().getData("named-ids");
     if (file == null) return Optional.empty();
 
     String filename =
-        file.getName().replace(TOUT_CAS_FILE_EXTENSION, "").replace(CAS_FILE_EXTENSION, "");
+        file.getName()
+            .replace(TOUT_CAS_FILE_EXTENSION, "")
+            .replace(CAS_FILE_EXTENSION, "")
+            .replace(PJ_FILE_EXTENSION, "");
 
-    var listToSearch = isPlanned ? ids.planned() : ids.done();
+    var listToSearch =
+        switch (category) {
+          case JUSTIFICATIVE -> ids.justificative();
+          case PLANNED -> ids.planned();
+          case DONE -> ids.done();
+        };
 
     return listToSearch.stream()
         .filter(n -> n.name().equals(filename))

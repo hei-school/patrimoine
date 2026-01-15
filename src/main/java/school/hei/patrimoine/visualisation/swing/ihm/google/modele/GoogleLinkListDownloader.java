@@ -28,6 +28,10 @@ public record GoogleLinkListDownloader(FileNameExtractor fileNameExtractor, Driv
     for (var namedId : ids.done()) {
       driveApi.download(namedId.id(), fileNameExtractor, getDoneDirectoryPath(), true);
     }
+
+    for (var namedId : ids.justificative()) {
+      driveApi.download(namedId.id(), fileNameExtractor, getJustificativeDirectoryPath(), true);
+    }
   }
 
   public static String getPlannedDirectoryPath() {
@@ -38,19 +42,29 @@ public record GoogleLinkListDownloader(FileNameExtractor fileNameExtractor, Driv
     return GoogleApiUtilities.getDownloadDirectoryPath() + "/realises";
   }
 
+  public static String getJustificativeDirectoryPath() {
+    return GoogleApiUtilities.getDownloadDirectoryPath() + "/justificatifs";
+  }
+
   public static String getPlannedStagedDirectoryPath() {
-    return GoogleApiUtilities.getStagingDirectoryPath() + "/realises";
+    return GoogleApiUtilities.getStagingDirectoryPath() + "/planifies";
   }
 
   public static String getDoneStagedDirectoryPath() {
-    return GoogleApiUtilities.getStagingDirectoryPath() + "/planifies";
+    return GoogleApiUtilities.getStagingDirectoryPath() + "/realises";
+  }
+
+  public static String getJustificativeStagedDirectoryPath() {
+    return GoogleApiUtilities.getStagingDirectoryPath() + "/justificatifs";
   }
 
   public static void setup() {
     resetDirectory(getPlannedDirectoryPath());
     resetDirectory(getDoneDirectoryPath());
+    resetDirectory(getJustificativeDirectoryPath());
     resetDirectory(getPlannedStagedDirectoryPath());
     resetDirectory(getDoneStagedDirectoryPath());
+    resetDirectory(getJustificativeStagedDirectoryPath());
   }
 
   @SuppressWarnings("all")

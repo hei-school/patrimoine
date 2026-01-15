@@ -22,9 +22,18 @@ public class PatriLangStagingFileManager {
     return GoogleApiUtilities.getStagingDirectoryPath() + "/realises";
   }
 
-  public static void saveToStaged(File file, boolean isPlanned) {
+  public static String getStagedJustificativeDir() {
+    return GoogleApiUtilities.getStagingDirectoryPath() + "/justificatifs";
+  }
+
+  public static void saveToStaged(File file, FileCategory category) {
     try {
-      String targetDir = isPlanned ? getStagedPlannedDir() : getStagedDoneDir();
+      String targetDir =
+          switch (category) {
+            case PLANNED -> getStagedPlannedDir();
+            case DONE -> getStagedDoneDir();
+            case JUSTIFICATIVE -> getStagedJustificativeDir();
+          };
       Path target = Paths.get(targetDir, file.getName());
 
       Files.createDirectories(target.getParent());
@@ -44,6 +53,10 @@ public class PatriLangStagingFileManager {
     return listFilesIn(getStagedDoneDir());
   }
 
+  public static List<File> getStagedJustificativeFiles() {
+    return listFilesIn(getStagedJustificativeDir());
+  }
+
   private static List<File> listFilesIn(String folder) {
     File f = new File(folder);
     File[] files = f.listFiles();
@@ -59,9 +72,14 @@ public class PatriLangStagingFileManager {
     deleteAllFilesIn(getStagedDoneDir());
   }
 
+  public static void clearJustificativeStaged() {
+    deleteAllFilesIn(getStagedJustificativeDir());
+  }
+
   public static void clearAllStaged() {
     clearStagedPlanned();
     clearStagedDone();
+    clearJustificativeStaged();
   }
 
   private static void deleteAllFilesIn(String folder) {
