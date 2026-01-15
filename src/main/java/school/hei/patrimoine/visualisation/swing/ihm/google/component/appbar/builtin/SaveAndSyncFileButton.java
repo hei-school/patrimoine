@@ -99,7 +99,7 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
                   throw new RuntimeException(e);
                 }
               },
-              () -> System.out.println("Aucun ID Drive trouvé pour done : " + file.getName()));
+              () -> System.out.println("Aucun ID Drive trouvé pour justificative : " + file.getName()));
     }
   }
 
