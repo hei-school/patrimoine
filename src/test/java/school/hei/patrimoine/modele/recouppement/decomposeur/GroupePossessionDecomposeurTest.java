@@ -8,6 +8,7 @@ import static school.hei.patrimoine.modele.Devise.MGA;
 import java.time.LocalDate;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
+import school.hei.patrimoine.modele.decomposeur.GroupePossessionDecomposeur;
 import school.hei.patrimoine.modele.possession.Compte;
 import school.hei.patrimoine.modele.possession.GroupePossession;
 

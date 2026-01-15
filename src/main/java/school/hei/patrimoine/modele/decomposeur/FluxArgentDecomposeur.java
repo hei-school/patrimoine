@@ -1,6 +1,6 @@
-package school.hei.patrimoine.modele.recouppement.decomposeur;
+package school.hei.patrimoine.modele.decomposeur;
 
-import static school.hei.patrimoine.modele.recouppement.decomposeur.PossessionDecomposeurFactory.normalize;
+import static school.hei.patrimoine.modele.decomposeur.PossessionDecomposeurFactory.normalize;
 
 import java.time.LocalDate;
 import java.util.List;
