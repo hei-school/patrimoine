@@ -1,5 +1,6 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.component;
 
+import static javax.swing.event.HyperlinkEvent.EventType.ACTIVATED;
 import static school.hei.patrimoine.patrilang.PatriLangTranspiler.PJ_FILE_EXTENSION;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.AppBar.ViewMode;
 
@@ -40,7 +41,7 @@ public class HtmlViewer extends JEditorPane {
 
     addHyperlinkListener(
         e -> {
-          if (e.getEventType() == javax.swing.event.HyperlinkEvent.EventType.ACTIVATED) {
+          if (e.getEventType() == ACTIVATED) {
             try {
               openUrlInBrowser(e.getURL().toString());
             } catch (Exception ex) {
