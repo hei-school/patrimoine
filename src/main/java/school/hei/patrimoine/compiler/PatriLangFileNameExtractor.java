@@ -3,7 +3,6 @@ package school.hei.patrimoine.compiler;
 import static school.hei.patrimoine.patrilang.PatriLangTranspiler.*;
 
 import java.util.List;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class PatriLangFileNameExtractor implements FileNameExtractor {
@@ -23,11 +22,11 @@ public class PatriLangFileNameExtractor implements FileNameExtractor {
 
   @Override
   public String apply(String code) {
-    for (Pattern pattern : PJ_FILE_NAME_PATTERNS) {
-      Matcher matcher = pattern.matcher(code);
+    for (var pattern : PJ_FILE_NAME_PATTERNS) {
+      var matcher = pattern.matcher(code);
       if (matcher.find()) {
-        for (Pattern casPattern : CAS_FILE_NAME_PATTERNS) {
-          Matcher casNameMatcher = casPattern.matcher(code);
+        for (var casPattern : CAS_FILE_NAME_PATTERNS) {
+          var casNameMatcher = casPattern.matcher(code);
           if (casNameMatcher.find()) {
             return casNameMatcher.group(1) + PJ_FILE_EXTENSION;
           }
@@ -36,16 +35,16 @@ public class PatriLangFileNameExtractor implements FileNameExtractor {
       }
     }
 
-    for (Pattern pattern : CAS_FILE_NAME_PATTERNS) {
-      Matcher matcher = pattern.matcher(code);
+    for (var pattern : CAS_FILE_NAME_PATTERNS) {
+      var matcher = pattern.matcher(code);
 
       if (matcher.find()) {
         return matcher.group(1) + CAS_FILE_EXTENSION;
       }
     }
 
-    for (Pattern pattern : TOUT_CAS_FILE_NAME_PATTERN) {
-      Matcher matcher = pattern.matcher(code);
+    for (var pattern : TOUT_CAS_FILE_NAME_PATTERN) {
+      var matcher = pattern.matcher(code);
 
       if (matcher.find()) {
         return CAS_SET_FILENAME + TOUT_CAS_FILE_EXTENSION;
