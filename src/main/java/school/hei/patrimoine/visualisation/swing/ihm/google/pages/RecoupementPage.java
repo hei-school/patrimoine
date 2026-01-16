@@ -1,16 +1,20 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.pages;
 
+import static school.hei.patrimoine.patrilang.PatriLangTranspiler.transpilePiecesJustificative;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.AppBar.builtInUserInfoPanel;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.pages.PatriLangFilesPage.addImprevuButton;
 
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.File;
 import java.util.*;
 import java.util.List;
 import javax.swing.*;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import school.hei.patrimoine.modele.possession.Compte;
+import school.hei.patrimoine.modele.possession.pj.PieceJustificative;
 import school.hei.patrimoine.modele.recouppement.PossessionRecoupee;
 import school.hei.patrimoine.modele.recouppement.RecoupementStatus;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.Footer;
@@ -29,6 +33,7 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
 import school.hei.patrimoine.visualisation.swing.ihm.google.providers.PossessionRecoupeeProvider;
 import school.hei.patrimoine.visualisation.swing.ihm.google.providers.model.Pagination;
 
+@Slf4j
 public class RecoupementPage extends LazyPage {
   public static final String PAGE_NAME = "recoupement";
   public static final int RECOUPEMENT_ITEM_PER_PAGE = 50;
@@ -188,12 +193,47 @@ public class RecoupementPage extends LazyPage {
       return;
     }
 
+    var selectedFile = (File) state.get("selectedFile");
+    log.info("RecoupementPage.update called, selectedFile=" + selectedFile.getName());
+
+    Set<PieceJustificative> pieces = loadPiecesForCas(selectedFile);
+    log.info("PJs chargées=" + pieces.size());
+
     AsyncTask.<List<PossessionRecoupee>>builder()
         .task(this::getFilteredPossessionRecoupees)
-        .onSuccess(possessionRecoupeeListPanel::update)
+        .onSuccess(
+            list -> {
+              log.info("Possessions recoupées chargées=" + list.size());
+              possessionRecoupeeListPanel.update(new HashSet<>(list), pieces);
+              log.info("PossessionRecoupeeListPanel.update appelé");
+            })
         .withDialogLoading(false)
         .build()
         .execute();
+  }
+
+  private Set<PieceJustificative> loadPiecesForCas(File casFile) {
+    if (casFile == null) return Set.of();
+
+    var casName = casFile.getName();
+    if (!casName.endsWith(".cas.md")) return Set.of();
+
+    var baseName = casName.substring(0, casName.length() - ".cas.md".length());
+
+    var pjFile =
+        FileSideBar.getPatriLangJustificativeFiles().stream()
+            .filter(f -> f.getName().equals(baseName + ".pj.md"))
+            .findFirst()
+            .orElse(null);
+
+    if (pjFile == null) return Set.of();
+
+    try {
+      return new HashSet<>(transpilePiecesJustificative(pjFile.getAbsolutePath()));
+    } catch (Exception e) {
+      e.printStackTrace();
+      return Set.of();
+    }
   }
 
   public enum PossessionRecoupeeFilterStatus {
