@@ -6,6 +6,8 @@ import static school.hei.patrimoine.visualisation.swing.ihm.google.component.app
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.MessageDialog.showError;
 
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.*;
 import java.util.List;
@@ -19,6 +21,7 @@ import school.hei.patrimoine.modele.objectif.ObjectifExeption;
 import school.hei.patrimoine.modele.recouppement.RecoupeurDeCasSet;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.HtmlViewer;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.ObjectifNonAtteintsDialog;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.PlaceholderTextField;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.LazyPage;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.AppBar;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.builtin.SaveAndSyncFileButton;
@@ -28,6 +31,7 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.File
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.recoupement.AddImprevuDialog;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.AsyncTask;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.CasSetSetter;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.Debouncer;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
 
 @Getter
@@ -105,7 +109,8 @@ public class PatriLangFilesPage extends LazyPage {
                     }),
                 evolutionGraphicButton(),
                 recoupementButton(),
-                addImprevuButton),
+                addImprevuButton,
+                addSearchTextBar()),
             List.of(builtInFontSizeControllerButton(state), builtInUserInfoPanel()));
 
     add(appBar, BorderLayout.NORTH);
@@ -152,6 +157,24 @@ public class PatriLangFilesPage extends LazyPage {
           }
           new AddImprevuDialog(state);
         });
+  }
+
+  private PlaceholderTextField addSearchTextBar() {
+    var searchBar = new PlaceholderTextField("Rechercher");
+    searchBar.setPreferredSize(new Dimension(180, 35));
+    searchBar.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
+
+    var contentSearchDebouncer =
+        new Debouncer(() -> state.update(Map.of("searchText", searchBar.getText().trim())));
+
+    searchBar.addKeyListener(
+        new KeyAdapter() {
+          @Override
+          public void keyReleased(KeyEvent evt) {
+            contentSearchDebouncer.restart();
+          }
+        });
+    return searchBar;
   }
 
   private void updateAddImprevuButtonVisibility() {

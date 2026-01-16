@@ -14,6 +14,9 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.swing.*;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultHighlighter;
+import javax.swing.text.Highlighter;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import school.hei.patrimoine.patrilang.files.PatriLangFileWritter.FileWritterInput;
@@ -50,7 +53,7 @@ public class HtmlViewer extends JEditorPane {
           }
         });
 
-    state.subscribe(Set.of("viewMode", "fontSize", "selectedFile"), this::update);
+    state.subscribe(Set.of("viewMode", "fontSize", "selectedFile", "searchText"), this::update);
   }
 
   private void addEmptyContent() {
@@ -73,6 +76,7 @@ public class HtmlViewer extends JEditorPane {
     ViewMode currentMode = state.get("viewMode");
     File currentFile = state.get("selectedFile");
     int currentFontSize = state.get("fontSize");
+    String searchText = state.get("searchText");
 
     lastEditedFile = currentFile;
     lastViewMode = currentMode;
@@ -99,6 +103,11 @@ public class HtmlViewer extends JEditorPane {
         setContentType("text/plain");
         setEditable(true);
         setText(content);
+
+        if (searchText != null && !searchText.isEmpty()) {
+          highlightSearchText(searchText);
+        }
+
         setCaretPosition(0);
         return;
       }
@@ -180,5 +189,26 @@ public class HtmlViewer extends JEditorPane {
     }
 
     processBuilder.start();
+  }
+
+  private void highlightSearchText(String searchText) {
+    try {
+      Highlighter highlighter = getHighlighter();
+      highlighter.removeAllHighlights();
+
+      String text = getText().toLowerCase();
+      String textToSearch = searchText.toLowerCase();
+
+      int index = 0;
+      while ((index = text.indexOf(textToSearch, index)) >= 0) {
+        highlighter.addHighlight(
+            index,
+            index + searchText.length(),
+            new DefaultHighlighter.DefaultHighlightPainter(Color.YELLOW));
+        index += searchText.length();
+      }
+    } catch (BadLocationException e) {
+      log.error("Erreur lors du highlighting", e);
+    }
   }
 }
