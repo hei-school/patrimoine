@@ -33,12 +33,12 @@ public class PatriLangParser {
     return document.cas();
   }
 
-  public static PiecesJustificativesContext parsePieceJustificative(String casSetPath) {
-    var document = parse(casSetPath);
+  public static PiecesJustificativesContext parsePieceJustificative(String pjPath) {
+    var document = parse(pjPath);
 
     if (isNull(document.piecesJustificatives())) {
       throw new IllegalArgumentException(
-          "Fichier Pièces justificative attendu, mais fichier CasSet trouvé.");
+          "Fichier PieceJustificative attendu, mais un autre type de fichier trouvé.");
     }
 
     return document.piecesJustificatives();
