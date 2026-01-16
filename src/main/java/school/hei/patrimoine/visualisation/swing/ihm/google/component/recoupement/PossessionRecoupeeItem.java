@@ -3,6 +3,8 @@ package school.hei.patrimoine.visualisation.swing.ihm.google.component.recoupeme
 import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import lombok.extern.slf4j.Slf4j;
+import school.hei.patrimoine.modele.possession.pj.PieceJustificative;
 import school.hei.patrimoine.modele.recouppement.PossessionRecoupee;
 import school.hei.patrimoine.modele.recouppement.RecoupementStatus;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
@@ -10,13 +12,17 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.formatter.ArgentFormatter;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.formatter.DateFormatter;
 
+@Slf4j
 public class PossessionRecoupeeItem extends JPanel {
   private final State state;
   private final PossessionRecoupee possessionRecoupee;
+  private final PieceJustificative pieceJustificative;
 
-  public PossessionRecoupeeItem(State state, PossessionRecoupee possessionRecoupee) {
+  public PossessionRecoupeeItem(
+      State state, PossessionRecoupee possessionRecoupee, PieceJustificative pieceJustificative) {
     this.state = state;
     this.possessionRecoupee = possessionRecoupee;
+    this.pieceJustificative = pieceJustificative;
 
     setOpaque(true);
     setLayout(new BorderLayout());
@@ -28,6 +34,21 @@ public class PossessionRecoupeeItem extends JPanel {
   }
 
   private void addTitle() {
+    var pjHtml =
+        pieceJustificative == null
+            ? ""
+            : "<div style='margin-bottom: 8px;'>"
+                + "<b>Pièce justificative:</b> "
+                + "<a href='"
+                + pieceJustificative.link()
+                + "'>"
+                + pieceJustificative.id()
+                + "</a>"
+                + ",&nbsp&nbsp&nbsp"
+                + "<b>Date d'insertion:</b> "
+                + DateFormatter.format(pieceJustificative.date())
+                + "</div>";
+
     var titleString =
         String.format(
             "<html>"
@@ -40,6 +61,7 @@ public class PossessionRecoupeeItem extends JPanel {
                 + "<b>Valeur prévue:</b> %s,&nbsp&nbsp&nbsp"
                 + "<b>Valeur réalisée:</b> %s"
                 + "</div>"
+                + pjHtml
                 + "</html>",
             possessionRecoupee.possession().nom(),
             possessionRecoupee.possession().getClass().getSimpleName(),
@@ -47,9 +69,28 @@ public class PossessionRecoupeeItem extends JPanel {
             ArgentFormatter.format(possessionRecoupee.prevu().valeur()),
             ArgentFormatter.format(possessionRecoupee.valeurRealisee()));
 
-    var title = new JLabel(titleString);
+    //    var title = new JLabel(titleString);
+    //    title.setFont(new Font("Arial", Font.PLAIN, 16));
+    //    title.setForeground(new Color(40, 40, 40));
+
+    JEditorPane title = new JEditorPane();
+    title.setContentType("text/html");
+    title.setText(titleString);
+    title.setEditable(false);
+    title.setOpaque(false);
+    title.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
     title.setFont(new Font("Arial", Font.PLAIN, 16));
-    title.setForeground(new Color(40, 40, 40));
+
+    title.addHyperlinkListener(
+        e -> {
+          if (e.getEventType() == javax.swing.event.HyperlinkEvent.EventType.ACTIVATED) {
+            try {
+              java.awt.Desktop.getDesktop().browse(e.getURL().toURI());
+            } catch (Exception ex) {
+              ex.printStackTrace();
+            }
+          }
+        });
 
     add(title, BorderLayout.WEST);
   }
