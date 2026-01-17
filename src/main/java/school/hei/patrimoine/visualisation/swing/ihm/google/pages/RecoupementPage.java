@@ -1,6 +1,6 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.pages;
 
-import static school.hei.patrimoine.patrilang.PatriLangTranspiler.transpilePiecesJustificative;
+import static school.hei.patrimoine.patrilang.PatriLangTranspiler.transpilePieceJustificative;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.AppBar.builtInUserInfoPanel;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.pages.PatriLangFilesPage.addImprevuButton;
 
@@ -229,7 +229,7 @@ public class RecoupementPage extends LazyPage {
     if (pjFile == null) return Set.of();
 
     try {
-      return new HashSet<>(transpilePiecesJustificative(pjFile.getAbsolutePath()));
+      return new HashSet<>(transpilePieceJustificative(pjFile.getAbsolutePath()));
     } catch (Exception e) {
       e.printStackTrace();
       return Set.of();
