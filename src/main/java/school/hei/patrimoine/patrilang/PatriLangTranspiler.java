@@ -9,10 +9,9 @@ import java.util.function.Function;
 import school.hei.patrimoine.cas.Cas;
 import school.hei.patrimoine.cas.CasSet;
 import school.hei.patrimoine.modele.possession.pj.PieceJustificative;
-import school.hei.patrimoine.patrilang.modele.variable.VariableScope;
 import school.hei.patrimoine.patrilang.visitors.*;
 import school.hei.patrimoine.patrilang.visitors.factory.SectionVisitorFactory;
-import school.hei.patrimoine.patrilang.visitors.variable.VariableDateVisitor;
+import school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor;
 
 public class PatriLangTranspiler implements Function<String, CasSet> {
   public static final String CAS_FILE_EXTENSION = ".cas.md";
@@ -45,15 +44,16 @@ public class PatriLangTranspiler implements Function<String, CasSet> {
     return patrilangVisitor.visitToutCas(tree);
   }
 
-  public static List<PieceJustificative> transpilePiecesJustificative(
+  public static List<PieceJustificative> transpilePieceJustificative(
       String pieceJustificativePath) {
     var tree = parsePieceJustificative(pieceJustificativePath);
+    var variableVisitor = new VariableVisitor();
     var patrilangVisitor =
         new PatriLangVisitor(
             null,
             null,
             new PatriLangPieceJustificativeVisitor(
-                new IdVisitor(null), new VariableDateVisitor(new VariableScope(), null)));
+                new IdVisitor(variableVisitor), variableVisitor.getVariableDateVisitor()));
     return patrilangVisitor.visitPiecesJustificatives(tree);
   }
 }

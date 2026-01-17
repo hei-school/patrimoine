@@ -28,7 +28,7 @@ public class PatriLangPieceJustificativeVisitor
   public PieceJustificative visitPieceJustificative(PiecesJustificativesItemContext ctx) {
     var id = this.idVisitor.apply(ctx.id());
     var date = this.dateVisitor.apply(ctx.date());
-    var link = ctx.URL_CONTENT().toString();
+    var link = ctx.URL_CONTENT() == null ? null : ctx.URL_CONTENT().getText().trim();
 
     return new PieceJustificative(id, date, link);
   }

@@ -1,6 +1,7 @@
 package school.hei.patrimoine.patrilang.files;
 
 import static school.hei.patrimoine.patrilang.PatriLangTranspiler.PJ_FILE_EXTENSION;
+import static school.hei.patrimoine.patrilang.PatriLangTranspiler.transpilePieceJustificative;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -66,7 +67,11 @@ public class PatriLangFileWritter {
     try {
       runnable.run();
 
-      if (input.file.getAbsolutePath().endsWith(PJ_FILE_EXTENSION)) return;
+      var filePath = input.file().getAbsolutePath();
+      if (filePath.endsWith(PJ_FILE_EXTENSION)) {
+        transpilePieceJustificative(filePath);
+        return;
+      }
 
       validator.accept(input.casSet().getAbsolutePath());
     } catch (ParseCancellationException | IllegalArgumentException e) {
