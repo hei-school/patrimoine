@@ -1,5 +1,7 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.component.recoupement;
 
+import static javax.swing.event.HyperlinkEvent.EventType.ACTIVATED;
+
 import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -69,11 +71,7 @@ public class PossessionRecoupeeItem extends JPanel {
             ArgentFormatter.format(possessionRecoupee.prevu().valeur()),
             ArgentFormatter.format(possessionRecoupee.valeurRealisee()));
 
-    //    var title = new JLabel(titleString);
-    //    title.setFont(new Font("Arial", Font.PLAIN, 16));
-    //    title.setForeground(new Color(40, 40, 40));
-
-    JEditorPane title = new JEditorPane();
+    var title = new JEditorPane();
     title.setContentType("text/html");
     title.setText(titleString);
     title.setEditable(false);
@@ -83,7 +81,7 @@ public class PossessionRecoupeeItem extends JPanel {
 
     title.addHyperlinkListener(
         e -> {
-          if (e.getEventType() == javax.swing.event.HyperlinkEvent.EventType.ACTIVATED) {
+          if (e.getEventType() == ACTIVATED) {
             try {
               java.awt.Desktop.getDesktop().browse(e.getURL().toURI());
             } catch (Exception ex) {
