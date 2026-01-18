@@ -1,5 +1,6 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.pages;
 
+import static java.util.stream.Collectors.toSet;
 import static school.hei.patrimoine.patrilang.PatriLangTranspiler.transpilePieceJustificative;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.AppBar.builtInUserInfoPanel;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.pages.PatriLangFilesPage.addImprevuButton;
@@ -54,6 +55,8 @@ public class RecoupementPage extends LazyPage {
                 1,
                 "filterStatus",
                 PossessionRecoupeeFilterStatus.TOUT,
+                "filterPJ",
+                PieceJustificativeFilter.TOUT,
                 "pagination",
                 new Pagination(1, RECOUPEMENT_ITEM_PER_PAGE)));
 
@@ -61,7 +64,8 @@ public class RecoupementPage extends LazyPage {
 
     casSetSetter.addObserver(this::update);
     state.subscribe(
-        Set.of("filterStatus", "selectedFile", "pagination", "filterName"), this::update);
+        Set.of("filterStatus", "filterPJ", "selectedFile", "pagination", "filterName"),
+        this::update);
 
     setLayout(new BorderLayout());
   }
@@ -82,6 +86,12 @@ public class RecoupementPage extends LazyPage {
     statusFilter.addActionListener(
         e -> state.update("filterStatus", statusFilter.getSelectedItem()));
 
+    var pjFilter = new JComboBox<>(PieceJustificativeFilter.values());
+    pjFilter.setSelectedItem(PieceJustificativeFilter.TOUT);
+    pjFilter.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
+    pjFilter.setCursor(new Cursor(Cursor.HAND_CURSOR));
+    pjFilter.addActionListener(e -> state.update("filterPJ", pjFilter.getSelectedItem()));
+
     var addImprevuButton = addImprevuButton(state);
     var nameFilter = getPlaceholderTextField();
 
@@ -90,6 +100,7 @@ public class RecoupementPage extends LazyPage {
             List.of(
                 new NavigateButton("Retour", "patrilang-files"),
                 statusFilter,
+                pjFilter,
                 addImprevuButton,
                 nameFilter),
             List.of(builtInUserInfoPanel()));
@@ -203,8 +214,28 @@ public class RecoupementPage extends LazyPage {
         .task(this::getFilteredPossessionRecoupees)
         .onSuccess(
             list -> {
+              var pjFilter = (PieceJustificativeFilter) state.get("filterPJ");
+
+              Set<PossessionRecoupee> filteredPossessions =
+                  list.stream()
+                      .filter(
+                          pr -> {
+                            boolean hasPJ =
+                                pieces.stream()
+                                    .anyMatch(
+                                        pj ->
+                                            possessionRecoupeeListPanel.hasMatchingPiece(
+                                                pj, pr.possession().nom()));
+                            return switch (pjFilter) {
+                              case TOUT -> true;
+                              case AVEC_PJ -> hasPJ;
+                              case SANS_PJ -> !hasPJ;
+                            };
+                          })
+                      .collect(toSet());
+
               log.info("Possessions recoupées chargées=" + list.size());
-              possessionRecoupeeListPanel.update(new HashSet<>(list), pieces);
+              possessionRecoupeeListPanel.update(filteredPossessions, pieces);
               log.info("PossessionRecoupeeListPanel.update appelé");
             })
         .withDialogLoading(false)
@@ -246,6 +277,23 @@ public class RecoupementPage extends LazyPage {
     public final String label;
 
     PossessionRecoupeeFilterStatus(String label) {
+      this.label = label;
+    }
+
+    @Override
+    public String toString() {
+      return label;
+    }
+  }
+
+  public enum PieceJustificativeFilter {
+    TOUT(""),
+    AVEC_PJ("Avec PJ"),
+    SANS_PJ("Sans PJ");
+
+    public final String label;
+
+    PieceJustificativeFilter(String label) {
       this.label = label;
     }
 

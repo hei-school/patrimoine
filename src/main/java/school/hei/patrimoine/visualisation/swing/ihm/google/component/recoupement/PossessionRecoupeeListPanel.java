@@ -54,6 +54,28 @@ public class PossessionRecoupeeListPanel extends JPanel {
     repaint();
   }
 
+  public boolean hasMatchingPiece(PieceJustificative pj, String possessionName) {
+    var normPoss = normalizeAndStrip(stripTrailingDate(possessionName));
+    var idNorm = normalizeAndStrip(stripTrailingDate(pj.id()));
+    var linkNorm = pj.link() == null ? "" : normalizeAndStrip(stripTrailingDate(pj.link()));
+
+    return idNorm.equals(normPoss)
+        || stripExtensions(idNorm).equals(stripExtensions(normPoss))
+        || idNorm.contains(normPoss)
+        || normPoss.contains(idNorm)
+        || linkNorm.contains(normPoss)
+        || normPoss.contains(linkNorm);
+  }
+
+  public JScrollPane toScrollPane() {
+    var scroll =
+        new JScrollPane(
+            this, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+    scroll.getVerticalScrollBar().setUnitIncrement(20);
+
+    return scroll;
+  }
+
   private PieceJustificative findMatchingPiece(
       Set<PieceJustificative> pjSet, String possessionName) {
     if (possessionName == null || pjSet == null || pjSet.isEmpty()) {
@@ -138,14 +160,5 @@ public class PossessionRecoupeeListPanel extends JPanel {
     out = out.replaceAll("\\text*\\d{1,2}/\\d{1,2}/\\d{2,4}\\text*$", "");
     out = out.replaceAll("\\text*\\d{4}-\\d{2}-\\d{2}\\text*$", "");
     return out.trim();
-  }
-
-  public JScrollPane toScrollPane() {
-    var scroll =
-        new JScrollPane(
-            this, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-    scroll.getVerticalScrollBar().setUnitIncrement(20);
-
-    return scroll;
   }
 }
