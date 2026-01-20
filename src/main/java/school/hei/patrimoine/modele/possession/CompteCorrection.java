@@ -1,6 +1,7 @@
 package school.hei.patrimoine.modele.possession;
 
 import static school.hei.patrimoine.modele.possession.TypeAgregat.CORRECTION;
+import static school.hei.patrimoine.modele.possession.TypeFEC.AUTRE;
 
 import java.time.LocalDate;
 import lombok.Getter;
@@ -32,5 +33,10 @@ public final class CompteCorrection extends Possession {
   @Override
   public TypeAgregat typeAgregat() {
     return CORRECTION;
+  }
+
+  @Override
+  public TypeFEC getTypeFEC() {
+    return AUTRE;
   }
 }

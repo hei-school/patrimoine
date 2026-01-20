@@ -2,6 +2,7 @@ package school.hei.patrimoine.modele.possession;
 
 import static java.util.stream.Collectors.toSet;
 import static school.hei.patrimoine.modele.possession.TypeAgregat.FLUX;
+import static school.hei.patrimoine.modele.possession.TypeFEC.AUTRE;
 
 import java.time.LocalDate;
 import java.util.Set;
@@ -36,6 +37,11 @@ public final class GroupePossession extends Possession {
   @Override
   public TypeAgregat typeAgregat() {
     return typeAgregat(possessions);
+  }
+
+  @Override
+  public TypeFEC getTypeFEC() {
+    return AUTRE;
   }
 
   private TypeAgregat typeAgregat(Set<Possession> possessions) {

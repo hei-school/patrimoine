@@ -2,6 +2,7 @@ package school.hei.patrimoine.modele.possession;
 
 import static school.hei.patrimoine.modele.Argent.euro;
 import static school.hei.patrimoine.modele.possession.TypeAgregat.PATRIMOINE;
+import static school.hei.patrimoine.modele.possession.TypeFEC.AUTRE;
 
 import java.time.LocalDate;
 import lombok.Getter;
@@ -31,5 +32,10 @@ public final class PersonneMorale extends Possession {
   @Override
   public TypeAgregat typeAgregat() {
     return PATRIMOINE;
+  }
+
+  @Override
+  public TypeFEC getTypeFEC() {
+    return AUTRE;
   }
 }
