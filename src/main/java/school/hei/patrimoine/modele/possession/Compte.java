@@ -2,6 +2,7 @@ package school.hei.patrimoine.modele.possession;
 
 import static java.util.stream.Collectors.toSet;
 import static school.hei.patrimoine.modele.possession.TypeAgregat.TRESORERIE;
+import static school.hei.patrimoine.modele.possession.TypeFEC.AUTRE;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -52,6 +53,11 @@ public sealed class Compte extends Possession permits Dette, Creance {
   @Override
   public TypeAgregat typeAgregat() {
     return TRESORERIE;
+  }
+
+  @Override
+  public TypeFEC getTypeFEC() {
+    return AUTRE;
   }
 
   private Argent financementsFuturs(LocalDate tFutur) {

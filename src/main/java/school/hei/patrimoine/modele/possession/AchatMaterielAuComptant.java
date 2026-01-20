@@ -54,4 +54,9 @@ public final class AchatMaterielAuComptant extends Possession {
   public Compte financé() {
     return new Compte("Matétiel " + this.nom, LocalDate.now(), this.financeur.valeurComptable());
   }
+
+  @Override
+  public TypeFEC getTypeFEC() {
+    return TypeFEC.IMMOBILISATION;
+  }
 }
