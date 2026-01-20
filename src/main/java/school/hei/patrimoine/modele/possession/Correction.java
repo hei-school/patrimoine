@@ -1,6 +1,7 @@
 package school.hei.patrimoine.modele.possession;
 
 import static school.hei.patrimoine.modele.possession.TypeAgregat.CORRECTION;
+import static school.hei.patrimoine.modele.possession.TypeFEC.AUTRE;
 
 import java.time.LocalDate;
 import school.hei.patrimoine.modele.Argent;
@@ -41,7 +42,8 @@ public final class Correction extends Possession {
         String.format("Correction.Flux[compteCorrection=%s,%s]", compteCorrection.nom, raison),
         compteCorrection.getCompte(),
         t,
-        valeur);
+        valeur,
+        getTypeFEC());
   }
 
   private Correction(Possession possession, CompteCorrection compteCorrection) {
@@ -58,5 +60,10 @@ public final class Correction extends Possession {
   @Override
   public TypeAgregat typeAgregat() {
     return CORRECTION;
+  }
+
+  @Override
+  public TypeFEC getTypeFEC() {
+    return AUTRE;
   }
 }
