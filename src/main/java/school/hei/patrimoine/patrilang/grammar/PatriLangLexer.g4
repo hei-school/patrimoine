@@ -91,6 +91,28 @@ MOT_OBJECTIF_DE
 ENTETE_TRESORERIES
     :   'Trésoreries'
     ;
+
+/* --------------------  Types de Flux d'argent  --------------------  */
+TYPE_IMMOBILISATION
+    :   'Immobilisation'
+    |   'IMMO'
+    ;
+
+TYPE_CHARGE
+    :   'Charge'
+    |   'CHG'
+    ;
+
+TYPE_PRODUIT
+    :   'Produit'
+    |   'PRD'
+    ;
+
+TYPE_CCA
+    :   'CCA'
+    |   'cca'
+    ;
+
 MOT_CONTIENT
     :   'contient'
     ;
@@ -253,6 +275,13 @@ RPAREN
 
 COLON
     :   ':'
+    ;
+LCROCHET
+    :   '['
+    ;
+
+RCROCHET
+    :   ']'
     ;
 
 /* Valeurs */
