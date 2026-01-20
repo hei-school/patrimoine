@@ -171,7 +171,7 @@ public class HtmlViewer extends JEditorPane {
 
   private String convertQuotedUrlsToLinks(String content) {
     Matcher matcher = URL_PATTERN.matcher(content);
-    var result = new StringBuffer();
+    var result = new StringBuilder();
 
     while (matcher.find()) {
       String url = matcher.group(1);
