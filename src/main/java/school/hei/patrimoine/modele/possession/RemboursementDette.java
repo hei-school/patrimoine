@@ -2,6 +2,7 @@ package school.hei.patrimoine.modele.possession;
 
 import static school.hei.patrimoine.modele.Argent.euro;
 import static school.hei.patrimoine.modele.possession.TypeAgregat.FLUX;
+import static school.hei.patrimoine.modele.possession.TypeFEC.CHARGE;
 
 import java.time.LocalDate;
 import java.util.Set;
@@ -42,5 +43,10 @@ public final class RemboursementDette extends Possession {
   @Override
   public TypeAgregat typeAgregat() {
     return FLUX;
+  }
+
+  @Override
+  public TypeFEC getTypeFEC() {
+    return CHARGE;
   }
 }

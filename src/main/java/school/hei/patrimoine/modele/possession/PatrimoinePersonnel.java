@@ -1,6 +1,7 @@
 package school.hei.patrimoine.modele.possession;
 
 import static school.hei.patrimoine.modele.possession.TypeAgregat.PATRIMOINE;
+import static school.hei.patrimoine.modele.possession.TypeFEC.AUTRE;
 
 import java.time.LocalDate;
 import school.hei.patrimoine.modele.Argent;
@@ -36,5 +37,10 @@ public final class PatrimoinePersonnel extends Possession {
   @Override
   public TypeAgregat typeAgregat() {
     return PATRIMOINE;
+  }
+
+  @Override
+  public TypeFEC getTypeFEC() {
+    return AUTRE;
   }
 }
