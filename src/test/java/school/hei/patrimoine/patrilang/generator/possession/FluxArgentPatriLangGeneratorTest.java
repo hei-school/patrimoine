@@ -9,6 +9,7 @@ import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
 import school.hei.patrimoine.modele.possession.Compte;
 import school.hei.patrimoine.modele.possession.FluxArgent;
+import school.hei.patrimoine.modele.possession.TypeFEC;
 
 class FluxArgentPatriLangGeneratorTest {
   private static final FluxArgentPatriLangGenerator subject = new FluxArgentPatriLangGenerator();
@@ -73,6 +74,78 @@ class FluxArgentPatriLangGeneratorTest {
     var actual = subject.apply(flux);
 
     var expected = "* `[CCA]_flux1`, le 1 janvier 2025 entrer 0Ar vers Trésoreries:comptePersonnel";
+
+    assertEquals(expected, actual);
+  }
+
+  @Test
+  void test_entree_avec_tous_les_types_fec() {
+    for (var type : TypeFEC.values()) {
+      var flux = new FluxArgent("fluxType", compte, date, ariary(500), type);
+
+      var actual = subject.apply(flux);
+
+      var expected =
+          "* `["
+              + type
+              + "]_fluxType`, le 1 janvier 2025 entrer 500Ar vers Trésoreries:comptePersonnel";
+
+      assertEquals(expected, actual);
+    }
+  }
+
+  @Test
+  void test_sortie_avec_tous_les_types_fec() {
+    for (var type : TypeFEC.values()) {
+      var flux = new FluxArgent("fluxType", compte, date, ariary(-750), type);
+
+      var actual = subject.apply(flux);
+
+      var expected =
+          "* `["
+              + type
+              + "]_fluxType`, le 1 janvier 2025 sortir 750Ar depuis Trésoreries:comptePersonnel";
+
+      assertEquals(expected, actual);
+    }
+  }
+
+  @Test
+  void test_nom_sans_type_est_id_genere() {
+    var flux = new FluxArgent("nomSimple", compte, date, ariary(100));
+
+    var actual = subject.apply(flux);
+
+    assertTrue(actual.contains("`nomSimple`"));
+  }
+
+  @Test
+  void test_nom_avec_type_est_prefixe() {
+    var flux = new FluxArgent("nomSimple", compte, date, ariary(100), IMMOBILISATION);
+
+    var actual = subject.apply(flux);
+
+    assertTrue(actual.contains("`[IMMOBILISATION]_nomSimple`"));
+  }
+
+  @Test
+  void test_generator_is_stateless() {
+    var flux = new FluxArgent("flux", compte, date, ariary(300));
+
+    var first = subject.apply(flux);
+    var second = subject.apply(flux);
+
+    assertEquals(first, second);
+  }
+
+  @Test
+  void test_compte_different() {
+    var autreCompte = new Compte("compteEpargne", date, ariary(10_000));
+    var flux = new FluxArgent("flux", autreCompte, date, ariary(200));
+
+    var actual = subject.apply(flux);
+
+    var expected = "* `flux`, le 1 janvier 2025 entrer 200Ar vers Trésoreries:compteEpargne";
 
     assertEquals(expected, actual);
   }
