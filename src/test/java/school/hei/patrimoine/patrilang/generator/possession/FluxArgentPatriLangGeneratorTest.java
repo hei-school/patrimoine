@@ -3,6 +3,7 @@ package school.hei.patrimoine.patrilang.generator.possession;
 import static java.time.Month.JANUARY;
 import static org.junit.jupiter.api.Assertions.*;
 import static school.hei.patrimoine.modele.Argent.ariary;
+import static school.hei.patrimoine.modele.possession.TypeFEC.*;
 
 import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
@@ -38,6 +39,41 @@ class FluxArgentPatriLangGeneratorTest {
     var actual = subject.apply(flux);
 
     var expected = "* `flux1`, le 1 janvier 2025 entrer 0Ar vers Trésoreries:comptePersonnel";
+    assertEquals(expected, actual);
+  }
+
+  @Test
+  void test_entree_avec_type_fec() {
+    var flux = new FluxArgent("flux1", compte, date, ariary(1_000), PRODUIT);
+
+    var actual = subject.apply(flux);
+
+    var expected =
+        "* `[PRODUIT]_flux1`, le 1 janvier 2025 entrer 1_000Ar vers Trésoreries:comptePersonnel";
+
+    assertEquals(expected, actual);
+  }
+
+  @Test
+  void test_sortie_avec_type_fec() {
+    var flux = new FluxArgent("flux1", compte, date, ariary(-1_000), CHARGE);
+
+    var actual = subject.apply(flux);
+
+    var expected =
+        "* `[CHARGE]_flux1`, le 1 janvier 2025 sortir 1_000Ar depuis Trésoreries:comptePersonnel";
+
+    assertEquals(expected, actual);
+  }
+
+  @Test
+  void test_zero_flux_avec_type_fec() {
+    var flux = new FluxArgent("flux1", compte, date, ariary(0), CCA);
+
+    var actual = subject.apply(flux);
+
+    var expected = "* `[CCA]_flux1`, le 1 janvier 2025 entrer 0Ar vers Trésoreries:comptePersonnel";
+
     assertEquals(expected, actual);
   }
 }
