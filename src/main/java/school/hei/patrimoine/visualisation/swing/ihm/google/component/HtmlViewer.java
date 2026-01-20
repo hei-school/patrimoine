@@ -69,6 +69,8 @@ public class HtmlViewer extends JEditorPane {
   }
 
   public void update() {
+    getHighlighter().removeAllHighlights();
+
     if (ViewMode.EDIT.equals(lastViewMode)) {
       saveCurrentContentToMemory();
     }
@@ -115,6 +117,11 @@ public class HtmlViewer extends JEditorPane {
       content = convertQuotedUrlsToLinks(content);
 
       var html = markdownToHtmlConverter.apply(content);
+
+      if (searchText != null && !searchText.isEmpty()) {
+        html = highlightSearchInHtml(html, searchText);
+      }
+
       html = html.replace("<body>", "<body style='font-size: " + currentFontSize + "px;'>");
       html = html.replaceAll("<code>", "<code style='font-size: " + currentFontSize + "px;'>");
 
@@ -176,26 +183,9 @@ public class HtmlViewer extends JEditorPane {
     return result.toString();
   }
 
-  private void openUrlInBrowser(String url) throws IOException {
-    String os = System.getProperty("os.name").toLowerCase();
-    ProcessBuilder processBuilder;
-
-    if (os.contains("win")) {
-      processBuilder = new ProcessBuilder("rundll32", "url.dll,FileProtocolHandler", url);
-    } else if (os.contains("mac")) {
-      processBuilder = new ProcessBuilder("open", url);
-    } else {
-      processBuilder = new ProcessBuilder("xdg-open", url);
-    }
-
-    processBuilder.start();
-  }
-
   private void highlightSearchText(String searchText) {
     try {
       Highlighter highlighter = getHighlighter();
-      highlighter.removeAllHighlights();
-
       String text = getText().toLowerCase();
       String textToSearch = searchText.toLowerCase();
 
@@ -210,5 +200,95 @@ public class HtmlViewer extends JEditorPane {
     } catch (BadLocationException e) {
       log.error("Erreur lors du highlighting", e);
     }
+  }
+
+  private String highlightSearchInHtml(String html, String searchText) {
+    if (searchText == null || searchText.isEmpty()) {
+      return html;
+    }
+
+    int bodyStart = html.indexOf("<body");
+    if (bodyStart == -1) {
+      return html;
+    }
+
+    int bodyContentStart = html.indexOf('>', bodyStart);
+    if (bodyContentStart == -1) {
+      return html;
+    }
+    bodyContentStart++;
+
+    int bodyEnd = html.lastIndexOf("</body>");
+    if (bodyEnd == -1) {
+      bodyEnd = html.length();
+    }
+
+    String beforeBody = html.substring(0, bodyContentStart);
+    String bodyContent = html.substring(bodyContentStart, bodyEnd);
+    String afterBody = html.substring(bodyEnd);
+
+    String highlightedBody = highlightTextInHtml(bodyContent, searchText);
+
+    return beforeBody + highlightedBody + afterBody;
+  }
+
+  private String highlightTextInHtml(String html, String searchText) {
+    var result = new StringBuilder();
+    String lowerHtml = html.toLowerCase();
+    String lowerSearch = searchText.toLowerCase();
+
+    int position = 0;
+    boolean insideTag = false;
+
+    while (position < html.length()) {
+      char c = html.charAt(position);
+
+      if (c == '<') {
+        insideTag = true;
+        result.append(c);
+        position++;
+        continue;
+      } else if (c == '>') {
+        insideTag = false;
+        result.append(c);
+        position++;
+        continue;
+      }
+
+      if (insideTag) {
+        result.append(c);
+        position++;
+        continue;
+      }
+
+      if (position + lowerSearch.length() <= html.length()
+          && lowerHtml.startsWith(lowerSearch, position)) {
+        result.append("<span style='background-color: yellow;'>");
+        result.append(html, position, position + searchText.length());
+        result.append("</span>");
+        position += searchText.length();
+
+      } else {
+        result.append(c);
+        position++;
+      }
+    }
+
+    return result.toString();
+  }
+
+  private void openUrlInBrowser(String url) throws IOException {
+    String os = System.getProperty("os.name").toLowerCase();
+    ProcessBuilder processBuilder;
+
+    if (os.contains("win")) {
+      processBuilder = new ProcessBuilder("rundll32", "url.dll,FileProtocolHandler", url);
+    } else if (os.contains("mac")) {
+      processBuilder = new ProcessBuilder("open", url);
+    } else {
+      processBuilder = new ProcessBuilder("xdg-open", url);
+    }
+
+    processBuilder.start();
   }
 }
