@@ -2,6 +2,8 @@ package school.hei.patrimoine.visualisation.swing.ihm.google.component;
 
 import static javax.swing.event.HyperlinkEvent.EventType.ACTIVATED;
 import static school.hei.patrimoine.patrilang.PatriLangTranspiler.PJ_FILE_EXTENSION;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.component.SearchHighlighter.highlightInHtml;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.component.SearchHighlighter.highlightInTextComponent;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.AppBar.ViewMode;
 
 import java.awt.*;
@@ -50,7 +52,7 @@ public class HtmlViewer extends JEditorPane {
           }
         });
 
-    state.subscribe(Set.of("viewMode", "fontSize", "selectedFile"), this::update);
+    state.subscribe(Set.of("viewMode", "fontSize", "selectedFile", "searchText"), this::update);
   }
 
   private void addEmptyContent() {
@@ -66,6 +68,8 @@ public class HtmlViewer extends JEditorPane {
   }
 
   public void update() {
+    getHighlighter().removeAllHighlights();
+
     if (ViewMode.EDIT.equals(lastViewMode)) {
       saveCurrentContentToMemory();
     }
@@ -73,6 +77,7 @@ public class HtmlViewer extends JEditorPane {
     ViewMode currentMode = state.get("viewMode");
     File currentFile = state.get("selectedFile");
     int currentFontSize = state.get("fontSize");
+    String searchText = state.get("searchText");
 
     lastEditedFile = currentFile;
     lastViewMode = currentMode;
@@ -99,6 +104,11 @@ public class HtmlViewer extends JEditorPane {
         setContentType("text/plain");
         setEditable(true);
         setText(content);
+
+        if (searchText != null && !searchText.isEmpty()) {
+          highlightInTextComponent(this, searchText);
+        }
+
         setCaretPosition(0);
         return;
       }
@@ -106,6 +116,11 @@ public class HtmlViewer extends JEditorPane {
       content = convertQuotedUrlsToLinks(content);
 
       var html = markdownToHtmlConverter.apply(content);
+
+      if (searchText != null && !searchText.isEmpty()) {
+        html = highlightInHtml(html, searchText);
+      }
+
       html = html.replace("<body>", "<body style='font-size: " + currentFontSize + "px;'>");
       html = html.replaceAll("<code>", "<code style='font-size: " + currentFontSize + "px;'>");
 
@@ -155,7 +170,7 @@ public class HtmlViewer extends JEditorPane {
 
   private String convertQuotedUrlsToLinks(String content) {
     Matcher matcher = URL_PATTERN.matcher(content);
-    var result = new StringBuffer();
+    var result = new StringBuilder();
 
     while (matcher.find()) {
       String url = matcher.group(1);
