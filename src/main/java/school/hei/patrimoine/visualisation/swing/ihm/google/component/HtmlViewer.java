@@ -2,6 +2,8 @@ package school.hei.patrimoine.visualisation.swing.ihm.google.component;
 
 import static javax.swing.event.HyperlinkEvent.EventType.ACTIVATED;
 import static school.hei.patrimoine.patrilang.PatriLangTranspiler.PJ_FILE_EXTENSION;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.component.SearchHighlighter.highlightInHtml;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.component.SearchHighlighter.highlightInTextComponent;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.AppBar.ViewMode;
 
 import java.awt.*;
@@ -14,9 +16,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.swing.*;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.DefaultHighlighter;
-import javax.swing.text.Highlighter;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import school.hei.patrimoine.patrilang.files.PatriLangFileWritter.FileWritterInput;
@@ -107,7 +106,7 @@ public class HtmlViewer extends JEditorPane {
         setText(content);
 
         if (searchText != null && !searchText.isEmpty()) {
-          highlightSearchText(searchText);
+          highlightInTextComponent(this, searchText);
         }
 
         setCaretPosition(0);
@@ -119,7 +118,7 @@ public class HtmlViewer extends JEditorPane {
       var html = markdownToHtmlConverter.apply(content);
 
       if (searchText != null && !searchText.isEmpty()) {
-        html = highlightSearchInHtml(html, searchText);
+        html = highlightInHtml(html, searchText);
       }
 
       html = html.replace("<body>", "<body style='font-size: " + currentFontSize + "px;'>");
@@ -179,100 +178,6 @@ public class HtmlViewer extends JEditorPane {
       matcher.appendReplacement(result, replacement);
     }
     matcher.appendTail(result);
-
-    return result.toString();
-  }
-
-  private void highlightSearchText(String searchText) {
-    try {
-      Highlighter highlighter = getHighlighter();
-      String text = getText().toLowerCase();
-      String textToSearch = searchText.toLowerCase();
-
-      int index = 0;
-      while ((index = text.indexOf(textToSearch, index)) >= 0) {
-        highlighter.addHighlight(
-            index,
-            index + searchText.length(),
-            new DefaultHighlighter.DefaultHighlightPainter(Color.YELLOW));
-        index += searchText.length();
-      }
-    } catch (BadLocationException e) {
-      log.error("Erreur lors du highlighting", e);
-    }
-  }
-
-  private String highlightSearchInHtml(String html, String searchText) {
-    if (searchText == null || searchText.isEmpty()) {
-      return html;
-    }
-
-    int bodyStart = html.indexOf("<body");
-    if (bodyStart == -1) {
-      return html;
-    }
-
-    int bodyContentStart = html.indexOf('>', bodyStart);
-    if (bodyContentStart == -1) {
-      return html;
-    }
-    bodyContentStart++;
-
-    int bodyEnd = html.lastIndexOf("</body>");
-    if (bodyEnd == -1) {
-      bodyEnd = html.length();
-    }
-
-    String beforeBody = html.substring(0, bodyContentStart);
-    String bodyContent = html.substring(bodyContentStart, bodyEnd);
-    String afterBody = html.substring(bodyEnd);
-
-    String highlightedBody = highlightTextInHtml(bodyContent, searchText);
-
-    return beforeBody + highlightedBody + afterBody;
-  }
-
-  private String highlightTextInHtml(String html, String searchText) {
-    var result = new StringBuilder();
-    String lowerHtml = html.toLowerCase();
-    String lowerSearch = searchText.toLowerCase();
-
-    int position = 0;
-    boolean insideTag = false;
-
-    while (position < html.length()) {
-      char c = html.charAt(position);
-
-      if (c == '<') {
-        insideTag = true;
-        result.append(c);
-        position++;
-        continue;
-      } else if (c == '>') {
-        insideTag = false;
-        result.append(c);
-        position++;
-        continue;
-      }
-
-      if (insideTag) {
-        result.append(c);
-        position++;
-        continue;
-      }
-
-      if (position + lowerSearch.length() <= html.length()
-          && lowerHtml.startsWith(lowerSearch, position)) {
-        result.append("<span style='background-color: yellow;'>");
-        result.append(html, position, position + searchText.length());
-        result.append("</span>");
-        position += searchText.length();
-
-      } else {
-        result.append(c);
-        position++;
-      }
-    }
 
     return result.toString();
   }
