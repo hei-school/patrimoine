@@ -2,7 +2,6 @@ package school.hei.patrimoine.visualisation.swing.ihm.google.component.recoupeme
 
 import java.text.Normalizer;
 import java.util.Set;
-import java.util.stream.Collectors;
 import javax.swing.*;
 import lombok.extern.slf4j.Slf4j;
 import school.hei.patrimoine.modele.possession.pj.PieceJustificative;
@@ -27,24 +26,12 @@ public class PossessionRecoupeeListPanel extends JPanel {
 
     var pjSet = piecesJustificatives == null ? Set.<PieceJustificative>of() : piecesJustificatives;
 
-    log.info(
-        "PossessionRecoupeeListPanel.update -> possessions="
-            + possessionRecoupees.size()
-            + " pjs="
-            + pjSet.size());
+    log.info("possessions=" + possessionRecoupees.size() + " pjs=" + pjSet.size());
 
     possessionRecoupees.forEach(
         possessionRecoupee -> {
           var name = possessionRecoupee.possession().nom();
           var matched = findMatchingPiece(pjSet, name);
-
-          if (matched == null && !pjSet.isEmpty()) {
-            var candidates =
-                pjSet.stream().map(PieceJustificative::id).collect(Collectors.joining(", "));
-            log.info("Aucune PJ trouvée pour \"" + name + "\". Candidates: [" + candidates + "]");
-          } else if (matched != null) {
-            log.info("PJ trouvée pour \"" + name + "\" -> " + matched.id());
-          }
 
           add(new PossessionRecoupeeItem(state, possessionRecoupee, matched));
           add(Box.createVerticalStrut(10));

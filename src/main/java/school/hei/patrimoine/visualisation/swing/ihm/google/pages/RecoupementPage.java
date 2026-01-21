@@ -205,10 +205,9 @@ public class RecoupementPage extends LazyPage {
     }
 
     var selectedFile = (File) state.get("selectedFile");
-    log.info("RecoupementPage.update called, selectedFile=" + selectedFile.getName());
+    log.info("selectedFile=" + selectedFile.getName());
 
     Set<PieceJustificative> pieces = loadPiecesForCas(selectedFile);
-    log.info("PJs chargées=" + pieces.size());
 
     AsyncTask.<List<PossessionRecoupee>>builder()
         .task(this::getFilteredPossessionRecoupees)
@@ -234,9 +233,7 @@ public class RecoupementPage extends LazyPage {
                           })
                       .collect(toSet());
 
-              log.info("Possessions recoupées chargées=" + list.size());
               possessionRecoupeeListPanel.update(filteredPossessions, pieces);
-              log.info("PossessionRecoupeeListPanel.update appelé");
             })
         .withDialogLoading(false)
         .build()
