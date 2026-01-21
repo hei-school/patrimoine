@@ -149,4 +149,14 @@ class FluxArgentPatriLangGeneratorTest {
 
     assertEquals(expected, actual);
   }
+
+  @Test
+  void test_getTypeFEC_dans_FluxArgent_est_null_ou_pas() {
+    var flux1 = new FluxArgent("flux1", compte, date, ariary(100));
+    var flux2 = new FluxArgent("flux2", compte, date, ariary(100), CCA);
+
+    assertNotNull(compte.getTypeFEC());
+    assertNull(flux1.getTypeFEC());
+    assertEquals(flux2.getTypeFEC(), CCA);
+  }
 }
