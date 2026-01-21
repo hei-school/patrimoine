@@ -4,6 +4,7 @@ import static java.util.stream.Collectors.toSet;
 import static school.hei.patrimoine.patrilang.PatriLangTranspiler.transpilePieceJustificative;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.AppBar.builtInUserInfoPanel;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.pages.PatriLangFilesPage.addImprevuButton;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.pages.RecoupementPage.PieceJustificativeFilter.TOUT;
 
 import java.awt.*;
 import java.awt.event.KeyAdapter;
@@ -26,6 +27,7 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Nav
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.FileListCellRenderer;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.FileListModel;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.FileSideBar;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.recoupement.PieceJustificativeMatcher;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.recoupement.PossessionRecoupeeListPanel;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.AsyncTask;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.CasSetSetter;
@@ -43,6 +45,8 @@ public class RecoupementPage extends LazyPage {
   private final State state;
 
   private final PossessionRecoupeeListPanel possessionRecoupeeListPanel;
+
+  private final PieceJustificativeMatcher pjMatcher = new PieceJustificativeMatcher();
 
   public RecoupementPage() {
     super(PAGE_NAME);
@@ -76,6 +80,42 @@ public class RecoupementPage extends LazyPage {
     addAppBar();
     addMainSplitPane();
     addFooter();
+  }
+
+  public enum PossessionRecoupeeFilterStatus {
+    TOUT("Tout"),
+    IMPREVU("Imprévu"),
+    NON_EXECUTE("Non Éxecuté"),
+    EXECUTE_AVEC_CORRECTION("Éxecuté avec correction"),
+    EXECUTE_SANS_CORRECTION("Éxecuté sans correction");
+
+    public final String label;
+
+    PossessionRecoupeeFilterStatus(String label) {
+      this.label = label;
+    }
+
+    @Override
+    public String toString() {
+      return label;
+    }
+  }
+
+  public enum PieceJustificativeFilter {
+    TOUT("Aucune"),
+    AVEC_PJ("Avec pj"),
+    SANS_PJ("Sans pj");
+
+    public final String label;
+
+    PieceJustificativeFilter(String label) {
+      this.label = label;
+    }
+
+    @Override
+    public String toString() {
+      return label;
+    }
   }
 
   private void addAppBar() {
@@ -205,35 +245,21 @@ public class RecoupementPage extends LazyPage {
     }
 
     var selectedFile = (File) state.get("selectedFile");
-    log.info("selectedFile=" + selectedFile.getName());
+    log.info("selectedFile={}", selectedFile.getName());
 
     Set<PieceJustificative> pieces = loadPiecesForCas(selectedFile);
+    var pjFilter = (PieceJustificativeFilter) state.get("filterPJ");
 
     AsyncTask.<List<PossessionRecoupee>>builder()
         .task(this::getFilteredPossessionRecoupees)
         .onSuccess(
             list -> {
-              var pjFilter = (PieceJustificativeFilter) state.get("filterPJ");
-
-              Set<PossessionRecoupee> filteredPossessions =
+              Set<PossessionRecoupee> filtered =
                   list.stream()
-                      .filter(
-                          pr -> {
-                            boolean hasPJ =
-                                pieces.stream()
-                                    .anyMatch(
-                                        pj ->
-                                            possessionRecoupeeListPanel.hasMatchingPiece(
-                                                pj, pr.possession().nom()));
-                            return switch (pjFilter) {
-                              case TOUT -> true;
-                              case AVEC_PJ -> hasPJ;
-                              case SANS_PJ -> !hasPJ;
-                            };
-                          })
+                      .filter(pr -> keepAccordingToPJFilter(pr, pieces, pjFilter))
                       .collect(toSet());
 
-              possessionRecoupeeListPanel.update(filteredPossessions, pieces);
+              possessionRecoupeeListPanel.update(filtered, pieces);
             })
         .withDialogLoading(false)
         .build()
@@ -264,39 +290,21 @@ public class RecoupementPage extends LazyPage {
     }
   }
 
-  public enum PossessionRecoupeeFilterStatus {
-    TOUT("Tout"),
-    IMPREVU("Imprévu"),
-    NON_EXECUTE("Non Éxecuté"),
-    EXECUTE_AVEC_CORRECTION("Éxecuté avec correction"),
-    EXECUTE_SANS_CORRECTION("Éxecuté sans correction");
+  private boolean keepAccordingToPJFilter(
+      PossessionRecoupee possession,
+      Set<PieceJustificative> pieces,
+      PieceJustificativeFilter filter) {
 
-    public final String label;
-
-    PossessionRecoupeeFilterStatus(String label) {
-      this.label = label;
+    if (filter == TOUT) {
+      return true;
     }
 
-    @Override
-    public String toString() {
-      return label;
-    }
-  }
+    var hasPJ = pjMatcher.findMatchingPiece(pieces, possession.possession().nom()) != null;
 
-  public enum PieceJustificativeFilter {
-    TOUT("Aucune"),
-    AVEC_PJ("Avec pj"),
-    SANS_PJ("Sans pj");
-
-    public final String label;
-
-    PieceJustificativeFilter(String label) {
-      this.label = label;
-    }
-
-    @Override
-    public String toString() {
-      return label;
-    }
+    return switch (filter) {
+      case AVEC_PJ -> hasPJ;
+      case SANS_PJ -> !hasPJ;
+      default -> true;
+    };
   }
 }
