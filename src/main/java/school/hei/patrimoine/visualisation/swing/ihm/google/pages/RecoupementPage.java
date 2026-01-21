@@ -287,9 +287,9 @@ public class RecoupementPage extends LazyPage {
   }
 
   public enum PieceJustificativeFilter {
-    TOUT(""),
-    AVEC_PJ("Avec PJ"),
-    SANS_PJ("Sans PJ");
+    TOUT("Aucune"),
+    AVEC_PJ("Avec pj"),
+    SANS_PJ("Sans pj");
 
     public final String label;
 
