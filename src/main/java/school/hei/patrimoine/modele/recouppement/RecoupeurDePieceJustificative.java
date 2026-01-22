@@ -11,8 +11,8 @@ public class RecoupeurDePieceJustificative {
   private final Set<Possession> possessions;
   private final Set<PieceJustificative> piecesJustificatives;
 
-  private Set<PossessionWithPieceJustificative<? extends Possession>> possessionWithPjs;
   private Set<Possession> possessionsWithoutPj;
+  private Set<PossessionWithPieceJustificative<? extends Possession>> possessionWithPjs;
 
   public RecoupeurDePieceJustificative(
       Set<PieceJustificative> piecesJustificatives, Set<Possession> possessions) {
