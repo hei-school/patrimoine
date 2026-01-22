@@ -1,6 +1,7 @@
 package school.hei.patrimoine.modele.possession;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static school.hei.patrimoine.modele.possession.TypeFEC.*;
 
 import org.junit.jupiter.api.Test;
 
@@ -27,10 +28,10 @@ class TypeFECTest {
       assertTrue(type.ordinal() < 5);
     }
 
-    assertEquals(TypeFEC.CCA, TypeFEC.values()[0]);
-    assertEquals(TypeFEC.PRODUIT, TypeFEC.values()[1]);
-    assertEquals(TypeFEC.IMMOBILISATION, TypeFEC.values()[2]);
-    assertEquals(TypeFEC.CHARGE, TypeFEC.values()[3]);
-    assertEquals(TypeFEC.AUTRE, TypeFEC.values()[4]);
+    assertEquals(CCA, TypeFEC.values()[0]);
+    assertEquals(PRODUIT, TypeFEC.values()[1]);
+    assertEquals(IMMOBILISATION, TypeFEC.values()[2]);
+    assertEquals(CHARGE, TypeFEC.values()[3]);
+    assertEquals(AUTRE, TypeFEC.values()[4]);
   }
 }
