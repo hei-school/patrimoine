@@ -93,24 +93,11 @@ ENTETE_TRESORERIES
     ;
 
 /* --------------------  Types de Flux d'argent  --------------------  */
-TYPE_IMMOBILISATION
-    :   'Immobilisation'
-    |   'IMMO'
-    ;
-
-TYPE_CHARGE
-    :   'Charge'
-    |   'CHG'
-    ;
-
-TYPE_PRODUIT
-    :   'Produit'
-    |   'PRD'
-    ;
-
-TYPE_CCA
-    :   'CCA'
-    |   'cca'
+TYPE_FEC
+    :   ('Immobilisation'|'IMMO')
+    |   ('Charge'|'CHG')
+    |   ('Produit'|'PRD')
+    |   ('CCA'|'cca')
     ;
 
 MOT_CONTIENT
