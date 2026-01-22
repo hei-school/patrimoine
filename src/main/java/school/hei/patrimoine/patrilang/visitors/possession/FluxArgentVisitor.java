@@ -6,9 +6,11 @@ import static school.hei.patrimoine.patrilang.visitors.BaseVisitor.*;
 
 import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
+import org.antlr.v4.runtime.tree.TerminalNode;
 import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.possession.Compte;
 import school.hei.patrimoine.modele.possession.FluxArgent;
+import school.hei.patrimoine.modele.possession.TypeFEC;
 import school.hei.patrimoine.patrilang.visitors.IdVisitor;
 import school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor;
 
@@ -22,6 +24,8 @@ public class FluxArgentVisitor {
     Argent valeurComptable = this.variableVisitor.asArgent(ctx.valeurComptable);
     LocalDate t = this.variableVisitor.asDate(ctx.dateValue);
     Compte compte = this.variableVisitor.asCompte(ctx.compteCrediteurNom);
+    TypeFEC typeFEC = toTypeFEC(ctx.id().TYPE_FEC());
+
     var dateFinOpt =
         ofNullable(ctx.dateFin()).map(dateFin -> visitDateFin(dateFin, this.variableVisitor));
 
@@ -36,10 +40,16 @@ public class FluxArgentVisitor {
 
     return dateFinOpt
         .map(
-            dateFin ->
-                new FluxArgent(
-                    id, compte, t, dateFin.value(), dateFin.dateOperation(), valeurComptable))
-        .orElseGet(() -> new FluxArgent(id, compte, t, valeurComptable));
+            df ->
+                typeFEC == null
+                    ? new FluxArgent(id, compte, t, df.value(), df.dateOperation(), valeurComptable)
+                    : new FluxArgent(
+                        id, compte, t, df.value(), df.dateOperation(), valeurComptable, typeFEC))
+        .orElseGet(
+            () ->
+                typeFEC == null
+                    ? new FluxArgent(id, compte, t, valeurComptable)
+                    : new FluxArgent(id, compte, t, valeurComptable, typeFEC));
   }
 
   public FluxArgent apply(FluxArgentSortirContext ctx) {
@@ -47,6 +57,9 @@ public class FluxArgentVisitor {
     Argent valeurComptable = this.variableVisitor.asArgent(ctx.valeurComptable).mult(-1);
     LocalDate t = this.variableVisitor.asDate(ctx.dateValue);
     Compte compte = this.variableVisitor.asCompte(ctx.compteDebiteurNom);
+
+    TypeFEC typeFEC = toTypeFEC(ctx.id().TYPE_FEC());
+
     var dateFinOpt =
         ofNullable(ctx.dateFin()).map(dateFin -> visitDateFin(dateFin, this.variableVisitor));
 
@@ -62,8 +75,34 @@ public class FluxArgentVisitor {
     return dateFinOpt
         .map(
             dateFin ->
-                new FluxArgent(
-                    id, compte, t, dateFin.value(), dateFin.dateOperation(), valeurComptable))
-        .orElseGet(() -> new FluxArgent(id, compte, t, valeurComptable));
+                typeFEC == null
+                    ? new FluxArgent(
+                        id, compte, t, dateFin.value(), dateFin.dateOperation(), valeurComptable)
+                    : new FluxArgent(
+                        id,
+                        compte,
+                        t,
+                        dateFin.value(),
+                        dateFin.dateOperation(),
+                        valeurComptable,
+                        typeFEC))
+        .orElseGet(
+            () ->
+                typeFEC == null
+                    ? new FluxArgent(id, compte, t, valeurComptable)
+                    : new FluxArgent(id, compte, t, valeurComptable, typeFEC));
+  }
+
+  private static TypeFEC toTypeFEC(TerminalNode node) {
+    if (node == null) {
+      return null;
+    }
+    return switch (node.getText().toUpperCase()) {
+      case "IMMOBILISATION", "IMMO" -> TypeFEC.IMMOBILISATION;
+      case "CHARGE", "CHG" -> TypeFEC.CHARGE;
+      case "PRODUIT", "PRD" -> TypeFEC.PRODUIT;
+      case "CCA" -> TypeFEC.CCA;
+      default -> throw new IllegalArgumentException("TypeFEC inconnu : " + node.getText());
+    };
   }
 }
