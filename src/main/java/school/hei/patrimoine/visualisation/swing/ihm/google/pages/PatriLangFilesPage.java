@@ -19,7 +19,6 @@ import school.hei.patrimoine.cas.CasSetAnalyzer;
 import school.hei.patrimoine.google.model.Pagination;
 import school.hei.patrimoine.modele.objectif.ObjectifExeption;
 import school.hei.patrimoine.modele.recouppement.RecoupeurDeCasSet;
-import school.hei.patrimoine.visualisation.swing.ihm.google.component.HtmlViewer;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.ObjectifNonAtteintsDialog;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.PlaceholderTextField;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.LazyPage;
@@ -28,6 +27,7 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.bui
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.comment.CommentSideBar;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.FileSideBar;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.html.HtmlViewer;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.recoupement.AddImprevuDialog;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.AsyncTask;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.CasSetSetter;

@@ -49,11 +49,11 @@ public class PatriLangTranspiler implements Function<String, CasSet> {
     var tree = parsePieceJustificative(pieceJustificativePath);
     var variableVisitor = new VariableVisitor();
     var patrilangVisitor =
-        new PatriLangVisitor(
-            null,
-            null,
-            new PatriLangPieceJustificativeVisitor(
-                new IdVisitor(variableVisitor), variableVisitor.getVariableDateVisitor()));
+        PatriLangVisitor.builder()
+            .piecesJustificativeVisitor(
+                new PatriLangPieceJustificativeVisitor(
+                    new IdVisitor(variableVisitor), variableVisitor.getVariableDateVisitor()))
+            .build();
     return patrilangVisitor.visitPiecesJustificatives(tree);
   }
 }
