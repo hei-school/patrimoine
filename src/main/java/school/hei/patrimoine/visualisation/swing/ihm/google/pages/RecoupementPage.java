@@ -299,6 +299,10 @@ public class RecoupementPage extends LazyPage {
       return true;
     }
 
+    if (!possession.hasSupportingDocument()) {
+      return filter == PieceJustificativeFilter.SANS_PJ;
+    }
+
     var hasPJ = pjMatcher.findMatchingPiece(pieces, possession.possession().nom()) != null;
 
     return switch (filter) {

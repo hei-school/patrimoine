@@ -30,7 +30,11 @@ public class PossessionRecoupeeListPanel extends JPanel {
 
     possessions.forEach(
         possession -> {
-          var matched = matcher.findMatchingPiece(pjSet, possession.possession().nom());
+          PieceJustificative matched = null;
+
+          if (possession.hasSupportingDocument()) {
+            matched = matcher.findMatchingPiece(pjSet, possession.possession().nom());
+          }
 
           add(new PossessionRecoupeeItem(state, possession, matched));
           add(Box.createVerticalStrut(10));
