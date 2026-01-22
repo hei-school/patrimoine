@@ -276,13 +276,6 @@ RPAREN
 COLON
     :   ':'
     ;
-LCROCHET
-    :   '['
-    ;
-
-RCROCHET
-    :   ']'
-    ;
 
 /* Valeurs */
 ARGENTS_VARIABLE
