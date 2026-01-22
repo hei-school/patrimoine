@@ -6,6 +6,7 @@ import static school.hei.patrimoine.modele.Argent.ariary;
 import static school.hei.patrimoine.modele.possession.TypeFEC.*;
 
 import java.time.LocalDate;
+import java.util.regex.Pattern;
 import org.junit.jupiter.api.Test;
 import school.hei.patrimoine.modele.possession.Compte;
 import school.hei.patrimoine.modele.possession.FluxArgent;
@@ -111,21 +112,24 @@ class FluxArgentPatriLangGeneratorTest {
   }
 
   @Test
+  void test_nom_avec_type_est_prefixe() {
+    var flux = new FluxArgent("nomSimple", compte, date, ariary(100), IMMOBILISATION);
+
+    var actual = subject.apply(flux);
+    var expected = extractId(actual);
+
+    assertEquals("[IMMOBILISATION]_nomSimple", expected);
+  }
+
+  @Test
   void test_nom_sans_type_est_id_genere() {
     var flux = new FluxArgent("nomSimple", compte, date, ariary(100));
 
     var actual = subject.apply(flux);
 
-    assertTrue(actual.contains("`nomSimple`"));
-  }
+    var expected = extractId(actual);
 
-  @Test
-  void test_nom_avec_type_est_prefixe() {
-    var flux = new FluxArgent("nomSimple", compte, date, ariary(100), IMMOBILISATION);
-
-    var actual = subject.apply(flux);
-
-    assertTrue(actual.contains("`[IMMOBILISATION]_nomSimple`"));
+    assertEquals("nomSimple", expected);
   }
 
   @Test
@@ -158,5 +162,14 @@ class FluxArgentPatriLangGeneratorTest {
     assertNotNull(compte.getTypeFEC());
     assertNull(flux1.getTypeFEC());
     assertEquals(flux2.getTypeFEC(), CCA);
+  }
+
+  private String extractId(String character) {
+    var pattern = Pattern.compile("`([^`]+)`");
+    var matcher = pattern.matcher(character);
+    if (matcher.find()) {
+      return matcher.group(1);
+    }
+    return null;
   }
 }
