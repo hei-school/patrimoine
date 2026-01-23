@@ -98,6 +98,7 @@ TYPE_FEC
     |   ('Charge'|'CHG')
     |   ('Produit'|'PRD')
     |   ('CCA'|'cca')
+    |   ('autre'|'AUTRE')
     ;
 
 MOT_CONTIENT
