@@ -14,8 +14,8 @@ import school.hei.patrimoine.patrilang.visitors.factory.SectionVisitorFactory;
 import school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor;
 
 public class PatriLangTranspiler implements Function<String, CasSet> {
-  public static final String CAS_FILE_EXTENSION = ".cas.md";
   public static final String PJ_FILE_EXTENSION = ".pj.md";
+  public static final String CAS_FILE_EXTENSION = ".cas.md";
   public static final String TOUT_CAS_FILE_EXTENSION = ".tout.md";
 
   @Override

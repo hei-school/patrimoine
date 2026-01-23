@@ -1,7 +1,6 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.pages;
 
 import static java.util.stream.Collectors.toSet;
-import static school.hei.patrimoine.patrilang.PatriLangTranspiler.transpilePieceJustificative;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.AppBar.builtInUserInfoPanel;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.pages.PatriLangFilesPage.addImprevuButton;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.pages.RecoupementPage.PieceJustificativeFilter.TOUT;
@@ -29,6 +28,7 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.File
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.FileSideBar;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.recoupement.PieceJustificativeMatcher;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.recoupement.PossessionRecoupeeListPanel;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.recoupement.pj.PJRetriever;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.AsyncTask;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.CasSetSetter;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.Debouncer;
@@ -244,10 +244,10 @@ public class RecoupementPage extends LazyPage {
       return;
     }
 
-    var selectedFile = (File) state.get("selectedFile");
-    log.info("selectedFile={}", selectedFile.getName());
+    var casFile = (File) state.get("selectedFile");
 
-    Set<PieceJustificative> pieces = loadPiecesForCas(selectedFile);
+    var pjsRetriever = new PJRetriever();
+    var pjs = pjsRetriever.apply(casFile);
     var pjFilter = (PieceJustificativeFilter) state.get("filterPJ");
 
     AsyncTask.<List<PossessionRecoupee>>builder()
@@ -256,38 +256,14 @@ public class RecoupementPage extends LazyPage {
             list -> {
               Set<PossessionRecoupee> filtered =
                   list.stream()
-                      .filter(pr -> keepAccordingToPJFilter(pr, pieces, pjFilter))
+                      .filter(pr -> keepAccordingToPJFilter(pr, pjs, pjFilter))
                       .collect(toSet());
 
-              possessionRecoupeeListPanel.update(filtered, pieces);
+              possessionRecoupeeListPanel.update(filtered, pjs);
             })
         .withDialogLoading(false)
         .build()
         .execute();
-  }
-
-  private Set<PieceJustificative> loadPiecesForCas(File casFile) {
-    if (casFile == null) return Set.of();
-
-    var casName = casFile.getName();
-    if (!casName.endsWith(".cas.md")) return Set.of();
-
-    var baseName = casName.substring(0, casName.length() - ".cas.md".length());
-
-    var pjFile =
-        FileSideBar.getPatriLangJustificativeFiles().stream()
-            .filter(f -> f.getName().equals(baseName + ".pj.md"))
-            .findFirst()
-            .orElse(null);
-
-    if (pjFile == null) return Set.of();
-
-    try {
-      return new HashSet<>(transpilePieceJustificative(pjFile.getAbsolutePath()));
-    } catch (Exception e) {
-      e.printStackTrace();
-      return Set.of();
-    }
   }
 
   private boolean keepAccordingToPJFilter(

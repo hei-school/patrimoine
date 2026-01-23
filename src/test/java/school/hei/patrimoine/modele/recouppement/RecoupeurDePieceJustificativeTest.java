@@ -24,7 +24,7 @@ class RecoupeurDePieceJustificativeTest {
 
     var subject = new RecoupeurDePieceJustificative(Set.of(pj), Set.of(compte, salaire));
 
-    var actual = subject.getPossessionWithPj();
+    var actual = subject.getRecouped();
     assertEquals(2, actual.size());
 
     var association =
@@ -41,7 +41,7 @@ class RecoupeurDePieceJustificativeTest {
     var salaire = new FluxArgent("salaire", compte, date, ariary(200));
     var subject = new RecoupeurDePieceJustificative(Set.of(), Set.of(compte, salaire));
 
-    var actual = subject.getPossessionWithPj();
+    var actual = subject.getRecouped();
     assertEquals(2, actual.size());
     assertTrue(actual.stream().allMatch(a -> a.pieceJustificative() == null));
   }
@@ -160,6 +160,5 @@ class RecoupeurDePieceJustificativeTest {
     var actual = subject.getPossessionWithPj();
 
     assertEquals(1, actual.size());
-    assertTrue(actual.stream().allMatch(a -> a.pieceJustificative() == null));
   }
 }

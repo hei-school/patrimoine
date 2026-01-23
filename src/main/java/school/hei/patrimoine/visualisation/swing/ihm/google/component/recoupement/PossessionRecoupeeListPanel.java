@@ -25,9 +25,7 @@ public class PossessionRecoupeeListPanel extends JPanel {
 
     removeAll();
 
-    var pjSet = piecesJustificatives == null ? Set.<PieceJustificative>of() : piecesJustificatives;
-    log.info("possessions={} pjs={}", possessions.size(), pjSet.size());
-
+    Set<PieceJustificative> pjSet = piecesJustificatives == null ? Set.of() : piecesJustificatives;
     possessions.forEach(
         possession -> {
           PieceJustificative matched = null;

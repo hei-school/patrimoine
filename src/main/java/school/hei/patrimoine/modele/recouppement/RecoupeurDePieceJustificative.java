@@ -1,8 +1,12 @@
 package school.hei.patrimoine.modele.recouppement;
 
+import static java.util.function.Function.identity;
 import static java.util.function.Predicate.not;
+import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
 
+import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import school.hei.patrimoine.modele.possession.Possession;
 import school.hei.patrimoine.modele.possession.pj.PieceJustificative;
@@ -42,19 +46,29 @@ public class RecoupeurDePieceJustificative {
       return possessionWithPjs;
     }
 
-    possessionWithPjs =
-        possessions.stream()
-            .map(
-                possession -> {
-                  var pj =
-                      piecesJustificatives.stream()
-                          .filter(pjItem -> pjItem.id().equals(possession.nom()))
-                          .findFirst()
-                          .orElse(null);
+    var possessionByNom = possessions.stream().collect(toMap(Possession::nom, identity()));
 
-                  return new PossessionWithPieceJustificative<>(possession, pj);
-                })
+    possessionWithPjs =
+        piecesJustificatives.stream()
+            .map(pj -> new PossessionWithPieceJustificative<>(possessionByNom.get(pj.id()), pj))
             .collect(toSet());
+
     return possessionWithPjs;
+  }
+
+  public Set<PossessionWithPieceJustificative<? extends Possession>> getRecouped() {
+    var result = new HashSet<>(getPossessionWithPj());
+
+    var possessionsAlreadyUsed =
+        result.stream()
+            .map(PossessionWithPieceJustificative::possession)
+            .filter(Objects::nonNull)
+            .collect(toSet());
+
+    possessions.stream()
+        .filter(not(possessionsAlreadyUsed::contains))
+        .forEach(p -> result.add(new PossessionWithPieceJustificative<>(p, null)));
+
+    return result;
   }
 }
