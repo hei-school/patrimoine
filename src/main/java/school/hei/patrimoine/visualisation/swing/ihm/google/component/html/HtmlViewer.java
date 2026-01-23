@@ -1,4 +1,4 @@
-package school.hei.patrimoine.visualisation.swing.ihm.google.component;
+package school.hei.patrimoine.visualisation.swing.ihm.google.component.html;
 
 import static javax.swing.event.HyperlinkEvent.EventType.ACTIVATED;
 import static school.hei.patrimoine.patrilang.PatriLangTranspiler.PJ_FILE_EXTENSION;
@@ -8,13 +8,10 @@ import static school.hei.patrimoine.visualisation.swing.ihm.google.component.app
 
 import java.awt.*;
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import javax.swing.*;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -32,8 +29,6 @@ public class HtmlViewer extends JEditorPane {
   @Getter private final Map<File, String> originalContents = new HashMap<>();
   private final Map<File, FileWritterInput> modifiedFilesData = new HashMap<>();
 
-  private static final Pattern URL_PATTERN = Pattern.compile("\"(https?://[^\"]+)\"");
-
   public HtmlViewer(State state) {
     this.state = state;
     this.markdownToHtmlConverter = new MarkdownToHtmlConverter();
@@ -43,13 +38,11 @@ public class HtmlViewer extends JEditorPane {
 
     addHyperlinkListener(
         e -> {
-          if (e.getEventType() == ACTIVATED) {
-            try {
-              openUrlInBrowser(e.getURL().toString());
-            } catch (Exception ex) {
-              log.error("Erreur lors de l'ouverture du lien: {}", e.getURL(), ex);
-            }
+          if (e.getEventType() != ACTIVATED) {
+            return;
           }
+
+          new LinkOpener().accept(e.getURL().toString());
         });
 
     state.subscribe(Set.of("viewMode", "fontSize", "selectedFile", "searchText"), this::update);
@@ -113,8 +106,7 @@ public class HtmlViewer extends JEditorPane {
         return;
       }
 
-      content = convertQuotedUrlsToLinks(content);
-
+      content = new LinkReplacer().apply(content);
       var html = markdownToHtmlConverter.apply(content);
 
       if (searchText != null && !searchText.isEmpty()) {
@@ -166,34 +158,5 @@ public class HtmlViewer extends JEditorPane {
 
   public void clearModifiedFiles() {
     modifiedFilesData.clear();
-  }
-
-  private String convertQuotedUrlsToLinks(String content) {
-    Matcher matcher = URL_PATTERN.matcher(content);
-    var result = new StringBuilder();
-
-    while (matcher.find()) {
-      String url = matcher.group(1);
-      String replacement = "<a href=\"" + url + "\" target=\"_blank\">" + url + "</a>";
-      matcher.appendReplacement(result, replacement);
-    }
-    matcher.appendTail(result);
-
-    return result.toString();
-  }
-
-  private void openUrlInBrowser(String url) throws IOException {
-    String os = System.getProperty("os.name").toLowerCase();
-    ProcessBuilder processBuilder;
-
-    if (os.contains("win")) {
-      processBuilder = new ProcessBuilder("rundll32", "url.dll,FileProtocolHandler", url);
-    } else if (os.contains("mac")) {
-      processBuilder = new ProcessBuilder("open", url);
-    } else {
-      processBuilder = new ProcessBuilder("xdg-open", url);
-    }
-
-    processBuilder.start();
   }
 }

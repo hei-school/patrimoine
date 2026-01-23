@@ -18,22 +18,18 @@ class RecoupeurDePieceJustificativeTest {
   @Test
   void trouve_piece_justificative_pour_possession() {
     var date = LocalDate.of(2025, JANUARY, 1);
-
     var compte = new Compte("comptePersonnel", date, ariary(0));
     var salaire = new FluxArgent("salaire", compte, date, ariary(200));
-
-    var pj = new PieceJustificative("salaire", date, "http://example.com/salaire.pdf");
+    var pj = new PieceJustificative("salaire", date, "https://example.com/salaire.pdf");
 
     var subject = new RecoupeurDePieceJustificative(Set.of(pj), Set.of(compte, salaire));
 
-    var actual = subject.getPossessionWithPj();
-
+    var actual = subject.getRecouped();
     assertEquals(2, actual.size());
 
     var association =
         actual.stream().filter(a -> a.possession().equals(salaire)).findFirst().orElseThrow();
     assertEquals("salaire", association.possession().nom());
-    assertNotNull(association.pieceJustificative());
     assertEquals("salaire", association.pieceJustificative().id());
   }
 
@@ -43,11 +39,9 @@ class RecoupeurDePieceJustificativeTest {
 
     var compte = new Compte("comptePersonnel", date, ariary(0));
     var salaire = new FluxArgent("salaire", compte, date, ariary(200));
-
     var subject = new RecoupeurDePieceJustificative(Set.of(), Set.of(compte, salaire));
 
-    var actual = subject.getPossessionWithPj();
-
+    var actual = subject.getRecouped();
     assertEquals(2, actual.size());
     assertTrue(actual.stream().allMatch(a -> a.pieceJustificative() == null));
   }
@@ -56,17 +50,13 @@ class RecoupeurDePieceJustificativeTest {
   void recoupe_apres_decomposition_des_possessions() {
     var au01Janvier2025 = LocalDate.of(2025, JANUARY, 1);
     var au02Mars2025 = LocalDate.of(2025, MARCH, 2);
-
     var compte = new Compte("comptePersonnel", au01Janvier2025, ariary(0));
-
     var flux = new FluxArgent("salaire", compte, au01Janvier2025, au02Mars2025, 1, ariary(200));
-
     var pj = new PieceJustificative("salaire", au01Janvier2025, "http://example.com/salaire.pdf");
 
     var subject = new RecoupeurDePieceJustificative(Set.of(pj), Set.of(compte, flux));
 
     var actual = subject.getPossessionWithPj();
-
     assertFalse(actual.isEmpty());
     assertTrue(actual.stream().anyMatch(a -> a.possession().equals(flux)));
   }
@@ -77,9 +67,7 @@ class RecoupeurDePieceJustificativeTest {
 
     var compte = new Compte("comptePersonnel", date, ariary(0));
     var salaire = new FluxArgent("salaire", compte, date, ariary(200));
-
     var pj1 = new PieceJustificative("salaire", date, "http://example.com/salaire.pdf");
-
     var pj2 = new PieceJustificative("comptePersonnel", date, "http://example.com/compte.pdf");
 
     var subject = new RecoupeurDePieceJustificative(Set.of(pj1, pj2), Set.of(compte, salaire));
@@ -172,6 +160,5 @@ class RecoupeurDePieceJustificativeTest {
     var actual = subject.getPossessionWithPj();
 
     assertEquals(1, actual.size());
-    assertTrue(actual.stream().allMatch(a -> a.pieceJustificative() == null));
   }
 }

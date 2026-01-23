@@ -1,16 +1,21 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.pages;
 
+import static java.util.stream.Collectors.toSet;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.AppBar.builtInUserInfoPanel;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.pages.PatriLangFilesPage.addImprevuButton;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.pages.RecoupementPage.PieceJustificativeFilter.TOUT;
 
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.File;
 import java.util.*;
 import java.util.List;
 import javax.swing.*;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import school.hei.patrimoine.modele.possession.Compte;
+import school.hei.patrimoine.modele.possession.pj.PieceJustificative;
 import school.hei.patrimoine.modele.recouppement.PossessionRecoupee;
 import school.hei.patrimoine.modele.recouppement.RecoupementStatus;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.Footer;
@@ -21,7 +26,9 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Nav
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.FileListCellRenderer;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.FileListModel;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.FileSideBar;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.recoupement.PieceJustificativeMatcher;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.recoupement.PossessionRecoupeeListPanel;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.recoupement.pj.PJRetriever;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.AsyncTask;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.CasSetSetter;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.Debouncer;
@@ -29,6 +36,7 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
 import school.hei.patrimoine.visualisation.swing.ihm.google.providers.PossessionRecoupeeProvider;
 import school.hei.patrimoine.visualisation.swing.ihm.google.providers.model.Pagination;
 
+@Slf4j
 public class RecoupementPage extends LazyPage {
   public static final String PAGE_NAME = "recoupement";
   public static final int RECOUPEMENT_ITEM_PER_PAGE = 50;
@@ -37,6 +45,8 @@ public class RecoupementPage extends LazyPage {
   private final State state;
 
   private final PossessionRecoupeeListPanel possessionRecoupeeListPanel;
+
+  private final PieceJustificativeMatcher pjMatcher = new PieceJustificativeMatcher();
 
   public RecoupementPage() {
     super(PAGE_NAME);
@@ -49,6 +59,8 @@ public class RecoupementPage extends LazyPage {
                 1,
                 "filterStatus",
                 PossessionRecoupeeFilterStatus.TOUT,
+                "filterPJ",
+                PieceJustificativeFilter.TOUT,
                 "pagination",
                 new Pagination(1, RECOUPEMENT_ITEM_PER_PAGE)));
 
@@ -56,7 +68,8 @@ public class RecoupementPage extends LazyPage {
 
     casSetSetter.addObserver(this::update);
     state.subscribe(
-        Set.of("filterStatus", "selectedFile", "pagination", "filterName"), this::update);
+        Set.of("filterStatus", "filterPJ", "selectedFile", "pagination", "filterName"),
+        this::update);
 
     setLayout(new BorderLayout());
   }
@@ -69,6 +82,42 @@ public class RecoupementPage extends LazyPage {
     addFooter();
   }
 
+  public enum PossessionRecoupeeFilterStatus {
+    TOUT("Tout"),
+    IMPREVU("Imprévu"),
+    NON_EXECUTE("Non Éxecuté"),
+    EXECUTE_AVEC_CORRECTION("Éxecuté avec correction"),
+    EXECUTE_SANS_CORRECTION("Éxecuté sans correction");
+
+    public final String label;
+
+    PossessionRecoupeeFilterStatus(String label) {
+      this.label = label;
+    }
+
+    @Override
+    public String toString() {
+      return label;
+    }
+  }
+
+  public enum PieceJustificativeFilter {
+    TOUT("Aucune"),
+    AVEC_PJ("Avec pj"),
+    SANS_PJ("Sans pj");
+
+    public final String label;
+
+    PieceJustificativeFilter(String label) {
+      this.label = label;
+    }
+
+    @Override
+    public String toString() {
+      return label;
+    }
+  }
+
   private void addAppBar() {
     var statusFilter = new JComboBox<>(PossessionRecoupeeFilterStatus.values());
     statusFilter.setSelectedItem(PossessionRecoupeeFilterStatus.TOUT);
@@ -76,6 +125,12 @@ public class RecoupementPage extends LazyPage {
     statusFilter.setCursor(new Cursor(Cursor.HAND_CURSOR));
     statusFilter.addActionListener(
         e -> state.update("filterStatus", statusFilter.getSelectedItem()));
+
+    var pjFilter = new JComboBox<>(PieceJustificativeFilter.values());
+    pjFilter.setSelectedItem(PieceJustificativeFilter.TOUT);
+    pjFilter.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
+    pjFilter.setCursor(new Cursor(Cursor.HAND_CURSOR));
+    pjFilter.addActionListener(e -> state.update("filterPJ", pjFilter.getSelectedItem()));
 
     var addImprevuButton = addImprevuButton(state);
     var nameFilter = getPlaceholderTextField();
@@ -85,6 +140,7 @@ public class RecoupementPage extends LazyPage {
             List.of(
                 new NavigateButton("Retour", "patrilang-files"),
                 statusFilter,
+                pjFilter,
                 addImprevuButton,
                 nameFilter),
             List.of(builtInUserInfoPanel()));
@@ -188,30 +244,47 @@ public class RecoupementPage extends LazyPage {
       return;
     }
 
+    var casFile = (File) state.get("selectedFile");
+
+    var pjsRetriever = new PJRetriever();
+    var pjs = pjsRetriever.apply(casFile);
+    var pjFilter = (PieceJustificativeFilter) state.get("filterPJ");
+
     AsyncTask.<List<PossessionRecoupee>>builder()
         .task(this::getFilteredPossessionRecoupees)
-        .onSuccess(possessionRecoupeeListPanel::update)
+        .onSuccess(
+            list -> {
+              Set<PossessionRecoupee> filtered =
+                  list.stream()
+                      .filter(pr -> keepAccordingToPJFilter(pr, pjs, pjFilter))
+                      .collect(toSet());
+
+              possessionRecoupeeListPanel.update(filtered, pjs);
+            })
         .withDialogLoading(false)
         .build()
         .execute();
   }
 
-  public enum PossessionRecoupeeFilterStatus {
-    TOUT("Tout"),
-    IMPREVU("Imprévu"),
-    NON_EXECUTE("Non Éxecuté"),
-    EXECUTE_AVEC_CORRECTION("Éxecuté avec correction"),
-    EXECUTE_SANS_CORRECTION("Éxecuté sans correction");
+  private boolean keepAccordingToPJFilter(
+      PossessionRecoupee possession,
+      Set<PieceJustificative> pieces,
+      PieceJustificativeFilter filter) {
 
-    public final String label;
-
-    PossessionRecoupeeFilterStatus(String label) {
-      this.label = label;
+    if (filter == TOUT) {
+      return true;
     }
 
-    @Override
-    public String toString() {
-      return label;
+    if (!possession.hasSupportingDocument()) {
+      return filter == PieceJustificativeFilter.SANS_PJ;
     }
+
+    var hasPJ = pjMatcher.findMatchingPiece(pieces, possession.possession().nom()) != null;
+
+    return switch (filter) {
+      case AVEC_PJ -> hasPJ;
+      case SANS_PJ -> !hasPJ;
+      default -> true;
+    };
   }
 }

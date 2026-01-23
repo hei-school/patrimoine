@@ -1,5 +1,6 @@
 package school.hei.patrimoine.patrilang.unit.visitors.pj;
 
+import static lombok.AccessLevel.PRIVATE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static school.hei.patrimoine.patrilang.modele.variable.VariableType.DATE;
@@ -22,8 +23,11 @@ class PieceJustificativeVisitorTest {
   private PatriLangPieceJustificativeVisitor subject;
   private UnitTestVisitor visitor;
 
-  @Getter private VariableExpressionVisitor expressionVisitor;
-  @Getter private VariableDateVisitor variableDateVisitor;
+  @Getter(PRIVATE)
+  private VariableDateVisitor variableDateVisitor;
+
+  @Getter(PRIVATE)
+  private VariableExpressionVisitor expressionVisitor;
 
   @BeforeEach
   void setup() {

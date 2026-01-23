@@ -22,6 +22,12 @@ public record PossessionRecoupee(
     return somme;
   }
 
+  public boolean hasSupportingDocument() {
+    return status == RecoupementStatus.IMPREVU
+        || status == RecoupementStatus.EXECUTE_SANS_CORRECTION
+        || status == RecoupementStatus.EXECUTE_AVEC_CORRECTION;
+  }
+
   public Argent ecartValeurAvecRealises() {
     return valeurRealisee().minus(prevu.valeur(), prevu.t());
   }
