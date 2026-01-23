@@ -61,6 +61,43 @@ class FluxVariableArgentVisitorTest {
   }
 
   @Test
+  void parse_entrer_flux_argent_without_date_fin_with_type_fec() {
+    var input1 =
+        """
+    * `PRODUIT_fluxArgentEntrer` Dates:ajd, entrer 500000Ar vers Trésoreries:comptePersonnel
+""";
+
+    var input2 =
+        """
+            * `AUTRE_fluxArgentEntrer` Dates:ajd, entrer 500000Ar vers Trésoreries:comptePersonnel
+        """;
+
+    var input3 =
+        """
+    * `IMMOBILISATION_fluxArgentEntrer` Dates:ajd, entrer 500000Ar vers Trésoreries:comptePersonnel
+""";
+    var expected1 =
+        new FluxArgent("PRODUIT_fluxArgentEntrer", COMPTE_PERSONNEL, AJD, ariary(500_000), PRODUIT);
+    var expected2 =
+        new FluxArgent("AUTRE_fluxArgentEntrer", COMPTE_PERSONNEL, AJD, ariary(500_000), AUTRE);
+    var expected3 =
+        new FluxArgent(
+            "IMMOBILISATION_fluxArgentEntrer",
+            COMPTE_PERSONNEL,
+            AJD,
+            ariary(500_000),
+            IMMOBILISATION);
+
+    FluxArgent actual1 = visitor.visit(input1, PatriLangParser::fluxArgentEntrer);
+    FluxArgent actual2 = visitor.visit(input2, PatriLangParser::fluxArgentEntrer);
+    FluxArgent actual3 = visitor.visit(input3, PatriLangParser::fluxArgentEntrer);
+
+    assertFluxArgentEquals(expected1, actual1);
+    assertFluxArgentEquals(expected2, actual2);
+    assertFluxArgentEquals(expected3, actual3);
+  }
+
+  @Test
   void parse_sortir_flux_argent_without_date_fin() {
     var formatter = DateTimeFormatter.ofPattern("yyyy_MM_dd");
     var input =
@@ -140,24 +177,20 @@ class FluxVariableArgentVisitorTest {
   }
 
   @Test
-  void parse_flux_argent_with_date_fin_du_mois_avec_type_fec() {
+  void parse_sortir_flux_argent_with_date_fin_du_mois_avec_type_fec() {
     var formatter = DateTimeFormatter.ofPattern("yyyy_MM_dd");
+
     var input1 =
-        """
-    * `IMMO fluxArgentSortir + Dates:ajd` Dates:ajd, sortir 500000Ar depuis Trésoreries:comptePersonnel, jusqu'à DATE_MAX tous les fin du mois
-""";
-
-    var input2 =
-        """
-    * `PRD fluxArgentSortir + Dates:ajd` Dates:ajd, sortir 500000Ar depuis Trésoreries:comptePersonnel, jusqu'à DATE_MAX tous les fin du mois
-""";
-
-    var input3 =
         """
     * `CCA fluxArgentSortir + Dates:ajd` Dates:ajd, sortir 500000Ar depuis Trésoreries:comptePersonnel, jusqu'à DATE_MAX tous les fin du mois
 """;
 
-    var input4 =
+    var input2 =
+        """
+    * `AUTRE fluxArgentSortir + Dates:ajd` Dates:ajd, sortir 500000Ar depuis Trésoreries:comptePersonnel jusqu'à DATE_MAX tous les fin du mois
+""";
+
+    var input3 =
         """
     * `CHG fluxArgentSortir + Dates:ajd` Dates:ajd, sortir 500000Ar depuis Trésoreries:comptePersonnel, jusqu'à DATE_MAX tous les fin du mois
 """;
@@ -170,7 +203,7 @@ class FluxVariableArgentVisitorTest {
             LocalDate.MAX,
             31,
             ariary(-500_000),
-            IMMOBILISATION);
+            CCA);
 
     var expected2 =
         new FluxArgent(
@@ -180,19 +213,9 @@ class FluxVariableArgentVisitorTest {
             LocalDate.MAX,
             31,
             ariary(-500_000),
-            PRODUIT);
+            AUTRE);
 
     var expected3 =
-        new FluxArgent(
-            "fluxArgentSortir" + AJD.format(formatter),
-            COMPTE_PERSONNEL,
-            AJD,
-            LocalDate.MAX,
-            31,
-            ariary(-500_000),
-            CCA);
-
-    var expected4 =
         new FluxArgent(
             "fluxArgentSortir" + AJD.format(formatter),
             COMPTE_PERSONNEL,
@@ -205,7 +228,79 @@ class FluxVariableArgentVisitorTest {
     FluxArgent actual1 = visitor.visit(input1, PatriLangParser::fluxArgentSortir);
     FluxArgent actual2 = visitor.visit(input2, PatriLangParser::fluxArgentSortir);
     FluxArgent actual3 = visitor.visit(input3, PatriLangParser::fluxArgentSortir);
-    FluxArgent actual4 = visitor.visit(input4, PatriLangParser::fluxArgentSortir);
+
+    assertFluxArgentEquals(expected1, actual1);
+    assertFluxArgentEquals(expected2, actual2);
+    assertFluxArgentEquals(expected3, actual3);
+  }
+
+  @Test
+  void parse_entrer_flux_argent_with_date_fin_du_mois_avec_type_fec() {
+    var formatter = DateTimeFormatter.ofPattern("yyyy_MM_dd");
+    var input1 =
+        """
+    * `IMMO fluxArgentEntrer + Dates:ajd` Dates:ajd, entrer 500000Ar vers Trésoreries:comptePersonnel, jusqu'à DATE_MAX tous les fin du mois
+""";
+
+    var input2 =
+        """
+    * `PRD fluxArgentEntrer + Dates:ajd` Dates:ajd, entrer 500000Ar vers Trésoreries:comptePersonnel, jusqu'à DATE_MAX tous les fin du mois
+""";
+
+    var input3 =
+        """
+    * `CCA fluxArgentEntrer + Dates:ajd` Dates:ajd, entrer 500000Ar vers Trésoreries:comptePersonnel, jusqu'à DATE_MAX tous les fin du mois
+""";
+
+    var input4 =
+        """
+    * `CHG fluxArgentEntrer + Dates:ajd` Dates:ajd, entrer 500000Ar vers Trésoreries:comptePersonnel, jusqu'à DATE_MAX tous les fin du mois
+""";
+
+    var expected1 =
+        new FluxArgent(
+            "fluxArgentEntrer" + AJD.format(formatter),
+            COMPTE_PERSONNEL,
+            AJD,
+            LocalDate.MAX,
+            31,
+            ariary(500_000),
+            IMMOBILISATION);
+
+    var expected2 =
+        new FluxArgent(
+            "fluxArgentEntrer" + AJD.format(formatter),
+            COMPTE_PERSONNEL,
+            AJD,
+            LocalDate.MAX,
+            31,
+            ariary(500_000),
+            PRODUIT);
+
+    var expected3 =
+        new FluxArgent(
+            "fluxArgentEntrer" + AJD.format(formatter),
+            COMPTE_PERSONNEL,
+            AJD,
+            LocalDate.MAX,
+            31,
+            ariary(500_000),
+            CCA);
+
+    var expected4 =
+        new FluxArgent(
+            "fluxArgentEntrer" + AJD.format(formatter),
+            COMPTE_PERSONNEL,
+            AJD,
+            LocalDate.MAX,
+            31,
+            ariary(500_000),
+            CHARGE);
+
+    FluxArgent actual1 = visitor.visit(input1, PatriLangParser::fluxArgentEntrer);
+    FluxArgent actual2 = visitor.visit(input2, PatriLangParser::fluxArgentEntrer);
+    FluxArgent actual3 = visitor.visit(input3, PatriLangParser::fluxArgentEntrer);
+    FluxArgent actual4 = visitor.visit(input4, PatriLangParser::fluxArgentEntrer);
 
     assertFluxArgentEquals(expected1, actual1);
     assertFluxArgentEquals(expected2, actual2);
