@@ -9,6 +9,8 @@ public class FluxArgentPatriLangGenerator implements PatriLangGenerator<FluxArge
   private final ArgentPatriLangGenerator argentGenerator;
   private final VariableTypePatriLangGenerator variableTypeGenerator;
 
+  private static final String SEPARATEUR_ID = "_";
+
   public FluxArgentPatriLangGenerator() {
     this.idGenerator = new IdPatriLangGenerator();
     this.dateGenerator = new DatePatriLangGenerator();
@@ -18,30 +20,29 @@ public class FluxArgentPatriLangGenerator implements PatriLangGenerator<FluxArge
 
   @Override
   public String apply(FluxArgent fluxArgent) {
-    if (fluxArgent.getFluxMensuel().lt(0)) {
-      return sortir(fluxArgent);
+    var isSortie = fluxArgent.getFluxMensuel().lt(0);
+
+    var nom = buildNom(fluxArgent);
+    var date = dateGenerator.apply(fluxArgent.t());
+    var type = variableTypeGenerator.apply(fluxArgent.getCompte());
+    var compte = fluxArgent.getCompte().nom();
+
+    if (isSortie) {
+      var argent = argentGenerator.apply(fluxArgent.getFluxMensuel().mult(-1));
+      return String.format("* `%s`, %s sortir %s depuis %s:%s", nom, date, argent, type, compte);
     }
 
-    return entrer(fluxArgent);
-  }
-
-  private String sortir(FluxArgent fluxArgent) {
-    var nom = idGenerator.apply(fluxArgent.nom());
-    var date = dateGenerator.apply(fluxArgent.t());
-    var argent = argentGenerator.apply(fluxArgent.getFluxMensuel().mult(-1));
-    var type = variableTypeGenerator.apply(fluxArgent.getCompte());
-    var compte = fluxArgent.getCompte().nom();
-
-    return String.format("* `%s`, %s sortir %s depuis %s:%s", nom, date, argent, type, compte);
-  }
-
-  private String entrer(FluxArgent fluxArgent) {
-    var nom = fluxArgent.nom();
-    var compte = fluxArgent.getCompte().nom();
-    var date = dateGenerator.apply(fluxArgent.t());
     var argent = argentGenerator.apply(fluxArgent.getFluxMensuel());
-    var type = variableTypeGenerator.apply(fluxArgent.getCompte());
-
     return String.format("* `%s`, %s entrer %s vers %s:%s", nom, date, argent, type, compte);
+  }
+
+  private String buildNom(FluxArgent fluxArgent) {
+    if (fluxArgent.getTypeFEC() == null) {
+      return idGenerator.apply(fluxArgent.nom());
+    }
+
+    var type = fluxArgent.getTypeFEC();
+    var nomTypé = type + SEPARATEUR_ID + fluxArgent.nom();
+    return idGenerator.apply(nomTypé);
   }
 }

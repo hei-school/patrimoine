@@ -19,6 +19,8 @@ public final class FluxArgent extends Possession {
   private final Argent fluxMensuel;
   private final int dateOperation;
 
+  private final TypeFEC typeComptableFEC;
+
   public FluxArgent(
       String nom,
       Compte compte,
@@ -34,6 +36,39 @@ public final class FluxArgent extends Possession {
     this.fin = fin;
     this.fluxMensuel = fluxMensuel;
     this.dateOperation = dateOperation;
+    this.typeComptableFEC = fluxMensuel.lt(0) ? TypeFEC.CHARGE : TypeFEC.PRODUIT;
+  }
+
+  public FluxArgent(
+      String nom,
+      Compte compte,
+      LocalDate debut,
+      LocalDate fin,
+      int dateOperation,
+      Argent fluxMensuel,
+      TypeFEC typeComptableFEC) {
+    super(nom, debut, new Argent(0, fluxMensuel.devise()));
+    this.compte = compte;
+    this.compte.addFinancés(this);
+
+    this.debut = debut;
+    this.fin = fin;
+    this.fluxMensuel = fluxMensuel;
+    this.dateOperation = dateOperation;
+    this.typeComptableFEC = typeComptableFEC;
+  }
+
+  public FluxArgent(
+      String nom, Compte compte, LocalDate date, Argent montant, TypeFEC typeComptableFEC) {
+    super(nom, date, new Argent(0, montant.devise()));
+    this.compte = compte;
+    this.compte.addFinancés(this);
+
+    this.debut = date;
+    this.fin = date;
+    this.fluxMensuel = montant;
+    this.dateOperation = date.getDayOfMonth();
+    this.typeComptableFEC = typeComptableFEC;
   }
 
   public FluxArgent(String nom, Compte compte, LocalDate date, Argent montant) {
@@ -71,5 +106,10 @@ public final class FluxArgent extends Possession {
   @Override
   public TypeAgregat typeAgregat() {
     return FLUX;
+  }
+
+  @Override
+  public TypeFEC getTypeFEC() {
+    return typeComptableFEC;
   }
 }

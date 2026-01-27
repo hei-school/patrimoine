@@ -91,6 +91,16 @@ MOT_OBJECTIF_DE
 ENTETE_TRESORERIES
     :   'Trésoreries'
     ;
+
+/* --------------------  Types de Flux d'argent  --------------------  */
+TYPE_FEC
+    :   ('Immobilisation'|'IMMO')
+    |   ('Charge'|'CHG')
+    |   ('Produit'|'PRD')
+    |   ('CCA'|'cca')
+    |   ('autre'|'AUTRE')
+    ;
+
 MOT_CONTIENT
     :   'contient'
     ;

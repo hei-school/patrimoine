@@ -289,7 +289,7 @@ jourPart
     ;
 
 id
-    : BACKTICK text (PLUS variable)? BACKTICK
+    : BACKTICK TYPE_FEC? text (PLUS variable)? BACKTICK
     ;
 
 date
