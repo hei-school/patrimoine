@@ -177,7 +177,7 @@ class FluxVariableArgentVisitorTest {
   }
 
   @Test
-  void parse_sortir_flux_argent_with_date_fin_du_mois_avec_type_fec() {
+  void parse_sortir_flux_argent_avec_date_fin_du_mois_type_fec() {
     var formatter = DateTimeFormatter.ofPattern("yyyy_MM_dd");
 
     var input1 =
@@ -235,7 +235,7 @@ class FluxVariableArgentVisitorTest {
   }
 
   @Test
-  void parse_entrer_flux_argent_with_date_fin_du_mois_avec_type_fec() {
+  void parse_entrer_flux_argent_avec_date_fin_du_mois_type_fec() {
     var formatter = DateTimeFormatter.ofPattern("yyyy_MM_dd");
     var input1 =
         """
