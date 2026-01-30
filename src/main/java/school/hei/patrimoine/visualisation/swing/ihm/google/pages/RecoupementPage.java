@@ -1,7 +1,9 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.pages;
 
 import static java.util.stream.Collectors.toSet;
+import static school.hei.patrimoine.modele.fec.CsvExporter.exportCsv;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.AppBar.builtInUserInfoPanel;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.MessageDialog.showError;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.pages.PatriLangFilesPage.addImprevuButton;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.pages.RecoupementPage.PieceJustificativeFilter.TOUT;
 
@@ -9,6 +11,7 @@ import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.File;
+import java.io.IOException;
 import java.util.*;
 import java.util.List;
 import javax.swing.*;
@@ -22,6 +25,7 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.component.Footer;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.PlaceholderTextField;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.LazyPage;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.AppBar;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.NavigateButton;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.FileListCellRenderer;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.FileListModel;
@@ -46,7 +50,8 @@ public class RecoupementPage extends LazyPage {
 
   private final PossessionRecoupeeListPanel possessionRecoupeeListPanel;
 
-  private final PieceJustificativeMatcher pjMatcher = new PieceJustificativeMatcher();
+  private static final PieceJustificativeMatcher pjMatcher = new PieceJustificativeMatcher();
+  private static final PJRetriever pjRetriever = new PJRetriever();
 
   public RecoupementPage() {
     super(PAGE_NAME);
@@ -142,7 +147,8 @@ public class RecoupementPage extends LazyPage {
                 statusFilter,
                 pjFilter,
                 addImprevuButton,
-                nameFilter),
+                nameFilter,
+                addExportButton()),
             List.of(builtInUserInfoPanel()));
 
     add(appBar, BorderLayout.NORTH);
@@ -246,8 +252,7 @@ public class RecoupementPage extends LazyPage {
 
     var casFile = (File) state.get("selectedFile");
 
-    var pjsRetriever = new PJRetriever();
-    var pjs = pjsRetriever.apply(casFile);
+    var pjs = pjRetriever.apply(casFile);
     var pjFilter = (PieceJustificativeFilter) state.get("filterPJ");
 
     AsyncTask.<List<PossessionRecoupee>>builder()
@@ -264,6 +269,24 @@ public class RecoupementPage extends LazyPage {
         .withDialogLoading(false)
         .build()
         .execute();
+  }
+
+  private Button addExportButton() {
+    return new Button(
+        "Exporter csv",
+        e -> {
+          try {
+            var casFile = (File) state.get("selectedFile");
+            if (casFile == null) {
+              showError("Erreur", "Veuillez selectionner un fichier avant l'exportation.");
+              return;
+            }
+            var pjs = pjRetriever.apply(casFile);
+            exportCsv(getFilteredPossessionRecoupees(), pjs);
+          } catch (IOException ex) {
+            throw new RuntimeException(ex);
+          }
+        });
   }
 
   private boolean keepAccordingToPJFilter(
