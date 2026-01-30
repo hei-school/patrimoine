@@ -85,29 +85,29 @@ public class CsvExporter {
 
   private static String[] getFecHeader() {
     return new String[] {
-            "JournalCode",
-            "JournalLib",
-            "EcritureNum",
-            "EcritureDate",
-            "CompteNum",
-            "CompteLib",
-            "CompAuxNum",
-            "CompAuxLib",
-            "PieceRef",
-            "PieceDate",
-            "EcritureLib",
-            "Debit",
-            "Credit",
-            "EcritureLet",
-            "DateLet",
-            "ValidDate",
-            "Montantdevise",
-            "Idevise"
+      "JournalCode",
+      "JournalLib",
+      "EcritureNum",
+      "EcritureDate",
+      "CompteNum",
+      "CompteLib",
+      "CompAuxNum",
+      "CompAuxLib",
+      "PieceRef",
+      "PieceDate",
+      "EcritureLib",
+      "Debit",
+      "Credit",
+      "EcritureLet",
+      "DateLet",
+      "ValidDate",
+      "Montantdevise",
+      "Idevise"
     };
   }
 
   private static String[] getFecLine(
-          PossessionRecoupee possessionRecoupee, Set<PieceJustificative> pjs, int sequence) {
+      PossessionRecoupee possessionRecoupee, Set<PieceJustificative> pjs, int sequence) {
     Possession possession = possessionRecoupee.possession();
 
     var currentjournalCode = JN;
@@ -139,28 +139,28 @@ public class CsvExporter {
     var dateLet = "";
     var validDate = "";
     var montantDevise =
-            formatFECAmount(valeurRealise.convertir(Devise.MGA, LocalDate.now()).montant());
+        formatFECAmount(valeurRealise.convertir(Devise.MGA, LocalDate.now()).montant());
     var idevise = possessionRecoupee.valeurRealisee().devise().codeIso();
 
     return new String[] {
-            journalCode,
-            journalLib,
-            ecritureNum,
-            ecritureDate,
-            compteNum,
-            compteLib,
-            compAuxNum,
-            compAuxLib,
-            pieceRef,
-            pieceDate,
-            ecritureLib,
-            debit,
-            credit,
-            ecritureLet,
-            dateLet,
-            validDate,
-            montantDevise,
-            idevise
+      journalCode,
+      journalLib,
+      ecritureNum,
+      ecritureDate,
+      compteNum,
+      compteLib,
+      compAuxNum,
+      compAuxLib,
+      pieceRef,
+      pieceDate,
+      ecritureLib,
+      debit,
+      credit,
+      ecritureLet,
+      dateLet,
+      validDate,
+      montantDevise,
+      idevise
     };
   }
 

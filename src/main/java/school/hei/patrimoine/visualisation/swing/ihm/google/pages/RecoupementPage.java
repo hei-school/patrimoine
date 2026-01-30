@@ -146,8 +146,8 @@ public class RecoupementPage extends LazyPage {
                 new NavigateButton("Retour", "patrilang-files"),
                 statusFilter,
                 pjFilter,
-                addImprevuButton,
                 nameFilter,
+                addImprevuButton,
                 addExportButton()),
             List.of(builtInUserInfoPanel()));
 
