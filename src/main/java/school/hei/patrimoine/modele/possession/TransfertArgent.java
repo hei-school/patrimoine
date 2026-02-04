@@ -4,10 +4,20 @@ import static school.hei.patrimoine.modele.possession.TypeAgregat.FLUX;
 
 import java.time.LocalDate;
 import java.util.Set;
+import lombok.Getter;
+import lombok.experimental.Accessors;
 import school.hei.patrimoine.modele.Argent;
 
 public final class TransfertArgent extends Possession {
   private final GroupePossession transfertCommeGroupe;
+
+  @Getter
+  @Accessors(fluent = true)
+  private final Compte depuisCompte;
+
+  @Getter
+  @Accessors(fluent = true)
+  private final Compte versCompte;
 
   public TransfertArgent(
       String nom,
@@ -18,6 +28,8 @@ public final class TransfertArgent extends Possession {
       int dateOperation,
       Argent fluxMensuel) {
     super(nom, debut, new Argent(0, fluxMensuel.devise()));
+    this.depuisCompte = depuisCompte;
+    this.versCompte = versCompte;
     this.transfertCommeGroupe =
         new GroupePossession(
             nom,
