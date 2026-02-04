@@ -8,6 +8,7 @@ import lombok.ToString;
 import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.Devise;
 import school.hei.patrimoine.modele.objectif.Objectivable;
+import school.hei.patrimoine.modele.possession.enumFEC.RegionComptable;
 
 @ToString
 @EqualsAndHashCode(callSuper = false)
@@ -64,6 +65,11 @@ public abstract sealed class Possession extends Objectivable
   public abstract TypeAgregat typeAgregat();
 
   public abstract TypeFEC getTypeFEC();
+
+  public String getTypeFECCodeRegion() {
+    var regionCode = RegionComptable.detecterRegion();
+    return FECCodeResolver.resolve(getTypeFEC(), regionCode);
+  }
 
   @Override
   public String nom() {
