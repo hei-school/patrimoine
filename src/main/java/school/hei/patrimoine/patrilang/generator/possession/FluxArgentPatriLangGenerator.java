@@ -9,8 +9,6 @@ public class FluxArgentPatriLangGenerator implements PatriLangGenerator<FluxArge
   private final ArgentPatriLangGenerator argentGenerator;
   private final VariableTypePatriLangGenerator variableTypeGenerator;
 
-  private static final String SEPARATEUR_ID = "_";
-
   public FluxArgentPatriLangGenerator() {
     this.idGenerator = new IdPatriLangGenerator();
     this.dateGenerator = new DatePatriLangGenerator();
@@ -22,7 +20,7 @@ public class FluxArgentPatriLangGenerator implements PatriLangGenerator<FluxArge
   public String apply(FluxArgent fluxArgent) {
     var isSortie = fluxArgent.getFluxMensuel().lt(0);
 
-    var nom = buildNom(fluxArgent);
+    var nom = idGenerator.apply(fluxArgent.nom());
     var date = dateGenerator.apply(fluxArgent.t());
     var type = variableTypeGenerator.apply(fluxArgent.getCompte());
     var compte = fluxArgent.getCompte().nom();
@@ -34,15 +32,5 @@ public class FluxArgentPatriLangGenerator implements PatriLangGenerator<FluxArge
 
     var argent = argentGenerator.apply(fluxArgent.getFluxMensuel());
     return String.format("* `%s`, %s entrer %s vers %s:%s", nom, date, argent, type, compte);
-  }
-
-  private String buildNom(FluxArgent fluxArgent) {
-    if (fluxArgent.getTypeFEC() == null) {
-      return idGenerator.apply(fluxArgent.nom());
-    }
-
-    var type = fluxArgent.getTypeFEC();
-    var nomTypé = type + SEPARATEUR_ID + fluxArgent.nom();
-    return idGenerator.apply(nomTypé);
   }
 }
