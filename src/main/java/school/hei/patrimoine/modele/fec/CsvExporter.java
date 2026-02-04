@@ -1,5 +1,6 @@
 package school.hei.patrimoine.modele.fec;
 
+import static school.hei.patrimoine.modele.decomposeur.PossessionCompteResolver.resolve;
 import static school.hei.patrimoine.modele.fec.JournalCode.*;
 
 import com.opencsv.CSVWriter;
@@ -12,7 +13,7 @@ import java.util.Optional;
 import java.util.Set;
 import javax.swing.*;
 import school.hei.patrimoine.modele.Devise;
-import school.hei.patrimoine.modele.possession.Possession;
+import school.hei.patrimoine.modele.possession.*;
 import school.hei.patrimoine.modele.possession.pj.PieceJustificative;
 import school.hei.patrimoine.modele.recouppement.PossessionRecoupee;
 
@@ -22,9 +23,10 @@ public class CsvExporter {
   private static final String DOWNLOADS_PATH = "Downloads";
   private static final String TELECHARGEMENTS_PATH = "Téléchargements";
 
-  public static void exportCsv(List<PossessionRecoupee> possessions, Set<PieceJustificative> pjs)
+  public static void exportCsv(
+      List<PossessionRecoupee> possessions, Set<PieceJustificative> pjs, File selectedFile)
       throws IOException {
-    Optional<File> outputFile = getOutputFile();
+    Optional<File> outputFile = getOutputFile(selectedFile);
     if (outputFile.isEmpty()) return;
 
     try (Writer writer =
@@ -51,11 +53,12 @@ public class CsvExporter {
     }
   }
 
-  private static Optional<File> getOutputFile() {
+  private static Optional<File> getOutputFile(File selectedFile) {
     var fileChooser = new JFileChooser();
     fileChooser.setDialogTitle("Exporter le fichier CSV");
     fileChooser.setCurrentDirectory(getDefaultDir());
-    fileChooser.setSelectedFile(new File("FEC.csv"));
+    var baseName = selectedFile.getName().split("\\.", 2)[0];
+    fileChooser.setSelectedFile(new File(baseName + CSV_FILE_EXTENSION));
 
     if (fileChooser.showSaveDialog(null) != JFileChooser.APPROVE_OPTION) {
       return Optional.empty();
@@ -117,9 +120,11 @@ public class CsvExporter {
     var ecritureNum = journalCode + String.format("%03d", sequence);
     var ecritureDate = formatFECDate(possession.t());
     var compteNum = "";
-    var compteLib = possession.nom();
+
+    var comptes = resolve(possession);
+    var compteLib = comptes.comptePrincipal().nom();
     var compAuxNum = "";
-    var compAuxLib = "";
+    var compAuxLib = comptes.compteAuxiliaire() != null ? comptes.compteAuxiliaire().nom() : "";
     var pj = getPj(possession, pjs);
     var pieceRef = pj != null ? pj.id() : "";
     var pieceDate = pj != null ? formatFECDate(pj.date()) : "";

@@ -282,7 +282,7 @@ public class RecoupementPage extends LazyPage {
               return;
             }
             var pjs = pjRetriever.apply(casFile);
-            exportCsv(getFilteredPossessionRecoupees(), pjs);
+            exportCsv(getFilteredPossessionRecoupees(), pjs, casFile);
           } catch (IOException ex) {
             throw new RuntimeException(ex);
           }
