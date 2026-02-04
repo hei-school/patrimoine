@@ -124,10 +124,10 @@ public class CsvExporter {
     var journalLib = currentjournalCode.getJournalLib();
     var ecritureNum = journalCode + String.format("%03d", sequence);
     var ecritureDate = formatFECDate(possession.t());
-    var compteNum = "";
 
     var comptes = resolve(possession);
     var compteLib = getCompteLib(comptes, isCreditor);
+    var compteNum = possession.getTypeFEC().abrev() + possession.getTypeFECCodeRegion();
     var compAuxNum = "";
     var compAuxLib = "";
     var pj = getPj(possession, pjs);
