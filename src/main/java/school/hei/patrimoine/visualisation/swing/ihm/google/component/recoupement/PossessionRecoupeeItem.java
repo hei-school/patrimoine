@@ -10,6 +10,7 @@ import school.hei.patrimoine.modele.possession.pj.PieceJustificative;
 import school.hei.patrimoine.modele.recouppement.PossessionRecoupee;
 import school.hei.patrimoine.modele.recouppement.RecoupementStatus;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.html.LinkOpener;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.formatter.ArgentFormatter;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.formatter.DateFormatter;
@@ -81,13 +82,11 @@ public class PossessionRecoupeeItem extends JPanel {
 
     title.addHyperlinkListener(
         e -> {
-          if (e.getEventType() == ACTIVATED) {
-            try {
-              java.awt.Desktop.getDesktop().browse(e.getURL().toURI());
-            } catch (Exception ex) {
-              ex.printStackTrace();
-            }
+          if (e.getEventType() != ACTIVATED) {
+            return;
           }
+
+          new LinkOpener().accept(e.getURL().toString());
         });
 
     add(title, BorderLayout.WEST);
