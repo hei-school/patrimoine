@@ -133,8 +133,12 @@ public class CsvExporter {
     var pj = getPj(possession, pjs);
     var pieceRef = pj != null ? pj.id() : "";
     var pieceDate = pj != null ? formatFECDate(pj.date()) : "";
-    var ecritureLib = "";
-
+    var ecritureLib =
+        possession
+            .nom()
+            .replaceFirst("^" + possession.getTypeFEC().name() + "_", "")
+            .replaceFirst("^" + possession.getTypeFEC().abrev() + "_", "")
+            .replaceFirst("(\\d{4}_\\d{2}_\\d{2})$", "");
     var valeurRealise = possessionRecoupee.valeurRealisee().convertir(Devise.EUR, LocalDate.now());
     var debit = "";
     var credit = "";
