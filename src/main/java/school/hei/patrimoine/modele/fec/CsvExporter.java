@@ -13,6 +13,7 @@ import java.util.Optional;
 import java.util.Set;
 import javax.swing.*;
 import school.hei.patrimoine.modele.Devise;
+import school.hei.patrimoine.modele.decomposeur.PossessionCompteResolver.Comptes;
 import school.hei.patrimoine.modele.possession.*;
 import school.hei.patrimoine.modele.possession.pj.PieceJustificative;
 import school.hei.patrimoine.modele.recouppement.PossessionRecoupee;
@@ -47,7 +48,8 @@ public class CsvExporter {
       for (PossessionRecoupee p : possessions) {
         if (p.ecartValeurAvecRealises().montant() != 0) continue;
 
-        csvWriter.writeNext(getFecLine(p, pjs, sequence));
+        csvWriter.writeNext(getFecLine(p, pjs, sequence, false));
+        csvWriter.writeNext(getFecLine(p, pjs, sequence, true));
         sequence++;
       }
     }
@@ -110,7 +112,10 @@ public class CsvExporter {
   }
 
   private static String[] getFecLine(
-      PossessionRecoupee possessionRecoupee, Set<PieceJustificative> pjs, int sequence) {
+      PossessionRecoupee possessionRecoupee,
+      Set<PieceJustificative> pjs,
+      int sequence,
+      boolean isCreditor) {
     Possession possession = possessionRecoupee.possession();
 
     var currentjournalCode = JN;
@@ -122,9 +127,9 @@ public class CsvExporter {
     var compteNum = "";
 
     var comptes = resolve(possession);
-    var compteLib = comptes.comptePrincipal().nom();
+    var compteLib = getCompteLib(comptes, isCreditor);
     var compAuxNum = "";
-    var compAuxLib = comptes.compteAuxiliaire() != null ? comptes.compteAuxiliaire().nom() : "";
+    var compAuxLib = "";
     var pj = getPj(possession, pjs);
     var pieceRef = pj != null ? pj.id() : "";
     var pieceDate = pj != null ? formatFECDate(pj.date()) : "";
@@ -134,10 +139,10 @@ public class CsvExporter {
     var debit = "";
     var credit = "";
     var amount = valeurRealise.montant();
-    if (amount < 0) {
-      debit = formatFECAmount(amount);
-    } else {
+    if (isCreditor) {
       credit = formatFECAmount(amount);
+    } else {
+      debit = formatFECAmount(amount);
     }
 
     var ecritureLet = "";
@@ -192,5 +197,12 @@ public class CsvExporter {
 
   private static String formatFECAmount(double m) {
     return String.format(Locale.US, "%.2f", Math.abs(m));
+  }
+
+  private static String getCompteLib(Comptes comptes, boolean isCreditor) {
+    if (isCreditor) {
+      return comptes.compteCréditeur() != null ? comptes.compteCréditeur().nom() : "";
+    }
+    return comptes.compteDébiteur() != null ? comptes.compteDébiteur().nom() : "";
   }
 }
