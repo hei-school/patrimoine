@@ -2,6 +2,7 @@ package school.hei.patrimoine.visualisation.swing.ihm.google;
 
 import static java.awt.Toolkit.getDefaultToolkit;
 import static javax.swing.SwingUtilities.invokeLater;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.config.EnvironmentConfig.isOnelineMode;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.PatriLangStagingFileManager.getStagedDoneFiles;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.PatriLangStagingFileManager.getStagedPlannedFiles;
 
@@ -52,11 +53,15 @@ public class PatriLangViewer extends App {
 
   @Override
   protected String defaultPageName() {
+    if (!isOnelineMode()) return PatriLangFilesPage.PAGE_NAME;
     return LoginPage.PAGE_NAME;
   }
 
   @Override
   protected Set<Page> pages() {
+    if (!isOnelineMode()) {
+      return Set.of(new PatriLangFilesPage(), new RecoupementPage());
+    }
     return Set.of(
         new LoginPage(),
         new SubmitLinkPage(),
@@ -68,8 +73,10 @@ public class PatriLangViewer extends App {
   public static void main(String[] args) {
     App.setup();
     FlatLightLaf.setup();
-    GoogleApiUtilities.setup();
-    GoogleLinkListDownloader.setup();
+    if (isOnelineMode()) {
+      GoogleApiUtilities.setup();
+      GoogleLinkListDownloader.setup();
+    }
     invokeLater(PatriLangViewer::new);
   }
 }

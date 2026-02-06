@@ -3,6 +3,8 @@ package school.hei.patrimoine.visualisation.swing.ihm.google.pages;
 import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
 import static school.hei.patrimoine.patrilang.PatriLangTranspiler.TOUT_CAS_FILE_EXTENSION;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.AppBar.*;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.builtin.SaveAndSyncFileButton.simpleSaveButton;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.config.EnvironmentConfig.isOnelineMode;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.MessageDialog.showError;
 
 import java.awt.*;
@@ -100,18 +102,22 @@ public class PatriLangFilesPage extends LazyPage {
         new AppBar(
             List.of(
                 builtInViewModeSelect(state),
-                new SaveAndSyncFileButton(
-                    state,
-                    htmlViewer,
-                    () -> {
-                      getCommentSideBar().refreshCommentsCache();
-                      return null;
-                    }),
+                !isOnelineMode()
+                    ? simpleSaveButton(state, htmlViewer)
+                    : new SaveAndSyncFileButton(
+                        state,
+                        htmlViewer,
+                        () -> {
+                          getCommentSideBar().refreshCommentsCache();
+                          return null;
+                        }),
                 evolutionGraphicButton(),
                 recoupementButton(),
                 addImprevuButton,
                 addSearchTextBar()),
-            List.of(builtInFontSizeControllerButton(state), builtInUserInfoPanel()));
+            !isOnelineMode()
+                ? List.of(builtInFontSizeControllerButton(state))
+                : List.of(builtInFontSizeControllerButton(state), builtInUserInfoPanel()));
 
     add(appBar, BorderLayout.NORTH);
   }
@@ -120,7 +126,10 @@ public class PatriLangFilesPage extends LazyPage {
     var horizontalSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
     horizontalSplit.setLeftComponent(new FileSideBar(state));
 
-    this.commentSideBar = new CommentSideBar(state);
+    if (isOnelineMode()) {
+      this.commentSideBar = new CommentSideBar(state);
+    }
+
     var rightSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
     rightSplit.setLeftComponent(htmlViewer.toScrollPane());
     rightSplit.setRightComponent(commentSideBar);

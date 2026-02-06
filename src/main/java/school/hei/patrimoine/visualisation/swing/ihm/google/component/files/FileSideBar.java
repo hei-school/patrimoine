@@ -2,6 +2,7 @@ package school.hei.patrimoine.visualisation.swing.ihm.google.component.files;
 
 import static java.util.Objects.requireNonNull;
 import static school.hei.patrimoine.patrilang.PatriLangTranspiler.*;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.config.EnvironmentConfig.isOfflineMode;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.FileCategory.*;
 
 import java.awt.*;
@@ -42,16 +43,27 @@ public class FileSideBar extends JPanel {
             () -> {
               var selectedFile = plannedList.getSelectedValue();
               if (selectedFile == null) return;
-              this.state.update(
-                  Map.of(
-                      "selectedFile",
-                      selectedFile,
-                      "selectedCasSetFile",
-                      getPlannedCasSetFile(),
-                      "selectedFileId",
-                      getSelectedFileDriveId(selectedFile, PLANNED).orElse(""),
-                      "isPlannedSelectedFile",
-                      true));
+              if (isOfflineMode()) {
+                this.state.update(
+                    Map.of(
+                        "selectedFile",
+                        selectedFile,
+                        "selectedCasSetFile",
+                        getPlannedCasSetFile(),
+                        "isPlannedSelectedFile",
+                        true));
+              } else {
+                this.state.update(
+                    Map.of(
+                        "selectedFile",
+                        selectedFile,
+                        "selectedCasSetFile",
+                        getPlannedCasSetFile(),
+                        "selectedFileId",
+                        getSelectedFileDriveId(selectedFile, PLANNED).orElse(""),
+                        "isPlannedSelectedFile",
+                        true));
+              }
               doneList.clearSelection();
               justificativeList.clearSelection();
             });
@@ -61,16 +73,27 @@ public class FileSideBar extends JPanel {
             () -> {
               var selectedFile = doneList.getSelectedValue();
               if (selectedFile == null) return;
-              this.state.update(
-                  Map.of(
-                      "selectedFile",
-                      selectedFile,
-                      "selectedCasSetFile",
-                      getDoneCasSetFile(),
-                      "selectedFileId",
-                      getSelectedFileDriveId(selectedFile, DONE).orElse(""),
-                      "isPlannedSelectedFile",
-                      false));
+              if (isOfflineMode()) {
+                this.state.update(
+                    Map.of(
+                        "selectedFile",
+                        selectedFile,
+                        "selectedCasSetFile",
+                        getDoneCasSetFile(),
+                        "isPlannedSelectedFile",
+                        false));
+              } else {
+                this.state.update(
+                    Map.of(
+                        "selectedFile",
+                        selectedFile,
+                        "selectedCasSetFile",
+                        getDoneCasSetFile(),
+                        "selectedFileId",
+                        getSelectedFileDriveId(selectedFile, DONE).orElse(""),
+                        "isPlannedSelectedFile",
+                        false));
+              }
               plannedList.clearSelection();
               justificativeList.clearSelection();
             });
@@ -80,14 +103,19 @@ public class FileSideBar extends JPanel {
             () -> {
               var selectedFile = justificativeList.getSelectedValue();
               if (selectedFile == null) return;
-              this.state.update(
-                  Map.of(
-                      "selectedFile",
-                      selectedFile,
-                      "selectedFileId",
-                      getSelectedFileDriveId(selectedFile, JUSTIFICATIVE).orElse(""),
-                      "isPlannedSelectedFile",
-                      false));
+              if (isOfflineMode()) {
+                this.state.update(
+                    Map.of("selectedFile", selectedFile, "isPlannedSelectedFile", false));
+              } else {
+                this.state.update(
+                    Map.of(
+                        "selectedFile",
+                        selectedFile,
+                        "selectedFileId",
+                        getSelectedFileDriveId(selectedFile, JUSTIFICATIVE).orElse(""),
+                        "isPlannedSelectedFile",
+                        false));
+              }
               plannedList.clearSelection();
               doneList.clearSelection();
             });

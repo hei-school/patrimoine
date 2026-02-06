@@ -2,6 +2,7 @@ package school.hei.patrimoine.visualisation.swing.ihm.google.pages;
 
 import static java.util.stream.Collectors.toSet;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.AppBar.builtInUserInfoPanel;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.config.EnvironmentConfig.isOnelineMode;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.pages.PatriLangFilesPage.addImprevuButton;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.pages.RecoupementPage.PieceJustificativeFilter.TOUT;
 
@@ -143,7 +144,7 @@ public class RecoupementPage extends LazyPage {
                 pjFilter,
                 addImprevuButton,
                 nameFilter),
-            List.of(builtInUserInfoPanel()));
+            !isOnelineMode() ? List.of() : List.of(builtInUserInfoPanel()));
 
     add(appBar, BorderLayout.NORTH);
   }

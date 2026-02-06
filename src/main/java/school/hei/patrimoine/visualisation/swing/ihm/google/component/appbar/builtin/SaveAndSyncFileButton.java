@@ -22,6 +22,7 @@ import school.hei.patrimoine.patrilang.files.PatriLangFileWritter;
 import school.hei.patrimoine.patrilang.files.PatriLangFileWritter.FileWritterInput;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.AppContext;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.AppBar;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.comment.LocalCommentManager;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.html.HtmlViewer;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.popup.PopupItem;
@@ -58,6 +59,17 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
                   saveAndSyncSelectedFile(
                       state.get("viewMode"), htmlViewer, state.get("selectedFile"), onSuccess);
                 })));
+  }
+
+  public static Button simpleSaveButton(State state, HtmlViewer htmlViewer) {
+    Button saveButton = new Button("Sauvegarder");
+    saveButton.addActionListener(
+        e -> {
+          AppBar.ViewMode currentMode = state.get("viewMode");
+          File selectedFile = state.get("selectedFile");
+          saveAllModifiedFiles(currentMode, htmlViewer, selectedFile);
+        });
+    return saveButton;
   }
 
   @SneakyThrows
