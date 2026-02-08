@@ -1,45 +1,47 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.config;
 
-import static school.hei.patrimoine.visualisation.swing.ihm.google.Mode.OFFLINE;
-import static school.hei.patrimoine.visualisation.swing.ihm.google.Mode.ONELINE;
-
 import lombok.extern.slf4j.Slf4j;
-import school.hei.patrimoine.visualisation.swing.ihm.google.Mode;
 
 @Slf4j
 public class EnvironmentConfig {
   private static final Mode CURRENT_MODE;
 
   static {
-    CURRENT_MODE = determineMode();
+    CURRENT_MODE = getMode();
   }
 
-  private static Mode determineMode() {
-    String modeValue = System.getProperty("patrimoine.mode");
+  private static Mode getMode() {
+    var modeValue = System.getProperty("patrimoine.mode");
 
     if (modeValue == null || modeValue.trim().isEmpty()) {
       modeValue = System.getenv("PATRIMOINE_MODE");
     }
 
     if (modeValue == null || modeValue.trim().isEmpty()) {
-      log.warn("Unspecified mode. Uses ONELINE mode by default.");
-      return ONELINE;
+      log.warn("Unspecified mode. Uses ONLINE mode by default.");
+      return Mode.ONLINE;
     }
 
     try {
       return Mode.valueOf(modeValue.trim().toUpperCase());
-    } catch (IllegalArgumentException e) {
-      log.error("Invalid mode: '" + modeValue + "'. Possible values: OFFLINE, ONELINE");
-      log.error("Using ONELINE mode by default.");
-      return ONELINE;
+    } catch (Exception e) {
+      log.error(
+          "Invalid mode: '{}'. Possible values: OFFLINE, ONLINE. \nUsing ONLINE mode by default.",
+          modeValue);
+      return Mode.ONLINE;
     }
   }
 
-  public static boolean isOnelineMode() {
-    return CURRENT_MODE == ONELINE;
+  public static boolean isOnlineMode() {
+    return CURRENT_MODE.equals(Mode.ONLINE);
   }
 
   public static boolean isOfflineMode() {
-    return CURRENT_MODE == OFFLINE;
+    return CURRENT_MODE.equals(Mode.OFFLINE);
+  }
+
+  public enum Mode {
+    OFFLINE,
+    ONLINE
   }
 }

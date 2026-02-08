@@ -69,5 +69,10 @@ public class GoogleApiUtilities {
     if (!stagedDirectory.exists() && !stagedDirectory.mkdirs()) {
       log.warn("Failed to create staged directory");
     }
+
+    var pjDirectory = new File(getStagingDirectoryPath());
+    if (!pjDirectory.exists() && !stagedDirectory.mkdirs()) {
+      log.warn("Failed to create staged directory");
+    }
   }
 }

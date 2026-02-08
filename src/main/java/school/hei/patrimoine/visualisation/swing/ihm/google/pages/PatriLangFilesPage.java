@@ -4,7 +4,7 @@ import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
 import static school.hei.patrimoine.patrilang.PatriLangTranspiler.TOUT_CAS_FILE_EXTENSION;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.AppBar.*;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.builtin.SaveAndSyncFileButton.simpleSaveButton;
-import static school.hei.patrimoine.visualisation.swing.ihm.google.config.EnvironmentConfig.isOnelineMode;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.config.EnvironmentConfig.isOnlineMode;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.MessageDialog.showError;
 
 import java.awt.*;
@@ -102,7 +102,7 @@ public class PatriLangFilesPage extends LazyPage {
         new AppBar(
             List.of(
                 builtInViewModeSelect(state),
-                !isOnelineMode()
+                !isOnlineMode()
                     ? simpleSaveButton(state, htmlViewer)
                     : new SaveAndSyncFileButton(
                         state,
@@ -115,7 +115,7 @@ public class PatriLangFilesPage extends LazyPage {
                 recoupementButton(),
                 addImprevuButton,
                 addSearchTextBar()),
-            !isOnelineMode()
+            !isOnlineMode()
                 ? List.of(builtInFontSizeControllerButton(state))
                 : List.of(builtInFontSizeControllerButton(state), builtInUserInfoPanel()));
 
@@ -126,7 +126,7 @@ public class PatriLangFilesPage extends LazyPage {
     var horizontalSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
     horizontalSplit.setLeftComponent(new FileSideBar(state));
 
-    if (isOnelineMode()) {
+    if (isOnlineMode()) {
       this.commentSideBar = new CommentSideBar(state);
     }
 

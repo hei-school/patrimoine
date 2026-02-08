@@ -4,6 +4,8 @@ import static java.util.Objects.requireNonNull;
 import static school.hei.patrimoine.patrilang.PatriLangTranspiler.*;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.config.EnvironmentConfig.isOfflineMode;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.FileCategory.*;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.GoogleLinkListDownloader.getDoneDirectoryPath;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.GoogleLinkListDownloader.getPlannedDirectoryPath;
 
 import java.awt.*;
 import java.io.File;
@@ -196,9 +198,7 @@ public class FileSideBar extends JPanel {
   }
 
   public static List<File> getPatriLangPlannedFiles() {
-    return Arrays.stream(
-            requireNonNull(
-                new File(GoogleLinkListDownloader.getPlannedDirectoryPath()).listFiles()))
+    return Arrays.stream(requireNonNull(new File(getPlannedDirectoryPath()).listFiles()))
         .filter(
             file ->
                 file.getName().endsWith(TOUT_CAS_FILE_EXTENSION)
@@ -207,8 +207,7 @@ public class FileSideBar extends JPanel {
   }
 
   public static List<File> getPatriLangDoneFiles() {
-    return Arrays.stream(
-            requireNonNull(new File(GoogleLinkListDownloader.getDoneDirectoryPath()).listFiles()))
+    return Arrays.stream(requireNonNull(new File(getDoneDirectoryPath()).listFiles()))
         .filter(
             file ->
                 file.getName().endsWith(TOUT_CAS_FILE_EXTENSION)
@@ -225,17 +224,14 @@ public class FileSideBar extends JPanel {
   }
 
   public static File getPlannedCasSetFile() {
-    return Arrays.stream(
-            requireNonNull(
-                new File(GoogleLinkListDownloader.getPlannedDirectoryPath()).listFiles()))
+    return Arrays.stream(requireNonNull(new File(getPlannedDirectoryPath()).listFiles()))
         .filter(file -> file.getName().endsWith(TOUT_CAS_FILE_EXTENSION))
         .findFirst()
         .orElseThrow();
   }
 
   public static File getDoneCasSetFile() {
-    return Arrays.stream(
-            requireNonNull(new File(GoogleLinkListDownloader.getDoneDirectoryPath()).listFiles()))
+    return Arrays.stream(requireNonNull(new File(getDoneDirectoryPath()).listFiles()))
         .filter(file -> file.getName().endsWith(TOUT_CAS_FILE_EXTENSION))
         .findFirst()
         .orElseThrow();

@@ -1,10 +1,11 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.modele;
 
+import static java.nio.file.Files.createDirectories;
+import static java.nio.file.Files.walk;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.GoogleLinkList.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import lombok.extern.slf4j.Slf4j;
@@ -74,9 +75,9 @@ public record GoogleLinkListDownloader(FileNameExtractor fileNameExtractor, Driv
 
     try {
       if (directory.exists()) {
-        Files.walk(path).map(Path::toFile).forEach(File::delete);
+        walk(path).map(Path::toFile).forEach(File::delete);
       }
-      Files.createDirectories(path);
+      createDirectories(path);
     } catch (IOException e) {
       throw new RuntimeException("Directory reset error : " + directoryPath, e);
     }
