@@ -15,7 +15,6 @@ import java.util.Optional;
 import java.util.concurrent.Callable;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import school.hei.patrimoine.google.api.CommentApi;
 import school.hei.patrimoine.google.exception.GoogleIntegrationException;
 import school.hei.patrimoine.patrilang.files.PatriLangFileContext;
 import school.hei.patrimoine.patrilang.files.PatriLangFileWritter;
@@ -23,6 +22,7 @@ import school.hei.patrimoine.patrilang.files.PatriLangFileWritter.FileWritterInp
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.AppContext;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.AppBar;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.comment.CommentSynchronizer;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.comment.LocalCommentManager;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.html.HtmlViewer;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.popup.PopupItem;
@@ -289,7 +289,7 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
   }
 
   private static void syncAllPendingComments() {
-    CommentApi commentApi = AppContext.getDefault().getData("comment-api");
+    CommentSynchronizer commentSynchronizer = new CommentSynchronizer(driveApi());
     LocalCommentManager localManager = LocalCommentManager.getInstance();
 
     List<String> filesWithPendingComments = localManager.getFilesWithPendingChanges();
@@ -300,7 +300,7 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
 
     for (String fileId : filesWithPendingComments) {
       try {
-        commentApi.syncComments(fileId);
+        commentSynchronizer.syncComments(fileId);
       } catch (GoogleIntegrationException e) {
         hasErrors = true;
       }

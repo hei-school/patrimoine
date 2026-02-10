@@ -9,12 +9,13 @@ import school.hei.patrimoine.google.model.User;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.comment.pending.*;
 
 public class LocalCommentManager {
-  private static LocalCommentManager INSTANCE;
+  public static final String LOCAL_ID_PREFIX = "local_";
+  private static final LocalCommentManager INSTANCE = new LocalCommentManager();
 
-  private final Map<String, List<PendingComment>> pendingCommentsByFile;
   private final Map<String, List<PendingReply>> pendingRepliesByFile;
-  private final Map<String, List<PendingResolution>> pendingResolutionsByFile;
+  private final Map<String, List<PendingComment>> pendingCommentsByFile;
   private final Map<String, List<PendingDeletion>> pendingDeletionsByFile;
+  private final Map<String, List<PendingResolution>> pendingResolutionsByFile;
   private final Map<String, Map<String, String>> idMappingsByFile = new ConcurrentHashMap<>();
 
   private LocalCommentManager() {
@@ -25,9 +26,6 @@ public class LocalCommentManager {
   }
 
   public static LocalCommentManager getInstance() {
-    if (INSTANCE == null) {
-      INSTANCE = new LocalCommentManager();
-    }
     return INSTANCE;
   }
 
@@ -39,7 +37,7 @@ public class LocalCommentManager {
   }
 
   public void addPendingComment(String fileId, String content, User author) {
-    String localId = generateLocalId();
+    var localId = generateLocalId();
     var pendingComment =
         PendingComment.builder()
             .localId(localId)
@@ -69,7 +67,7 @@ public class LocalCommentManager {
   }
 
   public void addPendingReply(String fileId, String parentCommentId, String content, User author) {
-    String localId = generateLocalId();
+    var localId = generateLocalId();
     var pendingReply =
         PendingReply.builder()
             .localId(localId)
@@ -218,7 +216,7 @@ public class LocalCommentManager {
     for (T item : items) {
       String currentId = idExtractor.apply(item);
 
-      if (!currentId.startsWith("local_")) {
+      if (!currentId.startsWith(LOCAL_ID_PREFIX)) {
         remappedItems.add(item);
         continue;
       }
@@ -238,7 +236,7 @@ public class LocalCommentManager {
   }
 
   private String generateLocalId() {
-    return "local_" + UUID.randomUUID().toString().substring(0, 8);
+    return LOCAL_ID_PREFIX + UUID.randomUUID().toString().substring(0, 8);
   }
 
   public void cleanUpCommentActions(String fileId, String commentId) {

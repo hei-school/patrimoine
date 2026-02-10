@@ -14,6 +14,8 @@ import school.hei.patrimoine.google.api.GoogleApi;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.CustomBorder;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.Page;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.ButtonWithIcon;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.comment.CommentMerger;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.comment.LocalCommentManager;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.AsyncTask;
 
 public class LoginPage extends Page {
@@ -120,7 +122,8 @@ public class LoginPage extends Page {
                           "drive-api",
                           driveApi,
                           "comment-api",
-                          new CommentApi(driveApi)));
+                          new CommentApi(
+                              driveApi, new CommentMerger(LocalCommentManager.getInstance()))));
               pageManager().navigate(SubmitLinkPage.PAGE_NAME);
             })
         .onError(e -> showError("Erreur", "Erreur d'authentification, veuillez réessayer"))

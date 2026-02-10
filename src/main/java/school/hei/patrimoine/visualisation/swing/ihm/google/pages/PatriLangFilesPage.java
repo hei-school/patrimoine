@@ -28,6 +28,8 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.App
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.builtin.SaveAndSyncFileButton;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.comment.CommentSideBar;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.comment.LocalCommentActions;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.comment.LocalCommentManager;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.FileSideBar;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.html.HtmlViewer;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.recoupement.AddImprevuDialog;
@@ -44,6 +46,7 @@ public class PatriLangFilesPage extends LazyPage {
 
   private final State state;
   private final CasSetSetter casSetSetter;
+  private final LocalCommentActions localCommentActions;
 
   private final HtmlViewer htmlViewer;
   private Button addImprevuButton;
@@ -52,6 +55,7 @@ public class PatriLangFilesPage extends LazyPage {
   public PatriLangFilesPage() {
     super(PAGE_NAME);
     this.casSetSetter = CasSetSetter.getInstance();
+    this.localCommentActions = new LocalCommentActions(LocalCommentManager.getInstance());
 
     state =
         new State(
@@ -127,7 +131,7 @@ public class PatriLangFilesPage extends LazyPage {
     horizontalSplit.setLeftComponent(new FileSideBar(state));
 
     if (isOnlineMode()) {
-      this.commentSideBar = new CommentSideBar(state);
+      this.commentSideBar = new CommentSideBar(state, localCommentActions);
     }
 
     var rightSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);

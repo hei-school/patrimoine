@@ -25,6 +25,7 @@ public class CommentSideBar extends JPanel {
   private final State state;
   private final ApiCache apiCache;
   private final CommentApi commentApi;
+  private final LocalCommentActions localCommentActions;
   private final CommentListPanel commentListPanel;
   private final CommentFooter footer;
   private DatePicker datePicker;
@@ -32,13 +33,15 @@ public class CommentSideBar extends JPanel {
   private final Map<String, Pagination> paginationByFile = new HashMap<>();
   private final Map<String, List<String>> previousTokensByFile = new HashMap<>();
 
-  public CommentSideBar(State state) {
+  public CommentSideBar(State state, LocalCommentActions localCommentActions) {
     super(new BorderLayout());
 
     this.state = state;
     this.apiCache = ApiCache.getInstance();
     this.commentApi = AppContext.getDefault().getData("comment-api");
-    this.commentListPanel = new CommentListPanel(this, true, this::refreshCommentsCache);
+    this.localCommentActions = localCommentActions;
+    this.commentListPanel =
+        new CommentListPanel(localCommentActions, this, true, this::refreshCommentsCache);
     this.footer = new CommentFooter(this::goToPreviousPage, this::goToNextPage);
 
     addTopPanel();
@@ -79,7 +82,8 @@ public class CommentSideBar extends JPanel {
             + "</table></html>";
     var button = new Button(buttonLabel);
     button.setPreferredSize(new Dimension(110, 35));
-    button.addActionListener(e -> new CommentAddDialog(state, this::refreshCommentsCache));
+    button.addActionListener(
+        e -> new CommentAddDialog(localCommentActions, state, this::refreshCommentsCache));
     button.setToolTipText("Ajouter un commentaire");
 
     return button;
@@ -177,7 +181,8 @@ public class CommentSideBar extends JPanel {
     this.update();
   }
 
-  static void resolveComment(String fileId, Comment toResolve, Runnable refresh) {
+  static void resolveComment(
+      LocalCommentActions localCommentActions, String fileId, Comment toResolve, Runnable refresh) {
     int confirm =
         JOptionPane.showConfirmDialog(
             AppContext.getDefault().app(),
@@ -189,11 +194,10 @@ public class CommentSideBar extends JPanel {
       return;
     }
 
-    CommentApi commentApi = AppContext.getDefault().getData("comment-api");
     AsyncTask.<Void>builder()
         .task(
             () -> {
-              commentApi.resolve(fileId, toResolve);
+              localCommentActions.resolve(fileId, toResolve);
               return null;
             })
         .withDialogLoading(false)
@@ -208,9 +212,9 @@ public class CommentSideBar extends JPanel {
         .execute();
   }
 
-  static void removeComment(String fileId, Comment toRemove, Runnable refresh) {
-    boolean canDelete =
-        toRemove.id().startsWith("local_") || toRemove.author() != null && toRemove.author().me();
+  static void removeComment(
+      LocalCommentActions localCommentActions, String fileId, Comment toRemove, Runnable refresh) {
+    boolean canDelete = localCommentActions.canDelete(toRemove);
     if (!canDelete) {
       showError("Erreur", "Vous ne pouvez supprimer que vos propres commentaires.");
       return;
@@ -227,11 +231,10 @@ public class CommentSideBar extends JPanel {
       return;
     }
 
-    CommentApi commentApi = AppContext.getDefault().getData("comment-api");
     AsyncTask.<Void>builder()
         .task(
             () -> {
-              commentApi.delete(fileId, toRemove);
+              localCommentActions.delete(fileId, toRemove);
               return null;
             })
         .withDialogLoading(false)
