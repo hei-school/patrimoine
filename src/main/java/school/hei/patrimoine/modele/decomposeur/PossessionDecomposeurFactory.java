@@ -9,22 +9,24 @@ import school.hei.patrimoine.modele.possession.Possession;
 public class PossessionDecomposeurFactory {
   @SuppressWarnings("unchecked")
   public static <ToDecompose extends Possession, Decomposed extends Possession>
-      PossessionDecomposeur<ToDecompose, Decomposed> make(
-          ToDecompose possession, LocalDate finSimulation) {
-
+  PossessionDecomposeur<ToDecompose, Decomposed> make(ToDecompose possession,LocalDate debut, LocalDate fin) {
     if (possession instanceof FluxArgent) {
       return (PossessionDecomposeur<ToDecompose, Decomposed>)
-          new FluxArgentDecomposeur(finSimulation);
+          new FluxArgentDecomposeur(debut, fin);
     }
 
     if (possession instanceof GroupePossession) {
       return (PossessionDecomposeur<ToDecompose, Decomposed>)
-          new GroupePossessionDecomposeur(finSimulation);
+          new GroupePossessionDecomposeur(debut, fin);
     }
 
-    return new PossessionDecomposeurBase<>(finSimulation) {
+    return new PossessionDecomposeurBase<>(debut, fin) {
       @Override
       public List<Decomposed> apply(ToDecompose toDecompose) {
+        if(isOutOfRange(toDecompose)) {
+          return List.of();
+        }
+
         return List.of((Decomposed) toDecompose);
       }
     };

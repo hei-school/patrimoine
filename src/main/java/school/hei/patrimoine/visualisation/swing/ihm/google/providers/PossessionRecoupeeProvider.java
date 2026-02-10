@@ -30,6 +30,7 @@ public class PossessionRecoupeeProvider {
     var recoupeur =
         RecoupeurDePossessions.of(
             meta.planned().getFinSimulation(),
+            meta.planned().getFinSimulation(),
             meta.planned().patrimoine(),
             meta.done().patrimoine(),
             CompteGetterFactory.make(meta.done(), casSetComptes));

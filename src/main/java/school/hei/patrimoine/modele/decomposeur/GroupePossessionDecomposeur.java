@@ -7,8 +7,8 @@ import school.hei.patrimoine.modele.possession.Possession;
 
 public class GroupePossessionDecomposeur
     extends PossessionDecomposeurBase<GroupePossession, Possession> {
-  public GroupePossessionDecomposeur(LocalDate finSimulation) {
-    super(finSimulation);
+  public GroupePossessionDecomposeur(LocalDate debut, LocalDate fin) {
+    super(debut, fin);
   }
 
   @Override
@@ -16,7 +16,7 @@ public class GroupePossessionDecomposeur
     return groupePossession.getPossessions().stream()
         .map(
             possession -> {
-              var decomposeur = PossessionDecomposeurFactory.make(possession, getFinSimulation());
+              var decomposeur = PossessionDecomposeurFactory.make(possession, getDebut(), getFin());
               return decomposeur.apply(possession);
             })
         .flatMap(List::stream)

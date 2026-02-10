@@ -17,65 +17,84 @@ import school.hei.patrimoine.modele.recouppement.CompteGetterFactory.CompteGette
 import school.hei.patrimoine.modele.recouppement.generateur.RecoupeurDePossessionFacade;
 
 public class RecoupeurDePossessions {
-  private final LocalDate finSimulation;
+  private final LocalDate debut;
+  private final LocalDate fin;
   private final Set<Possession> prevus;
   private final Set<Possession> realises;
-
-  public static final Pattern MULTIPLE_REALISATION_PATTERN = Pattern.compile("\\[(.*)\\]__(.*)");
-
+  private final Set<Possession> decomposedPrevus;
+  private final Set<Possession> decomposedRealises;
   private final RecoupeurDePossessionFacade recoupeurFacade;
 
+  private static final Pattern MULTIPLE_REALISATION_PATTERN = Pattern.compile("\\[(.*)\\]__(.*)");
+
   public static RecoupeurDePossessions of(
-      LocalDate finSimulation, Patrimoine prevu, Patrimoine realise) {
-    return RecoupeurDePossessions.of(
-        finSimulation, prevu, realise, CompteGetterFactory.make(realise));
+      LocalDate debut, LocalDate fin, Patrimoine prevu, Patrimoine realise) {
+    return RecoupeurDePossessions.of(debut, fin, prevu, realise, CompteGetterFactory.make(realise));
   }
 
   public static RecoupeurDePossessions of(
-      LocalDate finSimulation, Patrimoine prevu, Patrimoine realise, CompteGetter compteGetter) {
+      LocalDate debut,
+      LocalDate fin,
+      Patrimoine prevu,
+      Patrimoine realise,
+      CompteGetter compteGetter) {
     return new RecoupeurDePossessions(
-        finSimulation, prevu.getPossessions(), realise.getPossessions(), compteGetter);
+        debut, fin, prevu.getPossessions(), realise.getPossessions(), compteGetter);
   }
 
   public RecoupeurDePossessions(
-      LocalDate finSimulation,
+      LocalDate debut,
+      LocalDate fin,
       Set<Possession> prevus,
       Set<Possession> realises,
       CompteGetter compteGetter) {
-    this.finSimulation = finSimulation;
-    this.prevus =
-        withoutCompteCorrections(prevus).stream()
+    this.debut = debut;
+    this.fin = fin;
+    this.prevus = withoutCompteCorrections(prevus);
+    this.realises = withoutCompteCorrections(realises);
+
+    var decomposedPrevus =
+        this.prevus.stream()
             .map(
                 p -> {
-                  var decomposeur = PossessionDecomposeurFactory.make(p, this.finSimulation);
+                  var decomposeur = PossessionDecomposeurFactory.make(p, this.debut, this.fin);
                   return decomposeur.apply(p);
                 })
             .flatMap(Collection::stream)
             .collect(toSet());
 
-    this.realises =
-        withoutCompteCorrections(realises).stream()
+    var decomposedRealises =
+        this.realises.stream()
             .map(
                 p -> {
-                  var decomposeur = PossessionDecomposeurFactory.make(p, finSimulation);
+                  var decomposeur = PossessionDecomposeurFactory.make(p, this.debut, this.fin);
                   return decomposeur.apply(p);
                 })
             .flatMap(Collection::stream)
             .collect(toSet());
 
+    this.decomposedPrevus = new HashSet<>(decomposedPrevus);
+    this.decomposedRealises = new HashSet<>(decomposedRealises);
     this.recoupeurFacade = new RecoupeurDePossessionFacade(compteGetter);
   }
 
   public Set<Possession> getPossessionsExecutes() {
-    return prevus.stream().filter(not(p -> getRealises(p).isEmpty())).collect(toSet());
+    return decomposedRealises;
   }
 
   public Set<Possession> getPossessionsNonExecutes() {
-    return prevus.stream().filter(p -> getRealises(p).isEmpty()).collect(toSet());
+    return decomposedPrevus.stream().filter(p -> getRealises(p).isEmpty()).collect(toSet());
   }
 
   public Set<Possession> getPossessionsNonPrevus() {
-    return realises.stream().filter(p -> getPrevu(p).isEmpty()).collect(toSet());
+    return decomposedRealises.stream().filter(p -> getPrevu(p).isEmpty()).collect(toSet());
+  }
+
+  public Set<PossessionRecoupee> getByStatus(RecoupementStatus status){
+      return getPossessionsRecoupees()
+          .stream()
+          .filter(recouped -> recouped.status().equals(status))
+          .collect(toSet());
   }
 
   public Set<PossessionRecoupee> getPossessionsRecoupees() {
@@ -117,9 +136,9 @@ public class RecoupeurDePossessions {
   public Set<Possession> getPossessionsExecutesAvecCorrections() {
     return getPossessionsExecutes().stream()
         .filter(
-            prevu -> {
-              var realises = getRealises(prevu);
-              var possessionRecoupeur = recoupeurFacade.getRecoupeur(prevu);
+            realise -> {
+              var realises = getPrevu(realise);
+              var possessionRecoupeur = recoupeurFacade.getRecoupeur(realise);
               var possessionRecoupee = possessionRecoupeur.comparer(prevu, realises);
               return possessionRecoupee.status().equals(EXECUTE_AVEC_CORRECTION);
             })
@@ -139,7 +158,7 @@ public class RecoupeurDePossessions {
   }
 
   private Optional<Possession> getPrevu(Possession realise) {
-    return prevus.stream()
+    return decomposedPrevus.stream()
         .filter(
             p -> {
               var prevuNom = realise.nom();
@@ -158,7 +177,7 @@ public class RecoupeurDePossessions {
   }
 
   private Set<Possession> getRealises(Possession prevu) {
-    return realises.stream()
+    return decomposedRealises.stream()
         .filter(
             realise -> {
               var realiseBaseName = realise.nom();
