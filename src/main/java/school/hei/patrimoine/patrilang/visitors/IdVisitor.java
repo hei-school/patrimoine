@@ -1,6 +1,7 @@
 package school.hei.patrimoine.patrilang.visitors;
 
 import static java.util.Objects.isNull;
+import static school.hei.patrimoine.modele.normalizer.PossessionNomNormalizer.normalize;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.IdContext;
 import static school.hei.patrimoine.patrilang.visitors.BaseVisitor.visitText;
 
@@ -20,6 +21,6 @@ public class IdVisitor implements SimpleVisitor<IdContext, String> {
     }
 
     var variableValue = this.variableVisitor.apply(ctx.variable());
-    return ((baseId) + variableValue.value()).replaceAll("-", "_");
+    return normalize((baseId) + variableValue.value());
   }
 }

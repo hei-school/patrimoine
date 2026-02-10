@@ -29,8 +29,4 @@ public class PossessionDecomposeurFactory {
       }
     };
   }
-
-  static String normalize(String nom) {
-    return nom.replaceAll("-", "_");
-  }
 }

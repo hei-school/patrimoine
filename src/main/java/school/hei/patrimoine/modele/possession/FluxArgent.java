@@ -8,6 +8,7 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import school.hei.patrimoine.Pair;
 import school.hei.patrimoine.modele.Argent;
+import school.hei.patrimoine.modele.series.DateSeries;
 
 @ToString(callSuper = true)
 @Slf4j
@@ -49,10 +50,8 @@ public final class FluxArgent extends Possession {
     }
 
     var valeurFutur =
-        debutOperationMinoréParDebut
-            .datesUntil(tFuturMajoréParFin.plusDays(1))
-            .filter(d -> d.getDayOfMonth() == Math.min(dateOperation, d.lengthOfMonth()))
-            .sorted()
+        DateSeries.byDayOfMonth(debutOperationMinoréParDebut, tFuturMajoréParFin, dateOperation)
+            .stream()
             .map(d -> Pair.of(fluxMensuel, d))
             // Addition must be done at a given time since Devise fluctuates
             // TODO: test with Transfert between Compte with different Devise

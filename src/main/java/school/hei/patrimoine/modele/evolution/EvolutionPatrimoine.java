@@ -3,11 +3,7 @@ package school.hei.patrimoine.modele.evolution;
 import static java.util.stream.Collectors.toSet;
 
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import school.hei.patrimoine.modele.Patrimoine;
@@ -16,6 +12,7 @@ import school.hei.patrimoine.modele.possession.CompteCorrection;
 import school.hei.patrimoine.modele.possession.Dette;
 import school.hei.patrimoine.modele.possession.FluxArgent;
 import school.hei.patrimoine.modele.possession.Possession;
+import school.hei.patrimoine.modele.series.DateSeries;
 
 @Getter
 @Slf4j
@@ -76,12 +73,13 @@ public class EvolutionPatrimoine {
   }
 
   public List<LocalDate> serieDates() {
-    return debut.datesUntil(fin.plusDays(1)).toList();
+    return DateSeries.byInterval(debut, fin);
   }
 
   private Map<LocalDate, Patrimoine> evolutionJournaliere() {
     Map<LocalDate, Patrimoine> evolutionJournaliere = new HashMap<>();
-    serieDates().forEach(date -> evolutionJournaliere.put(date, patrimoine.projectionFuture(date)));
+    DateSeries.byInterval(debut, fin)
+        .forEach(date -> evolutionJournaliere.put(date, patrimoine.projectionFuture(date)));
     return evolutionJournaliere;
   }
 }

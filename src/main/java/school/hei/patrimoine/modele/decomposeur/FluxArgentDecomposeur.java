@@ -1,12 +1,13 @@
 package school.hei.patrimoine.modele.decomposeur;
 
-import static school.hei.patrimoine.modele.decomposeur.PossessionDecomposeurFactory.normalize;
+import static school.hei.patrimoine.modele.normalizer.PossessionNomNormalizer.normalize;
 
 import java.time.LocalDate;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import school.hei.patrimoine.modele.possession.Compte;
 import school.hei.patrimoine.modele.possession.FluxArgent;
+import school.hei.patrimoine.modele.series.DateSeries;
 
 @Slf4j
 public class FluxArgentDecomposeur extends PossessionDecomposeurBase<FluxArgent, FluxArgent> {
@@ -35,13 +36,8 @@ public class FluxArgentDecomposeur extends PossessionDecomposeurBase<FluxArgent,
     }
 
     var compte = fluxArgent.getCompte();
-    return fluxArgent
-        .getDebut()
-        .datesUntil(fin.plusDays(1))
-        .filter(
-            date ->
-                date.getDayOfMonth()
-                    == Math.min(fluxArgent.getDateOperation(), date.lengthOfMonth()))
+    return DateSeries.byDayOfMonth(fluxArgent.getDebut(), fin, fluxArgent.getDateOperation())
+        .stream()
         .map(
             date ->
                 new FluxArgent(
