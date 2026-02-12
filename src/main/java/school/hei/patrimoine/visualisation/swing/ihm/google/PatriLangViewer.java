@@ -31,8 +31,12 @@ public class PatriLangViewer extends App {
         new WindowAdapter() {
           @Override
           public void windowClosing(WindowEvent e) {
-            var localCommentManager = LocalCommentManager.getInstance();
+            if (!isOnlineMode()) {
+              dispose();
+              return;
+            }
 
+            var localCommentManager = LocalCommentManager.getInstance();
             var doneFiles = getStagedDoneFiles();
             var plannedFiles = getStagedPlannedFiles();
             var hasPendingComments = localCommentManager.hasAnyPendingComments();
