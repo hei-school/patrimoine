@@ -57,11 +57,6 @@ public class RecoupeurDeCasSet {
                 CompteGetterFactory.make(doneCas, getCasSetComptes()))
             .getCorrections();
 
-    log.info(
-        "Recoupement: Patrimoine.nom={}, Corrections.size={}",
-        plannedCas.patrimoine().nom(),
-        corrections.size());
-
     return new Cas(
         doneCas.getAjd(), doneCas.getFinSimulation(), doneCas.patrimoine().getPossesseurs()) {
       @Override

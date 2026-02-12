@@ -203,6 +203,7 @@ public class PatriLangFilesPage extends LazyPage {
 
   private void showCasSetAnalyser() {
     AsyncTask.<CasSet>builder()
+        .logError(false)
         .task(
             () ->
                 RecoupeurDeCasSet.of(casSetSetter.plannedCasSet(), casSetSetter.doneCasSet())
