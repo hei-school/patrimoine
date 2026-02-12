@@ -19,6 +19,7 @@ public class AsyncTask<T> {
   @Builder.Default private final Consumer<T> onSuccess = (data) -> {};
   @Builder.Default private final Consumer<Exception> onError = (e) -> {};
   @Builder.Default private final boolean withDialogLoading = true;
+  @Builder.Default private final boolean logError = true;
 
   public interface Task<T> {
     T run() throws Exception;
@@ -51,12 +52,15 @@ public class AsyncTask<T> {
             } catch (Exception e) {
               Throwable cause =
                   e instanceof ExecutionException ? e.getCause() : new RuntimeException(e);
-              log.error(cause.getMessage());
-              Arrays.stream(cause.getStackTrace())
-                  .forEach(
-                      error -> {
-                        log.error(error.toString());
-                      });
+
+              if (logError) {
+                log.error(cause.getMessage());
+                Arrays.stream(cause.getStackTrace())
+                    .forEach(
+                        error -> {
+                          log.error(error.toString());
+                        });
+              }
 
               if (withDialogLoading) {
                 dialog.setVisible(false);
