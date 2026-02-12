@@ -147,15 +147,16 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
 
     AsyncTask.<Void>builder()
         .loadingMessage("Validation et sauvegarde des modifications...")
+        .logError(false)
         .task(
             () -> {
-              for (FileWritterInput input : modifiedFilesData.values()) {
-
-                new PatriLangFileWritter().write(input);
-
-                var file = new PatriLangFileContext(input);
-                saveToStaged(input.file(), file.getCategory());
-              }
+              new PatriLangFileWritter()
+                  .write(
+                      modifiedFilesData.values(),
+                      (input) -> {
+                        var file = new PatriLangFileContext(input);
+                        saveToStaged(input.file(), file.getCategory());
+                      });
               return null;
             })
         .onSuccess(

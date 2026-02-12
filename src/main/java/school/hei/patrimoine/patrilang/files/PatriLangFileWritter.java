@@ -6,8 +6,13 @@ import static school.hei.patrimoine.patrilang.PatriLangTranspiler.transpilePiece
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Consumer;
 import lombok.Builder;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import school.hei.patrimoine.patrilang.validator.PatriLangValidator;
@@ -23,6 +28,19 @@ public class PatriLangFileWritter {
     rollbackIfNotValid(
         () -> Files.writeString(input.file().toPath(), input.content(), StandardCharsets.UTF_8),
         input);
+  }
+
+  // TODO: refactor
+  public void write(Collection<FileWritterInput> inputs, Consumer<FileWritterInput> callback)
+      throws Exception {
+    rollbackIfNotValid(
+        () -> {
+          for (var input : inputs) {
+            Files.writeString(input.file().toPath(), input.content(), StandardCharsets.UTF_8);
+            callback.accept(input);
+          }
+        },
+        inputs);
   }
 
   public void insertAtLine(FileWritterInput input, int lineIndex) throws Exception {
@@ -59,6 +77,34 @@ public class PatriLangFileWritter {
           Files.move(tempFile.toPath(), input.file().toPath(), StandardCopyOption.REPLACE_EXISTING);
         },
         input);
+  }
+
+  // TODO: refactor
+  private void rollbackIfNotValid(ThrowingRunnable runnable, Collection<FileWritterInput> inputs)
+      throws Exception {
+    Map<String /* filename absolute path */, String /* old file content */> oldFileContents =
+        new HashMap<>();
+    for (var input : inputs) {
+      var oldContent = Files.readString(input.file().toPath());
+      oldFileContents.put(input.file().getAbsolutePath(), oldContent);
+    }
+
+    try {
+      runnable.run();
+      for (var input : inputs) {
+        validator.accept(input.casSet().getAbsolutePath());
+      }
+    } catch (ParseCancellationException | IllegalArgumentException e) {
+      oldFileContents.forEach(
+          (key, value) -> {
+            try {
+              Files.writeString(Path.of(key), value, StandardCharsets.UTF_8);
+            } catch (IOException ex) {
+              throw new RuntimeException(ex);
+            }
+          });
+      throw e;
+    }
   }
 
   private void rollbackIfNotValid(ThrowingRunnable runnable, FileWritterInput input)
