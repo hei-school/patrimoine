@@ -131,6 +131,29 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
     return false;
   }
 
+  private static boolean validateSyntaxBeforeWrite(Map<File, FileWritterInput> modifiedFilesData) {
+    var errors = new StringBuilder();
+
+    for (var entry : modifiedFilesData.entrySet()) {
+      var file = entry.getKey();
+      var content = entry.getValue().content();
+
+      List<String> syntaxErrors = PatriLangSyntaxValidator.validate(content);
+
+      if (!syntaxErrors.isEmpty()) {
+        errors.append("Fichier : ").append(file.getName()).append("\n");
+
+        syntaxErrors.forEach(error -> errors.append(" - ").append(error).append("\n"));
+      }
+    }
+
+    if (!errors.isEmpty()) {
+      showError("Erreurs de syntaxe détectées", errors.toString());
+      return false;
+    }
+    return true;
+  }
+
   private static void saveAllModifiedFiles(
       AppBar.ViewMode currentMode, HtmlViewer htmlViewer, File selectedFile) {
 
@@ -139,6 +162,10 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
     htmlViewer.saveCurrentContentToMemory();
 
     Map<File, FileWritterInput> modifiedFilesData = htmlViewer.getModifiedFilesData();
+
+    if (!validateSyntaxBeforeWrite(modifiedFilesData)) {
+      return;
+    }
 
     if (modifiedFilesData.isEmpty()) {
       showInfo("Information", "Aucune modification à sauvegarder.");
