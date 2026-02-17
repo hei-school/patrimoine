@@ -217,18 +217,13 @@ public class PatriLangFilesPage extends LazyPage {
         .onSuccess(recoupedCasSet -> new CasSetAnalyzer(DISPOSE_ON_CLOSE).accept(recoupedCasSet))
         .onError(
             error -> {
-              while (error != null) {
+                error = error.getCause() == null ? error : (Exception) error.getCause();
                 if (error instanceof ObjectifExeption exception) {
                   var objectifs = exception.getObjectifNonAtteints();
                   invokeLater(() -> new ObjectifNonAtteintsDialog(objectifs));
                   return;
                 }
-                error = (Exception) error.getCause();
-              }
-
-              showError(
-                  "Erreur",
-                  "Une erreur s'est produite lors de la génération de l'évolution graphique");
+              showError("Erreur", error.getMessage());
             })
         .build()
         .execute();

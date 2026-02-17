@@ -24,12 +24,6 @@ public class PatriLangFileWritter {
     this.validator = new PatriLangValidator();
   }
 
-  public void write(FileWritterInput input) throws Exception {
-    rollbackIfNotValid(
-        () -> Files.writeString(input.file().toPath(), input.content(), StandardCharsets.UTF_8),
-        input);
-  }
-
   // TODO: refactor
   public void write(Collection<FileWritterInput> inputs, Consumer<FileWritterInput> callback)
       throws Exception {
@@ -92,7 +86,7 @@ public class PatriLangFileWritter {
     try {
       runnable.run();
       for (var input : inputs) {
-        validator.accept(input.casSet().getAbsolutePath());
+        validate(input);
       }
     } catch (ParseCancellationException | IllegalArgumentException e) {
       oldFileContents.forEach(
@@ -105,6 +99,15 @@ public class PatriLangFileWritter {
           });
       throw e;
     }
+  }
+
+  private void validate(FileWritterInput input) {
+    var filePath = input.file.getAbsolutePath();
+    if (filePath.endsWith(PJ_FILE_EXTENSION)) {
+      transpilePieceJustificative(filePath);
+      return;
+    }
+    validator.accept(input.casSet().getAbsolutePath());
   }
 
   private void rollbackIfNotValid(ThrowingRunnable runnable, FileWritterInput input)

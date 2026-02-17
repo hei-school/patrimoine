@@ -117,18 +117,14 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
     }
   }
 
-  private static boolean validateBeforeSave(AppBar.ViewMode currentMode, File selectedFile) {
-    if (selectedFile == null) {
-      showError("Erreur", "Veuillez sélectionner un fichier avant de sauvegarder.");
-      return true;
-    }
-
+  private static void validateBeforeSave(AppBar.ViewMode currentMode, File selectedFile) {
     if (!AppBar.ViewMode.EDIT.equals(currentMode)) {
-      showError("Erreur", "Vous devez être en mode édition pour sauvegarder.");
-      return true;
+      throw new IllegalArgumentException("Vous devez être en mode édition pour sauvegarder.");
     }
 
-    return false;
+    if (selectedFile == null) {
+        throw new IllegalArgumentException("Veuillez sélectionner un fichier avant de sauvegarder.");
+    }
   }
 
   private static boolean validateSyntaxBeforeWrite(Map<File, FileWritterInput> modifiedFilesData) {
@@ -148,16 +144,14 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
     }
 
     if (!errors.isEmpty()) {
-      showError("Erreurs de syntaxe détectées", errors.toString());
+      showError("Erreurs de syntaxe détectées.\n", errors.toString());
       return false;
     }
     return true;
   }
 
-  private static void saveAllModifiedFiles(
-      AppBar.ViewMode currentMode, HtmlViewer htmlViewer, File selectedFile) {
-
-    if (validateBeforeSave(currentMode, selectedFile)) return;
+  private static void saveAllModifiedFiles(AppBar.ViewMode currentMode, HtmlViewer htmlViewer, File selectedFile) {
+    validateBeforeSave(currentMode, selectedFile);
 
     htmlViewer.saveCurrentContentToMemory();
 
@@ -254,11 +248,13 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
     }
 
     try {
-      for (FileWritterInput input : modifiedFilesData.values()) {
-        new PatriLangFileWritter().write(input);
-        var file = new PatriLangFileContext(input);
-        saveToStaged(input.file(), file.getCategory());
-      }
+      new PatriLangFileWritter()
+          .write(
+              modifiedFilesData.values(),
+              (input) -> {
+                var file = new PatriLangFileContext(input);
+                saveToStaged(input.file(), file.getCategory());
+              });
     } catch (Exception e) {
       if (showExceptionMessageIfRecognizedException(e)) return;
       showError("Erreur", "Une erreur est survenue lors de l'enregistrement");

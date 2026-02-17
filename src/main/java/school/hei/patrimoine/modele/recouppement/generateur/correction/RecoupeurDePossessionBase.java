@@ -132,8 +132,9 @@ public class RecoupeurDePossessionBase<T extends Possession> implements Recoupeu
 
   protected PossessionRecoupee<T> imprevu(Set<Info<T>> imprevus) {
     if (imprevus.size() != 1) {
+      var first = imprevus.stream().findFirst().orElseThrow();
       throw new IllegalArgumentException(
-          "Une opération non prévue doit être rattachée qu'à une seule réalisation");
+            String.format("Opération.nom=%s. Une opération non prévue doit être rattachée qu'à une seule réalisation", first.nom()));
     }
 
     var imprevu = imprevus.stream().findFirst().orElseThrow();
