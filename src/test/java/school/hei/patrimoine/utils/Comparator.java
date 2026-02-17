@@ -1,9 +1,8 @@
 package school.hei.patrimoine.utils;
 
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import school.hei.patrimoine.modele.possession.FluxArgent;
-
-import java.util.List;
 
 @Slf4j
 public class Comparator {
@@ -24,7 +23,7 @@ public class Comparator {
       return false;
     }
 
-    if(!a.getCompte().nom().equals(b.getCompte().nom())) {
+    if (!a.getCompte().nom().equals(b.getCompte().nom())) {
       return false;
     }
 
@@ -32,15 +31,15 @@ public class Comparator {
   }
 
   public static boolean isFluxArgentEquals(List<FluxArgent> a, List<FluxArgent> b) {
-    if(a.size() != b.size()) {
+    if (a.size() != b.size()) {
       return false;
     }
 
-    for(int i = 0; i < a.size(); i++) {
+    for (int i = 0; i < a.size(); i++) {
       var fluxA = a.get(i);
       var fluxB = b.get(i);
 
-      if(!isFluxArgentEquals(fluxA, fluxB)) {
+      if (!isFluxArgentEquals(fluxA, fluxB)) {
         log.error("{} is not equals to {}", fluxA, fluxB);
         return false;
       }

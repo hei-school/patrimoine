@@ -206,7 +206,8 @@ public class PatriLangFilesPage extends LazyPage {
         .logError(false)
         .task(
             () ->
-                RecoupeurDeCasSet.of(null, null, casSetSetter.plannedCasSet(), casSetSetter.doneCasSet())
+                RecoupeurDeCasSet.of(
+                        null, null, casSetSetter.plannedCasSet(), casSetSetter.doneCasSet())
                     .getRecouped())
         .onSuccess(recoupedCasSet -> new CasSetAnalyzer(DISPOSE_ON_CLOSE).accept(recoupedCasSet))
         .onError(

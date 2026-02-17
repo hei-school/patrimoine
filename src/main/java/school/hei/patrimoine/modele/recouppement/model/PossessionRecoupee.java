@@ -1,18 +1,16 @@
-package school.hei.patrimoine.modele.recouppement;
+package school.hei.patrimoine.modele.recouppement.model;
 
 import static school.hei.patrimoine.modele.Argent.ariary;
-import static school.hei.patrimoine.modele.Devise.MGA;
 
-import java.time.LocalDate;
 import java.util.Set;
 import lombok.Builder;
 import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.possession.Correction;
 import school.hei.patrimoine.modele.possession.Possession;
 
-@Builder
-public record PossessionRecoupee(
-    Info prevu, Set<Info> realises, RecoupementStatus status, Set<Correction> corrections) {
+@Builder(toBuilder = true)
+public record PossessionRecoupee<T extends Possession>(
+    Info<T> prevu, Set<Info<T>> realises, Set<Correction> corrections, RecoupementStatus status) {
   public Argent valeurRealisee() {
     var somme = ariary(0);
     for (var realise : realises) {
@@ -40,21 +38,10 @@ public record PossessionRecoupee(
     return info().valeur();
   }
 
-  public Info info() {
-    if (prevu.possession() != null) {
-      return prevu;
+  public Info<T> info() {
+    if (prevu.isEmpty()) {
+      return realises.stream().findFirst().orElseThrow();
     }
-
-    return realises.stream().findFirst().orElseThrow();
-  }
-
-  public record Info(LocalDate t, Argent valeur, Possession possession) {
-    public static Info of(Possession possession) {
-      return new Info(possession.t(), possession.valeurComptable(), possession);
-    }
-
-    public static Info empty() {
-      return new Info(LocalDate.MIN, new Argent(0, MGA), null);
-    }
+    return prevu;
   }
 }

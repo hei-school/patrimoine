@@ -1,4 +1,4 @@
-package school.hei.patrimoine.modele.recouppement;
+package school.hei.patrimoine.modele.recouppement.model;
 
 public enum RecoupementStatus {
   IMPREVU,

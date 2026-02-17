@@ -2,8 +2,8 @@ package school.hei.patrimoine.visualisation.swing.ihm.google.providers;
 
 import static java.time.Month.JANUARY;
 import static org.junit.jupiter.api.Assertions.*;
-import static school.hei.patrimoine.modele.recouppement.CompteGetterFactory.getComptes;
-import static school.hei.patrimoine.modele.recouppement.RecoupementStatus.EXECUTE_SANS_CORRECTION;
+import static school.hei.patrimoine.modele.recouppement.model.CompteGetter.getComptes;
+import static school.hei.patrimoine.modele.recouppement.model.RecoupementStatus.EXECUTE_SANS_CORRECTION;
 
 import java.time.LocalDate;
 import java.util.Map;
@@ -20,7 +20,7 @@ class PossessionRecoupeeProviderTest {
   private static final LocalDate date = LocalDate.of(2025, JANUARY, 1);
 
   private static PossessionRecoupeeProvider subject(Cas doneCas) {
-    return new PossessionRecoupeeProvider(getComptes(doneCas.patrimoine()));
+    return new PossessionRecoupeeProvider(getComptes(doneCas));
   }
 
   @Test

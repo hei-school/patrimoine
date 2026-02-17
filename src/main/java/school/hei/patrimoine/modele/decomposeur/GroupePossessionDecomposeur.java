@@ -1,5 +1,7 @@
 package school.hei.patrimoine.modele.decomposeur;
 
+import static school.hei.patrimoine.modele.decomposeur.PossessionDecomposeurFacade.decompose;
+
 import java.time.LocalDate;
 import java.util.List;
 import school.hei.patrimoine.modele.possession.GroupePossession;
@@ -14,11 +16,7 @@ public class GroupePossessionDecomposeur
   @Override
   public List<Possession> apply(GroupePossession groupePossession) {
     return groupePossession.getPossessions().stream()
-        .map(
-            possession -> {
-              var decomposeur = PossessionDecomposeurFactory.make(possession, getDebut(), getFin());
-              return decomposeur.apply(possession);
-            })
+        .map(possession -> decompose(possession, getDebut(), getFin()))
         .flatMap(List::stream)
         .toList();
   }

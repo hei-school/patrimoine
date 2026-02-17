@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 import school.hei.patrimoine.cas.Cas;
 import school.hei.patrimoine.cas.CasSet;
-import school.hei.patrimoine.modele.recouppement.CompteGetterFactory;
+import school.hei.patrimoine.modele.recouppement.model.CompteGetter;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.AppContext;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.FileSideBar;
 
@@ -37,7 +37,7 @@ public class CasSetSetter {
         .update(
             Map.of(
                 "casSetComptes",
-                CompteGetterFactory.getComptes(doneCasSet),
+                CompteGetter.getComptes(doneCasSet),
                 "plannedCasSet",
                 plannedCasSet,
                 "doneCasSet",

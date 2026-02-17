@@ -7,5 +7,6 @@ import java.util.function.Function;
 public interface PossessionDecomposeur<ToDecompose, Decomposed>
     extends Function<ToDecompose, List<Decomposed>> {
   LocalDate getFin();
+
   LocalDate getDebut();
 }

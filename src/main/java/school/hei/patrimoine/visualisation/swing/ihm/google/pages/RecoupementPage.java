@@ -16,9 +16,10 @@ import javax.swing.*;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import school.hei.patrimoine.modele.possession.Compte;
+import school.hei.patrimoine.modele.possession.Possession;
 import school.hei.patrimoine.modele.possession.pj.PieceJustificative;
-import school.hei.patrimoine.modele.recouppement.PossessionRecoupee;
-import school.hei.patrimoine.modele.recouppement.RecoupementStatus;
+import school.hei.patrimoine.modele.recouppement.model.PossessionRecoupee;
+import school.hei.patrimoine.modele.recouppement.model.RecoupementStatus;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.Footer;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.PlaceholderTextField;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.LazyPage;
@@ -208,7 +209,7 @@ public class RecoupementPage extends LazyPage {
     add(horizontalSplit, BorderLayout.CENTER);
   }
 
-  private List<PossessionRecoupee> getFilteredPossessionRecoupees() {
+  private List<PossessionRecoupee<Possession>> getFilteredPossessionRecoupees() {
     var plannedCas = casSetSetter.getCas(state.get("selectedFile"), casSetSetter.plannedCasSet());
     var doneCas = casSetSetter.getCas(state.get("selectedFile"), casSetSetter.doneCasSet());
     Set<Compte> casSetComptes = globalState().get("casSetComptes");
@@ -228,8 +229,11 @@ public class RecoupementPage extends LazyPage {
     var provider = new PossessionRecoupeeProvider(casSetComptes);
     var meta = new PossessionRecoupeeProvider.Meta(plannedCas, doneCas);
     var filter =
-        new PossessionRecoupeeProvider.Filter(
-            statusToKeep, state.get("pagination"), state.get("filterName"));
+        PossessionRecoupeeProvider.Filter.builder()
+            .statuses(statusToKeep)
+            .pagination(state.get("pagination"))
+            .filterName(state.get("filterName"))
+            .build();
 
     var result = provider.getList(meta, filter);
     if (result.totalPage() != (int) state.get("totalPages")) {
@@ -251,11 +255,11 @@ public class RecoupementPage extends LazyPage {
     var pjs = pjsRetriever.apply(casFile);
     var pjFilter = (PieceJustificativeFilter) state.get("filterPJ");
 
-    AsyncTask.<List<PossessionRecoupee>>builder()
+    AsyncTask.<List<PossessionRecoupee<Possession>>>builder()
         .task(this::getFilteredPossessionRecoupees)
         .onSuccess(
             list -> {
-              Set<PossessionRecoupee> filtered =
+              Set<PossessionRecoupee<Possession>> filtered =
                   list.stream()
                       .filter(pr -> keepAccordingToPJFilter(pr, pjs, pjFilter))
                       .collect(toSet());

@@ -1,8 +1,8 @@
 package school.hei.patrimoine.modele.recouppement;
 
 import static java.util.stream.Collectors.toSet;
-import static school.hei.patrimoine.modele.recouppement.CompteGetterFactory.getComptes;
 import static school.hei.patrimoine.modele.recouppement.RecoupeurDePossessions.withoutCompteCorrections;
+import static school.hei.patrimoine.modele.recouppement.model.CompteGetter.getComptes;
 
 import java.time.LocalDate;
 import java.util.Set;
@@ -13,6 +13,7 @@ import school.hei.patrimoine.cas.CasSet;
 import school.hei.patrimoine.modele.Devise;
 import school.hei.patrimoine.modele.possession.Compte;
 import school.hei.patrimoine.modele.possession.Possession;
+import school.hei.patrimoine.modele.recouppement.model.CompteGetter;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -58,14 +59,9 @@ public class RecoupeurDeCasSet {
     var plannedCas = getPlannedCas(doneCas, plannedCasSet);
     var possessions = withoutCompteCorrections(doneCas.patrimoine().getPossessions());
 
-    var corrections =
-        RecoupeurDePossessions.of(
-                debut,
-                fin,
-                plannedCas.patrimoine(),
-                doneCas.patrimoine(),
-                CompteGetterFactory.make(doneCas, getCasSetComptes()))
-            .getCorrections();
+    RecoupeurDePossessions.of(
+            debut, fin, plannedCas, doneCas, CompteGetter.make(doneCas, getCasSetComptes()))
+        .getCorrections();
 
     return new Cas(
         doneCas.getAjd(), doneCas.getFinSimulation(), doneCas.patrimoine().getPossesseurs()) {

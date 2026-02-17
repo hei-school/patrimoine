@@ -1,7 +1,7 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.component.recoupement;
 
 import static java.util.stream.Collectors.joining;
-import static school.hei.patrimoine.modele.recouppement.RecoupementStatus.IMPREVU;
+import static school.hei.patrimoine.modele.recouppement.model.RecoupementStatus.IMPREVU;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.component.app.ViewFactory.make;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.MessageDialog.*;
 
@@ -13,8 +13,9 @@ import java.util.Set;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import school.hei.patrimoine.modele.possession.FluxArgent;
-import school.hei.patrimoine.modele.recouppement.PossessionRecoupee;
-import school.hei.patrimoine.modele.recouppement.PossessionRecoupee.Info;
+import school.hei.patrimoine.modele.possession.Possession;
+import school.hei.patrimoine.modele.recouppement.model.Info;
+import school.hei.patrimoine.modele.recouppement.model.PossessionRecoupee;
 import school.hei.patrimoine.patrilang.files.PatriLangFileQuerier;
 import school.hei.patrimoine.patrilang.files.PatriLangFileWritter;
 import school.hei.patrimoine.patrilang.files.PatriLangFileWritter.FileWritterInput;
@@ -32,16 +33,17 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.modele.formatter.Dat
 
 public class PossessionRecoupeeRealisationsDialog extends Dialog {
   private final State state;
-  private final Set<Info> pendingInfos;
+  private final Set<Info<Possession>> pendingInfos;
   private final PatriLangFileWritter writter;
   private final PatriLangFileQuerier querier;
-  private final PossessionRecoupee possessionRecoupee;
+  private final PossessionRecoupee<Possession> possessionRecoupee;
 
-  private DefaultListModel<Info> realisesModel;
+  private DefaultListModel<Info<Possession>> realisesModel;
   private final JPanel contentPanel;
   private MultiViews pageManager;
 
-  public PossessionRecoupeeRealisationsDialog(State state, PossessionRecoupee possessionRecoupee) {
+  public PossessionRecoupeeRealisationsDialog(
+      State state, PossessionRecoupee<Possession> possessionRecoupee) {
     super("Exécutions d'opération", 700, 600, false);
 
     this.state = state;
@@ -135,7 +137,7 @@ public class PossessionRecoupeeRealisationsDialog extends Dialog {
     return panel;
   }
 
-  private Info buildInfoFromForm(AddRecoupementExecutionForm form) {
+  private Info<Possession> buildInfoFromForm(AddRecoupementExecutionForm form) {
     var generator = PossessionGeneratorFactory.make(possessionRecoupee.possession());
     Map<String, Object> args =
         switch (possessionRecoupee.possession()) {
@@ -149,7 +151,9 @@ public class PossessionRecoupeeRealisationsDialog extends Dialog {
           default -> throw new IllegalArgumentException("Type non supporté");
         };
     var newPossession = generator.apply(args);
-    return new Info(form.getDate(), form.getValeur(), newPossession);
+    // TODO: fix possession à corrigé
+    return new Info<>(
+        newPossession.nom(), form.getDate(), form.getValeur(), newPossession, newPossession);
   }
 
   private void addTitle() {
@@ -162,7 +166,7 @@ public class PossessionRecoupeeRealisationsDialog extends Dialog {
     add(title, BorderLayout.NORTH);
   }
 
-  private void register(Info info) {
+  private void register(Info<Possession> info) {
     if (alreadyExist(info)) {
       throw new IllegalArgumentException(
           String.format("L'exécution nom=%s est déjà utilisée", info.possession().nom()));
@@ -172,12 +176,12 @@ public class PossessionRecoupeeRealisationsDialog extends Dialog {
     realisesModel.addElement(info);
   }
 
-  private boolean alreadyExist(Info candiate) {
-    Set<Info> exists = new HashSet<>(possessionRecoupee.realises());
+  private boolean alreadyExist(Info<Possession> candidate) {
+    Set<Info<Possession>> exists = new HashSet<>(possessionRecoupee.realises());
     exists.addAll(pendingInfos);
 
     return exists.stream()
-        .anyMatch(info -> info.possession().nom().equals(candiate.possession().nom()));
+        .anyMatch(info -> info.possession().nom().equals(candidate.possession().nom()));
   }
 
   private void saveExecutions() {

@@ -2,7 +2,7 @@ package school.hei.patrimoine.modele.decomposeur;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static school.hei.patrimoine.modele.Argent.ariary;
-import static school.hei.patrimoine.modele.decomposeur.FluxArgentDecomposeur.getDecomposedId;
+import static school.hei.patrimoine.modele.decomposeur.IdRetriever.getDecomposedId;
 import static school.hei.patrimoine.utils.Comparator.isFluxArgentEquals;
 
 import java.time.LocalDate;

@@ -3,8 +3,9 @@ package school.hei.patrimoine.visualisation.swing.ihm.google.component.recoupeme
 import java.util.Set;
 import javax.swing.*;
 import lombok.extern.slf4j.Slf4j;
+import school.hei.patrimoine.modele.possession.Possession;
 import school.hei.patrimoine.modele.possession.pj.PieceJustificative;
-import school.hei.patrimoine.modele.recouppement.PossessionRecoupee;
+import school.hei.patrimoine.modele.recouppement.model.PossessionRecoupee;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
 
 @Slf4j
@@ -21,7 +22,8 @@ public class PossessionRecoupeeListPanel extends JPanel {
   }
 
   public void update(
-      Set<PossessionRecoupee> possessions, Set<PieceJustificative> piecesJustificatives) {
+      Set<PossessionRecoupee<Possession>> possessions,
+      Set<PieceJustificative> piecesJustificatives) {
 
     removeAll();
 

@@ -1,5 +1,6 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.providers;
 
+import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
@@ -8,32 +9,40 @@ import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import school.hei.patrimoine.cas.Cas;
 import school.hei.patrimoine.modele.possession.Compte;
-import school.hei.patrimoine.modele.recouppement.CompteGetterFactory;
-import school.hei.patrimoine.modele.recouppement.PossessionRecoupee;
-import school.hei.patrimoine.modele.recouppement.RecoupementStatus;
+import school.hei.patrimoine.modele.possession.Possession;
 import school.hei.patrimoine.modele.recouppement.RecoupeurDePossessions;
+import school.hei.patrimoine.modele.recouppement.model.CompteGetter;
+import school.hei.patrimoine.modele.recouppement.model.PossessionRecoupee;
+import school.hei.patrimoine.modele.recouppement.model.RecoupementStatus;
 import school.hei.patrimoine.visualisation.swing.ihm.google.providers.model.Pagination;
 
+// TODO: refactor
 @RequiredArgsConstructor
 public class PossessionRecoupeeProvider {
   private final Set<Compte> casSetComptes;
 
-  @Builder
+  @Builder(toBuilder = true)
   public record Meta(Cas planned, Cas done) {}
 
-  @Builder
-  public record Filter(Set<RecoupementStatus> statuses, Pagination pagination, String filterName) {}
+  @Builder(toBuilder = true)
+  public record Filter(
+      LocalDate debut,
+      LocalDate fin,
+      Set<RecoupementStatus> statuses,
+      Pagination pagination,
+      String filterName) {}
 
-  public record Result(List<PossessionRecoupee> possessionRecoupees, int totalPage) {}
+  @Builder(toBuilder = true)
+  public record Result(List<PossessionRecoupee<Possession>> possessionRecoupees, int totalPage) {}
 
   public Result getList(Meta meta, Filter filter) {
     var recoupeur =
         RecoupeurDePossessions.of(
-            meta.planned().getFinSimulation(),
-            meta.planned().getFinSimulation(),
-            meta.planned().patrimoine(),
-            meta.done().patrimoine(),
-            CompteGetterFactory.make(meta.done(), casSetComptes));
+            filter.debut(),
+            filter.fin(),
+            meta.planned(),
+            meta.done(),
+            CompteGetter.make(meta.done(), casSetComptes));
 
     var all = recoupeur.getPossessionsRecoupees();
     var filterName = filter.filterName() == null ? "" : filter.filterName().trim().toLowerCase();
@@ -45,7 +54,9 @@ public class PossessionRecoupeeProvider {
                 p ->
                     filterName.isBlank()
                         || p.possession().nom().toLowerCase().contains(filterName.toLowerCase()))
-            .sorted(Comparator.comparing((PossessionRecoupee p) -> p.possession().t()).reversed())
+            .sorted(
+                Comparator.comparing((PossessionRecoupee<Possession> p) -> p.possession().t())
+                    .reversed())
             .collect(Collectors.toList());
 
     int from = (filter.pagination().page() - 1) * filter.pagination().size();
