@@ -27,4 +27,8 @@ public class MessageDialog {
 
     return false;
   }
+
+  public static void showError(Exception error){
+    showError("Erreur", error.getMessage());
+  }
 }

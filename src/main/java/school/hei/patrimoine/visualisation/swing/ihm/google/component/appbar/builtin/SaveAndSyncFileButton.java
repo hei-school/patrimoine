@@ -42,9 +42,14 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
         List.of(
             new PopupItem(
                 "Sauvegarder localement",
-                e ->
+                e -> {
+                  try {
                     saveAllModifiedFiles(
-                        state.get("viewMode"), htmlViewer, state.get("selectedFile"))),
+                        state.get("viewMode"), htmlViewer, state.get("selectedFile"));
+                  } catch (Exception exception) {
+                    showError(exception);
+                  }
+                }),
             new PopupItem(
                 "Synchroniser avec Drive",
                 e ->
@@ -123,43 +128,17 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
     }
 
     if (selectedFile == null) {
-        throw new IllegalArgumentException("Veuillez sélectionner un fichier avant de sauvegarder.");
+      throw new IllegalArgumentException("Veuillez sélectionner un fichier avant de sauvegarder.");
     }
   }
 
-  private static boolean validateSyntaxBeforeWrite(Map<File, FileWritterInput> modifiedFilesData) {
-    var errors = new StringBuilder();
-
-    for (var entry : modifiedFilesData.entrySet()) {
-      var file = entry.getKey();
-      var content = entry.getValue().content();
-
-      List<String> syntaxErrors = PatriLangSyntaxValidator.validate(content);
-
-      if (!syntaxErrors.isEmpty()) {
-        errors.append("Fichier : ").append(file.getName()).append("\n");
-
-        syntaxErrors.forEach(error -> errors.append(" - ").append(error).append("\n"));
-      }
-    }
-
-    if (!errors.isEmpty()) {
-      showError("Erreurs de syntaxe détectées.\n", errors.toString());
-      return false;
-    }
-    return true;
-  }
-
-  private static void saveAllModifiedFiles(AppBar.ViewMode currentMode, HtmlViewer htmlViewer, File selectedFile) {
+  private static void saveAllModifiedFiles(
+      AppBar.ViewMode currentMode, HtmlViewer htmlViewer, File selectedFile) {
     validateBeforeSave(currentMode, selectedFile);
 
     htmlViewer.saveCurrentContentToMemory();
 
     Map<File, FileWritterInput> modifiedFilesData = htmlViewer.getModifiedFilesData();
-
-    if (!validateSyntaxBeforeWrite(modifiedFilesData)) {
-      return;
-    }
 
     if (modifiedFilesData.isEmpty()) {
       showInfo("Information", "Aucune modification à sauvegarder.");
@@ -236,7 +215,7 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
       File selectedFile,
       Callable<Void> onSuccess) {
 
-    if (validateBeforeSave(currentMode, selectedFile)) return;
+    validateBeforeSave(currentMode, selectedFile);
 
     htmlViewer.saveCurrentContentToMemory();
 

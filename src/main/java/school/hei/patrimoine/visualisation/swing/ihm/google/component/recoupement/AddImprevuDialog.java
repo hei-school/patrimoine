@@ -2,6 +2,7 @@ package school.hei.patrimoine.visualisation.swing.ihm.google.component.recoupeme
 
 import static java.util.Objects.requireNonNull;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.MessageDialog.*;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.providers.FilesProvider.getDoneCasSetFile;
 
 import java.awt.*;
 import java.io.File;
@@ -23,7 +24,6 @@ import school.hei.patrimoine.patrilang.modele.PatriLangCas;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.Dialog;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.AppContext;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
-import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.FileSideBar;
 import school.hei.patrimoine.visualisation.swing.ihm.google.generator.possession.FluxArgentExecutionGenerator;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.AsyncTask;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
@@ -120,7 +120,8 @@ public class AddImprevuDialog extends Dialog {
   private void saveExecutions(FluxArgent fluxArgent) {
     var lineGenerator = PatriLangGeneratorFactory.make(fluxArgent);
     var line = lineGenerator.apply(fluxArgent);
-    File casSet = FileSideBar.getDoneCasSetFile();
+
+    File casSet = getDoneCasSetFile();
     File selectedFile = state.get("selectedFile");
 
     AsyncTask.<Void>builder()
