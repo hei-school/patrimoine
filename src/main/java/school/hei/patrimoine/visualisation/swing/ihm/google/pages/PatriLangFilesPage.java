@@ -1,5 +1,6 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.pages;
 
+import static javax.swing.SwingUtilities.invokeLater;
 import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
 import static school.hei.patrimoine.patrilang.PatriLangTranspiler.TOUT_CAS_FILE_EXTENSION;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.AppBar.*;
@@ -11,6 +12,7 @@ import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.File;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.List;
 import javax.swing.*;
@@ -48,8 +50,8 @@ public class PatriLangFilesPage extends LazyPage {
   private final CasSetSetter casSetSetter;
   private final LocalCommentActions localCommentActions;
 
-  private final HtmlViewer htmlViewer;
   private Button addImprevuButton;
+  private final HtmlViewer htmlViewer;
   private CommentSideBar commentSideBar;
 
   public PatriLangFilesPage() {
@@ -206,16 +208,15 @@ public class PatriLangFilesPage extends LazyPage {
         .logError(false)
         .task(
             () ->
-                RecoupeurDeCasSet.of(
-                        null, null, casSetSetter.plannedCasSet(), casSetSetter.doneCasSet())
+                RecoupeurDeCasSet.of(LocalDate.MIN, LocalDate.MAX, casSetSetter.plannedCasSet(), casSetSetter.doneCasSet())
                     .getRecouped())
         .onSuccess(recoupedCasSet -> new CasSetAnalyzer(DISPOSE_ON_CLOSE).accept(recoupedCasSet))
         .onError(
             error -> {
               while (error != null) {
-                if (error instanceof ObjectifExeption exeption) {
-                  var objectifs = exeption.getObjectifNonAtteints();
-                  SwingUtilities.invokeLater(() -> new ObjectifNonAtteintsDialog(objectifs));
+                if (error instanceof ObjectifExeption exception) {
+                  var objectifs = exception.getObjectifNonAtteints();
+                  invokeLater(() -> new ObjectifNonAtteintsDialog(objectifs));
                   return;
                 }
                 error = (Exception) error.getCause();

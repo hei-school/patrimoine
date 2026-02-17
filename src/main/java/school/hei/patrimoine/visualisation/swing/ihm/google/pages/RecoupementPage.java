@@ -232,7 +232,7 @@ public class RecoupementPage extends LazyPage {
         PossessionRecoupeeProvider.Filter.builder()
             .statuses(statusToKeep)
             .pagination(state.get("pagination"))
-            .filterName(state.get("filterName"))
+            .nom(state.get("filterName"))
             .build();
 
     var result = provider.getList(meta, filter);
@@ -240,7 +240,7 @@ public class RecoupementPage extends LazyPage {
       state.update("totalPages", result.totalPage());
     }
 
-    return result.possessionRecoupees();
+    return result.data();
   }
 
   @Override
@@ -272,7 +272,7 @@ public class RecoupementPage extends LazyPage {
   }
 
   private boolean keepAccordingToPJFilter(
-      PossessionRecoupee possession,
+      PossessionRecoupee<Possession> possession,
       Set<PieceJustificative> pieces,
       PieceJustificativeFilter filter) {
 
