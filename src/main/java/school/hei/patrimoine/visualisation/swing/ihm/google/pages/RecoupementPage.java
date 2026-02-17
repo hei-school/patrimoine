@@ -59,7 +59,7 @@ public class RecoupementPage extends LazyPage {
                 "totalPages",
                 1,
                 "filterStatus",
-                TOUT,
+                PossessionRecoupeeFilterStatus.TOUT,
                 "filterPJ",
                 PieceJustificativeFilter.TOUT,
                 "pagination",
