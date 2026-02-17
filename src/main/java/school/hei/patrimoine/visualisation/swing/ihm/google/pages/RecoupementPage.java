@@ -6,6 +6,7 @@ import static school.hei.patrimoine.visualisation.swing.ihm.google.config.Enviro
 import static school.hei.patrimoine.visualisation.swing.ihm.google.pages.PatriLangFilesPage.addImprevuButton;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.pages.RecoupementPage.PieceJustificativeFilter.SANS_PJ;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.pages.RecoupementPage.PieceJustificativeFilter.TOUT;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.providers.FilesProvider.getDonePatrilangFilesWithoutCasSet;
 
 import java.awt.*;
 import java.awt.event.KeyAdapter;
@@ -29,7 +30,6 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.App
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.NavigateButton;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.FileListCellRenderer;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.FileListModel;
-import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.FileSideBar;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.recoupement.PossessionRecoupeeListPanel;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.AsyncTask;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.CasSetSetter;
@@ -179,7 +179,7 @@ public class RecoupementPage extends LazyPage {
   }
 
   private void addMainSplitPane() {
-    var fileList = new JList<>(new FileListModel(FileSideBar.getDonePatrilangFilesWithoutCasSet()));
+    var fileList = new JList<>(new FileListModel(getDonePatrilangFilesWithoutCasSet()));
     fileList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     fileList.setCellRenderer(new FileListCellRenderer());
 
@@ -200,9 +200,9 @@ public class RecoupementPage extends LazyPage {
         });
 
     var horizontalSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+    horizontalSplit.setDividerLocation(200);
     horizontalSplit.setLeftComponent(new JScrollPane(fileList));
     horizontalSplit.setRightComponent(possessionRecoupeeListPanel.toScrollPane());
-    horizontalSplit.setDividerLocation(200);
 
     add(horizontalSplit, BorderLayout.CENTER);
   }
