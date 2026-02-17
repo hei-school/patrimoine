@@ -208,7 +208,11 @@ public class PatriLangFilesPage extends LazyPage {
         .logError(false)
         .task(
             () ->
-                RecoupeurDeCasSet.of(LocalDate.MIN, LocalDate.MAX, casSetSetter.plannedCasSet(), casSetSetter.doneCasSet())
+                RecoupeurDeCasSet.of(
+                        LocalDate.MIN,
+                        LocalDate.MAX,
+                        casSetSetter.plannedCasSet(),
+                        casSetSetter.doneCasSet())
                     .getRecouped())
         .onSuccess(recoupedCasSet -> new CasSetAnalyzer(DISPOSE_ON_CLOSE).accept(recoupedCasSet))
         .onError(

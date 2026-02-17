@@ -4,8 +4,7 @@ import static java.util.Objects.requireNonNull;
 import static school.hei.patrimoine.patrilang.PatriLangTranspiler.*;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.config.EnvironmentConfig.isOfflineMode;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.FileCategory.*;
-import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.GoogleLinkListDownloader.getDoneDirectoryPath;
-import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.GoogleLinkListDownloader.getPlannedDirectoryPath;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.GoogleLinkListDownloader.*;
 
 import java.awt.*;
 import java.io.File;
@@ -216,9 +215,7 @@ public class FileSideBar extends JPanel {
   }
 
   public static List<File> getPatriLangJustificativeFiles() {
-    return Arrays.stream(
-            requireNonNull(
-                new File(GoogleLinkListDownloader.getJustificativeDirectoryPath()).listFiles()))
+    return Arrays.stream(requireNonNull(new File(getJustificativeDirectoryPath()).listFiles()))
         .filter(file -> file.getName().endsWith(PJ_FILE_EXTENSION))
         .toList();
   }

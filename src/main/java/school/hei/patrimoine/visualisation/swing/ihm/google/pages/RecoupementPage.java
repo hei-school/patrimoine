@@ -4,12 +4,14 @@ import static java.util.stream.Collectors.toSet;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.AppBar.builtInUserInfoPanel;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.config.EnvironmentConfig.isOnlineMode;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.pages.PatriLangFilesPage.addImprevuButton;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.pages.RecoupementPage.PieceJustificativeFilter.SANS_PJ;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.pages.RecoupementPage.PieceJustificativeFilter.TOUT;
 
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.File;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.List;
 import javax.swing.*;
@@ -28,14 +30,14 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Nav
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.FileListCellRenderer;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.FileListModel;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.FileSideBar;
-import school.hei.patrimoine.visualisation.swing.ihm.google.component.recoupement.PieceJustificativeMatcher;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.recoupement.PossessionRecoupeeListPanel;
-import school.hei.patrimoine.visualisation.swing.ihm.google.component.recoupement.pj.PJRetriever;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.AsyncTask;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.CasSetSetter;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.Debouncer;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
+import school.hei.patrimoine.visualisation.swing.ihm.google.providers.PJProvider;
 import school.hei.patrimoine.visualisation.swing.ihm.google.providers.PossessionRecoupeeProvider;
+import school.hei.patrimoine.visualisation.swing.ihm.google.providers.PossessionRecoupeeProvider.*;
 import school.hei.patrimoine.visualisation.swing.ihm.google.providers.model.Pagination;
 
 @Slf4j
@@ -43,12 +45,9 @@ public class RecoupementPage extends LazyPage {
   public static final String PAGE_NAME = "recoupement";
   public static final int RECOUPEMENT_ITEM_PER_PAGE = 50;
 
-  private final CasSetSetter casSetSetter;
   private final State state;
-
+  private final CasSetSetter casSetSetter;
   private final PossessionRecoupeeListPanel possessionRecoupeeListPanel;
-
-  private final PieceJustificativeMatcher pjMatcher = new PieceJustificativeMatcher();
 
   public RecoupementPage() {
     super(PAGE_NAME);
@@ -60,7 +59,7 @@ public class RecoupementPage extends LazyPage {
                 "totalPages",
                 1,
                 "filterStatus",
-                PossessionRecoupeeFilterStatus.TOUT,
+                TOUT,
                 "filterPJ",
                 PieceJustificativeFilter.TOUT,
                 "pagination",
@@ -78,7 +77,6 @@ public class RecoupementPage extends LazyPage {
 
   @Override
   protected void init() {
-
     addAppBar();
     addMainSplitPane();
     addFooter();
@@ -104,7 +102,7 @@ public class RecoupementPage extends LazyPage {
   }
 
   public enum PieceJustificativeFilter {
-    TOUT("Aucune"),
+    TOUT("Tout"),
     AVEC_PJ("Avec pj"),
     SANS_PJ("Sans pj");
 
@@ -227,10 +225,13 @@ public class RecoupementPage extends LazyPage {
     }
 
     var provider = new PossessionRecoupeeProvider(casSetComptes);
-    var meta = new PossessionRecoupeeProvider.Meta(plannedCas, doneCas);
+    var meta = new Meta(plannedCas, doneCas);
     var filter =
-        PossessionRecoupeeProvider.Filter.builder()
+        Filter.builder()
             .statuses(statusToKeep)
+            // TODO: add correct filter for performance
+            .debut(LocalDate.MIN)
+            .fin(LocalDate.MAX)
             .pagination(state.get("pagination"))
             .nom(state.get("filterName"))
             .build();
@@ -251,7 +252,7 @@ public class RecoupementPage extends LazyPage {
 
     var casFile = (File) state.get("selectedFile");
 
-    var pjsRetriever = new PJRetriever();
+    var pjsRetriever = new PJProvider();
     var pjs = pjsRetriever.apply(casFile);
     var pjFilter = (PieceJustificativeFilter) state.get("filterPJ");
 
@@ -259,7 +260,7 @@ public class RecoupementPage extends LazyPage {
         .task(this::getFilteredPossessionRecoupees)
         .onSuccess(
             list -> {
-              Set<PossessionRecoupee<Possession>> filtered =
+              var filtered =
                   list.stream()
                       .filter(pr -> keepAccordingToPJFilter(pr, pjs, pjFilter))
                       .collect(toSet());
@@ -273,19 +274,18 @@ public class RecoupementPage extends LazyPage {
 
   private boolean keepAccordingToPJFilter(
       PossessionRecoupee<Possession> possession,
-      Set<PieceJustificative> pieces,
+      Map<String, PieceJustificative> pieces,
       PieceJustificativeFilter filter) {
 
-    if (filter == TOUT) {
+    if (TOUT.equals(filter)) {
       return true;
     }
 
     if (!possession.hasSupportingDocument()) {
-      return filter == PieceJustificativeFilter.SANS_PJ;
+      return SANS_PJ.equals(filter);
     }
 
-    var hasPJ = pjMatcher.findMatchingPiece(pieces, possession.possession().nom()) != null;
-
+    var hasPJ = pieces.containsKey(possession.possession().nom());
     return switch (filter) {
       case AVEC_PJ -> hasPJ;
       case SANS_PJ -> !hasPJ;

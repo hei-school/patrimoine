@@ -1,5 +1,6 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.component.recoupement;
 
+import java.util.Map;
 import java.util.Set;
 import javax.swing.*;
 import lombok.extern.slf4j.Slf4j;
@@ -11,7 +12,6 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
 @Slf4j
 public class PossessionRecoupeeListPanel extends JPanel {
   private final State state;
-  private final PieceJustificativeMatcher matcher = new PieceJustificativeMatcher();
 
   public PossessionRecoupeeListPanel(State state) {
     super();
@@ -22,21 +22,14 @@ public class PossessionRecoupeeListPanel extends JPanel {
   }
 
   public void update(
-      Set<PossessionRecoupee<Possession>> possessions,
-      Set<PieceJustificative> piecesJustificatives) {
-
+      Set<PossessionRecoupee<Possession>> recoupees, Map<String, PieceJustificative> pjs) {
     removeAll();
 
-    Set<PieceJustificative> pjSet = piecesJustificatives == null ? Set.of() : piecesJustificatives;
-    possessions.forEach(
+    recoupees.forEach(
         possession -> {
-          PieceJustificative matched = null;
-
-          if (possession.hasSupportingDocument()) {
-            matched = matcher.findMatchingPiece(pjSet, possession.possession().nom());
-          }
-
-          add(new PossessionRecoupeeItem(state, possession, matched));
+          add(
+              new PossessionRecoupeeItem(
+                  state, possession, pjs.getOrDefault(possession.possession().nom(), null)));
           add(Box.createVerticalStrut(10));
         });
 
