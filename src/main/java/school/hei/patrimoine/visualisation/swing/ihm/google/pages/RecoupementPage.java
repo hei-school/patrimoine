@@ -1,7 +1,5 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.pages;
 
-import static school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.AppBar.builtInUserInfoPanel;
-import static school.hei.patrimoine.visualisation.swing.ihm.google.config.EnvironmentConfig.isOnlineMode;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.pages.PatriLangFilesPage.addImprevuButton;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.providers.FilesProvider.getDonePatrilangFilesWithoutCasSet;
 
@@ -26,6 +24,7 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Nav
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.FileListCellRenderer;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.FileListModel;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.recoupement.PossessionRecoupeeListPanel;
+import school.hei.patrimoine.visualisation.swing.ihm.google.mode.AppMode;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.*;
 import school.hei.patrimoine.visualisation.swing.ihm.google.providers.PossessionRecoupeeProvider;
 import school.hei.patrimoine.visualisation.swing.ihm.google.providers.PossessionRecoupeeProvider.*;
@@ -35,13 +34,15 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.providers.model.Pagi
 public class RecoupementPage extends LazyPage {
   public static final String PAGE_NAME = "recoupement";
   public static final int RECOUPEMENT_ITEM_PER_PAGE = 50;
+  private final AppMode MODE;
 
   private final State state;
   private final CasSetSetter casSetSetter;
   private final PossessionRecoupeeListPanel possessionRecoupeeListPanel;
 
-  public RecoupementPage() {
+  public RecoupementPage(AppMode mode) {
     super(PAGE_NAME);
+    this.MODE = mode;
     this.casSetSetter = CasSetSetter.getInstance();
 
     this.state =
@@ -107,7 +108,7 @@ public class RecoupementPage extends LazyPage {
                 statusFilter,
                 addImprevuButton,
                 nameFilter),
-            !isOnlineMode() ? List.of() : List.of(builtInUserInfoPanel()));
+            MODE.appBarRightComponents(state));
 
     add(appBar, BorderLayout.NORTH);
   }

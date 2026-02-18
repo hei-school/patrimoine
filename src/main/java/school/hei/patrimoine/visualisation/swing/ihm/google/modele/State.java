@@ -22,6 +22,10 @@ public class State {
     return (T) data.get(key);
   }
 
+  public boolean has(String key) {
+    return data.containsKey(key);
+  }
+
   public void update(Map<String, Object> newData) {
     data.putAll(newData);
     notifyObservers(newData.keySet());

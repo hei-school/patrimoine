@@ -57,6 +57,15 @@ public class AppBar extends JPanel {
   }
 
   public static JPanel builtInFontSizeControllerButton(State state) {
+
+    /**
+     * This condition is necessary to avoid displaying the font size controller on pages where it is
+     * not relevant.
+     */
+    if (!state.has("fontSize")) {
+      return new JPanel();
+    }
+
     var increaseFontButton = new Button("+");
     var decreaseFontButton = new Button("-");
 

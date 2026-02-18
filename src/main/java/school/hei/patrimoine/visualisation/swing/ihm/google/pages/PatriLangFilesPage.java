@@ -3,8 +3,6 @@ package school.hei.patrimoine.visualisation.swing.ihm.google.pages;
 import static school.hei.patrimoine.patrilang.PatriLangTranspiler.TOUT_CAS_FILE_EXTENSION;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.AppBar.*;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.component.html.ViewMode.VIEW;
-import static school.hei.patrimoine.visualisation.swing.ihm.google.config.EnvironmentConfig.isOfflineMode;
-import static school.hei.patrimoine.visualisation.swing.ihm.google.config.EnvironmentConfig.isOnlineMode;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.MessageDialog.showError;
 
 import java.awt.*;
@@ -29,6 +27,8 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.component.comment.Lo
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.FileSideBar;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.html.HtmlViewer;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.recoupement.AddImprevuDialog;
+import school.hei.patrimoine.visualisation.swing.ihm.google.mode.AppMode;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.AsyncTask;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.CasSetSetter;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.Debouncer;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
@@ -47,8 +47,9 @@ public class PatriLangFilesPage extends LazyPage {
   private final HtmlViewer htmlViewer;
   private CommentSideBar commentSideBar;
 
-  public PatriLangFilesPage() {
+  public PatriLangFilesPage(AppMode mode) {
     super(PAGE_NAME);
+    this.MODE = mode;
     this.casSetSetter = CasSetSetter.getInstance();
     this.localCommentActions = new LocalCommentActions(LocalCommentManager.getInstance());
 
@@ -95,6 +96,7 @@ public class PatriLangFilesPage extends LazyPage {
 
   private SaveAndSyncFileButton saveAndSyncFileButton() {
     return new SaveAndSyncFileButton(
+        MODE,
         state,
         htmlViewer,
         () -> {
@@ -116,21 +118,19 @@ public class PatriLangFilesPage extends LazyPage {
                 recoupementButton(),
                 addImprevuButton,
                 addSearchTextBar()),
-            isOfflineMode()
-                ? List.of(builtInFontSizeControllerButton(state))
-                : List.of(builtInFontSizeControllerButton(state), builtInUserInfoPanel()));
+            MODE.appBarRightComponents(state));
 
     add(appBar, BorderLayout.NORTH);
   }
 
   private void addMainSplitPane() {
     var horizontalSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-    horizontalSplit.setLeftComponent(new FileSideBar(state));
+    horizontalSplit.setLeftComponent(new FileSideBar(state, MODE));
 
     var rightSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
     rightSplit.setLeftComponent(new JScrollPane(htmlViewer));
 
-    if (isOnlineMode()) {
+    if (MODE.enableComments()) {
       this.commentSideBar = new CommentSideBar(state, localCommentActions);
       rightSplit.setRightComponent(commentSideBar);
     }
