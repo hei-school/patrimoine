@@ -38,6 +38,7 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
 public class PatriLangFilesPage extends LazyPage {
   public static final String PAGE_NAME = "patrilang-files";
   private static final int COMMENT_PAGE_SIZE = 100;
+  private final AppMode MODE;
 
   private final State state;
   private final CasSetSetter casSetSetter;
