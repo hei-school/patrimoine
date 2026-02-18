@@ -1,21 +1,20 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.component.html;
 
+import static java.awt.Font.MONOSPACED;
+import static java.awt.Font.PLAIN;
 import static javax.swing.event.HyperlinkEvent.EventType.ACTIVATED;
-import static school.hei.patrimoine.patrilang.PatriLangTranspiler.PJ_FILE_EXTENSION;
-import static school.hei.patrimoine.visualisation.swing.ihm.google.component.SearchHighlighter.highlightInHtml;
-import static school.hei.patrimoine.visualisation.swing.ihm.google.component.SearchHighlighter.highlightInTextComponent;
-import static school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.AppBar.ViewMode;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.component.html.SearchHighlighter.highlightInHtml;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.component.html.SearchHighlighter.highlightInTextComponent;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.component.html.ViewMode.EDIT;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.component.html.ViewMode.VIEW;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangFileContentManager.*;
 
 import java.awt.*;
 import java.io.File;
-import java.nio.file.Files;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import javax.swing.*;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import school.hei.patrimoine.patrilang.files.PatriLangFileWritter.FileWritterInput;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.MarkdownToHtmlConverter;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
 
@@ -23,17 +22,16 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
 public class HtmlViewer extends JEditorPane {
   private final State state;
   private final MarkdownToHtmlConverter markdownToHtmlConverter;
-  private File lastEditedFile = null;
-  private ViewMode lastViewMode = null;
 
-  @Getter private final Map<File, String> originalContents = new HashMap<>();
-  private final Map<File, FileWritterInput> modifiedFilesData = new HashMap<>();
+  private ViewMode lastViewMode;
+  private File lastSelectedFile;
+  private File lastSelectedFileCasSet;
 
   public HtmlViewer(State state) {
     this.state = state;
     this.markdownToHtmlConverter = new MarkdownToHtmlConverter();
 
-    addEmptyContent();
+    showEmptyContent();
     setBackground(new Color(255, 248, 220));
 
     addHyperlinkListener(
@@ -48,7 +46,45 @@ public class HtmlViewer extends JEditorPane {
     state.subscribe(Set.of("viewMode", "fontSize", "selectedFile", "searchText"), this::update);
   }
 
-  private void addEmptyContent() {
+  private ViewMode getViewMode() {
+    return state.get("viewMode");
+  }
+
+  private Optional<File> getSelectedFile() {
+    return Optional.ofNullable(state.get("selectedFile"));
+  }
+
+  private int getFontSize() {
+    return state.get("fontSize");
+  }
+
+  private String getSearchText() {
+    return state.get("searchText") == null ? "" : state.get("searchText");
+  }
+
+  private Optional<File> getSelectedFileCasSet() {
+    return Optional.ofNullable(state.get("selectedFileCasSet"));
+  }
+
+  private Optional<ViewMode> getLastViewMode() {
+    return Optional.ofNullable(lastViewMode);
+  }
+
+  private Optional<File> getLastSelectedFile() {
+    return Optional.ofNullable(lastSelectedFile);
+  }
+
+  private Optional<File> getLastSelectedFileCasSet() {
+    return Optional.ofNullable(lastSelectedFileCasSet);
+  }
+
+  private void updateLastViewModeAndFile() {
+    lastViewMode = getViewMode();
+    lastSelectedFile = getSelectedFile().orElse(null);
+    lastSelectedFileCasSet = getSelectedFileCasSet().orElse(null);
+  }
+
+  private void showEmptyContent() {
     setContentType("text/html");
     setEditable(false);
     setText(
@@ -56,107 +92,86 @@ public class HtmlViewer extends JEditorPane {
             + " l'afficher.</body></html>");
   }
 
-  public JScrollPane toScrollPane() {
-    return new JScrollPane(this);
+  private void showEditMode() {
+    setEditable(true);
+    setContentType("text/plain");
+    var content =
+        getContent(getSelectedFile().orElseThrow(), getSelectedFileCasSet().orElse(null))
+            .input()
+            .content();
+
+    setText(content);
+    if (!getSearchText().isBlank()) {
+      highlightInTextComponent(this, getSearchText());
+    }
+
+    setCaretPosition(0);
+  }
+
+  private void showReadMode() {
+    var content =
+        getContent(getSelectedFile().orElseThrow(), getSelectedFileCasSet().orElse(null))
+            .input()
+            .content();
+    var html = markdownToHtmlConverter.apply(new LinkReplacer().apply(content));
+
+    if (getSearchText().isEmpty()) {
+      html = highlightInHtml(html, getSearchText());
+    }
+
+    html = html.replace("<body>", "<body style='font-size: " + getFontSize() + "px;'>");
+    html = html.replaceAll("<code>", "<code style='font-size: " + getFontSize() + "px;'>");
+
+    setContentType("text/html");
+    setEditable(false);
+    setText(html);
+    setCaretPosition(0);
+  }
+
+  private void showErrorContent() {
+    setText("<html><body style='color:red;'>Erreur lors de la lecture du fichier.</body></html>");
   }
 
   public void update() {
     getHighlighter().removeAllHighlights();
 
-    if (ViewMode.EDIT.equals(lastViewMode)) {
-      saveCurrentContentToMemory();
+    if (EDIT.equals(getLastViewMode().orElse(VIEW))) {
+      saveLastFileToTempContent();
     }
+    updateLastViewModeAndFile();
 
-    ViewMode currentMode = state.get("viewMode");
-    File currentFile = state.get("selectedFile");
-    int currentFontSize = state.get("fontSize");
-    String searchText = state.get("searchText");
-
-    lastEditedFile = currentFile;
-    lastViewMode = currentMode;
-
-    if (currentFile == null || !currentFile.exists()) {
-      addEmptyContent();
+    if (getSelectedFile().isEmpty()) {
+      showEmptyContent();
       return;
     }
 
     try {
-      String content;
-      if (modifiedFilesData.containsKey(currentFile)) {
-        content = modifiedFilesData.get(currentFile).content();
-      } else {
-        content = Files.readString(currentFile.toPath());
-        if (ViewMode.EDIT.equals(currentMode)) {
-          originalContents.putIfAbsent(currentFile, content);
-        }
-      }
-
-      setFont(new Font(Font.MONOSPACED, Font.PLAIN, currentFontSize));
-
-      if (ViewMode.EDIT.equals(currentMode)) {
-        setContentType("text/plain");
-        setEditable(true);
-        setText(content);
-
-        if (searchText != null && !searchText.isEmpty()) {
-          highlightInTextComponent(this, searchText);
-        }
-
-        setCaretPosition(0);
+      setFont(new Font(MONOSPACED, PLAIN, getFontSize()));
+      if (EDIT.equals(getViewMode())) {
+        showEditMode();
         return;
       }
-
-      content = new LinkReplacer().apply(content);
-      var html = markdownToHtmlConverter.apply(content);
-
-      if (searchText != null && !searchText.isEmpty()) {
-        html = highlightInHtml(html, searchText);
-      }
-
-      html = html.replace("<body>", "<body style='font-size: " + currentFontSize + "px;'>");
-      html = html.replaceAll("<code>", "<code style='font-size: " + currentFontSize + "px;'>");
-
-      setContentType("text/html");
-      setEditable(false);
-      setText(html);
-      setCaretPosition(0);
+      showReadMode();
     } catch (Exception ex) {
-      setText("<html><body style='color:red;'>Erreur lors de la lecture du fichier.</body></html>");
+      showErrorContent();
     }
   }
 
-  public void saveCurrentContentToMemory() {
-    if (lastEditedFile == null || !lastEditedFile.exists() || !isEditable()) return;
-
-    String originalContent = originalContents.get(lastEditedFile);
-    if (originalContent == null) return;
-
-    String currentContent = getText();
-    if (currentContent.equals(originalContent)) {
-      modifiedFilesData.remove(lastEditedFile);
+  public void saveLastFileToTempContent() {
+    if (getLastSelectedFile().isEmpty()) {
       return;
     }
 
-    if (lastEditedFile.getAbsolutePath().endsWith(PJ_FILE_EXTENSION)) {
-      modifiedFilesData.put(
-          lastEditedFile,
-          FileWritterInput.builder().file(lastEditedFile).content(currentContent).build());
-    } else {
-      modifiedFilesData.put(
-          lastEditedFile,
-          FileWritterInput.builder()
-              .file(lastEditedFile)
-              .casSet(state.get("selectedCasSetFile"))
-              .content(currentContent)
-              .build());
+    var lastFile = getLastSelectedFile().orElseThrow();
+    var lastCasSet = getLastSelectedFileCasSet().orElse(null);
+    var lastContent = getContent(lastFile, lastCasSet);
+
+    var currentContent = getText();
+    if (lastContent.original() && currentContent.equals(lastContent.input().content())) {
+      removeInTempContent(lastFile);
+      return;
     }
-  }
 
-  public Map<File, FileWritterInput> getModifiedFilesData() {
-    return new HashMap<>(modifiedFilesData);
-  }
-
-  public void clearModifiedFiles() {
-    modifiedFilesData.clear();
+    saveTempContent(lastFile, lastCasSet, currentContent);
   }
 }

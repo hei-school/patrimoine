@@ -1,16 +1,17 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.component.recoupement;
 
-import java.util.Set;
+import java.util.Collection;
+import java.util.Map;
 import javax.swing.*;
 import lombok.extern.slf4j.Slf4j;
+import school.hei.patrimoine.modele.possession.Possession;
 import school.hei.patrimoine.modele.possession.pj.PieceJustificative;
-import school.hei.patrimoine.modele.recouppement.PossessionRecoupee;
+import school.hei.patrimoine.modele.recouppement.model.PossessionRecoupee;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
 
 @Slf4j
 public class PossessionRecoupeeListPanel extends JPanel {
   private final State state;
-  private final PieceJustificativeMatcher matcher = new PieceJustificativeMatcher();
 
   public PossessionRecoupeeListPanel(State state) {
     super();
@@ -21,20 +22,12 @@ public class PossessionRecoupeeListPanel extends JPanel {
   }
 
   public void update(
-      Set<PossessionRecoupee> possessions, Set<PieceJustificative> piecesJustificatives) {
-
+      Collection<PossessionRecoupee<Possession>> recoupees, Map<String, PieceJustificative> pjs) {
     removeAll();
 
-    Set<PieceJustificative> pjSet = piecesJustificatives == null ? Set.of() : piecesJustificatives;
-    possessions.forEach(
+    recoupees.forEach(
         possession -> {
-          PieceJustificative matched = null;
-
-          if (possession.hasSupportingDocument()) {
-            matched = matcher.findMatchingPiece(pjSet, possession.possession().nom());
-          }
-
-          add(new PossessionRecoupeeItem(state, possession, matched));
+          add(new PossessionRecoupeeItem(state, possession, null));
           add(Box.createVerticalStrut(10));
         });
 

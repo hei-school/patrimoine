@@ -1,11 +1,8 @@
-package school.hei.patrimoine.visualisation.swing.ihm.google.component;
-
-import static org.reflections.Reflections.log;
+package school.hei.patrimoine.visualisation.swing.ihm.google.component.html;
 
 import java.awt.*;
 import javax.swing.text.BadLocationException;
-import javax.swing.text.DefaultHighlighter;
-import javax.swing.text.Highlighter;
+import javax.swing.text.DefaultHighlighter.DefaultHighlightPainter;
 import javax.swing.text.JTextComponent;
 
 public class SearchHighlighter {
@@ -15,20 +12,18 @@ public class SearchHighlighter {
     }
 
     try {
-      Highlighter highlighter = component.getHighlighter();
-      String text = component.getText().toLowerCase();
-      String textToSearch = searchText.toLowerCase();
+      var highlighter = component.getHighlighter();
+      var text = component.getText().toLowerCase();
+      var textToSearch = searchText.toLowerCase();
 
       int index = 0;
       while ((index = text.indexOf(textToSearch, index)) >= 0) {
         highlighter.addHighlight(
-            index,
-            index + searchText.length(),
-            new DefaultHighlighter.DefaultHighlightPainter(Color.YELLOW));
+            index, index + searchText.length(), new DefaultHighlightPainter(Color.YELLOW));
         index += searchText.length();
       }
     } catch (BadLocationException e) {
-      log.error("Erreur lors du highlighting", e);
+      throw new RuntimeException(e);
     }
   }
 

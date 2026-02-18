@@ -1,44 +1,37 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.component.files;
 
-import static java.util.Objects.requireNonNull;
 import static school.hei.patrimoine.patrilang.PatriLangTranspiler.*;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.config.EnvironmentConfig.isOfflineMode;
-import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.FileCategory.*;
-import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.GoogleLinkListDownloader.getDoneDirectoryPath;
-import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.GoogleLinkListDownloader.getPlannedDirectoryPath;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.FileCategory.*;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.providers.FilesProvider.*;
 
 import java.awt.*;
 import java.io.File;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import javax.swing.*;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.AppContext;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.*;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.GoogleLinkList.NamedID;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.FileCategory;
 
 public class FileSideBar extends JPanel {
   private final State state;
   private final JList<File> plannedList;
   private final JList<File> doneList;
-  private final JList<File> justificativeList;
 
   public FileSideBar(State state) {
     super(new BorderLayout());
 
     this.state = state;
-    this.plannedList = new JList<>(new FileListModel(getPatriLangPlannedFiles()));
     this.doneList = new JList<>(new FileListModel(getPatriLangDoneFiles()));
-    this.justificativeList = new JList<>(new FileListModel(getPatriLangJustificativeFiles()));
+    this.plannedList = new JList<>(new FileListModel(getPatriLangPlannedFiles()));
 
-    plannedList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     doneList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-    justificativeList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    plannedList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-    plannedList.setCellRenderer(new FileListCellRenderer());
     doneList.setCellRenderer(new FileListCellRenderer());
-    justificativeList.setCellRenderer(new FileListCellRenderer());
+    plannedList.setCellRenderer(new FileListCellRenderer());
 
     var plannedDebouncer =
         new Debouncer(
@@ -50,7 +43,7 @@ public class FileSideBar extends JPanel {
                     Map.of(
                         "selectedFile",
                         selectedFile,
-                        "selectedCasSetFile",
+                        "selectedFileCasSet",
                         getPlannedCasSetFile(),
                         "isPlannedSelectedFile",
                         true));
@@ -59,7 +52,7 @@ public class FileSideBar extends JPanel {
                     Map.of(
                         "selectedFile",
                         selectedFile,
-                        "selectedCasSetFile",
+                        "selectedFileCasSet",
                         getPlannedCasSetFile(),
                         "selectedFileId",
                         getSelectedFileDriveId(selectedFile, PLANNED).orElse(""),
@@ -67,7 +60,6 @@ public class FileSideBar extends JPanel {
                         true));
               }
               doneList.clearSelection();
-              justificativeList.clearSelection();
             });
 
     var doneDebouncer =
@@ -80,7 +72,7 @@ public class FileSideBar extends JPanel {
                     Map.of(
                         "selectedFile",
                         selectedFile,
-                        "selectedCasSetFile",
+                        "selectedFileCasSet",
                         getDoneCasSetFile(),
                         "isPlannedSelectedFile",
                         false));
@@ -89,7 +81,7 @@ public class FileSideBar extends JPanel {
                     Map.of(
                         "selectedFile",
                         selectedFile,
-                        "selectedCasSetFile",
+                        "selectedFileCasSet",
                         getDoneCasSetFile(),
                         "selectedFileId",
                         getSelectedFileDriveId(selectedFile, DONE).orElse(""),
@@ -97,29 +89,6 @@ public class FileSideBar extends JPanel {
                         false));
               }
               plannedList.clearSelection();
-              justificativeList.clearSelection();
-            });
-
-    var justificativeDebouncer =
-        new Debouncer(
-            () -> {
-              var selectedFile = justificativeList.getSelectedValue();
-              if (selectedFile == null) return;
-              if (isOfflineMode()) {
-                this.state.update(
-                    Map.of("selectedFile", selectedFile, "isPlannedSelectedFile", false));
-              } else {
-                this.state.update(
-                    Map.of(
-                        "selectedFile",
-                        selectedFile,
-                        "selectedFileId",
-                        getSelectedFileDriveId(selectedFile, JUSTIFICATIVE).orElse(""),
-                        "isPlannedSelectedFile",
-                        false));
-              }
-              plannedList.clearSelection();
-              doneList.clearSelection();
             });
 
     plannedList.addListSelectionListener(
@@ -136,35 +105,21 @@ public class FileSideBar extends JPanel {
           }
         });
 
-    justificativeList.addListSelectionListener(
-        e -> {
-          if (!e.getValueIsAdjusting()) {
-            justificativeDebouncer.restart();
-          }
-        });
-
     var panel = new JPanel();
     panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
     var plannedLabel = new JLabel("Journaux planifiés");
     plannedLabel.setFont(plannedLabel.getFont().deriveFont(Font.BOLD));
+
     panel.add(plannedLabel);
     panel.add(new JScrollPane(plannedList));
-
     panel.add(Box.createVerticalStrut(20));
 
     var doneLabel = new JLabel("Journaux réalisés");
     doneLabel.setFont(doneLabel.getFont().deriveFont(Font.BOLD));
+
     panel.add(doneLabel);
     panel.add(new JScrollPane(doneList));
-
-    panel.add(Box.createVerticalStrut(20));
-
-    var justificativeLabel = new JLabel("Pièces justificatives");
-    justificativeLabel.setFont(justificativeLabel.getFont().deriveFont(Font.BOLD));
-    panel.add(justificativeLabel);
-    panel.add(new JScrollPane(justificativeList));
-
     add(panel, BorderLayout.CENTER);
   }
 
@@ -177,9 +132,9 @@ public class FileSideBar extends JPanel {
 
     var namedIds =
         switch (category) {
-          case JUSTIFICATIVE -> ids.justificative();
-          case PLANNED -> ids.planned();
           case DONE -> ids.done();
+          case PLANNED -> ids.planned();
+          case JUSTIFICATIVE -> ids.justificative();
         };
 
     return namedIds.stream()
@@ -188,58 +143,12 @@ public class FileSideBar extends JPanel {
               var filename =
                   currentFile
                       .getName()
-                      .replace(TOUT_CAS_FILE_EXTENSION, "")
+                      .replace(PJ_FILE_EXTENSION, "")
                       .replace(CAS_FILE_EXTENSION, "")
-                      .replace(PJ_FILE_EXTENSION, "");
+                      .replace(TOUT_CAS_FILE_EXTENSION, "");
               return driveNamedId.name().equals(filename);
             })
         .findFirst()
         .map(NamedID::id);
-  }
-
-  public static List<File> getPatriLangPlannedFiles() {
-    return Arrays.stream(requireNonNull(new File(getPlannedDirectoryPath()).listFiles()))
-        .filter(
-            file ->
-                file.getName().endsWith(TOUT_CAS_FILE_EXTENSION)
-                    || file.getName().endsWith(CAS_FILE_EXTENSION))
-        .toList();
-  }
-
-  public static List<File> getPatriLangDoneFiles() {
-    return Arrays.stream(requireNonNull(new File(getDoneDirectoryPath()).listFiles()))
-        .filter(
-            file ->
-                file.getName().endsWith(TOUT_CAS_FILE_EXTENSION)
-                    || file.getName().endsWith(CAS_FILE_EXTENSION))
-        .toList();
-  }
-
-  public static List<File> getPatriLangJustificativeFiles() {
-    return Arrays.stream(
-            requireNonNull(
-                new File(GoogleLinkListDownloader.getJustificativeDirectoryPath()).listFiles()))
-        .filter(file -> file.getName().endsWith(PJ_FILE_EXTENSION))
-        .toList();
-  }
-
-  public static File getPlannedCasSetFile() {
-    return Arrays.stream(requireNonNull(new File(getPlannedDirectoryPath()).listFiles()))
-        .filter(file -> file.getName().endsWith(TOUT_CAS_FILE_EXTENSION))
-        .findFirst()
-        .orElseThrow();
-  }
-
-  public static File getDoneCasSetFile() {
-    return Arrays.stream(requireNonNull(new File(getDoneDirectoryPath()).listFiles()))
-        .filter(file -> file.getName().endsWith(TOUT_CAS_FILE_EXTENSION))
-        .findFirst()
-        .orElseThrow();
-  }
-
-  public static List<File> getDonePatrilangFilesWithoutCasSet() {
-    return getPatriLangDoneFiles().stream()
-        .filter(file -> !file.getName().endsWith(TOUT_CAS_FILE_EXTENSION))
-        .toList();
   }
 }

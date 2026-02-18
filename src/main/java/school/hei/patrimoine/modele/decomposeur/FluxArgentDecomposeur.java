@@ -1,6 +1,6 @@
 package school.hei.patrimoine.modele.decomposeur;
 
-import static school.hei.patrimoine.modele.normalizer.PossessionNomNormalizer.normalize;
+import static school.hei.patrimoine.modele.decomposeur.IdRetriever.getDecomposedId;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -11,24 +11,31 @@ import school.hei.patrimoine.modele.series.DateSeries;
 
 @Slf4j
 public class FluxArgentDecomposeur extends PossessionDecomposeurBase<FluxArgent, FluxArgent> {
-  public static final String FLUX_ARGENT_DATE_SEPARATEUR = "__du_";
+  public FluxArgentDecomposeur(LocalDate debut, LocalDate fin) {
+    super(debut, fin);
+  }
 
-  public FluxArgentDecomposeur(LocalDate finProjection) {
-    super(finProjection);
+  @Override
+  protected boolean isOutOfRange(FluxArgent fluxArgent) {
+    return fluxArgent.getDebut().isAfter(getFin()) || fluxArgent.getFin().isBefore(getDebut());
   }
 
   @Override
   public List<FluxArgent> apply(FluxArgent fluxArgent) {
+    if (isOutOfRange(fluxArgent)) {
+      return List.of();
+    }
+
     if (fluxArgent.getDebut().equals(fluxArgent.getFin())) {
       return List.of(fluxArgent);
     }
 
-    var fin =
-        fluxArgent.getFin().isBefore(getFinSimulation()) ? fluxArgent.getFin() : getFinSimulation();
-
+    var debut = fluxArgent.getDebut().isAfter(getDebut()) ? fluxArgent.getDebut() : getDebut();
+    var fin = fluxArgent.getFin().isBefore(getFin()) ? fluxArgent.getFin() : getFin();
     if (fluxArgent.getDebut().isAfter(fin)) {
       log.warn(
-          "FluxArgent incohérent : le début ({}) est après la fin ({}). Nom = '{}'.",
+          "FluxArgent incohérent : la date de début ({}) est après la date de fin ({}). Nom ="
+              + " '{}'.",
           fluxArgent.getDebut(),
           fin,
           fluxArgent.nom());
@@ -36,12 +43,11 @@ public class FluxArgentDecomposeur extends PossessionDecomposeurBase<FluxArgent,
     }
 
     var compte = fluxArgent.getCompte();
-    return DateSeries.byDayOfMonth(fluxArgent.getDebut(), fin, fluxArgent.getDateOperation())
-        .stream()
+    return DateSeries.byDayOfMonth(debut, fin, fluxArgent.getDateOperation()).stream()
         .map(
             date ->
                 new FluxArgent(
-                    normalize(fluxArgent.nom() + FLUX_ARGENT_DATE_SEPARATEUR + date),
+                    getDecomposedId(fluxArgent.nom(), date),
                     new Compte(
                         compte.nom(), date, compte.valeurComptable()), // to avoid side effect
                     date,

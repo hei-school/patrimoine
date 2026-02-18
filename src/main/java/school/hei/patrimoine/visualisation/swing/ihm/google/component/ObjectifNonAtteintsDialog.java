@@ -4,15 +4,16 @@ import java.awt.*;
 import java.util.Set;
 import javax.swing.*;
 import school.hei.patrimoine.modele.objectif.ObjectifNonAtteint;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.AppContext;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
 
 public class ObjectifNonAtteintsDialog extends JDialog {
   public ObjectifNonAtteintsDialog(Set<ObjectifNonAtteint> objectifs) {
-    setTitle("Objectifs Non Atteints");
+    super(AppContext.getDefault().app(), "Objectifs Non Atteints", true);
 
     var listPanel = createListPanel();
-    fillObjetifs(listPanel, objectifs);
 
+    fillObjetifs(listPanel, objectifs);
     setupLayout(listPanel);
     finalizeDialog();
   }

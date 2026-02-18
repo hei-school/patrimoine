@@ -1,6 +1,8 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.modele;
 
 import static school.hei.patrimoine.patrilang.PatriLangTranspiler.transpileToutCas;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.providers.FilesProvider.getDoneCasSetFile;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.providers.FilesProvider.getPlannedCasSetFile;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -8,14 +10,13 @@ import java.util.List;
 import java.util.Map;
 import school.hei.patrimoine.cas.Cas;
 import school.hei.patrimoine.cas.CasSet;
-import school.hei.patrimoine.modele.recouppement.CompteGetterFactory;
+import school.hei.patrimoine.modele.recouppement.model.CompteGetter;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.AppContext;
-import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.FileSideBar;
 
 public class CasSetSetter {
-  private final List<State.StateObserverCallbackRunnable> observers;
-
   private static final CasSetSetter INSTANCE = new CasSetSetter();
+
+  private final List<State.StateObserverCallbackRunnable> observers;
 
   public static CasSetSetter getInstance() {
     return INSTANCE;
@@ -30,14 +31,14 @@ public class CasSetSetter {
     if (!isAnyFileModified()) {
       return;
     }
-    var plannedCasSet = transpileToutCas(FileSideBar.getPlannedCasSetFile().getAbsolutePath());
-    var doneCasSet = transpileToutCas(FileSideBar.getDoneCasSetFile().getAbsolutePath());
+    var doneCasSet = transpileToutCas(getDoneCasSetFile().getAbsolutePath());
+    var plannedCasSet = transpileToutCas(getPlannedCasSetFile().getAbsolutePath());
 
     globalState()
         .update(
             Map.of(
                 "casSetComptes",
-                CompteGetterFactory.getComptes(doneCasSet),
+                CompteGetter.getComptes(doneCasSet),
                 "plannedCasSet",
                 plannedCasSet,
                 "doneCasSet",
@@ -63,19 +64,19 @@ public class CasSetSetter {
         || (boolean) globalState().get("isAnyFileModified");
   }
 
-  public State globalState() {
-    return AppContext.getDefault().globalState();
-  }
-
-  public void addObserver(State.StateObserverCallbackRunnable observer) {
-    observers.add(observer);
+  public CasSet doneCasSet() {
+    return globalState().get("doneCasSet");
   }
 
   public CasSet plannedCasSet() {
     return globalState().get("plannedCasSet");
   }
 
-  public CasSet doneCasSet() {
-    return globalState().get("doneCasSet");
+  public State globalState() {
+    return AppContext.getDefault().globalState();
+  }
+
+  public void addObserver(State.StateObserverCallbackRunnable observer) {
+    observers.add(observer);
   }
 }

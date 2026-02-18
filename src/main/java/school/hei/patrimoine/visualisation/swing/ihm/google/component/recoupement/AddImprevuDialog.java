@@ -2,6 +2,9 @@ package school.hei.patrimoine.visualisation.swing.ihm.google.component.recoupeme
 
 import static java.util.Objects.requireNonNull;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.MessageDialog.*;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangFileContentManager.removeInTempContent;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangStagingFileManager.stage;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.providers.FilesProvider.getDoneCasSetFile;
 
 import java.awt.*;
 import java.io.File;
@@ -15,23 +18,24 @@ import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.Patrimoine;
 import school.hei.patrimoine.modele.possession.Compte;
 import school.hei.patrimoine.modele.possession.FluxArgent;
+import school.hei.patrimoine.patrilang.files.PatriLangFileContext;
 import school.hei.patrimoine.patrilang.files.PatriLangFileQuerier;
-import school.hei.patrimoine.patrilang.files.PatriLangFileWritter;
-import school.hei.patrimoine.patrilang.files.PatriLangFileWritter.FileWritterInput;
+import school.hei.patrimoine.patrilang.files.PatriLangFileWriter;
+import school.hei.patrimoine.patrilang.files.PatriLangFileWriter.FileWriterInput;
 import school.hei.patrimoine.patrilang.generator.PatriLangGeneratorFactory;
 import school.hei.patrimoine.patrilang.modele.PatriLangCas;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.Dialog;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.AppContext;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
-import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.FileSideBar;
 import school.hei.patrimoine.visualisation.swing.ihm.google.generator.possession.FluxArgentExecutionGenerator;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.AsyncTask;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.MessageDialog;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
 
 public class AddImprevuDialog extends Dialog {
   private final State state;
   private final PatriLangFileQuerier querier;
-  private final PatriLangFileWritter writter;
+  private final PatriLangFileWriter writter;
 
   private AddRecoupementExecutionForm form;
   private final JComboBox<NamedCompte> compteSelect;
@@ -40,7 +44,7 @@ public class AddImprevuDialog extends Dialog {
     super("Ajouter un imprévu", 800, 700, false);
     this.state = state;
     this.querier = new PatriLangFileQuerier();
-    this.writter = new PatriLangFileWritter();
+    this.writter = new PatriLangFileWriter();
     this.compteSelect = compteSelect();
 
     setLayout(new BorderLayout());
@@ -120,7 +124,8 @@ public class AddImprevuDialog extends Dialog {
   private void saveExecutions(FluxArgent fluxArgent) {
     var lineGenerator = PatriLangGeneratorFactory.make(fluxArgent);
     var line = lineGenerator.apply(fluxArgent);
-    File casSet = FileSideBar.getDoneCasSetFile();
+
+    File casSet = getDoneCasSetFile();
     File selectedFile = state.get("selectedFile");
 
     AsyncTask.<Void>builder()
@@ -134,23 +139,15 @@ public class AddImprevuDialog extends Dialog {
                 throw new RuntimeException("Section Operations introuvable dans le fichier");
               }
 
-              writter.insertAtLine(
-                  FileWritterInput.builder()
-                      .content(line)
-                      .file(selectedFile)
-                      .casSet(casSet)
-                      .build(),
-                  sectionOperation.get().endLine());
+              var input =
+                  FileWriterInput.builder().content(line).file(selectedFile).casSet(casSet).build();
+              writter.insertAtLine(input, sectionOperation.get().endLine());
+              var context = new PatriLangFileContext(input);
+              removeInTempContent(selectedFile);
+              stage(selectedFile, context.getCategory());
               return null;
             })
-        .onError(
-            error -> {
-              if (showExceptionMessageIfRecognizedException(error)) {
-                return;
-              }
-
-              showError("Erreur", "Une erreur est survenue lors de l'enregistrement");
-            })
+        .onError(MessageDialog::showError)
         .onSuccess(
             result -> {
               showInfo("Succès", "L'opération a été exécutée avec succès");

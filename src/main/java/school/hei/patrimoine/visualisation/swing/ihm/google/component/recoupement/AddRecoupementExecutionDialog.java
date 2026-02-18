@@ -8,19 +8,20 @@ import java.util.function.Consumer;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import school.hei.patrimoine.modele.possession.FluxArgent;
-import school.hei.patrimoine.modele.recouppement.PossessionRecoupee;
-import school.hei.patrimoine.modele.recouppement.PossessionRecoupee.Info;
+import school.hei.patrimoine.modele.possession.Possession;
+import school.hei.patrimoine.modele.recouppement.model.Info;
+import school.hei.patrimoine.modele.recouppement.model.PossessionRecoupee;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.Dialog;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
 import school.hei.patrimoine.visualisation.swing.ihm.google.generator.PossessionGeneratorFactory;
 
 public class AddRecoupementExecutionDialog extends Dialog {
   private final AddRecoupementExecutionForm form;
-  private final PossessionRecoupee possessionRecoupee;
-  private final Consumer<Info> onAddConsumer;
+  private final PossessionRecoupee<Possession> possessionRecoupee;
+  private final Consumer<Info<Possession>> onAddConsumer;
 
   public AddRecoupementExecutionDialog(
-      PossessionRecoupee possessionRecoupee, Consumer<Info> onAddConsumer) {
+      PossessionRecoupee<Possession> possessionRecoupee, Consumer<Info<Possession>> onAddConsumer) {
     super("Exécuter la possession", 700, 600, false);
     this.onAddConsumer = onAddConsumer;
     this.possessionRecoupee = possessionRecoupee;
@@ -77,7 +78,10 @@ public class AddRecoupementExecutionDialog extends Dialog {
     var generator = PossessionGeneratorFactory.make(possessionRecoupee.possession());
     var newPossession = generator.apply(args);
 
-    onAddConsumer.accept(new Info(form.getDate(), form.getValeur(), newPossession));
+    // TODO: fix possession à corrigé
+    onAddConsumer.accept(
+        new Info<>(
+            newPossession.nom(), form.getDate(), form.getValeur(), newPossession, newPossession));
   }
 
   private Map<String, Object> getArgsFacade() {

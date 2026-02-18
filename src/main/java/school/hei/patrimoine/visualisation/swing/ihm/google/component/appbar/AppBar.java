@@ -9,6 +9,7 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.component.CustomBord
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.ImageComponent;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.AppContext;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.html.ViewMode;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
 
 @Getter
@@ -121,22 +122,5 @@ public class AppBar extends JPanel {
     panel.add(textPanel, BorderLayout.CENTER);
 
     return panel;
-  }
-
-  @Getter
-  public enum ViewMode {
-    VIEW("Affichage"),
-    EDIT("Édition");
-
-    private final String label;
-
-    ViewMode(String label) {
-      this.label = label;
-    }
-
-    @Override
-    public String toString() {
-      return label;
-    }
   }
 }

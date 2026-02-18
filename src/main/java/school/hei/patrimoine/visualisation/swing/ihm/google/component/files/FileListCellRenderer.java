@@ -50,6 +50,7 @@ public class FileListCellRenderer extends DefaultListCellRenderer {
 
   private ImageIcon loadFileIcon() {
     var url = getClass().getResource("/icons/file.png");
+
     var icon = new ImageIcon(Objects.requireNonNull(url));
     Image scaled = icon.getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH);
 
