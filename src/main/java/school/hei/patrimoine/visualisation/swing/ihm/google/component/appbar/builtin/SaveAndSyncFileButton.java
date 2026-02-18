@@ -1,12 +1,14 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.builtin;
 
 import static school.hei.patrimoine.patrilang.PatriLangTranspiler.*;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.builtin.SyncConfirmDialog.forSync;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.component.html.ViewMode.EDIT;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.config.EnvironmentConfig.isOfflineMode;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.Api.driveApi;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.MessageDialog.*;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.FileCategory.*;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangFileContentManager.getAllModifiedFiles;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangSavingFileManager.save;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangStagingFileManager.*;
 
 import java.io.File;
@@ -25,10 +27,10 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.component.popup.Popu
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.popup.PopupMenuButton;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.AsyncTask;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.GoogleLinkList;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.GoogleLinkList.NamedID;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.MessageDialog;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.FileCategory;
-import school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangSavingFileManager;
 
 @Slf4j
 public class SaveAndSyncFileButton extends PopupMenuButton {
@@ -87,7 +89,7 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
         .logError(false)
         .task(
             () -> {
-              PatriLangSavingFileManager.save(modifiedFilesData);
+              save(modifiedFilesData);
               return null;
             })
         .onSuccess(
@@ -101,7 +103,7 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
   }
 
   private static void syncFilesWithDrive(Callable<Void> onSuccess) {
-    var confirmed = SyncConfirmDialog.forSync();
+    var confirmed = forSync();
     if (!confirmed) return;
 
     AsyncTask.<Void>builder()
@@ -133,12 +135,12 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
 
   private static void syncAllPendingComments() {
     var localManager = LocalCommentManager.getInstance();
-    var filesWithPendingComments = localManager.getFilesWithPendingChanges();
+    var filesWithPendingComments = localManager.getPendingFileIds();
     if (filesWithPendingComments.isEmpty()) return;
 
     var commentSynchronizer = new CommentSynchronizer(driveApi());
-    boolean hasErrors = false;
-    for (String fileId : filesWithPendingComments) {
+    var hasErrors = false;
+    for (var fileId : filesWithPendingComments) {
       try {
         commentSynchronizer.syncComments(fileId);
       } catch (GoogleIntegrationException e) {
@@ -152,10 +154,10 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
 
   // TODO: should use named-ids in global state
   private static Optional<String> getDriveIdOf(File file, FileCategory category) {
-    GoogleLinkList<GoogleLinkList.NamedID> ids = AppContext.getDefault().getData("named-ids");
+    GoogleLinkList<NamedID> ids = AppContext.getDefault().getData("named-ids");
     if (file == null) return Optional.empty();
 
-    String filename =
+    var filename =
         file.getName()
             .replace(TOUT_CAS_FILE_EXTENSION, "")
             .replace(CAS_FILE_EXTENSION, "")
@@ -170,7 +172,7 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
 
     return listToSearch.stream()
         .filter(n -> n.name().equals(filename))
-        .map(GoogleLinkList.NamedID::id)
+        .map(NamedID::id)
         .findFirst();
   }
 }
