@@ -1,7 +1,5 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.pages;
 
-import static javax.swing.SwingUtilities.invokeLater;
-import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
 import static school.hei.patrimoine.patrilang.PatriLangTranspiler.TOUT_CAS_FILE_EXTENSION;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.AppBar.*;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.component.html.ViewMode.VIEW;
@@ -13,21 +11,16 @@ import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.File;
-import java.time.LocalDate;
 import java.util.*;
 import java.util.List;
 import javax.swing.*;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import school.hei.patrimoine.cas.CasSet;
-import school.hei.patrimoine.cas.CasSetAnalyzer;
 import school.hei.patrimoine.google.model.Pagination;
-import school.hei.patrimoine.modele.objectif.ObjectifExeption;
-import school.hei.patrimoine.modele.recouppement.RecoupeurDeCasSet;
-import school.hei.patrimoine.visualisation.swing.ihm.google.component.ObjectifNonAtteintsDialog;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.PlaceholderTextField;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.LazyPage;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.AppBar;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.builtin.CasSetAnalyzerButton;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.builtin.SaveAndSyncFileButton;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.comment.CommentSideBar;
@@ -36,7 +29,6 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.component.comment.Lo
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.FileSideBar;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.html.HtmlViewer;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.recoupement.AddImprevuDialog;
-import school.hei.patrimoine.visualisation.swing.ihm.google.modele.AsyncTask;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.CasSetSetter;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.Debouncer;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
@@ -120,7 +112,7 @@ public class PatriLangFilesPage extends LazyPage {
             List.of(
                 builtInViewModeSelect(state),
                 saveAndSyncFileButton(),
-                evolutionGraphicButton(),
+                new CasSetAnalyzerButton(casSetSetter),
                 recoupementButton(),
                 addImprevuButton,
                 addSearchTextBar()),
@@ -159,10 +151,6 @@ public class PatriLangFilesPage extends LazyPage {
                   "selectedFile", "selectedFileCasSet", "isPlannedSelectedFile", "selectedFileId"));
           pageManager().navigate(RecoupementPage.PAGE_NAME);
         });
-  }
-
-  public Button evolutionGraphicButton() {
-    return new Button("Évolution graphique", e -> showCasSetAnalyser());
   }
 
   static Button addImprevuButton(State state) {
@@ -204,32 +192,6 @@ public class PatriLangFilesPage extends LazyPage {
     }
 
     addImprevuButton.setVisible(!isPlannedSelectedFile());
-  }
-
-  private void showCasSetAnalyser() {
-    AsyncTask.<CasSet>builder()
-        .logError(false)
-        .task(
-            () ->
-                RecoupeurDeCasSet.of(
-                        LocalDate.MIN,
-                        LocalDate.MAX,
-                        casSetSetter.plannedCasSet(),
-                        casSetSetter.doneCasSet())
-                    .getRecouped())
-        .onSuccess(recoupedCasSet -> new CasSetAnalyzer(DISPOSE_ON_CLOSE).accept(recoupedCasSet))
-        .onError(
-            error -> {
-              error = error.getCause() == null ? error : (Exception) error.getCause();
-              if (error instanceof ObjectifExeption exception) {
-                var objectifs = exception.getObjectifNonAtteints();
-                invokeLater(() -> new ObjectifNonAtteintsDialog(objectifs));
-                return;
-              }
-              showError(error);
-            })
-        .build()
-        .execute();
   }
 
   private void updateCas() {
