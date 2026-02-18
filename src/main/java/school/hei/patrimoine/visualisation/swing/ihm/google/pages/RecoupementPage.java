@@ -1,18 +1,13 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.pages;
 
-import static java.util.stream.Collectors.toSet;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.AppBar.builtInUserInfoPanel;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.config.EnvironmentConfig.isOnlineMode;
-import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.MessageDialog.showError;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.pages.PatriLangFilesPage.addImprevuButton;
-import static school.hei.patrimoine.visualisation.swing.ihm.google.pages.RecoupementPage.PieceJustificativeFilter.SANS_PJ;
-import static school.hei.patrimoine.visualisation.swing.ihm.google.pages.RecoupementPage.PieceJustificativeFilter.TOUT;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.providers.FilesProvider.getDonePatrilangFilesWithoutCasSet;
 
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.io.File;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.List;
@@ -21,7 +16,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import school.hei.patrimoine.modele.possession.Compte;
 import school.hei.patrimoine.modele.possession.Possession;
-import school.hei.patrimoine.modele.possession.pj.PieceJustificative;
 import school.hei.patrimoine.modele.recouppement.model.PossessionRecoupee;
 import school.hei.patrimoine.modele.recouppement.model.RecoupementStatus;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.Footer;
@@ -32,11 +26,7 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Nav
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.FileListCellRenderer;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.FileListModel;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.recoupement.PossessionRecoupeeListPanel;
-import school.hei.patrimoine.visualisation.swing.ihm.google.modele.AsyncTask;
-import school.hei.patrimoine.visualisation.swing.ihm.google.modele.CasSetSetter;
-import school.hei.patrimoine.visualisation.swing.ihm.google.modele.Debouncer;
-import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
-import school.hei.patrimoine.visualisation.swing.ihm.google.providers.PJProvider;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.*;
 import school.hei.patrimoine.visualisation.swing.ihm.google.providers.PossessionRecoupeeProvider;
 import school.hei.patrimoine.visualisation.swing.ihm.google.providers.PossessionRecoupeeProvider.*;
 import school.hei.patrimoine.visualisation.swing.ihm.google.providers.model.Pagination;
@@ -61,8 +51,6 @@ public class RecoupementPage extends LazyPage {
                 1,
                 "filterStatus",
                 PossessionRecoupeeFilterStatus.TOUT,
-                "filterPJ",
-                PieceJustificativeFilter.TOUT,
                 "pagination",
                 new Pagination(1, RECOUPEMENT_ITEM_PER_PAGE)));
 
@@ -70,8 +58,7 @@ public class RecoupementPage extends LazyPage {
 
     casSetSetter.addObserver(this::update);
     state.subscribe(
-        Set.of("filterStatus", "filterPJ", "selectedFile", "pagination", "filterName"),
-        this::update);
+        Set.of("filterStatus", "selectedFile", "pagination", "filterName"), this::update);
 
     setLayout(new BorderLayout());
   }
@@ -102,23 +89,6 @@ public class RecoupementPage extends LazyPage {
     }
   }
 
-  public enum PieceJustificativeFilter {
-    TOUT("Tout"),
-    AVEC_PJ("Avec pj"),
-    SANS_PJ("Sans pj");
-
-    public final String label;
-
-    PieceJustificativeFilter(String label) {
-      this.label = label;
-    }
-
-    @Override
-    public String toString() {
-      return label;
-    }
-  }
-
   private void addAppBar() {
     var statusFilter = new JComboBox<>(PossessionRecoupeeFilterStatus.values());
     statusFilter.setSelectedItem(PossessionRecoupeeFilterStatus.TOUT);
@@ -126,12 +96,6 @@ public class RecoupementPage extends LazyPage {
     statusFilter.setCursor(new Cursor(Cursor.HAND_CURSOR));
     statusFilter.addActionListener(
         e -> state.update("filterStatus", statusFilter.getSelectedItem()));
-
-    var pjFilter = new JComboBox<>(PieceJustificativeFilter.values());
-    pjFilter.setSelectedItem(PieceJustificativeFilter.TOUT);
-    pjFilter.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
-    pjFilter.setCursor(new Cursor(Cursor.HAND_CURSOR));
-    pjFilter.addActionListener(e -> state.update("filterPJ", pjFilter.getSelectedItem()));
 
     var addImprevuButton = addImprevuButton(state);
     var nameFilter = getPlaceholderTextField();
@@ -141,7 +105,6 @@ public class RecoupementPage extends LazyPage {
             List.of(
                 new NavigateButton("Retour", "patrilang-files"),
                 statusFilter,
-                pjFilter,
                 addImprevuButton,
                 nameFilter),
             !isOnlineMode() ? List.of() : List.of(builtInUserInfoPanel()));
@@ -251,47 +214,12 @@ public class RecoupementPage extends LazyPage {
       return;
     }
 
-    var casFile = (File) state.get("selectedFile");
-
-    var pjsRetriever = new PJProvider();
-    var pjs = pjsRetriever.apply(casFile);
-    var pjFilter = (PieceJustificativeFilter) state.get("filterPJ");
-
     AsyncTask.<List<PossessionRecoupee<Possession>>>builder()
-        .task(this::getFilteredPossessionRecoupees)
-        .onSuccess(
-            list -> {
-              var filtered =
-                  list.stream()
-                      .filter(pr -> keepAccordingToPJFilter(pr, pjs, pjFilter))
-                      .collect(toSet());
-
-              possessionRecoupeeListPanel.update(filtered, pjs);
-            })
         .withDialogLoading(false)
-        .onError(error -> showError("Erreur", error.getMessage()))
+        .onError(MessageDialog::showError)
+        .task(this::getFilteredPossessionRecoupees)
+        .onSuccess(list -> possessionRecoupeeListPanel.update(list, Map.of()))
         .build()
         .execute();
-  }
-
-  private boolean keepAccordingToPJFilter(
-      PossessionRecoupee<Possession> possession,
-      Map<String, PieceJustificative> pieces,
-      PieceJustificativeFilter filter) {
-
-    if (TOUT.equals(filter)) {
-      return true;
-    }
-
-    if (!possession.hasSupportingDocument()) {
-      return SANS_PJ.equals(filter);
-    }
-
-    var hasPJ = pieces.containsKey(possession.possession().nom());
-    return switch (filter) {
-      case AVEC_PJ -> hasPJ;
-      case SANS_PJ -> !hasPJ;
-      default -> true;
-    };
   }
 }

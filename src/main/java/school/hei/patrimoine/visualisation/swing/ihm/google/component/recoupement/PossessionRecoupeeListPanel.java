@@ -1,7 +1,7 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.component.recoupement;
 
+import java.util.Collection;
 import java.util.Map;
-import java.util.Set;
 import javax.swing.*;
 import lombok.extern.slf4j.Slf4j;
 import school.hei.patrimoine.modele.possession.Possession;
@@ -22,14 +22,12 @@ public class PossessionRecoupeeListPanel extends JPanel {
   }
 
   public void update(
-      Set<PossessionRecoupee<Possession>> recoupees, Map<String, PieceJustificative> pjs) {
+      Collection<PossessionRecoupee<Possession>> recoupees, Map<String, PieceJustificative> pjs) {
     removeAll();
 
     recoupees.forEach(
         possession -> {
-          add(
-              new PossessionRecoupeeItem(
-                  state, possession, pjs.getOrDefault(possession.possession().nom(), null)));
+          add(new PossessionRecoupeeItem(state, possession, null));
           add(Box.createVerticalStrut(10));
         });
 

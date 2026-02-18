@@ -19,7 +19,6 @@ public class FileSideBar extends JPanel {
   private final State state;
   private final JList<File> plannedList;
   private final JList<File> doneList;
-  private final JList<File> justificativeList;
 
   public FileSideBar(State state) {
     super(new BorderLayout());
@@ -27,15 +26,12 @@ public class FileSideBar extends JPanel {
     this.state = state;
     this.doneList = new JList<>(new FileListModel(getPatriLangDoneFiles()));
     this.plannedList = new JList<>(new FileListModel(getPatriLangPlannedFiles()));
-    this.justificativeList = new JList<>(new FileListModel(getPatriLangJustificativeFiles()));
 
     doneList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     plannedList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-    justificativeList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
     doneList.setCellRenderer(new FileListCellRenderer());
     plannedList.setCellRenderer(new FileListCellRenderer());
-    justificativeList.setCellRenderer(new FileListCellRenderer());
 
     var plannedDebouncer =
         new Debouncer(
@@ -64,7 +60,6 @@ public class FileSideBar extends JPanel {
                         true));
               }
               doneList.clearSelection();
-              justificativeList.clearSelection();
             });
 
     var doneDebouncer =
@@ -94,29 +89,6 @@ public class FileSideBar extends JPanel {
                         false));
               }
               plannedList.clearSelection();
-              justificativeList.clearSelection();
-            });
-
-    var justificativeDebouncer =
-        new Debouncer(
-            () -> {
-              var selectedFile = justificativeList.getSelectedValue();
-              if (selectedFile == null) return;
-              if (isOfflineMode()) {
-                this.state.update(
-                    Map.of("selectedFile", selectedFile, "isPlannedSelectedFile", false));
-              } else {
-                this.state.update(
-                    Map.of(
-                        "selectedFile",
-                        selectedFile,
-                        "selectedFileId",
-                        getSelectedFileDriveId(selectedFile, JUSTIFICATIVE).orElse(""),
-                        "isPlannedSelectedFile",
-                        false));
-              }
-              plannedList.clearSelection();
-              doneList.clearSelection();
             });
 
     plannedList.addListSelectionListener(
@@ -130,13 +102,6 @@ public class FileSideBar extends JPanel {
         e -> {
           if (!e.getValueIsAdjusting()) {
             doneDebouncer.restart();
-          }
-        });
-
-    justificativeList.addListSelectionListener(
-        e -> {
-          if (!e.getValueIsAdjusting()) {
-            justificativeDebouncer.restart();
           }
         });
 
@@ -155,14 +120,6 @@ public class FileSideBar extends JPanel {
 
     panel.add(doneLabel);
     panel.add(new JScrollPane(doneList));
-    panel.add(Box.createVerticalStrut(20));
-
-    var justificativeLabel = new JLabel("Pièces justificatives");
-    justificativeLabel.setFont(justificativeLabel.getFont().deriveFont(Font.BOLD));
-
-    panel.add(justificativeLabel);
-    panel.add(new JScrollPane(justificativeList));
-
     add(panel, BorderLayout.CENTER);
   }
 
