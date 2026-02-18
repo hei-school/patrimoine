@@ -272,7 +272,7 @@ public class LocalCommentManager {
     pendingDeletionsByFile.clear();
   }
 
-  public List<String> getFilesWithPendingChanges() {
+  public List<String> getPendingFileIds() {
     Set<String> files = new HashSet<>();
     files.addAll(pendingCommentsByFile.keySet());
     files.addAll(pendingRepliesByFile.keySet());
