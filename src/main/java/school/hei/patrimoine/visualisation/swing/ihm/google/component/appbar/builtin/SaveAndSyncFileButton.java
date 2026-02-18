@@ -1,7 +1,7 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.builtin;
 
 import static school.hei.patrimoine.patrilang.PatriLangTranspiler.*;
-import static school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.builtin.SyncConfirmDialog.forSync;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.builtin.DialogMode.SYNC;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.component.html.ViewMode.EDIT;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.config.EnvironmentConfig.isOfflineMode;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.Api.driveApi;
@@ -103,8 +103,8 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
   }
 
   private static void syncFilesWithDrive(Callable<Void> onSuccess) {
-    var confirmed = forSync();
-    if (!confirmed) return;
+    var confirmDialog = new SyncConfirmDialog(SYNC);
+    if (!confirmDialog.isConfirmed()) return;
 
     AsyncTask.<Void>builder()
         .task(

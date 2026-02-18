@@ -2,6 +2,7 @@ package school.hei.patrimoine.visualisation.swing.ihm.google;
 
 import static java.awt.Toolkit.getDefaultToolkit;
 import static javax.swing.SwingUtilities.invokeLater;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.builtin.DialogMode.EXIT;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.config.EnvironmentConfig.isOfflineMode;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.config.EnvironmentConfig.isOnlineMode;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangStagingFileManager.getStagedDoneFiles;
@@ -46,7 +47,8 @@ public class PatriLangViewer extends App {
               return;
             }
 
-            if (SyncConfirmDialog.forQuit()) {
+            var confirmDialog = new SyncConfirmDialog(EXIT);
+            if (confirmDialog.isConfirmed()) {
               dispose();
             }
           }
