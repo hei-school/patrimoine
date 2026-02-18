@@ -16,68 +16,54 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.But
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.comment.LocalCommentManager;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.comment.pending.PendingCommentsInfo;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.GoogleLinkList;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.GoogleLinkList.NamedID;
 
 public class SyncConfirmDialog extends JDialog {
   @Getter private boolean confirmed = false;
 
-  public SyncConfirmDialog(boolean isQuitDialog) {
-    super(
-        (Frame) null,
-        isQuitDialog ? "Modifications non synchronisées" : "Confirmer la synchronisation",
-        true);
+  private static final String FILE_ICON_PATH = "/icons/file.png";
+  private static final String COMMENT_ICON_PATH = "/icons/comment.png";
+
+  public SyncConfirmDialog(DialogMode mode) {
+    super((Frame) null, mode.title, true);
 
     List<File> plannedFiles = getStagedPlannedFiles();
     List<File> doneFiles = getStagedDoneFiles();
     List<File> justificativeFiles = getStagedJustificativeFiles();
 
-    LocalCommentManager localManager = LocalCommentManager.getInstance();
-    List<String> filesWithPendingComments = localManager.getFilesWithPendingChanges();
-    Map<String, PendingCommentsInfo> pendingCommentsPlanned = new HashMap<>();
-    Map<String, PendingCommentsInfo> pendingCommentsDone = new HashMap<>();
-    Map<String, PendingCommentsInfo> pendingJustificativeComments = new HashMap<>();
+    var localCommentManager = LocalCommentManager.getInstance();
+    List<String> filesWithPendingComments = localCommentManager.getPendingFileIds();
+    Map<String, PendingCommentsInfo> pendingComments = new HashMap<>();
 
-    for (String fileId : filesWithPendingComments) {
-      int addCount = localManager.getPendingComments(fileId).size();
-      int replyCount = localManager.getPendingReplies(fileId).size();
-      int resolveCount = localManager.getPendingResolutions(fileId).size();
-      int deleteCount = localManager.getPendingDeletions(fileId).size();
+    for (var fileId : filesWithPendingComments) {
+      int addedComments = localCommentManager.getPendingComments(fileId).size();
+      int repliedComments = localCommentManager.getPendingReplies(fileId).size();
+      int resolvedComments = localCommentManager.getPendingResolutions(fileId).size();
+      int deletedComments = localCommentManager.getPendingDeletions(fileId).size();
 
-      if (addCount > 0 || replyCount > 0 || resolveCount > 0 || deleteCount > 0) {
-        var info = new PendingCommentsInfo(fileId, addCount, replyCount, resolveCount, deleteCount);
+      if (addedComments == 0
+          && repliedComments == 0
+          && resolvedComments == 0
+          && deletedComments == 0) return;
 
-        if (isJustificative(fileId)) {
-          pendingJustificativeComments.put(fileId, info);
-        } else if (isPlannedFile(fileId)) {
-          pendingCommentsPlanned.put(fileId, info);
-        } else {
-          pendingCommentsDone.put(fileId, info);
-        }
-      }
+      var info =
+          new PendingCommentsInfo(
+              fileId, addedComments, repliedComments, resolvedComments, deletedComments);
+
+      pendingComments.put(fileId, info);
     }
 
-    boolean hasFiles =
-        !plannedFiles.isEmpty() || !doneFiles.isEmpty() || !justificativeFiles.isEmpty();
-    boolean hasComments =
-        !pendingCommentsPlanned.isEmpty()
-            || !pendingCommentsDone.isEmpty()
-            || !pendingJustificativeComments.isEmpty();
+    var hasFiles = !plannedFiles.isEmpty() || !doneFiles.isEmpty() || !justificativeFiles.isEmpty();
+    var hasComments = !pendingComments.isEmpty();
 
     if (hasFiles || hasComments) {
-      String messageText =
-          isQuitDialog
-              ? "Il reste des modifications non synchronisées. Voulez-vous vraiment quitter ?"
-              : "Voulez-vous synchroniser ces modifications avec Google Drive ?";
-
-      String confirmButtonText = isQuitDialog ? "Quitter" : "Synchroniser";
       initConfirmComponents(
           plannedFiles,
           doneFiles,
           justificativeFiles,
-          pendingCommentsPlanned,
-          pendingCommentsDone,
-          pendingJustificativeComments,
-          messageText,
-          confirmButtonText);
+          pendingComments,
+          mode.message,
+          mode.confirmButtonText);
     } else {
       initInfoComponents();
     }
@@ -86,33 +72,11 @@ public class SyncConfirmDialog extends JDialog {
     setLocationRelativeTo(null);
   }
 
-  private boolean isPlannedFile(String fileId) {
-    try {
-      GoogleLinkList<GoogleLinkList.NamedID> ids = AppContext.getDefault().getData("named-ids");
-
-      return ids.planned().stream().anyMatch(n -> n.id().equals(fileId));
-    } catch (Exception e) {
-      return false;
-    }
-  }
-
-  private boolean isJustificative(String fileId) {
-    try {
-      GoogleLinkList<GoogleLinkList.NamedID> ids = AppContext.getDefault().getData("named-ids");
-
-      return ids.justificative().stream().anyMatch(n -> n.id().equals(fileId));
-    } catch (Exception e) {
-      return false;
-    }
-  }
-
   private void initConfirmComponents(
       List<File> plannedFiles,
       List<File> doneFiles,
       List<File> justificativeFiles,
-      Map<String, PendingCommentsInfo> pendingCommentsPlanned,
-      Map<String, PendingCommentsInfo> pendingCommentsDone,
-      Map<String, PendingCommentsInfo> pendingJustificativeComments,
+      Map<String, PendingCommentsInfo> pendingComments,
       String messageText,
       String confirmButtonText) {
     setLayout(new BorderLayout());
@@ -131,30 +95,18 @@ public class SyncConfirmDialog extends JDialog {
       filesLabel.setBorder(CustomBorder.builder().thickness(0).padding(0, 0, 8, 0).build());
       contentPanel.add(filesLabel);
 
-      addFileSection(contentPanel, "Planifiés", plannedFiles, loadFileIcon());
-      addFileSection(contentPanel, "Réalisés", doneFiles, loadFileIcon());
-      addFileSection(contentPanel, "Pièces justificatives", justificativeFiles, loadFileIcon());
+      addFileSection(contentPanel, "Planifiés", plannedFiles, loadIcon(FILE_ICON_PATH));
+      addFileSection(contentPanel, "Réalisés", doneFiles, loadIcon(FILE_ICON_PATH));
+      addFileSection(
+          contentPanel, "Pièces justificatives", justificativeFiles, loadIcon(FILE_ICON_PATH));
 
-      if (!pendingCommentsPlanned.isEmpty()
-          || !pendingCommentsDone.isEmpty()
-          || !pendingJustificativeComments.isEmpty()) {
+      if (hasPendingComments(pendingComments)) {
         contentPanel.add(Box.createVerticalStrut(15));
       }
     }
 
-    if (!pendingCommentsPlanned.isEmpty()
-        || !pendingCommentsDone.isEmpty()
-        || !pendingJustificativeComments.isEmpty()) {
-      var commentsLabel = new JLabel("Commentaires modifiés");
-      commentsLabel.setFont(new Font("Arial", Font.BOLD, 16));
-      commentsLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-      commentsLabel.setBorder(CustomBorder.builder().thickness(0).padding(0, 0, 8, 0).build());
-      contentPanel.add(commentsLabel);
-
-      addCommentsSection(contentPanel, "Planifiés", pendingCommentsPlanned, loadCommentIcon());
-      addCommentsSection(contentPanel, "Réalisés", pendingCommentsDone, loadCommentIcon());
-      addCommentsSection(
-          contentPanel, "pièces justificatives", pendingJustificativeComments, loadCommentIcon());
+    if (hasPendingComments(pendingComments)) {
+      addCommentsSection(contentPanel, pendingComments, loadIcon(COMMENT_ICON_PATH));
     }
 
     var scrollPane = new JScrollPane(contentPanel);
@@ -173,6 +125,10 @@ public class SyncConfirmDialog extends JDialog {
     add(messagePanel, BorderLayout.CENTER);
 
     addButtons(confirmButtonText);
+  }
+
+  private boolean hasPendingComments(Map<String, PendingCommentsInfo> pendingComments) {
+    return !pendingComments.isEmpty();
   }
 
   private void initInfoComponents() {
@@ -254,7 +210,7 @@ public class SyncConfirmDialog extends JDialog {
 
     container.add(label);
 
-    for (File file : files) {
+    for (var file : files) {
       container.add(createFilePanel(file, icon));
       container.add(Box.createVerticalStrut(5));
     }
@@ -263,13 +219,10 @@ public class SyncConfirmDialog extends JDialog {
   }
 
   private void addCommentsSection(
-      JPanel container,
-      String title,
-      Map<String, PendingCommentsInfo> pendingCommentsMap,
-      ImageIcon icon) {
+      JPanel container, Map<String, PendingCommentsInfo> pendingCommentsMap, ImageIcon icon) {
     if (pendingCommentsMap.isEmpty()) return;
 
-    var label = new JLabel(title);
+    var label = new JLabel("Commentaires modifiés");
     label.setFont(new Font("Arial", Font.BOLD, 15));
     label.setAlignmentX(Component.LEFT_ALIGNMENT);
     label.setBorder(CustomBorder.builder().thickness(0).padding(0, 0, 3, 0).build());
@@ -353,23 +306,17 @@ public class SyncConfirmDialog extends JDialog {
 
   private String getFileNameFromId(String fileId) {
     try {
-      GoogleLinkList<GoogleLinkList.NamedID> ids = AppContext.getDefault().getData("named-ids");
+      GoogleLinkList<NamedID> ids = AppContext.getDefault().getData("named-ids");
 
       var plannedName =
-          ids.planned().stream()
-              .filter(n -> n.id().equals(fileId))
-              .map(GoogleLinkList.NamedID::name)
-              .findFirst();
+          ids.planned().stream().filter(n -> n.id().equals(fileId)).map(NamedID::name).findFirst();
 
       if (plannedName.isPresent()) {
         return plannedName.get();
       }
 
       var doneName =
-          ids.done().stream()
-              .filter(n -> n.id().equals(fileId))
-              .map(GoogleLinkList.NamedID::name)
-              .findFirst();
+          ids.done().stream().filter(n -> n.id().equals(fileId)).map(NamedID::name).findFirst();
 
       if (doneName.isPresent()) {
         return doneName.get();
@@ -378,7 +325,7 @@ public class SyncConfirmDialog extends JDialog {
       var justificativeName =
           ids.justificative().stream()
               .filter(n -> n.id().equals(fileId))
-              .map(GoogleLinkList.NamedID::name)
+              .map(NamedID::name)
               .findFirst();
 
       if (justificativeName.isPresent()) {
@@ -390,31 +337,11 @@ public class SyncConfirmDialog extends JDialog {
     return "Fichier " + fileId.substring(0, Math.min(8, fileId.length())) + "...";
   }
 
-  private ImageIcon loadFileIcon() {
-    var url = getClass().getResource("/icons/file.png");
+  private ImageIcon loadIcon(String resourcePath) {
+    var url = getClass().getResource(resourcePath);
     var icon = new ImageIcon(Objects.requireNonNull(url));
     Image scaled = icon.getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH);
 
     return new ImageIcon(scaled);
-  }
-
-  private ImageIcon loadCommentIcon() {
-    var url = getClass().getResource("/icons/comment.png");
-    var icon = new ImageIcon(Objects.requireNonNull(url));
-    Image scaled = icon.getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH);
-
-    return new ImageIcon(scaled);
-  }
-
-  public static boolean forSync() {
-    var dialog = new SyncConfirmDialog(false);
-    dialog.setVisible(true);
-    return dialog.isConfirmed();
-  }
-
-  public static boolean forQuit() {
-    var dialog = new SyncConfirmDialog(true);
-    dialog.setVisible(true);
-    return dialog.isConfirmed();
   }
 }
