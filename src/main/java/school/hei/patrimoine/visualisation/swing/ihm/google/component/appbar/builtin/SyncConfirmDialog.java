@@ -1,6 +1,6 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.builtin;
 
-import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.PatriLangStagingFileManager.*;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangStagingFileManager.*;
 
 import java.awt.*;
 import java.io.File;
@@ -12,6 +12,7 @@ import javax.swing.*;
 import lombok.Getter;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.CustomBorder;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.AppContext;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.comment.LocalCommentManager;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.comment.pending.PendingCommentsInfo;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.GoogleLinkList;
@@ -196,7 +197,7 @@ public class SyncConfirmDialog extends JDialog {
     var buttonPanel = new JPanel(new BorderLayout());
     buttonPanel.setBorder(CustomBorder.builder().thickness(0).padding(5, 15, 15, 15).build());
 
-    var okButton = new JButton("OK");
+    var okButton = new Button("OK");
     okButton.setPreferredSize(new Dimension(70, okButton.getPreferredSize().height));
     okButton.addActionListener(
         e -> {
@@ -218,14 +219,14 @@ public class SyncConfirmDialog extends JDialog {
     var buttonPanel = new JPanel(new BorderLayout());
     buttonPanel.setBorder(CustomBorder.builder().thickness(0).padding(5, 15, 15, 15).build());
 
-    var cancelButton = new JButton("Annuler");
+    var cancelButton = new Button("Annuler");
     cancelButton.addActionListener(
         e -> {
           confirmed = false;
           dispose();
         });
 
-    var confirmButton = new JButton(confirmButtonText);
+    var confirmButton = new Button(confirmButtonText);
     confirmButton.setPreferredSize(new Dimension(120, cancelButton.getPreferredSize().height));
     confirmButton.addActionListener(
         e -> {

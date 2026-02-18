@@ -18,8 +18,8 @@ import school.hei.patrimoine.modele.possession.Possession;
 import school.hei.patrimoine.modele.recouppement.model.Info;
 import school.hei.patrimoine.modele.recouppement.model.PossessionRecoupee;
 import school.hei.patrimoine.patrilang.files.PatriLangFileQuerier;
-import school.hei.patrimoine.patrilang.files.PatriLangFileWritter;
-import school.hei.patrimoine.patrilang.files.PatriLangFileWritter.FileWritterInput;
+import school.hei.patrimoine.patrilang.files.PatriLangFileWriter;
+import school.hei.patrimoine.patrilang.files.PatriLangFileWriter.FileWriterInput;
 import school.hei.patrimoine.patrilang.generator.PatriLangGeneratorFactory;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.Dialog;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.AppContext;
@@ -27,6 +27,7 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.MultiV
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
 import school.hei.patrimoine.visualisation.swing.ihm.google.generator.PossessionGeneratorFactory;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.AsyncTask;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.MessageDialog;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.formatter.ArgentFormatter;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.formatter.DateFormatter;
@@ -34,7 +35,7 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.modele.formatter.Dat
 public class PossessionRecoupeeRealisationsDialog extends Dialog {
   private final State state;
   private final Set<Info<Possession>> pendingInfos;
-  private final PatriLangFileWritter writter;
+  private final PatriLangFileWriter writter;
   private final PatriLangFileQuerier querier;
   private final PossessionRecoupee<Possession> possessionRecoupee;
 
@@ -48,7 +49,7 @@ public class PossessionRecoupeeRealisationsDialog extends Dialog {
 
     this.state = state;
     this.pendingInfos = new HashSet<>();
-    this.writter = new PatriLangFileWritter();
+    this.writter = new PatriLangFileWriter();
     this.querier = new PatriLangFileQuerier();
     this.possessionRecoupee = possessionRecoupee;
 
@@ -209,7 +210,7 @@ public class PossessionRecoupeeRealisationsDialog extends Dialog {
               }
 
               writter.insertAtLine(
-                  FileWritterInput.builder()
+                  FileWriterInput.builder()
                       .content(lines)
                       .file(selectedFile)
                       .casSet(casSet)
@@ -217,13 +218,7 @@ public class PossessionRecoupeeRealisationsDialog extends Dialog {
                   sectionOperation.get().endLine());
               return null;
             })
-        .onError(
-            error -> {
-              if (showExceptionMessageIfRecognizedException(error)) {
-                return;
-              }
-              showError("Erreur", "Une erreur est survenue lors de l'enregistrement");
-            })
+        .onError(MessageDialog::showError)
         .onSuccess(
             result -> {
               showInfo("Succès", "L'opération a été exécutée avec succès");

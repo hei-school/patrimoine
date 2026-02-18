@@ -4,7 +4,8 @@ import static javax.swing.SwingUtilities.invokeLater;
 import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
 import static school.hei.patrimoine.patrilang.PatriLangTranspiler.TOUT_CAS_FILE_EXTENSION;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.AppBar.*;
-import static school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.builtin.SaveAndSyncFileButton.simpleSaveButton;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.component.html.ViewMode.VIEW;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.config.EnvironmentConfig.isOfflineMode;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.config.EnvironmentConfig.isOnlineMode;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.MessageDialog.showError;
 
@@ -63,7 +64,7 @@ public class PatriLangFilesPage extends LazyPage {
         new State(
             Map.of(
                 "viewMode",
-                ViewMode.VIEW,
+                VIEW,
                 "fontSize",
                 12,
                 "commentPagination",
@@ -100,6 +101,16 @@ public class PatriLangFilesPage extends LazyPage {
     addMainSplitPane();
   }
 
+  private SaveAndSyncFileButton saveAndSyncFileButton() {
+    return new SaveAndSyncFileButton(
+        state,
+        htmlViewer,
+        () -> {
+          getCommentSideBar().refreshCommentsCache();
+          return null;
+        });
+  }
+
   private void addAppBar() {
     this.addImprevuButton = addImprevuButton(state);
     addImprevuButton.setVisible(false);
@@ -108,20 +119,12 @@ public class PatriLangFilesPage extends LazyPage {
         new AppBar(
             List.of(
                 builtInViewModeSelect(state),
-                !isOnlineMode()
-                    ? simpleSaveButton(state, htmlViewer)
-                    : new SaveAndSyncFileButton(
-                        state,
-                        htmlViewer,
-                        () -> {
-                          getCommentSideBar().refreshCommentsCache();
-                          return null;
-                        }),
+                saveAndSyncFileButton(),
                 evolutionGraphicButton(),
                 recoupementButton(),
                 addImprevuButton,
                 addSearchTextBar()),
-            !isOnlineMode()
+            isOfflineMode()
                 ? List.of(builtInFontSizeControllerButton(state))
                 : List.of(builtInFontSizeControllerButton(state), builtInUserInfoPanel()));
 
@@ -132,15 +135,15 @@ public class PatriLangFilesPage extends LazyPage {
     var horizontalSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
     horizontalSplit.setLeftComponent(new FileSideBar(state));
 
+    var rightSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+    rightSplit.setLeftComponent(new JScrollPane(htmlViewer));
+
     if (isOnlineMode()) {
       this.commentSideBar = new CommentSideBar(state, localCommentActions);
+      rightSplit.setRightComponent(commentSideBar);
     }
 
-    var rightSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-    rightSplit.setLeftComponent(htmlViewer.toScrollPane());
-    rightSplit.setRightComponent(commentSideBar);
     rightSplit.setDividerLocation(700);
-
     horizontalSplit.setRightComponent(rightSplit);
     horizontalSplit.setDividerLocation(200);
 
@@ -153,7 +156,7 @@ public class PatriLangFilesPage extends LazyPage {
         e -> {
           state.invalidate(
               Set.of(
-                  "selectedFile", "selectedCasSetFile", "isPlannedSelectedFile", "selectedFileId"));
+                  "selectedFile", "selectedFileCasSet", "isPlannedSelectedFile", "selectedFileId"));
           pageManager().navigate(RecoupementPage.PAGE_NAME);
         });
   }
@@ -217,13 +220,13 @@ public class PatriLangFilesPage extends LazyPage {
         .onSuccess(recoupedCasSet -> new CasSetAnalyzer(DISPOSE_ON_CLOSE).accept(recoupedCasSet))
         .onError(
             error -> {
-                error = error.getCause() == null ? error : (Exception) error.getCause();
-                if (error instanceof ObjectifExeption exception) {
-                  var objectifs = exception.getObjectifNonAtteints();
-                  invokeLater(() -> new ObjectifNonAtteintsDialog(objectifs));
-                  return;
-                }
-              showError("Erreur", error.getMessage());
+              error = error.getCause() == null ? error : (Exception) error.getCause();
+              if (error instanceof ObjectifExeption exception) {
+                var objectifs = exception.getObjectifNonAtteints();
+                invokeLater(() -> new ObjectifNonAtteintsDialog(objectifs));
+                return;
+              }
+              showError(error);
             })
         .build()
         .execute();
@@ -244,7 +247,7 @@ public class PatriLangFilesPage extends LazyPage {
     return Optional.ofNullable(state.get("selectedFile"));
   }
 
-  private boolean isToutCasFile(File file) {
+  private static boolean isToutCasFile(File file) {
     return file.getName().endsWith(TOUT_CAS_FILE_EXTENSION);
   }
 

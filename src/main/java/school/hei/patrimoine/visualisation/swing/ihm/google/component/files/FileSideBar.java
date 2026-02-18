@@ -2,8 +2,7 @@ package school.hei.patrimoine.visualisation.swing.ihm.google.component.files;
 
 import static school.hei.patrimoine.patrilang.PatriLangTranspiler.*;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.config.EnvironmentConfig.isOfflineMode;
-import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.FileCategory.*;
-import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.GoogleLinkListDownloader.*;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.FileCategory.*;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.providers.FilesProvider.*;
 
 import java.awt.*;
@@ -14,6 +13,7 @@ import javax.swing.*;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.AppContext;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.*;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.GoogleLinkList.NamedID;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.FileCategory;
 
 public class FileSideBar extends JPanel {
   private final State state;
@@ -47,7 +47,7 @@ public class FileSideBar extends JPanel {
                     Map.of(
                         "selectedFile",
                         selectedFile,
-                        "selectedCasSetFile",
+                        "selectedFileCasSet",
                         getPlannedCasSetFile(),
                         "isPlannedSelectedFile",
                         true));
@@ -56,7 +56,7 @@ public class FileSideBar extends JPanel {
                     Map.of(
                         "selectedFile",
                         selectedFile,
-                        "selectedCasSetFile",
+                        "selectedFileCasSet",
                         getPlannedCasSetFile(),
                         "selectedFileId",
                         getSelectedFileDriveId(selectedFile, PLANNED).orElse(""),
@@ -77,7 +77,7 @@ public class FileSideBar extends JPanel {
                     Map.of(
                         "selectedFile",
                         selectedFile,
-                        "selectedCasSetFile",
+                        "selectedFileCasSet",
                         getDoneCasSetFile(),
                         "isPlannedSelectedFile",
                         false));
@@ -86,7 +86,7 @@ public class FileSideBar extends JPanel {
                     Map.of(
                         "selectedFile",
                         selectedFile,
-                        "selectedCasSetFile",
+                        "selectedFileCasSet",
                         getDoneCasSetFile(),
                         "selectedFileId",
                         getSelectedFileDriveId(selectedFile, DONE).orElse(""),

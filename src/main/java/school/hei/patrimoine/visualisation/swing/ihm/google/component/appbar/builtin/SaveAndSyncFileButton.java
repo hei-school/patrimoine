@@ -1,145 +1,82 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.builtin;
 
 import static school.hei.patrimoine.patrilang.PatriLangTranspiler.*;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.component.html.ViewMode.EDIT;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.config.EnvironmentConfig.isOfflineMode;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.Api.driveApi;
-import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.FileCategory.*;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.MessageDialog.*;
-import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.PatriLangStagingFileManager.*;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.FileCategory.*;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangFileContentManager.getAllModifiedFiles;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangStagingFileManager.*;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.Callable;
-import lombok.SneakyThrows;
+import javax.swing.*;
 import lombok.extern.slf4j.Slf4j;
 import school.hei.patrimoine.google.exception.GoogleIntegrationException;
-import school.hei.patrimoine.patrilang.files.PatriLangFileContext;
-import school.hei.patrimoine.patrilang.files.PatriLangFileWritter;
-import school.hei.patrimoine.patrilang.files.PatriLangFileWritter.FileWritterInput;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.AppContext;
-import school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.AppBar;
-import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.comment.CommentSynchronizer;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.comment.LocalCommentManager;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.html.HtmlViewer;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.html.ViewMode;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.popup.PopupItem;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.popup.PopupMenuButton;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.AsyncTask;
-import school.hei.patrimoine.visualisation.swing.ihm.google.modele.FileCategory;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.GoogleLinkList;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.MessageDialog;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.FileCategory;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangSavingFileManager;
 
 @Slf4j
 public class SaveAndSyncFileButton extends PopupMenuButton {
   private static final String MIME_TYPE = "application/octet-stream";
 
+  private static PopupItem saveLocalButton(State state, HtmlViewer htmlViewer) {
+    return new PopupItem(
+        "Tout Sauvegarder localement",
+        event -> saveAllModifiedFiles(state.get("viewMode"), htmlViewer));
+  }
+
+  private static PopupItem driveSyncButton(Callable<Void> onSuccess) {
+    return new PopupItem("Tout Synchroniser avec Drive", e -> syncFilesWithDrive(onSuccess));
+  }
+
+  private static List<JMenuItem> getItems(
+      State state, HtmlViewer htmlViewer, Callable<Void> onSuccess) {
+    if (isOfflineMode()) {
+      return List.of(saveLocalButton(state, htmlViewer));
+    }
+    return List.of(saveLocalButton(state, htmlViewer), driveSyncButton(onSuccess));
+  }
+
   public SaveAndSyncFileButton(State state, HtmlViewer htmlViewer, Callable<Void> onSuccess) {
-    super(
-        "Sauvegarder / Synchroniser",
-        List.of(
-            new PopupItem(
-                "Sauvegarder localement",
-                e -> {
-                  try {
-                    saveAllModifiedFiles(
-                        state.get("viewMode"), htmlViewer, state.get("selectedFile"));
-                  } catch (Exception exception) {
-                    showError(exception);
-                  }
-                }),
-            new PopupItem(
-                "Synchroniser avec Drive",
-                e ->
-                    syncFilesWithDrive(
-                        getStagedPlannedFiles(),
-                        getStagedDoneFiles(),
-                        getStagedJustificativeFiles(),
-                        onSuccess)),
-            new PopupItem(
-                "Sauvegarder et synchroniser",
-                e -> {
-                  saveAndSyncSelectedFile(
-                      state.get("viewMode"), htmlViewer, state.get("selectedFile"), onSuccess);
-                })));
+    super("Sauvegarder / Synchroniser", getItems(state, htmlViewer, onSuccess));
   }
 
-  public static Button simpleSaveButton(State state, HtmlViewer htmlViewer) {
-    Button saveButton = new Button("Sauvegarder");
-    saveButton.addActionListener(
-        e -> {
-          AppBar.ViewMode currentMode = state.get("viewMode");
-          File selectedFile = state.get("selectedFile");
-          saveAllModifiedFiles(currentMode, htmlViewer, selectedFile);
-        });
-    return saveButton;
-  }
+  private static void sync(List<File> files, FileCategory category) {
+    for (var file : files) {
+      var id = getDriveIdOf(file, category);
+      if (id.isEmpty()) {
+        throw new RuntimeException("Aucun ID Drive trouvé pour : " + file.getName());
+      }
 
-  @SneakyThrows
-  private static void syncFiles(
-      List<File> plannedFiles, List<File> doneFiles, List<File> justificativeFiles) {
-    for (File file : plannedFiles) {
-      getDriveIdOf(file, PLANNED)
-          .ifPresentOrElse(
-              id -> {
-                try {
-                  driveApi().update(id, MIME_TYPE, file);
-                } catch (GoogleIntegrationException e) {
-                  throw new RuntimeException(e);
-                }
-              },
-              () -> System.out.println("Aucun ID Drive trouvé pour planned : " + file.getName()));
-    }
-
-    for (File file : doneFiles) {
-      getDriveIdOf(file, DONE)
-          .ifPresentOrElse(
-              id -> {
-                try {
-                  driveApi().update(id, MIME_TYPE, file);
-                } catch (GoogleIntegrationException e) {
-                  throw new RuntimeException(e);
-                }
-              },
-              () -> System.out.println("Aucun ID Drive trouvé pour done : " + file.getName()));
-    }
-
-    for (File file : justificativeFiles) {
-      getDriveIdOf(file, JUSTIFICATIVE)
-          .ifPresentOrElse(
-              id -> {
-                try {
-                  driveApi().update(id, MIME_TYPE, file);
-                } catch (GoogleIntegrationException e) {
-                  throw new RuntimeException(e);
-                }
-              },
-              () ->
-                  System.out.println(
-                      "Aucun ID Drive trouvé pour justificative : " + file.getName()));
+      try {
+        driveApi().update(id.get(), MIME_TYPE, file);
+      } catch (GoogleIntegrationException e) {
+        throw new RuntimeException(e);
+      }
     }
   }
 
-  private static void validateBeforeSave(AppBar.ViewMode currentMode, File selectedFile) {
-    if (!AppBar.ViewMode.EDIT.equals(currentMode)) {
-      throw new IllegalArgumentException("Vous devez être en mode édition pour sauvegarder.");
+  private static void saveAllModifiedFiles(ViewMode currentMode, HtmlViewer htmlViewer) {
+    if (EDIT.equals(currentMode)) {
+      htmlViewer.saveLastFileToTempContent();
     }
 
-    if (selectedFile == null) {
-      throw new IllegalArgumentException("Veuillez sélectionner un fichier avant de sauvegarder.");
-    }
-  }
-
-  private static void saveAllModifiedFiles(
-      AppBar.ViewMode currentMode, HtmlViewer htmlViewer, File selectedFile) {
-    validateBeforeSave(currentMode, selectedFile);
-
-    htmlViewer.saveCurrentContentToMemory();
-
-    Map<File, FileWritterInput> modifiedFilesData = htmlViewer.getModifiedFilesData();
-
+    var modifiedFilesData = getAllModifiedFiles();
     if (modifiedFilesData.isEmpty()) {
       showInfo("Information", "Aucune modification à sauvegarder.");
       return;
@@ -150,53 +87,38 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
         .logError(false)
         .task(
             () -> {
-              new PatriLangFileWritter()
-                  .write(
-                      modifiedFilesData.values(),
-                      (input) -> {
-                        var file = new PatriLangFileContext(input);
-                        saveToStaged(input.file(), file.getCategory());
-                      });
+              PatriLangSavingFileManager.save(modifiedFilesData);
               return null;
             })
         .onSuccess(
             result -> {
               AppContext.getDefault().globalState().update("isAnyFileModified", true);
-
-              reloadOriginalContents(modifiedFilesData, htmlViewer);
-
-              htmlViewer.clearModifiedFiles();
               showInfo("Succès", "Vous pouvez maintenant synchroniser avec Google Drive.");
             })
-        .onError(
-            error -> {
-              if (showExceptionMessageIfRecognizedException(error)) return;
-              showError("Erreur", "Une erreur est survenue lors de l'enregistrement");
-            })
+        .onError(MessageDialog::showError)
         .build()
         .execute();
   }
 
-  private static void syncFilesWithDrive(
-      List<File> plannedFiles,
-      List<File> doneFiles,
-      List<File> justificativeFiles,
-      Callable<Void> onSuccess) {
-    boolean confirmed = SyncConfirmDialog.forSync();
+  private static void syncFilesWithDrive(Callable<Void> onSuccess) {
+    var confirmed = SyncConfirmDialog.forSync();
     if (!confirmed) return;
 
     AsyncTask.<Void>builder()
         .task(
             () -> {
-              syncFiles(plannedFiles, doneFiles, justificativeFiles);
+              sync(getStagedDoneFiles(), DONE);
+              sync(getStagedPlannedFiles(), PLANNED);
+              sync(getStagedJustificativeFiles(), JUSTIFICATIVE);
               syncAllPendingComments();
               return null;
             })
         .loadingMessage("Synchronisation avec Drive...")
         .onSuccess(
             ignored -> {
-              clearAllStaged();
+              clearAllStagedFiles();
               LocalCommentManager.getInstance().clearAllPendingComments();
+
               showInfo("Succès", "Les fichiers ont été synchronisés avec succès sur Google Drive.");
               try {
                 onSuccess.call();
@@ -204,103 +126,18 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
                 throw new RuntimeException(e);
               }
             })
-        .onError(error -> showError("Erreur", "Échec de la synchronisation"))
-        .build()
-        .execute();
-  }
-
-  private static void saveAndSyncSelectedFile(
-      AppBar.ViewMode currentMode,
-      HtmlViewer htmlViewer,
-      File selectedFile,
-      Callable<Void> onSuccess) {
-
-    validateBeforeSave(currentMode, selectedFile);
-
-    htmlViewer.saveCurrentContentToMemory();
-
-    Map<File, FileWritterInput> modifiedFilesData = htmlViewer.getModifiedFilesData();
-
-    if (modifiedFilesData.isEmpty()) {
-      showInfo("Information", "Aucune modification à sauvegarder.");
-      return;
-    }
-
-    try {
-      new PatriLangFileWritter()
-          .write(
-              modifiedFilesData.values(),
-              (input) -> {
-                var file = new PatriLangFileContext(input);
-                saveToStaged(input.file(), file.getCategory());
-              });
-    } catch (Exception e) {
-      if (showExceptionMessageIfRecognizedException(e)) return;
-      showError("Erreur", "Une erreur est survenue lors de l'enregistrement");
-      return;
-    }
-
-    var syncConfirmed = SyncConfirmDialog.forSync();
-    if (!syncConfirmed) {
-
-      reloadOriginalContents(modifiedFilesData, htmlViewer);
-
-      htmlViewer.clearModifiedFiles();
-      showInfo(
-          "Sauvegarde effectuée",
-          "Les fichiers ont été sauvegardés localement. Vous pouvez les synchroniser plus tard.");
-      return;
-    }
-
-    AsyncTask.<Void>builder()
-        .loadingMessage("Synchronisation avec Drive...")
-        .task(
-            () -> {
-              List<File> stagedPlanned = getStagedPlannedFiles();
-              List<File> stagedDone = getStagedDoneFiles();
-              List<File> stagedJustificative = getStagedJustificativeFiles();
-              syncFiles(stagedPlanned, stagedDone, stagedJustificative);
-              syncAllPendingComments();
-              return null;
-            })
-        .onSuccess(
-            result -> {
-              AppContext.getDefault().globalState().update("isAnyFileModified", true);
-
-              reloadOriginalContents(modifiedFilesData, htmlViewer);
-
-              htmlViewer.clearModifiedFiles();
-
-              clearAllStaged();
-              showInfo(
-                  "Succès",
-                  "Les fichiers ont été sauvegardés localement et synchronisés avec succès sur"
-                      + " Google Drive.");
-              try {
-                onSuccess.call();
-              } catch (Exception e) {
-                throw new RuntimeException(e);
-              }
-            })
-        .onError(
-            error -> {
-              if (showExceptionMessageIfRecognizedException(error)) return;
-              showError("Erreur", "Une erreur est survenue lors de l'enregistrement");
-            })
+        .onError(MessageDialog::showError)
         .build()
         .execute();
   }
 
   private static void syncAllPendingComments() {
-    CommentSynchronizer commentSynchronizer = new CommentSynchronizer(driveApi());
-    LocalCommentManager localManager = LocalCommentManager.getInstance();
-
-    List<String> filesWithPendingComments = localManager.getFilesWithPendingChanges();
-
+    var localManager = LocalCommentManager.getInstance();
+    var filesWithPendingComments = localManager.getFilesWithPendingChanges();
     if (filesWithPendingComments.isEmpty()) return;
 
+    var commentSynchronizer = new CommentSynchronizer(driveApi());
     boolean hasErrors = false;
-
     for (String fileId : filesWithPendingComments) {
       try {
         commentSynchronizer.syncComments(fileId);
@@ -309,24 +146,11 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
       }
     }
     if (hasErrors) {
-      throw new RuntimeException("Some comments could not be synchronized.");
+      throw new RuntimeException("Certains commentaires n'ont pas pu être synchronisés.");
     }
   }
 
-  private static void reloadOriginalContents(
-      Map<File, FileWritterInput> modifiedFilesData, HtmlViewer htmlViewer) {
-    for (File file : modifiedFilesData.keySet()) {
-      if (file != null && file.exists()) {
-        try {
-          String savedContent = Files.readString(file.toPath());
-          htmlViewer.getOriginalContents().put(file, savedContent);
-        } catch (IOException e) {
-          throw new RuntimeException(e);
-        }
-      }
-    }
-  }
-
+  // TODO: should use named-ids in global state
   private static Optional<String> getDriveIdOf(File file, FileCategory category) {
     GoogleLinkList<GoogleLinkList.NamedID> ids = AppContext.getDefault().getData("named-ids");
     if (file == null) return Optional.empty();

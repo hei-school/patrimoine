@@ -1,14 +1,15 @@
 package school.hei.patrimoine.patrilang.files;
 
-import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.FileCategory.*;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.FileCategory.*;
 
-import school.hei.patrimoine.visualisation.swing.ihm.google.modele.FileCategory;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.FileCategory;
 
+// TODO: refactor ... any google package's code should be imported here (FileCategory)
 public class PatriLangFileContext {
-  private final PatriLangFileWritter.FileWritterInput input;
   private final String filePath;
+  private final PatriLangFileWriter.FileWriterInput input;
 
-  public PatriLangFileContext(PatriLangFileWritter.FileWritterInput input) {
+  public PatriLangFileContext(PatriLangFileWriter.FileWriterInput input) {
     this.input = input;
     this.filePath = input.file().getAbsolutePath().replace("\\", "/");
   }

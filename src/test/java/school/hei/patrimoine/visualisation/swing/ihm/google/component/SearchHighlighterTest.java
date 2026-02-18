@@ -1,10 +1,11 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.component;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static school.hei.patrimoine.visualisation.swing.ihm.google.component.SearchHighlighter.highlightInTextComponent;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.component.html.SearchHighlighter.highlightInTextComponent;
 
 import javax.swing.*;
 import org.junit.jupiter.api.Test;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.html.SearchHighlighter;
 
 class SearchHighlighterTest {
 
