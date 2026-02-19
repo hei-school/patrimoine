@@ -1,6 +1,7 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.component.files;
 
 import static school.hei.patrimoine.patrilang.PatriLangTranspiler.*;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.mode.config.EnvironnementConfigMode.getCurrentMode;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.FileCategory.*;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.providers.FilesProvider.*;
 
@@ -10,7 +11,6 @@ import java.util.Map;
 import java.util.Optional;
 import javax.swing.*;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.AppContext;
-import school.hei.patrimoine.visualisation.swing.ihm.google.mode.AppMode;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.*;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.GoogleLinkList.NamedID;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.FileCategory;
@@ -19,12 +19,10 @@ public class FileSideBar extends JPanel {
   private final State state;
   private final JList<File> plannedList;
   private final JList<File> doneList;
-  private final AppMode MODE;
 
-  public FileSideBar(State state, AppMode mode) {
+  public FileSideBar(State state) {
     super(new BorderLayout());
 
-    this.MODE = mode;
     this.state = state;
     this.doneList = new JList<>(new FileListModel(getPatriLangDoneFiles()));
     this.plannedList = new JList<>(new FileListModel(getPatriLangPlannedFiles()));
@@ -40,7 +38,7 @@ public class FileSideBar extends JPanel {
             () -> {
               var selectedFile = plannedList.getSelectedValue();
               if (selectedFile == null) return;
-              if (!MODE.isOnline()) {
+              if (getCurrentMode().isOffline()) {
                 this.state.update(
                     Map.of(
                         "selectedFile",
@@ -69,7 +67,7 @@ public class FileSideBar extends JPanel {
             () -> {
               var selectedFile = doneList.getSelectedValue();
               if (selectedFile == null) return;
-              if (!MODE.isOnline()) {
+              if (getCurrentMode().isOffline()) {
                 this.state.update(
                     Map.of(
                         "selectedFile",

@@ -2,7 +2,7 @@ package school.hei.patrimoine.visualisation.swing.ihm.google;
 
 import static java.awt.Toolkit.getDefaultToolkit;
 import static javax.swing.SwingUtilities.invokeLater;
-import static school.hei.patrimoine.visualisation.swing.ihm.google.mode.config.ModeResolver.current;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.mode.config.EnvironnementConfigMode.getCurrentMode;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangStagingFileManager.getStagedDoneFiles;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangStagingFileManager.getStagedPlannedFiles;
 
@@ -15,28 +15,21 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.App;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.Page;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.builtin.SyncConfirmDialog;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.comment.LocalCommentManager;
-import school.hei.patrimoine.visualisation.swing.ihm.google.mode.AppMode;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.GoogleLinkListDownloader;
 
 public class PatriLangViewer extends App {
-  private static AppMode CONSTRUCTION_MODE;
-  private final AppMode mode;
-
-  public PatriLangViewer(AppMode mode) {
+  public PatriLangViewer() {
     super(
         "patrilang-app",
         "Patrimoine",
         getDefaultToolkit().getScreenSize().width,
         getDefaultToolkit().getScreenSize().height);
 
-    this.mode = mode;
-    CONSTRUCTION_MODE = null;
-
     addWindowListener(
         new WindowAdapter() {
           @Override
           public void windowClosing(WindowEvent e) {
-            if (!mode.isOnline()) {
+            if (getCurrentMode().isOffline()) {
               dispose();
               return;
             }
@@ -60,14 +53,12 @@ public class PatriLangViewer extends App {
 
   @Override
   protected Set<Page> pages() {
-    var effectiveMode = mode != null ? mode : CONSTRUCTION_MODE;
-    return effectiveMode.pages();
+    return getCurrentMode().pages();
   }
 
   @Override
   protected String defaultPageName() {
-    var effectiveMode = mode != null ? mode : CONSTRUCTION_MODE;
-    return effectiveMode.defaultPageNames();
+    return getCurrentMode().defaultPageNames();
   }
 
   public static void main(String[] args) {
@@ -75,13 +66,11 @@ public class PatriLangViewer extends App {
     FlatLightLaf.setup();
     GoogleApiUtilities.setup();
 
-    var mode = current();
-
+    var mode = getCurrentMode();
     if (mode.isOnline()) {
       GoogleLinkListDownloader.setup();
     }
 
-    CONSTRUCTION_MODE = mode;
-    invokeLater(() -> new PatriLangViewer(mode));
+    invokeLater(PatriLangViewer::new);
   }
 }

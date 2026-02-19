@@ -9,13 +9,15 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
 public interface AppMode {
   boolean isOnline();
 
-  List<Component> appBarRightComponents(State state);
+  boolean isOffline();
+
+  boolean enableComments();
+
+  boolean enableDriveSync();
 
   Set<Page> pages();
 
   String defaultPageNames();
 
-  boolean enableComments();
-
-  boolean enableDriveSync();
+  List<Component> appBarRightComponents(State state);
 }

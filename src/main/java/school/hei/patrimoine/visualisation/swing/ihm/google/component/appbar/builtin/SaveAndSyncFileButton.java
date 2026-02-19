@@ -2,6 +2,7 @@ package school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.bu
 
 import static school.hei.patrimoine.patrilang.PatriLangTranspiler.*;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.component.html.ViewMode.EDIT;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.mode.config.EnvironnementConfigMode.getCurrentMode;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.Api.driveApi;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.MessageDialog.*;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.FileCategory.*;
@@ -22,7 +23,6 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.component.html.HtmlV
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.html.ViewMode;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.popup.PopupItem;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.popup.PopupMenuButton;
-import school.hei.patrimoine.visualisation.swing.ihm.google.mode.AppMode;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.AsyncTask;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.GoogleLinkList;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.MessageDialog;
@@ -45,16 +45,15 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
   }
 
   private static List<JMenuItem> getItems(
-      AppMode mode, State state, HtmlViewer htmlViewer, Callable<Void> onSuccess) {
-    if (!mode.enableDriveSync()) {
-      return List.of(saveLocalButton(state, htmlViewer));
+      State state, HtmlViewer htmlViewer, Callable<Void> onSuccess) {
+    if (getCurrentMode().enableDriveSync()) {
+      return List.of(saveLocalButton(state, htmlViewer), driveSyncButton(onSuccess));
     }
-    return List.of(saveLocalButton(state, htmlViewer), driveSyncButton(onSuccess));
+    return List.of(saveLocalButton(state, htmlViewer));
   }
 
-  public SaveAndSyncFileButton(
-      AppMode mode, State state, HtmlViewer htmlViewer, Callable<Void> onSuccess) {
-    super("Sauvegarder / Synchroniser", getItems(mode, state, htmlViewer, onSuccess));
+  public SaveAndSyncFileButton(State state, HtmlViewer htmlViewer, Callable<Void> onSuccess) {
+    super("Sauvegarder / Synchroniser", getItems(state, htmlViewer, onSuccess));
   }
 
   private static void sync(List<File> files, FileCategory category) {

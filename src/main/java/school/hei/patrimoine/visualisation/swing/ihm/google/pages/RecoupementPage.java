@@ -24,7 +24,6 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Nav
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.FileListCellRenderer;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.FileListModel;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.recoupement.PossessionRecoupeeListPanel;
-import school.hei.patrimoine.visualisation.swing.ihm.google.mode.AppMode;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.*;
 import school.hei.patrimoine.visualisation.swing.ihm.google.providers.PossessionRecoupeeProvider;
 import school.hei.patrimoine.visualisation.swing.ihm.google.providers.PossessionRecoupeeProvider.*;
@@ -34,15 +33,13 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.providers.model.Pagi
 public class RecoupementPage extends LazyPage {
   public static final String PAGE_NAME = "recoupement";
   public static final int RECOUPEMENT_ITEM_PER_PAGE = 50;
-  private final AppMode MODE;
 
   private final State state;
   private final CasSetSetter casSetSetter;
   private final PossessionRecoupeeListPanel possessionRecoupeeListPanel;
 
-  public RecoupementPage(AppMode mode) {
+  public RecoupementPage() {
     super(PAGE_NAME);
-    this.MODE = mode;
     this.casSetSetter = CasSetSetter.getInstance();
 
     this.state =
