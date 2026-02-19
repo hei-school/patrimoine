@@ -138,7 +138,12 @@ public class CsvExporter {
             .nom()
             .replaceFirst("^" + possession.getTypeFEC().name() + "_", "")
             .replaceFirst("^" + possession.getTypeFEC().abrev() + "_", "")
-            .replaceFirst("(\\d{4}_\\d{2}_\\d{2})$", "");
+            .replaceFirst("_\\d{4}_\\d{2}_\\d{2}$", "")
+            .replace("_", " ")
+            .replaceAll("(?<=[a-z])(?=[A-Z])", " ")
+            .replaceAll("(?<=[a-zA-Z])(?=\\d)", " ")
+            .replaceAll("(?<=\\d)(?=[a-zA-Z])", " ")
+            .trim();
     var valeurRealise = possessionRecoupee.valeurRealisee().convertir(Devise.EUR, LocalDate.now());
     var debit = "";
     var credit = "";
