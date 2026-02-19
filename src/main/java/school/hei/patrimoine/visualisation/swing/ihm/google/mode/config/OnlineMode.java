@@ -1,10 +1,12 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.mode.config;
 
+import static school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.AppBar.builtInFontSizeControllerButton;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.AppBar.builtInUserInfoPanel;
+
 import java.awt.*;
 import java.util.List;
 import java.util.Set;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.Page;
-import school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.AppBar;
 import school.hei.patrimoine.visualisation.swing.ihm.google.mode.AppMode;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
 import school.hei.patrimoine.visualisation.swing.ihm.google.pages.*;
@@ -17,7 +19,7 @@ public class OnlineMode implements AppMode {
 
   @Override
   public List<Component> appBarRightComponents(State state) {
-    return List.of(AppBar.builtInFontSizeControllerButton(state), AppBar.builtInUserInfoPanel());
+    return List.of(builtInFontSizeControllerButton(state), builtInUserInfoPanel());
   }
 
   @Override

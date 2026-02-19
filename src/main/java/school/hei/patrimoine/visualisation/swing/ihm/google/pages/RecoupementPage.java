@@ -108,7 +108,7 @@ public class RecoupementPage extends LazyPage {
                 statusFilter,
                 addImprevuButton,
                 nameFilter),
-            MODE.appBarRightComponents(state));
+            List.of());
 
     add(appBar, BorderLayout.NORTH);
   }

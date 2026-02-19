@@ -9,14 +9,17 @@ import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.
 import com.formdev.flatlaf.FlatLightLaf;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.Set;
 import school.hei.patrimoine.google.GoogleApiUtilities;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.App;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.Page;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.builtin.SyncConfirmDialog;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.comment.LocalCommentManager;
 import school.hei.patrimoine.visualisation.swing.ihm.google.mode.AppMode;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.GoogleLinkListDownloader;
 
 public class PatriLangViewer extends App {
+  private static AppMode CONSTRUCTION_MODE;
   private final AppMode mode;
 
   public PatriLangViewer(AppMode mode) {
@@ -24,11 +27,10 @@ public class PatriLangViewer extends App {
         "patrilang-app",
         "Patrimoine",
         getDefaultToolkit().getScreenSize().width,
-        getDefaultToolkit().getScreenSize().height,
-        mode.defaultPageNames(),
-        mode::pages);
+        getDefaultToolkit().getScreenSize().height);
 
     this.mode = mode;
+    CONSTRUCTION_MODE = null;
 
     addWindowListener(
         new WindowAdapter() {
@@ -56,6 +58,18 @@ public class PatriLangViewer extends App {
         });
   }
 
+  @Override
+  protected Set<Page> pages() {
+    var effectiveMode = mode != null ? mode : CONSTRUCTION_MODE;
+    return effectiveMode.pages();
+  }
+
+  @Override
+  protected String defaultPageName() {
+    var effectiveMode = mode != null ? mode : CONSTRUCTION_MODE;
+    return effectiveMode.defaultPageNames();
+  }
+
   public static void main(String[] args) {
     App.setup();
     FlatLightLaf.setup();
@@ -67,6 +81,7 @@ public class PatriLangViewer extends App {
       GoogleLinkListDownloader.setup();
     }
 
+    CONSTRUCTION_MODE = mode;
     invokeLater(() -> new PatriLangViewer(mode));
   }
 }
