@@ -7,14 +7,14 @@ public class PossessionCompteResolver {
     return switch (possession) {
       case FluxArgent flux ->
           flux.getFluxMensuel().montant() < 0
-              ? new Comptes(flux.getCompte(), null)
-              : new Comptes(null, flux.getCompte());
+              ? new Comptes(flux.compteAttente(), flux.getCompte())
+              : new Comptes(flux.getCompte(), flux.compteAttente());
       case TransfertArgent transfert ->
-          new Comptes(transfert.depuisCompte(), transfert.versCompte());
-      case Compte compte -> new Comptes(null, compte);
+          new Comptes(transfert.versCompte(), transfert.depuisCompte());
+      case Compte compte -> new Comptes(compte, compte.capitalSocial());
       case RemboursementDette remboursement ->
-          new Comptes(remboursement.rembourseur(), remboursement.remboursé());
-      case AchatMaterielAuComptant achat -> new Comptes(null, achat.financeur());
+          new Comptes(remboursement.remboursé(), remboursement.rembourseur());
+      case AchatMaterielAuComptant achat -> new Comptes(achat.financé(), achat.financeur());
       default ->
           throw new IllegalArgumentException(
               "Impossible de déterminer les comptes pour " + possession.getClass().getSimpleName());
