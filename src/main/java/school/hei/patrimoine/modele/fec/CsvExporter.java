@@ -1,6 +1,7 @@
 package school.hei.patrimoine.modele.fec;
 
 import static school.hei.patrimoine.modele.decomposeur.PossessionCompteResolver.resolve;
+import static school.hei.patrimoine.modele.fec.FECFields.*;
 import static school.hei.patrimoine.modele.fec.JournalCode.*;
 
 import com.opencsv.CSVWriter;
@@ -8,12 +9,10 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 import javax.swing.*;
 import school.hei.patrimoine.modele.Devise;
-import school.hei.patrimoine.modele.decomposeur.PossessionCompteResolver.Comptes;
 import school.hei.patrimoine.modele.possession.*;
 import school.hei.patrimoine.modele.possession.pj.PieceJustificative;
 import school.hei.patrimoine.modele.recouppement.PossessionRecoupee;
@@ -130,61 +129,34 @@ public class CsvExporter {
     var compteNum = possession.getTypeFEC().abrev() + possession.getTypeFECCodeRegion();
     var compAuxNum = "";
     var compAuxLib = "";
-    var pj = getPj(possession, pjs);
-    var pieceRef = pj != null ? pj.id() : "";
-    var pieceDate = pj != null ? formatFECDate(pj.date()) : "";
-    var ecritureLib =
-        possession
-            .nom()
-            .replaceFirst("^" + possession.getTypeFEC().name() + "_", "")
-            .replaceFirst("^" + possession.getTypeFEC().abrev() + "_", "")
-            .replaceFirst("_\\d{4}_\\d{2}_\\d{2}$", "")
-            .replace("_", " ")
-            .replaceAll("(?<=[a-z])(?=[A-Z])", " ")
-            .replaceAll("(?<=[a-zA-Z])(?=\\d)", " ")
-            .replaceAll("(?<=\\d)(?=[a-zA-Z])", " ")
-            .trim();
-    var valeurRealise = possessionRecoupee.valeurRealisee().convertir(Devise.EUR, LocalDate.now());
+    var pieceRef = getPieceRef(possession, pjs);
+    var pieceDate = getPieceDate(possession, pjs);
+    var ecritureLib = getEcritureLib(possession);
+
+    getDebitOrCredit(possessionRecoupee, isCreditor);
     var debit = "";
     var credit = "";
-    var amount = valeurRealise.montant();
-    if (isCreditor) {
-      credit = formatFECAmount(amount);
-    } else {
-      debit = formatFECAmount(amount);
-    }
 
     var ecritureLet = "";
     var dateLet = "";
     var validDate = "";
-    var montantDevise =
-        formatFECAmount(valeurRealise.convertir(Devise.MGA, LocalDate.now()).montant());
+    var valeurRealiseEUR =
+        possessionRecoupee.valeurRealisee().convertir(Devise.EUR, LocalDate.now());
+    var valeurRealiseMGA = valeurRealiseEUR.convertir(Devise.MGA, LocalDate.now()).montant();
+    var montantDevise = formatFECAmount(valeurRealiseMGA);
     var idevise = possessionRecoupee.valeurRealisee().devise().codeIso();
 
     return new String[] {
-      journalCode,
-      journalLib,
-      ecritureNum,
-      ecritureDate,
-      compteNum,
-      compteLib,
-      compAuxNum,
-      compAuxLib,
-      pieceRef,
-      pieceDate,
-      ecritureLib,
-      debit,
-      credit,
-      ecritureLet,
-      dateLet,
-      validDate,
-      montantDevise,
-      idevise
+      journalCode, journalLib,
+      ecritureNum, ecritureDate,
+      compteNum, compteLib,
+      compAuxNum, compAuxLib,
+      pieceRef, pieceDate,
+      ecritureLib, debit,
+      credit, ecritureLet,
+      dateLet, validDate,
+      montantDevise, idevise
     };
-  }
-
-  private static PieceJustificative getPj(Possession possession, Set<PieceJustificative> pjs) {
-    return pjs.stream().filter(p -> p.id().equals(possession.nom())).findFirst().orElse(null);
   }
 
   private static boolean isFileNameAvailable(File file) {
@@ -198,20 +170,5 @@ public class CsvExporter {
             "Fichier existant",
             JOptionPane.YES_NO_OPTION)
         == JOptionPane.YES_OPTION;
-  }
-
-  private static String formatFECDate(LocalDate t) {
-    return String.join("", t.toString().split("-"));
-  }
-
-  private static String formatFECAmount(double m) {
-    return String.format(Locale.US, "%.2f", Math.abs(m));
-  }
-
-  private static String getCompteLib(Comptes comptes, boolean isCreditor) {
-    if (isCreditor) {
-      return comptes.compteCréditeur() != null ? comptes.compteCréditeur().nom() : "";
-    }
-    return comptes.compteDébiteur() != null ? comptes.compteDébiteur().nom() : "";
   }
 }
