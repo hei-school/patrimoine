@@ -9,8 +9,8 @@ import school.hei.patrimoine.patrilang.antlr.PatriLangParser.DocumentContext;
 
 public class PatriLangFileQuerier {
   public <T extends ParserRuleContext> Optional<QueryResult<T>> query(
-      String filePath, Function<DocumentContext, T> querier) {
-    var document = PatriLangParser.parse(filePath);
+      PatriLangFile file, Function<DocumentContext, T> querier) {
+    var document = PatriLangParser.parse(file);
     var context = querier.apply(document);
 
     if (context == null) {

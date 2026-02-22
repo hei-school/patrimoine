@@ -5,24 +5,20 @@ import static java.nio.file.Files.*;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import static java.nio.file.StandardOpenOption.CREATE;
 import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
-import static school.hei.patrimoine.patrilang.PatriLangTranspiler.PJ_FILE_EXTENSION;
-import static school.hei.patrimoine.patrilang.PatriLangTranspiler.transpilePieceJustificative;
+import static school.hei.patrimoine.patrilang.files.PatriLangFile.PatriLangFileType.CAS;
 
 import java.io.*;
 import java.nio.file.Path;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import lombok.Builder;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
-import school.hei.patrimoine.patrilang.validator.PatriLangValidator;
+import school.hei.patrimoine.patrilang.files.validator.PatriLangFileValidator;
 
 public class PatriLangFileWriter {
-  private final PatriLangValidator validator;
+  private final PatriLangFileValidator validator;
 
   public PatriLangFileWriter() {
-    this.validator = new PatriLangValidator();
+    this.validator = new PatriLangFileValidator();
   }
 
   public void write(Collection<FileWriterInput> inputs) throws Exception {
@@ -73,7 +69,11 @@ public class PatriLangFileWriter {
     try {
       runnable.run();
       for (var input : inputs) {
-        validate(input);
+        if (CAS.equals(input.file().getType())) {
+          this.validator.accept(input.file());
+          continue;
+        }
+        this.validator.accept(input.casSet());
       }
     } catch (ParseCancellationException | IllegalArgumentException error) {
       oldContents.forEach(
@@ -98,17 +98,8 @@ public class PatriLangFileWriter {
     return contents;
   }
 
-  private void validate(FileWriterInput input) {
-    var filePath = input.file().getAbsolutePath();
-    if (filePath.endsWith(PJ_FILE_EXTENSION)) {
-      transpilePieceJustificative(filePath);
-      return;
-    }
-    validator.accept(input.casSet().getAbsolutePath());
-  }
-
   @Builder
-  public record FileWriterInput(File file, File casSet, String content) {}
+  public record FileWriterInput(PatriLangFile file, PatriLangFile casSet, String content) {}
 
   @FunctionalInterface
   private interface ThrowingRunnable {

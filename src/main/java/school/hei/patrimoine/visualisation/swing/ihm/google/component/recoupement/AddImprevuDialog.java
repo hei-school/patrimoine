@@ -18,6 +18,7 @@ import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.Patrimoine;
 import school.hei.patrimoine.modele.possession.Compte;
 import school.hei.patrimoine.modele.possession.FluxArgent;
+import school.hei.patrimoine.patrilang.files.PatriLangFile;
 import school.hei.patrimoine.patrilang.files.PatriLangFileContext;
 import school.hei.patrimoine.patrilang.files.PatriLangFileQuerier;
 import school.hei.patrimoine.patrilang.files.PatriLangFileWriter;
@@ -133,14 +134,18 @@ public class AddImprevuDialog extends Dialog {
             () -> {
               var sectionOperation =
                   querier.query(
-                      selectedFile.getAbsolutePath(),
+                      new PatriLangFile(selectedFile),
                       document -> document.cas().sectionOperations());
               if (sectionOperation.isEmpty()) {
                 throw new RuntimeException("Section Operations introuvable dans le fichier");
               }
 
               var input =
-                  FileWriterInput.builder().content(line).file(selectedFile).casSet(casSet).build();
+                  FileWriterInput.builder()
+                      .content(line)
+                      .file(new PatriLangFile(selectedFile))
+                      .casSet(new PatriLangFile(casSet))
+                      .build();
               writter.insertAtLine(input, sectionOperation.get().endLine());
               var context = new PatriLangFileContext(input);
               removeInTempContent(selectedFile);

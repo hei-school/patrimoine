@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import school.hei.patrimoine.patrilang.files.PatriLangFile;
 import school.hei.patrimoine.patrilang.files.PatriLangFileWriter.FileWriterInput;
 
 public class PatriLangFileContentManager {
@@ -21,7 +22,12 @@ public class PatriLangFileContentManager {
 
     try {
       var content = readString(Path.of(key));
-      var input = FileWriterInput.builder().file(file).casSet(casSet).content(content).build();
+      var input =
+          FileWriterInput.builder()
+              .file(new PatriLangFile(file))
+              .casSet(new PatriLangFile(casSet))
+              .content(content)
+              .build();
       return new TypedContent(input, true);
     } catch (Exception e) {
       throw new RuntimeException(e);
@@ -29,7 +35,12 @@ public class PatriLangFileContentManager {
   }
 
   public static void saveTempContent(File file, File casSet, String content) {
-    var input = FileWriterInput.builder().file(file).casSet(casSet).content(content).build();
+    var input =
+        FileWriterInput.builder()
+            .file(new PatriLangFile(file))
+            .casSet(new PatriLangFile(casSet))
+            .content(content)
+            .build();
     tempContents.put(file.getAbsolutePath(), input);
   }
 

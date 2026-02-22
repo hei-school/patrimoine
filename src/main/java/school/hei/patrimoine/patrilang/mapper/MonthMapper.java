@@ -8,17 +8,17 @@ public class MonthMapper {
   public static Month stringToMonth(String token) {
     return switch (token) {
       case "Janvier", "janvier" -> JANUARY;
-      case "Février", "février", "Fevrier", "fevrier" -> FEBRUARY;
+      case "Février", "février" -> FEBRUARY;
       case "Mars", "mars" -> MARCH;
       case "Avril", "avril" -> APRIL;
       case "Mai", "mai" -> MAY;
       case "Juin", "juin" -> JUNE;
       case "Juillet", "juillet" -> JULY;
-      case "Août", "août", "Aout", "aout" -> AUGUST;
+      case "Août", "août" -> AUGUST;
       case "Septembre", "septembre" -> SEPTEMBER;
       case "Octobre", "octobre" -> OCTOBER;
       case "Novembre", "novembre" -> NOVEMBER;
-      case "Décembre", "décembre", "Decembre", "decembre" -> DECEMBER;
+      case "Décembre", "décembre" -> DECEMBER;
       default -> throw new IllegalArgumentException("Mois invalide : " + token);
     };
   }

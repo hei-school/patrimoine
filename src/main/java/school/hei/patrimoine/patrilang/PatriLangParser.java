@@ -10,11 +10,12 @@ import java.io.IOException;
 import org.antlr.v4.runtime.CommonTokenStream;
 import school.hei.patrimoine.patrilang.antlr.PatriLangLexer;
 import school.hei.patrimoine.patrilang.antlr.PatriLangParser.PiecesJustificativesContext;
+import school.hei.patrimoine.patrilang.files.PatriLangFile;
 import school.hei.patrimoine.patrilang.listener.PatrilangErrorListener;
 
 public class PatriLangParser {
-  public static ToutCasContext parseToutCas(String casSetPath) {
-    var document = parse(casSetPath);
+  public static ToutCasContext parseToutCas(PatriLangFile casSetFile) {
+    var document = parse(casSetFile);
 
     if (isNull(document.toutCas())) {
       throw new IllegalArgumentException("Fichier CasSet attendu, mais fichier Cas trouvé.");
@@ -23,8 +24,8 @@ public class PatriLangParser {
     return document.toutCas();
   }
 
-  public static CasContext parseCas(String casSetPath) {
-    var document = parse(casSetPath);
+  public static CasContext parseCas(PatriLangFile casFile) {
+    var document = parse(casFile);
 
     if (isNull(document.cas())) {
       throw new IllegalArgumentException("Fichier Cas attendu, mais fichier CasSet trouvé.");
@@ -33,8 +34,8 @@ public class PatriLangParser {
     return document.cas();
   }
 
-  public static PiecesJustificativesContext parsePieceJustificative(String pjPath) {
-    var document = parse(pjPath);
+  public static PiecesJustificativesContext parsePieceJustificative(PatriLangFile pjFile) {
+    var document = parse(pjFile);
 
     if (isNull(document.piecesJustificatives())) {
       throw new IllegalArgumentException(
@@ -44,12 +45,12 @@ public class PatriLangParser {
     return document.piecesJustificatives();
   }
 
-  public static DocumentContext parse(String filePath) {
+  public static DocumentContext parse(PatriLangFile file) {
     try {
-      var lexer = new PatriLangLexer(fromFileName(filePath));
+      var lexer = new PatriLangLexer(fromFileName(file.getAbsolutePath()));
       var tokens = new CommonTokenStream(lexer);
       var parser = new school.hei.patrimoine.patrilang.antlr.PatriLangParser(tokens);
-      var errorListener = new PatrilangErrorListener(filePath);
+      var errorListener = new PatrilangErrorListener(file);
 
       parser.removeErrorListeners();
       parser.addErrorListener(errorListener);

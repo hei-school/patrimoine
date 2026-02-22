@@ -17,6 +17,7 @@ import school.hei.patrimoine.modele.possession.FluxArgent;
 import school.hei.patrimoine.modele.possession.Possession;
 import school.hei.patrimoine.modele.recouppement.model.Info;
 import school.hei.patrimoine.modele.recouppement.model.PossessionRecoupee;
+import school.hei.patrimoine.patrilang.files.PatriLangFile;
 import school.hei.patrimoine.patrilang.files.PatriLangFileQuerier;
 import school.hei.patrimoine.patrilang.files.PatriLangFileWriter;
 import school.hei.patrimoine.patrilang.files.PatriLangFileWriter.FileWriterInput;
@@ -203,7 +204,7 @@ public class PossessionRecoupeeRealisationsDialog extends Dialog {
             () -> {
               var sectionOperation =
                   querier.query(
-                      selectedFile.getAbsolutePath(),
+                      new PatriLangFile(selectedFile),
                       document -> document.cas().sectionOperations());
               if (sectionOperation.isEmpty()) {
                 throw new RuntimeException("Section Operations introuvable dans le fichier");
@@ -212,8 +213,8 @@ public class PossessionRecoupeeRealisationsDialog extends Dialog {
               writter.insertAtLine(
                   FileWriterInput.builder()
                       .content(lines)
-                      .file(selectedFile)
-                      .casSet(casSet)
+                      .file(new PatriLangFile(selectedFile))
+                      .casSet(new PatriLangFile(casSet))
                       .build(),
                   sectionOperation.get().endLine());
               return null;
