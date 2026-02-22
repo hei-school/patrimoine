@@ -60,8 +60,8 @@ public class CommentApi {
             .setPageToken(pagination.pageToken())
             .setFields(
                 "comments(id,content,createdTime,resolved,"
-                    + "author(displayName,emailAddress,photoLink,permissionId,me),"
-                    + "replies(id,content,createdTime,author(displayName,emailAddress,photoLink,permissionId,me)))"
+                    + "user(displayName,emailAddress,photoLink,permissionId,me),"
+                    + "replies(id,content,createdTime,user(displayName,emailAddress,photoLink,permissionId,me)))"
                     + ",nextPageToken")
             .execute();
 

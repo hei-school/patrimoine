@@ -6,6 +6,7 @@ import school.hei.patrimoine.google.model.Comment;
 import school.hei.patrimoine.google.model.User;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.AppContext;
 
+// done
 public class LocalCommentActions {
   private final LocalCommentManager localCommentManager;
 

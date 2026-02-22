@@ -51,7 +51,7 @@ public class LocalCommentManager {
     pendingCommentsByFile.computeIfAbsent(fileId, k -> new ArrayList<>()).add(pendingComment);
   }
 
-  public List<PendingComment> getPendingComments(String fileId) {
+  public List<PendingComment> getPendingCommentsREFACTORED(String fileId) {
     return pendingCommentsByFile.getOrDefault(fileId, new ArrayList<>());
   }
 

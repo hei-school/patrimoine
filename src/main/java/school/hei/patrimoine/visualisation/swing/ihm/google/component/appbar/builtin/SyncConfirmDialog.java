@@ -1,5 +1,6 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.builtin;
 
+import static java.util.Objects.requireNonNull;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangStagingFileManager.*;
 
 import java.awt.*;
@@ -7,7 +8,6 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import javax.swing.*;
 import lombok.Getter;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.CustomBorder;
@@ -36,21 +36,7 @@ public class SyncConfirmDialog extends JDialog {
     Map<String, PendingCommentsInfo> pendingComments = new HashMap<>();
 
     for (var fileId : filesWithPendingComments) {
-      int addedComments = localCommentManager.getPendingComments(fileId).size();
-      int repliedComments = localCommentManager.getPendingReplies(fileId).size();
-      int resolvedComments = localCommentManager.getPendingResolutions(fileId).size();
-      int deletedComments = localCommentManager.getPendingDeletions(fileId).size();
-
-      if (addedComments == 0
-          && repliedComments == 0
-          && resolvedComments == 0
-          && deletedComments == 0) return;
-
-      var info =
-          new PendingCommentsInfo(
-              fileId, addedComments, repliedComments, resolvedComments, deletedComments);
-
-      pendingComments.put(fileId, info);
+      collectPendingComments(fileId, localCommentManager, pendingComments);
     }
 
     var hasFiles = !plannedFiles.isEmpty() || !doneFiles.isEmpty() || !justificativeFiles.isEmpty();
@@ -72,6 +58,30 @@ public class SyncConfirmDialog extends JDialog {
     setLocationRelativeTo(null);
   }
 
+  private static void collectPendingComments(
+      String fileId,
+      LocalCommentManager localCommentManager,
+      Map<String, PendingCommentsInfo> pendingComments) {
+    int addedComments = localCommentManager.getPendingComments(fileId).size();
+    int repliedComments = localCommentManager.getPendingReplies(fileId).size();
+    int resolvedComments = localCommentManager.getPendingResolutions(fileId).size();
+    int deletedComments = localCommentManager.getPendingDeletions(fileId).size();
+
+    if (addedComments == 0 && repliedComments == 0 && resolvedComments == 0 && deletedComments == 0)
+      return;
+
+    var info =
+        PendingCommentsInfo.builder()
+            .fileId(fileId)
+            .addCount(addedComments)
+            .replyCount(repliedComments)
+            .resolveCount(resolvedComments)
+            .deleteCount(deletedComments)
+            .build();
+
+    pendingComments.put(fileId, info);
+  }
+
   private void initConfirmComponents(
       List<File> plannedFiles,
       List<File> doneFiles,
@@ -83,8 +93,6 @@ public class SyncConfirmDialog extends JDialog {
     setDefaultCloseOperation(DISPOSE_ON_CLOSE);
     setResizable(false);
 
-    var messagePanel = new JPanel(new BorderLayout(15, 0));
-    messagePanel.setBorder(CustomBorder.builder().thickness(0).padding(10, 15).build());
     var contentPanel = new JPanel();
     contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
 
@@ -111,20 +119,26 @@ public class SyncConfirmDialog extends JDialog {
 
     var scrollPane = new JScrollPane(contentPanel);
     scrollPane.setBorder(CustomBorder.builder().thickness(0).padding(0, 0).build());
-    int maxHeight = 600;
-    int computedHeight = Math.min(contentPanel.getPreferredSize().height, maxHeight);
+    int computedHeight = Math.min(contentPanel.getPreferredSize().height, 600);
     scrollPane.setPreferredSize(new Dimension(500, computedHeight));
 
-    messagePanel.add(scrollPane, BorderLayout.CENTER);
+    var messagePanel = createMessagePanel(scrollPane, messageText);
+    add(messagePanel, BorderLayout.CENTER);
+
+    addButtons(confirmButtonText);
+  }
+
+  private JPanel createMessagePanel(JComponent centerComponent, String messageText) {
+    var messagePanel = new JPanel(new BorderLayout(15, 0));
+    messagePanel.setBorder(CustomBorder.builder().thickness(0).padding(10, 15).build());
+    messagePanel.add(centerComponent, BorderLayout.CENTER);
 
     var questionLabel = new JLabel(messageText);
     questionLabel.setBorder(CustomBorder.builder().thickness(0).padding(10, 0, 0, 0).build());
 
     messagePanel.add(questionLabel, BorderLayout.SOUTH);
 
-    add(messagePanel, BorderLayout.CENTER);
-
-    addButtons(confirmButtonText);
+    return messagePanel;
   }
 
   private boolean hasPendingComments(Map<String, PendingCommentsInfo> pendingComments) {
@@ -136,22 +150,19 @@ public class SyncConfirmDialog extends JDialog {
     setDefaultCloseOperation(DISPOSE_ON_CLOSE);
     setResizable(false);
 
-    var messagePanel = new JPanel(new BorderLayout(15, 0));
-    messagePanel.setBorder(CustomBorder.builder().thickness(0).padding(10, 10).build());
-
     Icon infoIcon = UIManager.getIcon("OptionPane.informationIcon");
     var iconLabel = new JLabel(infoIcon);
 
     var messageLabel = new JLabel("Aucune modification en attente de synchronisation.");
     messageLabel.setFont(UIManager.getFont("Label.font"));
 
+    var messagePanel = new JPanel(new BorderLayout(15, 0));
+    messagePanel.setBorder(CustomBorder.builder().thickness(0).padding(10, 10).build());
     messagePanel.add(iconLabel, BorderLayout.WEST);
     messagePanel.add(messageLabel, BorderLayout.CENTER);
 
     add(messagePanel, BorderLayout.CENTER);
 
-    var buttonPanel = new JPanel(new BorderLayout());
-    buttonPanel.setBorder(CustomBorder.builder().thickness(0).padding(5, 15, 15, 15).build());
 
     var okButton = new Button("OK");
     okButton.setPreferredSize(new Dimension(70, okButton.getPreferredSize().height));
@@ -164,6 +175,8 @@ public class SyncConfirmDialog extends JDialog {
     var rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
     rightPanel.add(okButton);
 
+    var buttonPanel = new JPanel(new BorderLayout());
+    buttonPanel.setBorder(CustomBorder.builder().thickness(0).padding(5, 15, 15, 15).build());
     buttonPanel.add(rightPanel, BorderLayout.EAST);
 
     add(buttonPanel, BorderLayout.SOUTH);
@@ -339,7 +352,7 @@ public class SyncConfirmDialog extends JDialog {
 
   private ImageIcon loadIcon(String resourcePath) {
     var url = getClass().getResource(resourcePath);
-    var icon = new ImageIcon(Objects.requireNonNull(url));
+    var icon = new ImageIcon(requireNonNull(url));
     Image scaled = icon.getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH);
 
     return new ImageIcon(scaled);

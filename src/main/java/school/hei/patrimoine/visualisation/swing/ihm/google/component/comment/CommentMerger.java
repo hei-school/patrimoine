@@ -7,41 +7,36 @@ import java.util.Map;
 import school.hei.patrimoine.google.model.Comment;
 import school.hei.patrimoine.google.model.User;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.AppContext;
-import school.hei.patrimoine.visualisation.swing.ihm.google.component.comment.pending.PendingComment;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.comment.pending.PendingDeletion;
-import school.hei.patrimoine.visualisation.swing.ihm.google.component.comment.pending.PendingReply;
-import school.hei.patrimoine.visualisation.swing.ihm.google.component.comment.pending.PendingResolution;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.comment.CommentManager;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.comment.PendingComment;
 
 public class CommentMerger {
-  private final LocalCommentManager localCommentManager;
+  private final CommentManager commentManager;
 
-  public CommentMerger(LocalCommentManager localCommentManager) {
-    this.localCommentManager = localCommentManager;
+  public CommentMerger(CommentManager commentManager) {
+    this.commentManager = commentManager;
   }
 
   public List<Comment> mergeLocalComments(String fileId, List<Comment> driveComments) {
-    if (!localCommentManager.hasAnyPendingComments()) {
+    var pendingComments = commentManager.getPendingsByFileId(fileId);
+      if (pendingComments.isEmpty()) {
       return driveComments.stream()
           .sorted(Comparator.comparing(Comment::createdAt).reversed())
           .toList();
     }
 
-    var pendingDeletions = localCommentManager.getPendingDeletions(fileId);
-    var pendingComments = localCommentManager.getPendingComments(fileId);
-    var pendingResolutions = localCommentManager.getPendingResolutions(fileId);
-    var pendingReplies = localCommentManager.getPendingReplies(fileId);
-
     var allComments = new ArrayList<>(driveComments);
-    Map<String, String> idMapping = localCommentManager.getIdMappingsForFile(fileId);
+    Map<String, String> idMapping = commentManager.getIdMappingsForFile(fileId);
     User currentUser = AppContext.getDefault().getData("connected-user");
+// really need to separate these 4 methods?
+    removePendingDeletions(allComments, pendingComments, idMapping);
 
-    removePendingDeletions(allComments, pendingDeletions, idMapping);
+    addPendingComments(allComments, pendingComments, idMapping, currentUser);
 
-    addPendingComments(allComments, pendingComments, pendingDeletions, idMapping, currentUser);
+    applyPendingResolutions(allComments, pendingComments, idMapping);
 
-    applyPendingResolutions(allComments, pendingResolutions, pendingDeletions, idMapping);
-
-    addPendingReplies(allComments, pendingReplies, pendingDeletions, idMapping, currentUser);
+    addPendingReplies(allComments, pendingComments, idMapping, currentUser);
 
     return allComments.stream()
         .sorted(Comparator.comparing(Comment::createdAt).reversed())
@@ -50,13 +45,13 @@ public class CommentMerger {
 
   private void removePendingDeletions(
       List<Comment> allComments,
-      List<PendingDeletion> pendingDeletions,
+      List<PendingComment> deleteComments,
       Map<String, String> idMapping) {
 
     allComments.removeIf(
         comment -> {
           var commentId = comment.id();
-          return pendingDeletions.stream()
+          return deleteComments.stream()
               .anyMatch(
                   deletion -> {
                     var deletionId = deletion.commentId();
@@ -69,7 +64,6 @@ public class CommentMerger {
   private void addPendingComments(
       List<Comment> allComments,
       List<PendingComment> pendingComments,
-      List<PendingDeletion> pendingDeletions,
       Map<String, String> idMapping,
       User currentUser) {
 
@@ -95,8 +89,7 @@ public class CommentMerger {
 
   private void applyPendingResolutions(
       List<Comment> allComments,
-      List<PendingResolution> pendingResolutions,
-      List<PendingDeletion> pendingDeletions,
+      List<PendingComment> pendingResolutions,
       Map<String, String> idMapping) {
 
     for (var resolution : pendingResolutions) {
@@ -122,8 +115,7 @@ public class CommentMerger {
 
   private void addPendingReplies(
       List<Comment> allComments,
-      List<PendingReply> pendingReplies,
-      List<PendingDeletion> pendingDeletions,
+      List<PendingComment> pendingReplies,
       Map<String, String> idMapping,
       User currentUser) {
 

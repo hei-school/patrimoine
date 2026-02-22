@@ -1,6 +1,7 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.component.comment;
 
 import static school.hei.patrimoine.google.api.CommentApi.COMMENTS_CACHE_KEY;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.component.comment.LocalCommentManager.LOCAL_ID_PREFIX;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.MessageDialog.showError;
 
 import java.awt.*;
@@ -20,12 +21,14 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.AppCon
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.AsyncTask;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.comment.CommentManager;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.comment.DeleteComment;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.comment.ResolveComment;
 
 public class CommentSideBar extends JPanel {
   private final State state;
   private final ApiCache apiCache;
   private final CommentApi commentApi;
-  private final LocalCommentActions localCommentActions;
   private final CommentListPanel commentListPanel;
   private final CommentFooter footer;
   private DatePicker datePicker;
@@ -33,15 +36,14 @@ public class CommentSideBar extends JPanel {
   private final Map<String, Pagination> paginationByFile = new HashMap<>();
   private final Map<String, List<String>> previousTokensByFile = new HashMap<>();
 
-  public CommentSideBar(State state, LocalCommentActions localCommentActions) {
+  public CommentSideBar(State state) {
     super(new BorderLayout());
 
     this.state = state;
     this.apiCache = ApiCache.getInstance();
     this.commentApi = AppContext.getDefault().getData("comment-api");
-    this.localCommentActions = localCommentActions;
     this.commentListPanel =
-        new CommentListPanel(localCommentActions, this, true, this::refreshCommentsCache);
+        new CommentListPanel(this, true, this::refreshCommentsCache);
     this.footer = new CommentFooter(this::goToPreviousPage, this::goToNextPage);
 
     addTopPanel();
@@ -83,7 +85,7 @@ public class CommentSideBar extends JPanel {
     var button = new Button(buttonLabel);
     button.setPreferredSize(new Dimension(110, 35));
     button.addActionListener(
-        e -> new CommentAddDialog(localCommentActions, state, this::refreshCommentsCache));
+        e -> new CommentAddDialog(state, this::refreshCommentsCache));
     button.setToolTipText("Ajouter un commentaire");
 
     return button;
@@ -181,8 +183,7 @@ public class CommentSideBar extends JPanel {
     this.update();
   }
 
-  static void resolveComment(
-      LocalCommentActions localCommentActions, String fileId, Comment toResolve, Runnable refresh) {
+  static void resolveComment(String fileId, Comment toResolve, Runnable refresh) {
     int confirm =
         JOptionPane.showConfirmDialog(
             AppContext.getDefault().app(),
@@ -194,28 +195,16 @@ public class CommentSideBar extends JPanel {
       return;
     }
 
-    AsyncTask.<Void>builder()
-        .task(
-            () -> {
-              localCommentActions.resolve(fileId, toResolve);
-              return null;
-            })
-        .withDialogLoading(false)
-        .onSuccess(
-            result -> {
-              refresh.run();
-            })
-        .onError(
-            error ->
-                showError("Erreur", "Impossible de résoudre le commentaire. Veuillez réessayer."))
-        .build()
-        .execute();
+    var resolveComment = ResolveComment.builder().fileId(fileId).commentId(toResolve.id()).resolvedAt(Instant.now()).build();
+    CommentManager.getInstance().add(fileId, resolveComment);
+    refresh.run();
   }
 
   static void removeComment(
-      LocalCommentActions localCommentActions, String fileId, Comment toRemove, Runnable refresh) {
-    boolean canDelete = localCommentActions.canDelete(toRemove);
-    if (!canDelete) {
+      String fileId, Comment toRemove, Runnable refresh) {
+ var isLocal = toRemove.id().startsWith(LOCAL_ID_PREFIX);
+ var canDelete = isLocal || (toRemove.author() != null && toRemove.author().me());
+ if (!canDelete) {
       showError("Erreur", "Vous ne pouvez supprimer que vos propres commentaires.");
       return;
     }
@@ -231,22 +220,8 @@ public class CommentSideBar extends JPanel {
       return;
     }
 
-    AsyncTask.<Void>builder()
-        .task(
-            () -> {
-              localCommentActions.delete(fileId, toRemove);
-              return null;
-            })
-        .withDialogLoading(false)
-        .onSuccess(
-            result -> {
-              refresh.run();
-            })
-        .onError(
-            error -> {
-              showError("Erreur", "Impossible de supprimer le commentaire. Veuillez réessayer.");
-            })
-        .build()
-        .execute();
+    var deleteComment = DeleteComment.builder().fileId(fileId).commentId(toRemove.id()).deletedAt(Instant.now()).build();
+    CommentManager.getInstance().add(fileId, deleteComment);
+    refresh.run();
   }
 }

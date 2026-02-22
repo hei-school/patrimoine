@@ -11,19 +11,16 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.component.Dialog;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
 
 public class CommentAnswersDialog extends Dialog {
-  private final LocalCommentActions localCommentActions;
   private final String fileId;
   private final Comment parentComment;
   private final CommentListPanel commentListPanel;
   private final Runnable refresh;
 
   public CommentAnswersDialog(
-      LocalCommentActions localCommentActions,
       String fileId,
       Comment parentComment,
       Runnable refreshParent) {
     super("Réponses au commentaire", 800, 500, false);
-    this.localCommentActions = localCommentActions;
     this.fileId = fileId;
     this.refresh =
         () -> {
@@ -32,7 +29,7 @@ public class CommentAnswersDialog extends Dialog {
         };
 
     this.parentComment = parentComment;
-    this.commentListPanel = new CommentListPanel(localCommentActions, this, false, this::dispose);
+    this.commentListPanel = new CommentListPanel(this, false, this::dispose);
 
     setModal(true);
     setLayout(new BorderLayout());
@@ -52,12 +49,12 @@ public class CommentAnswersDialog extends Dialog {
   private void addActions() {
     var buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
     if (!parentComment.resolved()) {
-      buttonPanel.add(replyButton(localCommentActions, fileId, parentComment, refresh));
-      buttonPanel.add(resolveButton(localCommentActions, fileId, parentComment, refresh));
+      buttonPanel.add(replyButton(fileId, parentComment, refresh));
+      buttonPanel.add(resolveButton(fileId, parentComment, refresh));
     }
     buttonPanel.add(new Button("Fermer", e -> dispose()));
 
-    var removeBtn = removeButton(localCommentActions, fileId, parentComment, refresh);
+    var removeBtn = removeButton(fileId, parentComment, refresh);
     removeBtn.setMargin(new Insets(0, 50, 0, 50));
     buttonPanel.add(Box.createRigidArea(new Dimension(10, 0)));
     buttonPanel.add(removeBtn);

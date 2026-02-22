@@ -17,9 +17,9 @@ import java.util.Optional;
 import java.util.concurrent.Callable;
 import javax.swing.*;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NonNull;
 import school.hei.patrimoine.google.exception.GoogleIntegrationException;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.AppContext;
-import school.hei.patrimoine.visualisation.swing.ihm.google.component.comment.CommentSynchronizer;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.comment.LocalCommentManager;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.html.HtmlViewer;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.html.ViewMode;
@@ -30,6 +30,7 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.modele.GoogleLinkLis
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.GoogleLinkList.NamedID;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.MessageDialog;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.comment.CommentSynchronizer;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.FileCategory;
 
 @Slf4j
@@ -112,7 +113,7 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
               sync(getStagedDoneFiles(), DONE);
               sync(getStagedPlannedFiles(), PLANNED);
               sync(getStagedJustificativeFiles(), JUSTIFICATIVE);
-              syncAllPendingComments();
+              CommentSynchronizer.getInstance().sync();
               return null;
             })
         .loadingMessage("Synchronisation avec Drive...")
@@ -133,35 +134,11 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
         .execute();
   }
 
-  private static void syncAllPendingComments() {
-    var localManager = LocalCommentManager.getInstance();
-    var filesWithPendingComments = localManager.getPendingFileIds();
-    if (filesWithPendingComments.isEmpty()) return;
-
-    var commentSynchronizer = new CommentSynchronizer(driveApi());
-    var hasErrors = false;
-    for (var fileId : filesWithPendingComments) {
-      try {
-        commentSynchronizer.syncComments(fileId);
-      } catch (GoogleIntegrationException e) {
-        hasErrors = true;
-      }
-    }
-    if (hasErrors) {
-      throw new RuntimeException("Certains commentaires n'ont pas pu être synchronisés.");
-    }
-  }
-
-  // TODO: should use named-ids in global state
   private static Optional<String> getDriveIdOf(File file, FileCategory category) {
     GoogleLinkList<NamedID> ids = AppContext.getDefault().getData("named-ids");
     if (file == null) return Optional.empty();
 
-    var filename =
-        file.getName()
-            .replace(TOUT_CAS_FILE_EXTENSION, "")
-            .replace(CAS_FILE_EXTENSION, "")
-            .replace(PJ_FILE_EXTENSION, "");
+    var filename = getFileNameWithoutExtension(file);
 
     var listToSearch =
         switch (category) {
@@ -174,5 +151,12 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
         .filter(n -> n.name().equals(filename))
         .map(NamedID::id)
         .findFirst();
+  }
+
+  private static @NonNull String getFileNameWithoutExtension(File file) {
+    return file.getName()
+        .replace(TOUT_CAS_FILE_EXTENSION, "")
+        .replace(CAS_FILE_EXTENSION, "")
+        .replace(PJ_FILE_EXTENSION, "");
   }
 }
