@@ -109,7 +109,7 @@ public class CommentSideBar extends JPanel {
     AsyncTask.<PaginatedResult<List<Comment>>>builder()
         .task(() -> CommentsProvider.getByFile(selectedFile, pagination, startDate))
         .withDialogLoading(false)
-        .onSuccess(result -> commentListPanel.update(Optional::empty, result.data()))
+        .onSuccess(result -> commentListPanel.update(() -> getSelectedFile(state), result.data()))
         .onError(MessageDialog::showError)
         .build()
         .execute();

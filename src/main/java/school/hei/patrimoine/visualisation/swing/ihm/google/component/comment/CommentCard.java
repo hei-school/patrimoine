@@ -155,7 +155,7 @@ public class CommentCard extends JPanel {
     }
 
     if (!comment.getAnswers().isEmpty()) {
-      buttons.add(showAnswersButton(file, comment, refresh));
+      buttons.add(showAnswersButton(file, comment, parent, refresh));
     }
 
     if (!comment.isResolved()) {
@@ -170,9 +170,9 @@ public class CommentCard extends JPanel {
     return new Dimension(parent.getWidth() - 15, pref.height);
   }
 
-  static Button showAnswersButton(SelectedFileSupplier file, Comment comment,Runnable refresh) {
+  static Button showAnswersButton(SelectedFileSupplier file, Comment comment, Component parent, Runnable refresh) {
     return new Button("Réponses (" + comment.getAnswers().size() + ")",
-        e -> new CommentAnswersDialog(file, comment, refresh));
+        e -> new CommentAnswersDialog(file, comment, parent, refresh));
   }
 
   static Button replyButton(SelectedFileSupplier file, Comment parentComment, Runnable refresh) {

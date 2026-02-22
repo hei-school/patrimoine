@@ -6,6 +6,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
+
 import school.hei.patrimoine.google.model.Comment;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.Dialog;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
@@ -17,7 +18,7 @@ public class CommentAnswersDialog extends Dialog {
   private final SelectedFileSupplier file;
   private final CommentListPanel answersPanel;
 
-  public CommentAnswersDialog(SelectedFileSupplier file, Comment comment, Runnable refreshUI) {
+  public CommentAnswersDialog(SelectedFileSupplier file, Comment comment, Component parent, Runnable refreshUI) {
     super("Réponses au commentaire", 800, 500, false);
     this.file = file;
     this.refresh =
@@ -27,7 +28,7 @@ public class CommentAnswersDialog extends Dialog {
         };
 
     this.comment = comment;
-    this.answersPanel = new CommentListPanel(this.comment, false, refresh);
+    this.answersPanel = new CommentListPanel(parent, false, refresh);
 
     setModal(true);
     setLayout(new BorderLayout());
