@@ -9,30 +9,25 @@ import javax.swing.*;
 import school.hei.patrimoine.google.model.Comment;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.Dialog;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.FileSideBar.SelectedFileSupplier;
 
 public class CommentAnswersDialog extends Dialog {
-  private final LocalCommentActions localCommentActions;
-  private final String fileId;
-  private final Comment parentComment;
-  private final CommentListPanel commentListPanel;
+  private final Comment comment;
   private final Runnable refresh;
+  private final SelectedFileSupplier file;
+  private final CommentListPanel answersPanel;
 
-  public CommentAnswersDialog(
-      LocalCommentActions localCommentActions,
-      String fileId,
-      Comment parentComment,
-      Runnable refreshParent) {
+  public CommentAnswersDialog(SelectedFileSupplier file, Comment comment, Runnable refreshUI) {
     super("Réponses au commentaire", 800, 500, false);
-    this.localCommentActions = localCommentActions;
-    this.fileId = fileId;
+    this.file = file;
     this.refresh =
         () -> {
           dispose();
-          refreshParent.run();
+          refreshUI.run();
         };
 
-    this.parentComment = parentComment;
-    this.commentListPanel = new CommentListPanel(localCommentActions, this, false, this::dispose);
+    this.comment = comment;
+    this.answersPanel = new CommentListPanel(this.comment, false, refresh);
 
     setModal(true);
     setLayout(new BorderLayout());
@@ -45,31 +40,35 @@ public class CommentAnswersDialog extends Dialog {
   }
 
   private void addCommentList() {
-    add(commentListPanel.toScrollPane(), BorderLayout.CENTER);
+    add(answersPanel.toScrollPane(), BorderLayout.CENTER);
     update();
   }
 
   private void addActions() {
     var buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-    if (!parentComment.resolved()) {
-      buttonPanel.add(replyButton(localCommentActions, fileId, parentComment, refresh));
-      buttonPanel.add(resolveButton(localCommentActions, fileId, parentComment, refresh));
+    if (!comment.isResolved()) {
+      buttonPanel.add(replyButton(file, comment, refresh));
+      buttonPanel.add(resolveButton(file, comment, refresh));
     }
     buttonPanel.add(new Button("Fermer", e -> dispose()));
 
-    var removeBtn = removeButton(localCommentActions, fileId, parentComment, refresh);
+    if(!comment.getAuthor().me()){
+      add(buttonPanel, BorderLayout.SOUTH);
+      return;
+    }
+
+    buttonPanel.add(Box.createRigidArea(new Dimension(10, 0)));
+    var removeBtn = removeButton(file, comment, refresh);
     removeBtn.setMargin(new Insets(0, 50, 0, 50));
     buttonPanel.add(Box.createRigidArea(new Dimension(10, 0)));
     buttonPanel.add(removeBtn);
-    buttonPanel.add(Box.createRigidArea(new Dimension(10, 0)));
 
     add(buttonPanel, BorderLayout.SOUTH);
   }
 
   private void update() {
-    var comments = new ArrayList<>(List.of(parentComment));
-    comments.addAll(parentComment.answers());
-
-    commentListPanel.update(fileId, comments, false);
+    var comments = new ArrayList<>(List.of(comment));
+    comments.addAll(comment.getAnswers());
+    answersPanel.update(file, comments);
   }
 }

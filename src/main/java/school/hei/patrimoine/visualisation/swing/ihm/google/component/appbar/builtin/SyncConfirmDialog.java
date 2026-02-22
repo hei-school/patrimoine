@@ -11,7 +11,6 @@ import lombok.Getter;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.CustomBorder;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.AppContext;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
-import school.hei.patrimoine.visualisation.swing.ihm.google.component.comment.LocalCommentManager;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.comment.pending.PendingCommentsInfo;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.GoogleLinkList;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.GoogleLinkList.NamedID;

@@ -8,27 +8,23 @@ import javax.swing.border.EmptyBorder;
 import school.hei.patrimoine.google.model.Comment;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.Dialog;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
-import school.hei.patrimoine.visualisation.swing.ihm.google.modele.AsyncTask;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.FileSideBar.SelectedFileSupplier;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.comment.PendingCommentManager;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.comment.pending.ReplyComment;
 
 public class CommentReplyDialog extends Dialog {
-  private final LocalCommentActions localCommentActions;
-  private final String fileId;
-  private final Comment parentComment;
-  private final JTextArea textArea;
+  private final Comment comment;
   private final Runnable refresh;
+  private final JTextArea textArea;
+  private final SelectedFileSupplier file;
 
-  public CommentReplyDialog(
-      LocalCommentActions localCommentActions,
-      String fileId,
-      Comment parentComment,
-      Runnable refresh) {
+  public CommentReplyDialog(SelectedFileSupplier file, Comment comment, Runnable refresh) {
     super("Répondre au commentaire", 500, 300, false);
 
-    this.localCommentActions = localCommentActions;
-    this.fileId = fileId;
+    this.file = file;
     this.refresh = refresh;
+    this.comment = comment;
     this.textArea = new JTextArea();
-    this.parentComment = parentComment;
 
     setModal(true);
     setLayout(new BorderLayout());
@@ -66,27 +62,19 @@ public class CommentReplyDialog extends Dialog {
     buttonPanel.add(cancelButton);
     add(buttonPanel, BorderLayout.SOUTH);
   }
+  public String getContent(){
+    return textArea.getText().trim();
+  }
 
   private void replyComment() {
-    if (textArea.getText().trim().isBlank()) {
-      showError("Erreur", "Le contenu du commentaire ne peut pas être vide.");
+    var fileContext = file.get().orElseThrow();
+
+    if (getContent().isBlank()) {
+      showError("Le contenu du commentaire ne peut pas être vide.");
       return;
     }
 
-    AsyncTask.<Void>builder()
-        .task(
-            () -> {
-              localCommentActions.reply(fileId, parentComment.id(), textArea.getText().trim());
-              return null;
-            })
-        .withDialogLoading(false)
-        .onSuccess(
-            result -> {
-              dispose();
-              refresh.run();
-            })
-        .onError(error -> showError("Error", "Erreur lors de l'envoi du commentaire"))
-        .build()
-        .execute();
+    PendingCommentManager.add(new ReplyComment(fileContext.getDriveId(), getContent(), comment));
+    refresh.run();
   }
 }

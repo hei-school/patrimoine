@@ -5,6 +5,8 @@ import static school.hei.patrimoine.visualisation.swing.ihm.google.providers.Fil
 
 import java.awt.*;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Supplier;
 import javax.swing.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -21,9 +23,8 @@ public class FileSideBar extends JPanel {
   public FileSideBar(State state) {
     super(new BorderLayout());
 
-    this.doneList = createList(getPatriLangDoneFiles(), state, getDoneList()::clearSelection);
-    this.plannedList =
-        createList(getPatriLangPlannedFiles(), state, getPlannedList()::clearSelection);
+    this.doneList = createList(getPatriLangDoneFiles(), state, getPlannedList()::clearSelection);
+    this.plannedList = createList(getPatriLangPlannedFiles(), state, getDoneList()::clearSelection);
 
     var panel = new JPanel();
     panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
@@ -34,6 +35,12 @@ public class FileSideBar extends JPanel {
 
     add(panel, BorderLayout.CENTER);
   }
+
+  public static Optional<PatriLangFileContext> getSelectedFile(State state){
+    return Optional.ofNullable(state.get("selectedFile"));
+  }
+
+  public interface SelectedFileSupplier extends Supplier<Optional<PatriLangFileContext>> {}
 
   public static JList<PatriLangFileContext> createList(
       List<PatriLangFileContext> files, State state, Runnable onSuccess) {

@@ -1,8 +1,6 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.pages;
 
-import static school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.AppBar.builtInUserInfoPanel;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.config.EnvironmentConfig.isOnlineMode;
-import static school.hei.patrimoine.visualisation.swing.ihm.google.pages.PatriLangFilesPage.addImprevuButton;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.providers.FilesProvider.getDonePatrilangFilesWithoutCasSet;
 
 import java.awt.*;
@@ -13,15 +11,15 @@ import java.util.*;
 import java.util.List;
 import javax.swing.*;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import school.hei.patrimoine.modele.possession.Compte;
 import school.hei.patrimoine.modele.possession.Possession;
 import school.hei.patrimoine.modele.recouppement.model.PossessionRecoupee;
 import school.hei.patrimoine.modele.recouppement.model.RecoupementStatus;
-import school.hei.patrimoine.visualisation.swing.ihm.google.component.Footer;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.recoupement.RecoupementFooter;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.PlaceholderTextField;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.LazyPage;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.AppBar;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.builtin.AddImprevuButton;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.NavigateButton;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.FileListCellRenderer;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.FileListModel;
@@ -57,7 +55,8 @@ public class RecoupementPage extends LazyPage {
 
     this.possessionRecoupeeListPanel = new PossessionRecoupeeListPanel(state);
 
-    patriLangFilesWatcher.addObserver(this::update);
+    PatriLangFilesWatcher.addObserver(this::update);
+
     state.subscribe(
         Set.of("filterStatus", "selectedFile", "pagination", "filterName"), this::update);
 
@@ -90,7 +89,7 @@ public class RecoupementPage extends LazyPage {
     }
   }
 
-  private void addAppBar() {
+  private static JComboBox<PossessionRecoupeeFilterStatus> getStatusFilter(State state){
     var statusFilter = new JComboBox<>(PossessionRecoupeeFilterStatus.values());
     statusFilter.setSelectedItem(PossessionRecoupeeFilterStatus.TOUT);
     statusFilter.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
@@ -98,23 +97,31 @@ public class RecoupementPage extends LazyPage {
     statusFilter.addActionListener(
         e -> state.update("filterStatus", statusFilter.getSelectedItem()));
 
-    var addImprevuButton = addImprevuButton(state);
-    var nameFilter = getPlaceholderTextField();
+    return statusFilter;
+  }
 
+  private static leftAppBarControls(State state){
+    return List.of(
+        new NavigateButton("Retour", "patrilang-files"),
+        getStatusFilter(state),
+        new AddImprevuButton(state),
+        getPlaceholderTextField(state)
+    );
+  }
+  private void addAppBar() {
     var appBar =
         new AppBar(
             List.of(
                 new NavigateButton("Retour", "patrilang-files"),
                 statusFilter,
-                addImprevuButton,
-                nameFilter),
+                new AddImprevuButton(state),
+                getPlaceholderTextField()),
             !isOnlineMode() ? List.of() : List.of(builtInUserInfoPanel()));
 
     add(appBar, BorderLayout.NORTH);
   }
 
-  // TODO: refactor to a component utilities
-  private @NotNull PlaceholderTextField getPlaceholderTextField() {
+  private static PlaceholderTextField getPlaceholderTextField(State state) {
     var nameFilter = new PlaceholderTextField("Rechercher");
     nameFilter.setPreferredSize(new Dimension(180, 35));
     nameFilter.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
@@ -140,7 +147,7 @@ public class RecoupementPage extends LazyPage {
   }
 
   private void addFooter() {
-    add(new Footer(state), BorderLayout.SOUTH);
+    add(new RecoupementFooter(state), BorderLayout.SOUTH);
   }
 
   private void addMainSplitPane() {

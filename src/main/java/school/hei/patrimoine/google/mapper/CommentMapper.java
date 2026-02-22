@@ -1,6 +1,7 @@
 package school.hei.patrimoine.google.mapper;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import school.hei.patrimoine.google.model.Comment;
 
@@ -28,19 +29,19 @@ public class CommentMapper {
         .resolved(comment.getResolved() != null && comment.getResolved())
         .author(userMapper.toDomain(comment.getAuthor()))
         .createdAt(Instant.parse(comment.getCreatedTime().toString()))
-        .answers(answers)
+        .answers(new ArrayList<>(answers))
         .build();
   }
 
   public com.google.api.services.drive.model.Comment toGoogle(Comment comment) {
     return new com.google.api.services.drive.model.Comment()
-        .setId(comment.id())
-        .setContent(comment.content())
-        .setResolved(comment.resolved());
+        .setId(comment.getId())
+        .setContent(comment.getContent())
+        .setResolved(comment.isResolved());
   }
 
   public com.google.api.services.drive.model.Reply toGoogleReply(Comment comment) {
-    return new com.google.api.services.drive.model.Reply().setContent(comment.content());
+    return new com.google.api.services.drive.model.Reply().setContent(comment.getContent());
   }
 
   public Comment replyToDomain(com.google.api.services.drive.model.Reply comment) {
@@ -49,7 +50,7 @@ public class CommentMapper {
         .content(comment.getContent())
         .author(userMapper.toDomain(comment.getAuthor()))
         .createdAt(Instant.parse(comment.getCreatedTime().toString()))
-        .answers(List.of())
+        .answers(new ArrayList<>())
         .build();
   }
 }

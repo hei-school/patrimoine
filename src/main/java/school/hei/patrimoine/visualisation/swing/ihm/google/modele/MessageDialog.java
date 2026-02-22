@@ -20,4 +20,8 @@ public class MessageDialog {
   public static void showError(Exception error) {
     showError("Erreur", error.getMessage());
   }
+
+  public static void showError(String message) {
+    showError("Erreur", message);
+  }
 }

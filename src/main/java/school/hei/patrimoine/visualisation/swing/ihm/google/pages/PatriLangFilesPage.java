@@ -1,5 +1,6 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.pages;
 
+import static school.hei.patrimoine.visualisation.swing.ihm.google.component.files.FileSideBar.getSelectedFile;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.component.html.ViewMode.VIEW;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.config.EnvironmentConfig.isOfflineMode;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.config.EnvironmentConfig.isOnlineMode;
@@ -19,12 +20,9 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.App
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.builtin.*;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.comment.CommentSideBar;
-import school.hei.patrimoine.visualisation.swing.ihm.google.component.comment.LocalCommentActions;
-import school.hei.patrimoine.visualisation.swing.ihm.google.component.comment.LocalCommentManager;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.FileSideBar;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.html.HtmlViewer;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
-import school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangFileContext;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangFilesWatcher;
 
 @Getter
@@ -34,15 +32,12 @@ public class PatriLangFilesPage extends LazyPage {
   private static final int COMMENT_PAGE_SIZE = 100;
 
   private final State state;
-  private final LocalCommentActions localCommentActions;
-
   private Button addImprevuButton;
   private final HtmlViewer htmlViewer;
   private CommentSideBar commentSideBar;
 
   public PatriLangFilesPage() {
     super(PAGE_NAME);
-    this.localCommentActions = new LocalCommentActions(LocalCommentManager.getInstance());
 
     state =
         new State(
@@ -52,7 +47,7 @@ public class PatriLangFilesPage extends LazyPage {
                 "fontSize",
                 12,
                 "commentPagination",
-                new Pagination(COMMENT_PAGE_SIZE, null)));
+                Pagination.builder().pageSize(COMMENT_PAGE_SIZE).build()));
 
     this.htmlViewer = new HtmlViewer(state);
 
@@ -86,13 +81,7 @@ public class PatriLangFilesPage extends LazyPage {
   }
 
   private SaveAndSyncFileButton saveAndSyncFileButton() {
-    return new SaveAndSyncFileButton(
-        state,
-        htmlViewer,
-        () -> {
-          getCommentSideBar().refreshCommentsCache();
-          return null;
-        });
+    return new SaveAndSyncFileButton(state, htmlViewer, () -> commentSideBar.update());
   }
 
   private List<Component> leftAppBarControls(State state) {
@@ -127,7 +116,7 @@ public class PatriLangFilesPage extends LazyPage {
     rightSplit.setLeftComponent(new JScrollPane(htmlViewer));
 
     if (isOnlineMode()) {
-      this.commentSideBar = new CommentSideBar(state, localCommentActions);
+      this.commentSideBar = new CommentSideBar(state);
       rightSplit.setRightComponent(commentSideBar);
     }
 
@@ -148,7 +137,7 @@ public class PatriLangFilesPage extends LazyPage {
   }
 
   private void updateAddImprevuButtonVisibility() {
-    var optionalSelectedFile = getSelectedFile();
+    var optionalSelectedFile = getSelectedFile(state);
 
     if (optionalSelectedFile.isEmpty()) {
       addImprevuButton.setVisible(false);
@@ -165,7 +154,7 @@ public class PatriLangFilesPage extends LazyPage {
   }
 
   private void updateCas() {
-    var optionalSelectedFile = getSelectedFile();
+    var optionalSelectedFile = getSelectedFile(state);
     if (optionalSelectedFile.isEmpty()) {
       return;
     }
@@ -182,9 +171,5 @@ public class PatriLangFilesPage extends LazyPage {
     var doneCas = getCas(getDoneFile(selectedFile));
     var plannedCas = getCas(getPlannedFile(selectedFile));
     state.update(Map.of("plannedCas", plannedCas, "doneCas", doneCas));
-  }
-
-  private Optional<PatriLangFileContext> getSelectedFile() {
-    return Optional.ofNullable(state.get("selectedFile"));
   }
 }

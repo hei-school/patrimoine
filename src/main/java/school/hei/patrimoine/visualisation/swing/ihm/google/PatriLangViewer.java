@@ -5,8 +5,6 @@ import static javax.swing.SwingUtilities.invokeLater;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.builtin.DialogMode.EXIT;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.config.EnvironmentConfig.isOfflineMode;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.config.EnvironmentConfig.isOnlineMode;
-import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangStagingFileManager.getStagedDoneFiles;
-import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangStagingFileManager.getStagedPlannedFiles;
 
 import com.formdev.flatlaf.FlatLightLaf;
 import java.awt.event.WindowAdapter;
@@ -16,8 +14,8 @@ import school.hei.patrimoine.google.GoogleApiUtilities;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.App;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.Page;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.builtin.SyncConfirmDialog;
-import school.hei.patrimoine.visualisation.swing.ihm.google.component.comment.LocalCommentManager;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.GoogleLinkListDownloader;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangStagingFileManager;
 import school.hei.patrimoine.visualisation.swing.ihm.google.pages.*;
 
 public class PatriLangViewer extends App {
@@ -32,14 +30,13 @@ public class PatriLangViewer extends App {
         new WindowAdapter() {
           @Override
           public void windowClosing(WindowEvent e) {
-            if (!isOnlineMode()) {
+            if (isOfflineMode()) {
               dispose();
               return;
             }
 
             var localCommentManager = LocalCommentManager.getInstance();
-            var doneFiles = getStagedDoneFiles();
-            var plannedFiles = getStagedPlannedFiles();
+            var stagedFiles = PatriLangStagingFileManager.getFiles();
             var hasPendingComments = localCommentManager.hasAnyPendingComments();
 
             if (plannedFiles.isEmpty() && doneFiles.isEmpty() && !hasPendingComments) {

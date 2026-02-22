@@ -1,5 +1,8 @@
 package school.hei.patrimoine.google.model;
 
+import lombok.Builder;
+
+@Builder(toBuilder = true)
 public record PaginatedResult<T>(T data, Pagination nextPagination) {
   public Pagination getNextPagination() {
     return nextPagination;
