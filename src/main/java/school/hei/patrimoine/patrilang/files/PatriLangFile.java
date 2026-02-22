@@ -22,6 +22,25 @@ public class PatriLangFile extends File {
     this.type = type;
   }
 
+  public String getBaseFileName() {
+    return getName()
+        .replaceAll(PJ_FILE_EXTENSION, "")
+        .replaceAll(TOUT_CAS_FILE_EXTENSION, "")
+        .replaceAll(CAS_FILE_EXTENSION, "");
+  }
+
+  public boolean isTypePJ() {
+    return PatriLangFileType.PJ.equals(getType());
+  }
+
+  public boolean isTypeCas() {
+    return PatriLangFileType.CAS.equals(getType());
+  }
+
+  public boolean isTypeToutCas() {
+    return PatriLangFileType.TOUT_CAS.equals(getType());
+  }
+
   public static final String PJ_FILE_EXTENSION = ".pj.md";
   public static final String CAS_FILE_EXTENSION = ".cas.md";
   public static final String TOUT_CAS_FILE_EXTENSION = ".tout.md";

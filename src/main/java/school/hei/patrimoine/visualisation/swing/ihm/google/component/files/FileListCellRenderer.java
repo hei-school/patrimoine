@@ -1,8 +1,9 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.component.files;
 
+import static java.util.Objects.requireNonNull;
+
 import java.awt.*;
 import java.io.File;
-import java.util.Objects;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
@@ -51,8 +52,8 @@ public class FileListCellRenderer extends DefaultListCellRenderer {
   private ImageIcon loadFileIcon() {
     var url = getClass().getResource("/icons/file.png");
 
-    var icon = new ImageIcon(Objects.requireNonNull(url));
-    Image scaled = icon.getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH);
+    var icon = new ImageIcon(requireNonNull(url));
+    var scaled = icon.getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH);
 
     return new ImageIcon(scaled);
   }

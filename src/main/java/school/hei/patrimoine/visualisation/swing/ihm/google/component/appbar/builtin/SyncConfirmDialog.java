@@ -1,7 +1,5 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.builtin;
 
-import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangStagingFileManager.*;
-
 import java.awt.*;
 import java.io.File;
 import java.util.HashMap;

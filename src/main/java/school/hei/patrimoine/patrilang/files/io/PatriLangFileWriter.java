@@ -1,4 +1,4 @@
-package school.hei.patrimoine.patrilang.files;
+package school.hei.patrimoine.patrilang.files.io;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.nio.file.Files.*;
@@ -8,10 +8,12 @@ import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
 import static school.hei.patrimoine.patrilang.files.PatriLangFile.PatriLangFileType.CAS;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import lombok.Builder;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
+import school.hei.patrimoine.patrilang.files.PatriLangFile;
 import school.hei.patrimoine.patrilang.files.validator.PatriLangFileValidator;
 
 public class PatriLangFileWriter {
@@ -57,7 +59,7 @@ public class PatriLangFileWriter {
           }
           reader.close();
           writer.close();
-          move(tempFile.toPath(), input.file().toPath(), REPLACE_EXISTING);
+          Files.move(tempFile.toPath(), input.file().toPath(), REPLACE_EXISTING);
         },
         Set.of(input));
   }
@@ -70,10 +72,10 @@ public class PatriLangFileWriter {
       runnable.run();
       for (var input : inputs) {
         if (CAS.equals(input.file().getType())) {
-          this.validator.accept(input.file());
+          this.validator.accept(input.casSet());
           continue;
         }
-        this.validator.accept(input.casSet());
+        this.validator.accept(input.file());
       }
     } catch (ParseCancellationException | IllegalArgumentException error) {
       oldContents.forEach(

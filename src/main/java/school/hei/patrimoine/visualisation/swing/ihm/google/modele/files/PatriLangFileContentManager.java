@@ -1,21 +1,20 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.modele.files;
 
 import static java.nio.file.Files.readString;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.providers.FilesProvider.getCasSet;
 
-import java.io.File;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import school.hei.patrimoine.patrilang.files.PatriLangFile;
-import school.hei.patrimoine.patrilang.files.PatriLangFileWriter.FileWriterInput;
+import school.hei.patrimoine.patrilang.files.io.PatriLangFileWriter.FileWriterInput;
 
 public class PatriLangFileContentManager {
   private static final Map<String, FileWriterInput> tempContents = new HashMap<>();
 
-  public static TypedContent getContent(File file, File casSet) {
-    var key = file.getAbsolutePath();
+  public static TypedContent getContent(PatriLangFileContext file) {
+    var key = file.getDriveId();
     if (tempContents.containsKey(key)) {
       return new TypedContent(tempContents.get(key), false);
     }
@@ -23,25 +22,17 @@ public class PatriLangFileContentManager {
     try {
       var content = readString(Path.of(key));
       var input =
-          FileWriterInput.builder()
-              .file(new PatriLangFile(file))
-              .casSet(new PatriLangFile(casSet))
-              .content(content)
-              .build();
+          FileWriterInput.builder().file(file).casSet(getCasSet(file)).content(content).build();
       return new TypedContent(input, true);
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
   }
 
-  public static void saveTempContent(File file, File casSet, String content) {
+  public static void saveTempContent(PatriLangFileContext file, String content) {
     var input =
-        FileWriterInput.builder()
-            .file(new PatriLangFile(file))
-            .casSet(new PatriLangFile(casSet))
-            .content(content)
-            .build();
-    tempContents.put(file.getAbsolutePath(), input);
+        FileWriterInput.builder().file(file).casSet(getCasSet(file)).content(content).build();
+    tempContents.put(file.getDriveId(), input);
   }
 
   public static void clearAllTempContents() {
@@ -52,8 +43,8 @@ public class PatriLangFileContentManager {
     return new HashSet<>(tempContents.values());
   }
 
-  public static void removeInTempContent(File file) {
-    tempContents.remove(file.getAbsolutePath());
+  public static void removeInTempContent(PatriLangFileContext file) {
+    tempContents.remove(file.getDriveId());
   }
 
   public record TypedContent(FileWriterInput input, boolean original) {}

@@ -1,154 +1,72 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.component.files;
 
-import static school.hei.patrimoine.patrilang.PatriLangTranspiler.*;
-import static school.hei.patrimoine.visualisation.swing.ihm.google.config.EnvironmentConfig.isOfflineMode;
-import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.FileCategory.*;
+import static javax.swing.ListSelectionModel.SINGLE_SELECTION;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.providers.FilesProvider.*;
 
 import java.awt.*;
-import java.io.File;
-import java.util.Map;
-import java.util.Optional;
+import java.util.List;
 import javax.swing.*;
-import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.AppContext;
+import lombok.AccessLevel;
+import lombok.Getter;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.*;
-import school.hei.patrimoine.visualisation.swing.ihm.google.modele.GoogleLinkList.NamedID;
-import school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.FileCategory;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangFileContext;
 
 public class FileSideBar extends JPanel {
-  private final State state;
-  private final JList<File> plannedList;
-  private final JList<File> doneList;
+  @Getter(AccessLevel.PRIVATE)
+  private final JList<PatriLangFileContext> doneList;
+
+  @Getter(AccessLevel.PRIVATE)
+  private final JList<PatriLangFileContext> plannedList;
 
   public FileSideBar(State state) {
     super(new BorderLayout());
 
-    this.state = state;
-    this.doneList = new JList<>(new FileListModel(getPatriLangDoneFiles()));
-    this.plannedList = new JList<>(new FileListModel(getPatriLangPlannedFiles()));
-
-    doneList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-    plannedList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-
-    doneList.setCellRenderer(new FileListCellRenderer());
-    plannedList.setCellRenderer(new FileListCellRenderer());
-
-    var plannedDebouncer =
-        new Debouncer(
-            () -> {
-              var selectedFile = plannedList.getSelectedValue();
-              if (selectedFile == null) return;
-              if (isOfflineMode()) {
-                this.state.update(
-                    Map.of(
-                        "selectedFile",
-                        selectedFile,
-                        "selectedFileCasSet",
-                        getPlannedCasSetFile(),
-                        "isPlannedSelectedFile",
-                        true));
-              } else {
-                this.state.update(
-                    Map.of(
-                        "selectedFile",
-                        selectedFile,
-                        "selectedFileCasSet",
-                        getPlannedCasSetFile(),
-                        "selectedFileId",
-                        getSelectedFileDriveId(selectedFile, PLANNED).orElse(""),
-                        "isPlannedSelectedFile",
-                        true));
-              }
-              doneList.clearSelection();
-            });
-
-    var doneDebouncer =
-        new Debouncer(
-            () -> {
-              var selectedFile = doneList.getSelectedValue();
-              if (selectedFile == null) return;
-              if (isOfflineMode()) {
-                this.state.update(
-                    Map.of(
-                        "selectedFile",
-                        selectedFile,
-                        "selectedFileCasSet",
-                        getDoneCasSetFile(),
-                        "isPlannedSelectedFile",
-                        false));
-              } else {
-                this.state.update(
-                    Map.of(
-                        "selectedFile",
-                        selectedFile,
-                        "selectedFileCasSet",
-                        getDoneCasSetFile(),
-                        "selectedFileId",
-                        getSelectedFileDriveId(selectedFile, DONE).orElse(""),
-                        "isPlannedSelectedFile",
-                        false));
-              }
-              plannedList.clearSelection();
-            });
-
-    plannedList.addListSelectionListener(
-        e -> {
-          if (!e.getValueIsAdjusting()) {
-            plannedDebouncer.restart();
-          }
-        });
-
-    doneList.addListSelectionListener(
-        e -> {
-          if (!e.getValueIsAdjusting()) {
-            doneDebouncer.restart();
-          }
-        });
+    this.doneList = createList(getPatriLangDoneFiles(), state, getDoneList()::clearSelection);
+    this.plannedList =
+        createList(getPatriLangPlannedFiles(), state, getPlannedList()::clearSelection);
 
     var panel = new JPanel();
     panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
-    var plannedLabel = new JLabel("Journaux planifiés");
-    plannedLabel.setFont(plannedLabel.getFont().deriveFont(Font.BOLD));
-
-    panel.add(plannedLabel);
-    panel.add(new JScrollPane(plannedList));
+    addPanel(panel, "Journaux planifiés", plannedList);
     panel.add(Box.createVerticalStrut(20));
+    addPanel(panel, "Journaux réalisés", doneList);
 
-    var doneLabel = new JLabel("Journaux réalisés");
-    doneLabel.setFont(doneLabel.getFont().deriveFont(Font.BOLD));
-
-    panel.add(doneLabel);
-    panel.add(new JScrollPane(doneList));
     add(panel, BorderLayout.CENTER);
   }
 
-  private Optional<String> getSelectedFileDriveId(File currentFile, FileCategory category) {
-    GoogleLinkList<NamedID> ids = AppContext.getDefault().getData("named-ids");
+  public static JList<PatriLangFileContext> createList(
+      List<PatriLangFileContext> files, State state, Runnable onSuccess) {
+    var list = new JList<>(new FileListModel(files));
+    list.setCellRenderer(new FileListCellRenderer());
+    list.setSelectionMode(SINGLE_SELECTION);
 
-    if (currentFile == null) {
-      return Optional.empty();
-    }
+    var debouncer =
+        new Debouncer(
+            () -> {
+              var selectedFile = list.getSelectedValue();
+              if (selectedFile == null) {
+                state.invalidate("selectedFile");
+              } else {
+                state.update("selectedFile", selectedFile);
+              }
+              onSuccess.run();
+            });
 
-    var namedIds =
-        switch (category) {
-          case DONE -> ids.done();
-          case PLANNED -> ids.planned();
-          case JUSTIFICATIVE -> ids.justificative();
-        };
+    list.addListSelectionListener(
+        e -> {
+          if (!e.getValueIsAdjusting()) {
+            debouncer.restart();
+          }
+        });
+    return list;
+  }
 
-    return namedIds.stream()
-        .filter(
-            driveNamedId -> {
-              var filename =
-                  currentFile
-                      .getName()
-                      .replace(PJ_FILE_EXTENSION, "")
-                      .replace(CAS_FILE_EXTENSION, "")
-                      .replace(TOUT_CAS_FILE_EXTENSION, "");
-              return driveNamedId.name().equals(filename);
-            })
-        .findFirst()
-        .map(NamedID::id);
+  private static void addPanel(JPanel base, String labelValue, JList<PatriLangFileContext> list) {
+    var label = new JLabel(labelValue);
+    label.setFont(label.getFont().deriveFont(Font.BOLD));
+
+    base.add(label);
+    base.add(new JScrollPane(list));
   }
 }

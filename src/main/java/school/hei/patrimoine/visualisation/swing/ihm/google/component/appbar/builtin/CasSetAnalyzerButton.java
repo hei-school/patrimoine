@@ -15,21 +15,21 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.component.ObjectifNo
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.popup.PopupItem;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.popup.PopupMenuButton;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.AsyncTask;
-import school.hei.patrimoine.visualisation.swing.ihm.google.modele.CasSetSetter;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangFilesWatcher;
 
 public class CasSetAnalyzerButton extends PopupMenuButton {
-  public CasSetAnalyzerButton(CasSetSetter casSetSetter) {
-    super("Évolution graphique", getItems(casSetSetter));
+  public CasSetAnalyzerButton() {
+    super("Évolution graphique", getItems());
     setToolTipText("Afficher différentes analyses graphiques des cas");
   }
 
-  private static List<JMenuItem> getItems(CasSetSetter casSetSetter) {
+  private static List<JMenuItem> getItems() {
     return List.of(
-        new PopupItem("Analyse planifiée uniquement", e -> showPlannedOnly(casSetSetter)),
-        new PopupItem("Analyse recoupée (Planifié + Réalisé)", e -> showRecouped(casSetSetter)));
+        new PopupItem("Analyse planifiée uniquement", e -> showPlannedOnly()),
+        new PopupItem("Analyse recoupée (Planifié + Réalisé)", e -> showRecouped()));
   }
 
-  private static void showRecouped(CasSetSetter casSetSetter) {
+  private static void showRecouped() {
     AsyncTask.<CasSet>builder()
         .logError(false)
         .task(
@@ -37,8 +37,8 @@ public class CasSetAnalyzerButton extends PopupMenuButton {
                 RecoupeurDeCasSet.of(
                         LocalDate.MIN,
                         LocalDate.MAX,
-                        casSetSetter.plannedCasSet(),
-                        casSetSetter.doneCasSet())
+                        PatriLangFilesWatcher.getPlannedCasSet(),
+                        PatriLangFilesWatcher.getDoneCasSet())
                     .getRecouped())
         .onSuccess(result -> new CasSetAnalyzer(DISPOSE_ON_CLOSE).accept(result))
         .onError(CasSetAnalyzerButton::handleError)
@@ -46,10 +46,10 @@ public class CasSetAnalyzerButton extends PopupMenuButton {
         .execute();
   }
 
-  private static void showPlannedOnly(CasSetSetter casSetSetter) {
+  private static void showPlannedOnly() {
     AsyncTask.<CasSet>builder()
         .logError(false)
-        .task(casSetSetter::plannedCasSet)
+        .task(PatriLangFilesWatcher::getPlannedCasSet)
         .onSuccess(result -> new CasSetAnalyzer(DISPOSE_ON_CLOSE).accept(result))
         .onError(CasSetAnalyzerButton::handleError)
         .build()

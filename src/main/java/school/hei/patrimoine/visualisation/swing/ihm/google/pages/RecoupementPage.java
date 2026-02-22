@@ -27,6 +27,7 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.File
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.FileListModel;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.recoupement.PossessionRecoupeeListPanel;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.*;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangFilesWatcher;
 import school.hei.patrimoine.visualisation.swing.ihm.google.providers.PossessionRecoupeeProvider;
 import school.hei.patrimoine.visualisation.swing.ihm.google.providers.PossessionRecoupeeProvider.*;
 import school.hei.patrimoine.visualisation.swing.ihm.google.providers.model.Pagination;
@@ -37,12 +38,12 @@ public class RecoupementPage extends LazyPage {
   public static final int RECOUPEMENT_ITEM_PER_PAGE = 50;
 
   private final State state;
-  private final CasSetSetter casSetSetter;
+  private final PatriLangFilesWatcher patriLangFilesWatcher;
   private final PossessionRecoupeeListPanel possessionRecoupeeListPanel;
 
   public RecoupementPage() {
     super(PAGE_NAME);
-    this.casSetSetter = CasSetSetter.getInstance();
+    this.patriLangFilesWatcher = PatriLangFilesWatcher.getInstance();
 
     this.state =
         new State(
@@ -56,7 +57,7 @@ public class RecoupementPage extends LazyPage {
 
     this.possessionRecoupeeListPanel = new PossessionRecoupeeListPanel(state);
 
-    casSetSetter.addObserver(this::update);
+    patriLangFilesWatcher.addObserver(this::update);
     state.subscribe(
         Set.of("filterStatus", "selectedFile", "pagination", "filterName"), this::update);
 
@@ -172,8 +173,12 @@ public class RecoupementPage extends LazyPage {
   }
 
   private List<PossessionRecoupee<Possession>> getFilteredPossessionRecoupees() {
-    var plannedCas = casSetSetter.getCas(state.get("selectedFile"), casSetSetter.plannedCasSet());
-    var doneCas = casSetSetter.getCas(state.get("selectedFile"), casSetSetter.doneCasSet());
+    var plannedCas =
+        patriLangFilesWatcher.getCas(
+            state.get("selectedFile"), patriLangFilesWatcher.getPlannedCasSet());
+    var doneCas =
+        patriLangFilesWatcher.getCas(
+            state.get("selectedFile"), patriLangFilesWatcher.getDoneCasSet());
     Set<Compte> casSetComptes = globalState().get("casSetComptes");
     var filteredStatus = (PossessionRecoupeeFilterStatus) state.get("filterStatus");
 

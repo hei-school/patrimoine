@@ -10,13 +10,13 @@ import static school.hei.patrimoine.visualisation.swing.ihm.google.component.htm
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangFileContentManager.*;
 
 import java.awt.*;
-import java.io.File;
 import java.util.Optional;
 import java.util.Set;
 import javax.swing.*;
 import lombok.extern.slf4j.Slf4j;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.MarkdownToHtmlConverter;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangFileContext;
 
 @Slf4j
 public class HtmlViewer extends JEditorPane {
@@ -24,8 +24,7 @@ public class HtmlViewer extends JEditorPane {
   private final MarkdownToHtmlConverter markdownToHtmlConverter;
 
   private ViewMode lastViewMode;
-  private File lastSelectedFile;
-  private File lastSelectedFileCasSet;
+  private PatriLangFileContext lastSelectedFile;
 
   public HtmlViewer(State state) {
     this.state = state;
@@ -50,7 +49,7 @@ public class HtmlViewer extends JEditorPane {
     return state.get("viewMode");
   }
 
-  private Optional<File> getSelectedFile() {
+  private Optional<PatriLangFileContext> getSelectedFile() {
     return Optional.ofNullable(state.get("selectedFile"));
   }
 
@@ -62,26 +61,17 @@ public class HtmlViewer extends JEditorPane {
     return state.get("searchText") == null ? "" : state.get("searchText");
   }
 
-  private Optional<File> getSelectedFileCasSet() {
-    return Optional.ofNullable(state.get("selectedFileCasSet"));
-  }
-
   private Optional<ViewMode> getLastViewMode() {
     return Optional.ofNullable(lastViewMode);
   }
 
-  private Optional<File> getLastSelectedFile() {
+  private Optional<PatriLangFileContext> getLastSelectedFile() {
     return Optional.ofNullable(lastSelectedFile);
-  }
-
-  private Optional<File> getLastSelectedFileCasSet() {
-    return Optional.ofNullable(lastSelectedFileCasSet);
   }
 
   private void updateLastViewModeAndFile() {
     lastViewMode = getViewMode();
     lastSelectedFile = getSelectedFile().orElse(null);
-    lastSelectedFileCasSet = getSelectedFileCasSet().orElse(null);
   }
 
   private void showEmptyContent() {
@@ -95,10 +85,7 @@ public class HtmlViewer extends JEditorPane {
   private void showEditMode() {
     setEditable(true);
     setContentType("text/plain");
-    var content =
-        getContent(getSelectedFile().orElseThrow(), getSelectedFileCasSet().orElse(null))
-            .input()
-            .content();
+    var content = getContent(getSelectedFile().orElseThrow()).input().content();
 
     setText(content);
     if (!getSearchText().isBlank()) {
@@ -109,10 +96,7 @@ public class HtmlViewer extends JEditorPane {
   }
 
   private void showReadMode() {
-    var content =
-        getContent(getSelectedFile().orElseThrow(), getSelectedFileCasSet().orElse(null))
-            .input()
-            .content();
+    var content = getContent(getSelectedFile().orElseThrow()).input().content();
     var html = markdownToHtmlConverter.apply(new LinkReplacer().apply(content));
 
     if (getSearchText().isEmpty()) {
@@ -163,8 +147,7 @@ public class HtmlViewer extends JEditorPane {
     }
 
     var lastFile = getLastSelectedFile().orElseThrow();
-    var lastCasSet = getLastSelectedFileCasSet().orElse(null);
-    var lastContent = getContent(lastFile, lastCasSet);
+    var lastContent = getContent(lastFile);
 
     var currentContent = getText();
     if (lastContent.original() && currentContent.equals(lastContent.input().content())) {
@@ -172,6 +155,6 @@ public class HtmlViewer extends JEditorPane {
       return;
     }
 
-    saveTempContent(lastFile, lastCasSet, currentContent);
+    saveTempContent(lastFile, currentContent);
   }
 }
