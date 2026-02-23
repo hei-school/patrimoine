@@ -81,7 +81,7 @@ public class CommentAddDialog extends Dialog {
     }
 
     var selectedFile = optionalSelectedFile.get();
-    PendingCommentManager.add(new AddComment(selectedFile.getDriveId(), getContent()));
+    PendingCommentManager.add(new AddComment(selectedFile, getContent()));
     onAddFinish.run();
   }
 }

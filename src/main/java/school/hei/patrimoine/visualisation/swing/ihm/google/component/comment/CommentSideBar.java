@@ -120,7 +120,7 @@ public class CommentSideBar extends JPanel {
       return;
     }
 
-    PendingCommentManager.add(new ResolveComment(file.getDriveId(), toResolve));
+    PendingCommentManager.add(new ResolveComment(file, toResolve));
     onFinish.run();
   }
 
@@ -134,7 +134,7 @@ public class CommentSideBar extends JPanel {
       return;
     }
 
-    PendingCommentManager.add(new DeleteComment(file.getDriveId(), toDelete));
+    PendingCommentManager.add(new DeleteComment(file, toDelete));
     onFinish.run();
   }
 

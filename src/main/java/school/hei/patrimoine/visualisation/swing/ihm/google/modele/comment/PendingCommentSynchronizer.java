@@ -13,29 +13,29 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.modele.comment.pendi
 public class PendingCommentSynchronizer {
   private static Optional<Comment> sync(AbstractPendingComment pending)
       throws GoogleIntegrationException {
+    var fileId = pending.getFile().getDriveId();
+
     return switch (pending) {
-      case AddComment toAdd ->
-          Optional.ofNullable(commentApi().add(toAdd.getFileId(), toAdd.getContent()));
+      case AddComment toAdd -> Optional.ofNullable(commentApi().add(fileId, toAdd.getContent()));
       case DeleteComment toDelete -> {
-        commentApi().delete(toDelete.getFileId(), toDelete.getComment().getId());
+        commentApi().delete(fileId, toDelete.getComment().getId());
         yield Optional.empty();
       }
       case ResolveComment toResolve -> {
-        commentApi().resolve(toResolve.getFileId(), toResolve.getComment().getId());
+        commentApi().resolve(fileId, toResolve.getComment().getId());
         yield Optional.empty();
       }
       case ReplyComment toReply -> {
-        commentApi().reply(toReply.getFileId(), toReply.getComment().getId(), toReply.getContent());
+        commentApi().reply(fileId, toReply.getComment().getId(), toReply.getContent());
         yield Optional.empty();
       }
       case GroupedByComment group -> {
         var subs = group.getSortedPendings();
-        var first = group.getSortedPendings().getFirst();
         var rawComment = group.getRawComment();
 
         if (rawComment instanceof NotSynchronizedComment) {
           rawComment =
-              sync(new AddComment(first.getLocalId(), rawComment.getContent())).orElseThrow();
+              sync(new AddComment(pending.getFile(), rawComment.getContent())).orElseThrow();
         }
 
         for (var subPending : mapRawComment(rawComment, subs)) {
@@ -60,15 +60,17 @@ public class PendingCommentSynchronizer {
       Comment rawComment, List<AbstractPendingComment> pendings) {
     return pendings.stream()
         .map(
-            pending ->
-                switch (pending) {
-                  case ReplyComment toReply -> toReply.toBuilder().comment(rawComment).build();
-                  case DeleteComment toDelete -> toDelete.toBuilder().comment(rawComment).build();
-                  case ResolveComment toResolve ->
-                      toResolve.toBuilder().comment(rawComment).build();
-                  default ->
-                      throw new RuntimeException("Unexpected type of pending of mapRawComment");
-                })
+            pending -> {
+              var file = pending.getFile();
+              return switch (pending) {
+                case ReplyComment toReply ->
+                    new ReplyComment(file, toReply.getContent(), rawComment);
+                case DeleteComment ignored -> new DeleteComment(file, rawComment);
+                case ResolveComment ignored -> new ResolveComment(file, rawComment);
+                default ->
+                    throw new RuntimeException("Unexpected type of pending of mapRawComment");
+              };
+            })
         .toList();
   }
 }

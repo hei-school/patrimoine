@@ -75,7 +75,7 @@ public class CommentReplyDialog extends Dialog {
       return;
     }
 
-    PendingCommentManager.add(new ReplyComment(fileContext.getDriveId(), getContent(), comment));
+    PendingCommentManager.add(new ReplyComment(fileContext, getContent(), comment));
     refresh.run();
   }
 }

@@ -7,12 +7,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import school.hei.patrimoine.google.model.Comment;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangFileContext;
 
 public class GroupedByComment extends AbstractPendingComment {
   private final Map<String, AbstractPendingComment> pendings;
 
-  public GroupedByComment(String fileId) {
-    super(fileId);
+  public GroupedByComment(PatriLangFileContext file) {
+    super(file);
     this.pendings = new ConcurrentHashMap<>();
   }
 

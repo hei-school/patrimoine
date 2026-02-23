@@ -1,15 +1,14 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.modele.comment.pending;
 
-import lombok.Builder;
 import lombok.Getter;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangFileContext;
 
 @Getter
-@Builder(toBuilder = true)
 public class AddComment extends AbstractPendingComment {
   private final String content;
 
-  public AddComment(String fileId, String content) {
-    super(fileId);
+  public AddComment(PatriLangFileContext file, String content) {
+    super(file);
     this.content = content;
   }
 }

@@ -17,14 +17,14 @@ public class PendingCommentManager {
   }
 
   public static void add(AbstractPendingComment pending) {
-    var subMap = getSubMap(pending.getFileId());
+    var subMap = getSubMap(pending.getFile().getDriveId());
     var baseKey = getBaseKey(pending);
     switch (pending) {
       case AddComment ignored -> subMap.put(baseKey, pending);
       default -> {
         var group =
             (GroupedByComment)
-                subMap.getOrDefault(baseKey, new GroupedByComment(pending.getFileId()));
+                subMap.getOrDefault(baseKey, new GroupedByComment(pending.getFile()));
         group.add(pending);
       }
     }
@@ -36,14 +36,14 @@ public class PendingCommentManager {
   }
 
   public static void remove(AbstractPendingComment pending) {
-    var subMap = getSubMap(pending.getFileId());
+    var subMap = getSubMap(pending.getFile().getDriveId());
     var baseKey = getBaseKey(pending);
     switch (pending) {
       case AddComment ignored -> subMap.remove(baseKey);
       default -> {
         var group =
             (GroupedByComment)
-                subMap.getOrDefault(baseKey, new GroupedByComment(pending.getFileId()));
+                subMap.getOrDefault(baseKey, new GroupedByComment(pending.getFile()));
         group.remove(pending);
         if (group.isEmpty()) {
           subMap.remove(baseKey);
