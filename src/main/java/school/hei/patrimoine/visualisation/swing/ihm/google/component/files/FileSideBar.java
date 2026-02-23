@@ -36,6 +36,15 @@ public class FileSideBar extends JPanel {
     addPanel(panel, "Journaux réalisés", doneList);
 
     add(panel, BorderLayout.CENTER);
+
+    state.subscribe(
+        "selectedFile",
+        () -> {
+          if (getSelectedFile(state).isEmpty()) {
+            doneList.clearSelection();
+            plannedList.clearSelection();
+          }
+        });
   }
 
   public static Optional<PatriLangFileContext> getSelectedFile(State state) {

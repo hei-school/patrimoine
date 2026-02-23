@@ -14,7 +14,8 @@ public class ObjectifNonAtteintsDialog extends Dialog {
 
     fillObjectifs(listPanel, objectifs);
     setupLayout(listPanel);
-    finalizeDialog();
+    setLocationRelativeTo(null);
+    setVisible(true);
   }
 
   private JPanel createListPanel() {
@@ -47,11 +48,5 @@ public class ObjectifNonAtteintsDialog extends Dialog {
 
     getContentPane().add(scrollPane, BorderLayout.CENTER);
     getContentPane().add(bottom, BorderLayout.SOUTH);
-  }
-
-  private void finalizeDialog() {
-    setSize(700, 500);
-    setLocationRelativeTo(null);
-    setVisible(true);
   }
 }

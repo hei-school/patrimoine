@@ -2,18 +2,23 @@ package school.hei.patrimoine.visualisation.swing.ihm.google.component.html;
 
 import static java.awt.Font.MONOSPACED;
 import static java.awt.Font.PLAIN;
+import static java.nio.file.Files.readString;
 import static javax.swing.event.HyperlinkEvent.EventType.ACTIVATED;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.component.files.FileSideBar.getSelectedFile;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.component.html.SearchHighlighter.highlightInHtml;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.component.html.SearchHighlighter.highlightInTextComponent;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.component.html.ViewMode.EDIT;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.component.html.ViewMode.VIEW;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangFileContentManager.*;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangFilesWatcher.ANY_FILE_MODIFIED;
 
 import java.awt.*;
+import java.io.IOException;
 import java.util.Optional;
 import java.util.Set;
 import javax.swing.*;
 import lombok.extern.slf4j.Slf4j;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.AppContext;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.MarkdownToHtmlConverter;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangFileContext;
@@ -43,14 +48,38 @@ public class HtmlViewer extends JEditorPane {
         });
 
     state.subscribe(Set.of("viewMode", "fontSize", "selectedFile", "searchText"), this::update);
+
+    AppContext.getDefault()
+        .globalState()
+        .subscribe(
+            ANY_FILE_MODIFIED,
+            () -> {
+              if (VIEW.equals(getViewMode())) {
+                return;
+              }
+
+              if (getSelectedFile(state).isEmpty()) {
+                return;
+              }
+
+              try {
+                setText(readString(getSelectedFile(state).get().toPath()));
+              } catch (IOException e) {
+                showErrorContent();
+                return;
+              }
+
+              if (!getSearchText().isBlank()) {
+                highlightInTextComponent(this, getSearchText());
+              }
+
+              setCaretPosition(0);
+              showEditMode();
+            });
   }
 
   private ViewMode getViewMode() {
     return state.get("viewMode");
-  }
-
-  private Optional<PatriLangFileContext> getSelectedFile() {
-    return Optional.ofNullable(state.get("selectedFile"));
   }
 
   private int getFontSize() {
@@ -71,7 +100,7 @@ public class HtmlViewer extends JEditorPane {
 
   private void updateLastViewModeAndFile() {
     lastViewMode = getViewMode();
-    lastSelectedFile = getSelectedFile().orElse(null);
+    lastSelectedFile = getSelectedFile(state).orElse(null);
   }
 
   private void showEmptyContent() {
@@ -85,7 +114,7 @@ public class HtmlViewer extends JEditorPane {
   private void showEditMode() {
     setEditable(true);
     setContentType("text/plain");
-    var content = getContent(getSelectedFile().orElseThrow()).input().content();
+    var content = getContent(getSelectedFile(state).orElseThrow()).input().content();
 
     setText(content);
     if (!getSearchText().isBlank()) {
@@ -96,10 +125,10 @@ public class HtmlViewer extends JEditorPane {
   }
 
   private void showReadMode() {
-    var content = getContent(getSelectedFile().orElseThrow()).input().content();
+    var content = getContent(getSelectedFile(state).orElseThrow()).input().content();
     var html = markdownToHtmlConverter.apply(new LinkReplacer().apply(content));
 
-    if (getSearchText().isEmpty()) {
+    if (!getSearchText().isBlank()) {
       html = highlightInHtml(html, getSearchText());
     }
 
@@ -119,12 +148,13 @@ public class HtmlViewer extends JEditorPane {
   public void update() {
     getHighlighter().removeAllHighlights();
 
-    if (EDIT.equals(getLastViewMode().orElse(VIEW))) {
+    if (EDIT.equals(getLastViewMode().orElse(VIEW))
+        && !getViewMode().equals(getLastViewMode().orElse(VIEW))) {
       saveLastFileToTempContent();
     }
     updateLastViewModeAndFile();
 
-    if (getSelectedFile().isEmpty()) {
+    if (getSelectedFile(state).isEmpty()) {
       showEmptyContent();
       return;
     }
@@ -137,7 +167,6 @@ public class HtmlViewer extends JEditorPane {
       }
       showReadMode();
     } catch (Exception ex) {
-      ex.printStackTrace();
       log.error(ex.getMessage());
       showErrorContent();
     }
@@ -152,7 +181,7 @@ public class HtmlViewer extends JEditorPane {
     var lastContent = getContent(lastFile);
 
     var currentContent = getText();
-    if (lastContent.original() && currentContent.equals(lastContent.input().content())) {
+    if (lastContent.original() && currentContent.equals(lastContent.input().content().trim())) {
       removeInTempContent(lastFile);
       return;
     }
