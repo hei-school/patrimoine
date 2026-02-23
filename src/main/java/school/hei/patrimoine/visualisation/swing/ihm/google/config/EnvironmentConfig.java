@@ -18,7 +18,6 @@ public class EnvironmentConfig {
     }
 
     if (modeValue == null || modeValue.trim().isEmpty()) {
-      log.warn("Unspecified mode. Uses ONLINE mode by default.");
       return Mode.ONLINE;
     }
 

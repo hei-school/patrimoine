@@ -23,8 +23,8 @@ public class FileSideBar extends JPanel {
   public FileSideBar(State state) {
     super(new BorderLayout());
 
-    this.doneList = createList(getPatriLangDoneFiles(), state, getPlannedList()::clearSelection);
-    this.plannedList = createList(getPatriLangPlannedFiles(), state, getDoneList()::clearSelection);
+    this.doneList = createList(getPatriLangDoneFiles(), state,()-> getPlannedList().clearSelection());
+    this.plannedList = createList(getPatriLangPlannedFiles(), state,()-> getDoneList().clearSelection());
 
     var panel = new JPanel();
     panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
@@ -53,10 +53,10 @@ public class FileSideBar extends JPanel {
             () -> {
               var selectedFile = list.getSelectedValue();
               if (selectedFile == null) {
-                state.invalidate("selectedFile");
-              } else {
-                state.update("selectedFile", selectedFile);
+                return;
               }
+
+              state.update("selectedFile", selectedFile);
               onSuccess.run();
             });
 

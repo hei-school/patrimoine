@@ -20,7 +20,7 @@ public class PatriLangFileContentManager {
     }
 
     try {
-      var content = readString(Path.of(key));
+      var content = readString(Path.of(file.getAbsolutePath()));
       var input =
           FileWriterInput.builder().file(file).casSet(getCasSet(file)).content(content).build();
       return new TypedContent(input, true);

@@ -71,7 +71,7 @@ public class AddImprevuDialog extends Dialog {
   }
 
   private Patrimoine getDonePatrimoine() {
-    PatriLangCas cas = state.get("getDoneCas");
+    PatriLangCas cas = state.get("doneCas");
     return cas.patrimoine();
   }
 

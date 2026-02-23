@@ -137,6 +137,8 @@ public class HtmlViewer extends JEditorPane {
       }
       showReadMode();
     } catch (Exception ex) {
+      ex.printStackTrace();
+      log.error(ex.getMessage());
       showErrorContent();
     }
   }
