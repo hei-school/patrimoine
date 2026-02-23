@@ -20,11 +20,8 @@ public class CommentAddDialog extends Dialog {
     super("Ajouter un commentaire", 600, 400, false);
     this.file = file;
     this.textArea = new JTextArea();
-    this.onAddFinish =
-        () -> {
-          dispose();
-          refreshUI.run();
-        };
+    this.onAddFinish = refreshUI;
+    ;
 
     setLayout(new BorderLayout());
 
@@ -82,6 +79,7 @@ public class CommentAddDialog extends Dialog {
 
     var selectedFile = optionalSelectedFile.get();
     PendingCommentManager.add(new AddComment(selectedFile, getContent()));
+    dispose();
     onAddFinish.run();
   }
 }

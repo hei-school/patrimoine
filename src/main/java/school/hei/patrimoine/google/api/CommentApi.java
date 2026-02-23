@@ -84,11 +84,11 @@ public class CommentApi {
     return PaginatedResult.of(results, nexPagination);
   }
 
-  public Comment add(String fileId, String content) throws GoogleIntegrationException {
+  public String add(String fileId, String content) throws GoogleIntegrationException {
     try {
       var newComment = Comment.builder().content(content).build();
 
-      var addedComment =
+      var added =
           driveApi
               .driveService()
               .comments()
@@ -96,7 +96,7 @@ public class CommentApi {
               .setFields("id")
               .execute();
 
-      return commentMapper.toDomain(addedComment);
+      return added.getId();
     } catch (IOException e) {
       throw new GoogleIntegrationException("Failed to add comment to fileId=" + fileId, e);
     }

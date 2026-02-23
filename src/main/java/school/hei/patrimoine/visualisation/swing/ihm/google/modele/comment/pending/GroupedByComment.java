@@ -1,19 +1,26 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.modele.comment.pending;
 
+import static java.time.Instant.now;
 import static java.util.Comparator.comparing;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import lombok.Getter;
 import school.hei.patrimoine.google.model.Comment;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.comment.PendingCommentMapper;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangFileContext;
 
-public class GroupedByComment extends AbstractPendingComment {
+public class GroupedByComment {
   private final Map<String, AbstractPendingComment> pendings;
+  @Getter private Instant lastModifiedDatetime;
+  @Getter private final PatriLangFileContext file;
 
   public GroupedByComment(PatriLangFileContext file) {
-    super(file);
+    this.file = file;
+    this.lastModifiedDatetime = now();
     this.pendings = new ConcurrentHashMap<>();
   }
 
@@ -39,11 +46,8 @@ public class GroupedByComment extends AbstractPendingComment {
       return;
     }
 
-    if (!(comment instanceof ReplyComment)) {
-      throw new RuntimeException("Wrong type of comment");
-    }
-
     this.pendings.put(id, comment);
+    this.lastModifiedDatetime = comment.getCreatedAt();
   }
 
   public boolean isResolved() {
@@ -62,12 +66,14 @@ public class GroupedByComment extends AbstractPendingComment {
   public List<ReplyComment> getSortedReplies() {
     return getSortedPendings().stream()
         .filter(pending -> pending instanceof ReplyComment)
-        .map(pending -> (ReplyComment) pending)
+        .map(ReplyComment.class::cast)
         .toList();
   }
 
   public Comment getRawComment() {
     return switch (getSortedPendings().getFirst()) {
+      case AddComment addComment ->
+          new NotSynchronizedComment(PendingCommentMapper.map(addComment));
       case DeleteComment toDelete -> toDelete.getComment();
       case ReplyComment toReply -> toReply.getComment();
       case ResolveComment toResolve -> toResolve.getComment();

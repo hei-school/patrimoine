@@ -40,6 +40,6 @@ public class CommentsProvider {
   }
 
   private static List<Comment> sorted(Collection<Comment> comments) {
-    return comments.stream().sorted(comparing(Comment::getLastModifiedDate)).toList();
+    return comments.stream().sorted(comparing(Comment::getLastModifiedDate).reversed()).toList();
   }
 }

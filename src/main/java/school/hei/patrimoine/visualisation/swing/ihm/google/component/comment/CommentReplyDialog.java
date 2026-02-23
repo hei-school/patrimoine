@@ -76,6 +76,7 @@ public class CommentReplyDialog extends Dialog {
     }
 
     PendingCommentManager.add(new ReplyComment(fileContext, getContent(), comment));
+    dispose();
     refresh.run();
   }
 }

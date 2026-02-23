@@ -21,6 +21,7 @@ public class ExitConfirmDialog extends Dialog {
         this, "Il reste des modifications non synchronisées. Voulez-vous vraiment quitter ?");
 
     addButtons();
+    setVisible(true);
   }
 
   private void addButtons() {

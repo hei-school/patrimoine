@@ -10,24 +10,18 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.modele.comment.pendi
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangFileContext;
 
 public class PendingCommentManager {
-  public static Map<String, Map<String, AbstractPendingComment>> map = new ConcurrentHashMap<>();
+  public static Map<String, Map<String, GroupedByComment>> map = new ConcurrentHashMap<>();
 
-  public static List<AbstractPendingComment> getPendings() {
+  public static List<GroupedByComment> getPendings() {
     return map.values().stream().map(Map::values).flatMap(Collection::stream).toList();
   }
 
   public static void add(AbstractPendingComment pending) {
     var subMap = getSubMap(pending.getFile().getDriveId());
-    var baseKey = getBaseKey(pending);
-    switch (pending) {
-      case AddComment ignored -> subMap.put(baseKey, pending);
-      default -> {
-        var group =
-            (GroupedByComment)
-                subMap.getOrDefault(baseKey, new GroupedByComment(pending.getFile()));
-        group.add(pending);
-      }
-    }
+    var commentId = getCommentId(pending);
+    var group = subMap.getOrDefault(commentId, new GroupedByComment(pending.getFile()));
+    group.add(pending);
+    subMap.put(commentId, group);
   }
 
   public static void clear() {
@@ -37,28 +31,21 @@ public class PendingCommentManager {
 
   public static void remove(AbstractPendingComment pending) {
     var subMap = getSubMap(pending.getFile().getDriveId());
-    var baseKey = getBaseKey(pending);
-    switch (pending) {
-      case AddComment ignored -> subMap.remove(baseKey);
-      default -> {
-        var group =
-            (GroupedByComment)
-                subMap.getOrDefault(baseKey, new GroupedByComment(pending.getFile()));
-        group.remove(pending);
-        if (group.isEmpty()) {
-          subMap.remove(baseKey);
-        }
-      }
+    var commentId = getCommentId(pending);
+    var group = subMap.getOrDefault(commentId, new GroupedByComment(pending.getFile()));
+    group.remove(pending);
+    if (group.isEmpty()) {
+      subMap.remove(commentId);
     }
   }
 
-  public static List<AbstractPendingComment> getByFile(PatriLangFileContext file) {
+  public static List<GroupedByComment> getByFile(PatriLangFileContext file) {
     return getSubMap(file.getDriveId()).values().stream()
-        .sorted(comparing(AbstractPendingComment::getCreatedAt))
+        .sorted(comparing(GroupedByComment::getLastModifiedDatetime))
         .toList();
   }
 
-  private static Map<String, AbstractPendingComment> getSubMap(String fileId) {
+  private static Map<String, GroupedByComment> getSubMap(String fileId) {
     if (!map.containsKey(fileId)) {
       map.put(fileId, new ConcurrentHashMap<>());
     }
@@ -66,7 +53,7 @@ public class PendingCommentManager {
     return map.get(fileId);
   }
 
-  private static String getBaseKey(AbstractPendingComment pending) {
+  private static String getCommentId(AbstractPendingComment pending) {
     return switch (pending) {
       case AddComment toAdd -> toAdd.getLocalId();
       case ReplyComment toReply -> toReply.getComment().getId();

@@ -4,6 +4,7 @@ import static javax.swing.JOptionPane.YES_NO_OPTION;
 import static javax.swing.JOptionPane.showConfirmDialog;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.component.files.FileSideBar.getSelectedFile;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.MessageDialog.showError;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.MessageDialog.showInfo;
 
 import java.awt.*;
 import java.time.Instant;
@@ -81,7 +82,16 @@ public class CommentSideBar extends JPanel {
     var button = new Button(buttonLabel);
     button.setToolTipText("Ajouter un commentaire");
     button.setPreferredSize(new Dimension(110, 35));
-    button.addActionListener(e -> new CommentAddDialog(() -> getSelectedFile(state), this::update));
+    button.addActionListener(
+        e -> {
+          if (getSelectedFile(state).isEmpty()) {
+            showInfo(
+                "Information",
+                "Vous devez sélectionner un fichier avant de pouvoir ajouter un commentaire");
+            return;
+          }
+          new CommentAddDialog(() -> getSelectedFile(state), this::update);
+        });
 
     return button;
   }
@@ -141,6 +151,6 @@ public class CommentSideBar extends JPanel {
   private static boolean isNotConfirmed(String message) {
     var confirm =
         showConfirmDialog(AppContext.getDefault().app(), message, "Confirmation", YES_NO_OPTION);
-    return confirm != JOptionPane.YES_OPTION;
+    return confirm == JOptionPane.NO_OPTION;
   }
 }

@@ -42,7 +42,7 @@ public class FilesProvider {
 
   public static PatriLangFileContext getPlannedCasSetFile() {
     return getPatriLangPlannedFiles().stream()
-         .filter(PatriLangFile::isTypeToutCas)
+        .filter(PatriLangFile::isTypeToutCas)
         .findFirst()
         .orElseThrow();
   }
@@ -94,7 +94,7 @@ public class FilesProvider {
 
   private static List<GoogleLinkList.NamedID> getIds(PatriLangFileContextType context) {
     GoogleLinkList<GoogleLinkList.NamedID> ids = AppContext.getDefault().getData("named-ids");
-    if(ids == null){
+    if (ids == null) {
       return List.of();
     }
     return switch (context) {
@@ -111,16 +111,17 @@ public class FilesProvider {
 
   private static String getDriveId(PatriLangFile file, PatriLangFileContextType context) {
     var ids = getIds(context);
-    var id = ids.stream()
-        .filter(nameId -> nameId.name().equals(file.getBaseFileName()))
-        .map(GoogleLinkList.NamedID::id)
-        .findFirst();
+    var id =
+        ids.stream()
+            .filter(nameId -> nameId.name().equals(file.getBaseFileName()))
+            .map(GoogleLinkList.NamedID::id)
+            .findFirst();
 
-    if(id.isPresent()) {
+    if (id.isPresent()) {
       return id.get();
     }
 
-    if(isOnlineMode() ){
+    if (isOnlineMode()) {
       throw new RuntimeException("Online mode without id");
     }
 

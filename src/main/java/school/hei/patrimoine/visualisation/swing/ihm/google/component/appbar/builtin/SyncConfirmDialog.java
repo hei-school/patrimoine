@@ -10,7 +10,7 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.component.CustomBord
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.Dialog;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.comment.PendingCommentManager;
-import school.hei.patrimoine.visualisation.swing.ihm.google.modele.comment.pending.AbstractPendingComment;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.comment.pending.GroupedByComment;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangFileContext;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangStagingFileManager;
 
@@ -31,6 +31,7 @@ public class SyncConfirmDialog extends Dialog {
 
     pack();
     setLocationRelativeTo(null);
+    setVisible(true);
   }
 
   private static void addFileSection(JPanel contentPanel) {
@@ -122,8 +123,7 @@ public class SyncConfirmDialog extends Dialog {
     container.add(Box.createVerticalStrut(10));
   }
 
-  private static void addCommentSection(
-      JPanel container, Collection<AbstractPendingComment> pendings) {
+  private static void addCommentSection(JPanel container, Collection<GroupedByComment> pendings) {
     container.add(getSectionTitle("Commentaires modifiés"));
     container.add(getCommentPanel(pendings));
   }
@@ -144,7 +144,7 @@ public class SyncConfirmDialog extends Dialog {
     return filePanel;
   }
 
-  private static JPanel getCommentPanel(Collection<AbstractPendingComment> pendings) {
+  private static JPanel getCommentPanel(Collection<GroupedByComment> pendings) {
     var commentPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
     commentPanel.setBorder(
         CustomBorder.builder()

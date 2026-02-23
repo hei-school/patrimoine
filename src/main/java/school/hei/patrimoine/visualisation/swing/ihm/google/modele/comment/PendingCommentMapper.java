@@ -8,26 +8,19 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.AppCon
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.comment.pending.*;
 
 public class PendingCommentMapper {
-  public static Comment map(AbstractPendingComment comment) {
-    return switch (comment) {
-      case AddComment toDelete -> new NotSynchronizedComment(map(toDelete));
-      default -> {
-        var group = (GroupedByComment) comment;
-        var rawComment = group.getRawComment();
+  public static Comment map(GroupedByComment group) {
+    var rawComment = group.getRawComment();
+    if (group.isDeleted()) {
+      return new NotSynchronizedComment(rawComment, true);
+    }
 
-        if (group.isDeleted()) {
-          yield new NotSynchronizedComment(rawComment, true);
-        }
+    var answers = getAnswers(group);
+    rawComment.addAnswers(answers);
+    if (group.isResolved()) {
+      rawComment.resolve();
+    }
 
-        var answers = getAnswers(group);
-        rawComment.addAnswers(answers);
-        if (group.isResolved()) {
-          rawComment.resolve();
-        }
-
-        yield rawComment;
-      }
-    };
+    return rawComment;
   }
 
   private static List<Comment> getAnswers(GroupedByComment group) {
@@ -45,7 +38,7 @@ public class PendingCommentMapper {
         .build();
   }
 
-  private static Comment map(AddComment toAdd) {
+  public static Comment map(AddComment toAdd) {
     return Comment.builder()
         .resolved(false)
         .author(getAuthor())
