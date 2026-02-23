@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 import school.hei.patrimoine.cas.Cas;
 import school.hei.patrimoine.cas.CasSet;
+import school.hei.patrimoine.modele.possession.Compte;
 import school.hei.patrimoine.modele.recouppement.model.CompteGetter;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.AppContext;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
@@ -34,7 +35,7 @@ public class PatriLangFilesWatcher {
             Map.of(
                 DONE_CAS_SET, done,
                 PLANNED_CAS_SET, planned,
-                DONE_CAS_SET_COMPTES, CompteGetter.make(done)));
+                DONE_CAS_SET_COMPTES, CompteGetter.getComptes(done)));
     this.observers.forEach(State.StateObserverCallbackRunnable::run);
     globalState().update(ANY_FILE_MODIFIED, false);
   }
@@ -49,6 +50,10 @@ public class PatriLangFilesWatcher {
       case DONE, PJ -> getDoneCasSet();
       case PLANNED -> getPlannedCasSet();
     };
+  }
+
+  public static Set<Compte> getDoneCasSetComptes() {
+    return globalState().get(DONE_CAS_SET_COMPTES);
   }
 
   public static Cas getCas(PatriLangFileContext file) {

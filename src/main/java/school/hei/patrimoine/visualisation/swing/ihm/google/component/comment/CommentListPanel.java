@@ -1,5 +1,7 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.component.comment;
 
+import static javax.swing.SwingUtilities.invokeLater;
+
 import java.awt.*;
 import java.util.List;
 import java.util.Optional;
@@ -7,8 +9,6 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import school.hei.patrimoine.google.model.Comment;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.FileSideBar.SelectedFileSupplier;
-
-import static javax.swing.SwingUtilities.invokeLater;
 
 public class CommentListPanel extends JPanel {
   private final Runnable refresh;
@@ -45,12 +45,12 @@ public class CommentListPanel extends JPanel {
   // reset scroll position to the top
   private void scrollToTop() {
     invokeLater(
-    () -> {
-      Container parent = getParent();
-      if (parent instanceof JViewport viewport) {
-        viewport.setViewPosition(new Point(0, 0));
-      }
-    });
+        () -> {
+          Container parent = getParent();
+          if (parent instanceof JViewport viewport) {
+            viewport.setViewPosition(new Point(0, 0));
+          }
+        });
   }
 
   public JScrollPane toScrollPane() {

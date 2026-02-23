@@ -1,11 +1,9 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.builtin;
 
-import static school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.builtin.DialogMode.SYNC;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.component.html.ViewMode.EDIT;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.config.EnvironmentConfig.isOfflineMode;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.MessageDialog.*;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangFileContentManager.getAllModifiedFiles;
-import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangSavingFileManager.save;
 
 import java.util.List;
 import javax.swing.*;
@@ -15,9 +13,12 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.component.html.ViewM
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.popup.PopupItem;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.popup.PopupMenuButton;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.*;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.comment.PendingCommentManager;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.comment.PendingCommentSynchronizer;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangFilesSynchronizer;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangFilesWatcher;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangSavingFileManager;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangStagingFileManager;
 
 @Slf4j
 public class SaveAndSyncFileButton extends PopupMenuButton {
@@ -32,8 +33,7 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
         "Tout Synchroniser avec Drive", e -> syncFilesAndCommentsWithDrive(onSuccess));
   }
 
-  private static List<JMenuItem> getItems(
-      State state, HtmlViewer htmlViewer, Runnable onSuccess) {
+  private static List<JMenuItem> getItems(State state, HtmlViewer htmlViewer, Runnable onSuccess) {
     if (isOfflineMode()) {
       return List.of(saveLocalButton(state, htmlViewer));
     }
@@ -60,7 +60,7 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
         .logError(false)
         .task(
             () -> {
-              save(modifiedFilesData);
+              PatriLangSavingFileManager.save(modifiedFilesData);
               return null;
             })
         .onSuccess(
@@ -74,8 +74,18 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
   }
 
   private static void syncFilesAndCommentsWithDrive(Runnable onSuccess) {
-    var confirmDialog = new SyncConfirmDialog(SYNC);
-    if (!confirmDialog.isConfirmed()) return;
+    var stagingFiles = PatriLangStagingFileManager.getFiles();
+    var pendingComments = PendingCommentManager.getPendings();
+
+    if (stagingFiles.isEmpty() && pendingComments.isEmpty()) {
+      showInfo("Erreur", "Aucune modification en attente de synchronisation.");
+      return;
+    }
+
+    var confirmDialog = new SyncConfirmDialog();
+    if (!confirmDialog.isConfirmed()) {
+      return;
+    }
 
     AsyncTask.<Void>builder()
         .task(
@@ -87,7 +97,10 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
         .loadingMessage("Synchronisation avec Drive...")
         .onSuccess(
             ignored -> {
-              showInfo("Succès", "Les fichiers ont été synchronisés avec succès sur Google Drive.");
+              showInfo(
+                  "Succès",
+                  "Les fichiers et Commentaires ont été synchronisés avec succès sur Google"
+                      + " Drive.");
 
               try {
                 onSuccess.run();

@@ -36,7 +36,7 @@ public class FileSideBar extends JPanel {
     add(panel, BorderLayout.CENTER);
   }
 
-  public static Optional<PatriLangFileContext> getSelectedFile(State state){
+  public static Optional<PatriLangFileContext> getSelectedFile(State state) {
     return Optional.ofNullable(state.get("selectedFile"));
   }
 

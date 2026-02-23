@@ -2,7 +2,6 @@ package school.hei.patrimoine.visualisation.swing.ihm.google;
 
 import static java.awt.Toolkit.getDefaultToolkit;
 import static javax.swing.SwingUtilities.invokeLater;
-import static school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.builtin.DialogMode.EXIT;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.config.EnvironmentConfig.isOfflineMode;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.config.EnvironmentConfig.isOnlineMode;
 
@@ -13,8 +12,9 @@ import java.util.Set;
 import school.hei.patrimoine.google.GoogleApiUtilities;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.App;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.Page;
-import school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.builtin.SyncConfirmDialog;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.builtin.ExitConfirmDialog;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.GoogleLinkListDownloader;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.comment.PendingCommentManager;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangStagingFileManager;
 import school.hei.patrimoine.visualisation.swing.ihm.google.pages.*;
 
@@ -35,16 +35,14 @@ public class PatriLangViewer extends App {
               return;
             }
 
-            var localCommentManager = LocalCommentManager.getInstance();
             var stagedFiles = PatriLangStagingFileManager.getFiles();
-            var hasPendingComments = localCommentManager.hasAnyPendingComments();
-
-            if (plannedFiles.isEmpty() && doneFiles.isEmpty() && !hasPendingComments) {
+            var pendingComments = PendingCommentManager.getPendings();
+            if (stagedFiles.isEmpty() && pendingComments.isEmpty()) {
               dispose();
               return;
             }
 
-            var confirmDialog = new SyncConfirmDialog(EXIT);
+            var confirmDialog = new ExitConfirmDialog();
             if (confirmDialog.isConfirmed()) {
               dispose();
             }

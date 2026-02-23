@@ -4,7 +4,6 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-
 import lombok.*;
 
 @Getter
@@ -22,18 +21,18 @@ public class Comment {
 
   private static final String APPROVED_KEYWORD = "approuvé";
 
-  public void resolve(){
+  public void resolve() {
     this.resolved = true;
   }
 
-  public void addAnswer(Comment comment){
-    if(this.answers == null){
+  public void addAnswer(Comment comment) {
+    if (this.answers == null) {
       this.answers = new ArrayList<>();
     }
     this.answers.add(comment);
   }
 
-  public void addAnswers(List<Comment> comments){
+  public void addAnswers(List<Comment> comments) {
     comments.forEach(this::addAnswer);
   }
 

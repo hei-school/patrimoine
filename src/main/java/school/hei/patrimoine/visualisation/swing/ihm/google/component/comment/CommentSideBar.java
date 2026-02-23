@@ -42,10 +42,10 @@ public class CommentSideBar extends JPanel {
     addCommentList();
     addCommentFooter();
 
-    state.subscribe(Set.of("pagination", "selectedFile") , this::update);
+    state.subscribe(Set.of("pagination", "selectedFile"), this::update);
   }
 
-  private static LocalDate getDefaultStartDate(){
+  private static LocalDate getDefaultStartDate() {
     return LocalDate.now().minusMonths(3);
   }
 
@@ -97,7 +97,7 @@ public class CommentSideBar extends JPanel {
   public void update() {
     var optionalSelectedFile = getSelectedFile(state);
 
-    if(optionalSelectedFile.isEmpty()){
+    if (optionalSelectedFile.isEmpty()) {
       commentListPanel.update(Optional::empty, List.of());
       return;
     }
@@ -116,7 +116,7 @@ public class CommentSideBar extends JPanel {
   }
 
   static void resolveComment(PatriLangFileContext file, Comment toResolve, Runnable onFinish) {
-    if(isNotConfirmed("Voulez-vous vraiment marquer ce commentaire comme résolu ?")){
+    if (isNotConfirmed("Voulez-vous vraiment marquer ce commentaire comme résolu ?")) {
       return;
     }
 
@@ -130,7 +130,7 @@ public class CommentSideBar extends JPanel {
       return;
     }
 
-    if(isNotConfirmed("Voulez-vous vraiment supprimer ce commentaire ?")){
+    if (isNotConfirmed("Voulez-vous vraiment supprimer ce commentaire ?")) {
       return;
     }
 
@@ -138,8 +138,9 @@ public class CommentSideBar extends JPanel {
     onFinish.run();
   }
 
-  private static boolean isNotConfirmed(String message){
-    var confirm = showConfirmDialog(AppContext.getDefault().app(), message, "Confirmation", YES_NO_OPTION);
+  private static boolean isNotConfirmed(String message) {
+    var confirm =
+        showConfirmDialog(AppContext.getDefault().app(), message, "Confirmation", YES_NO_OPTION);
     return confirm != JOptionPane.YES_OPTION;
   }
 }

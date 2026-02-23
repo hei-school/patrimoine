@@ -17,49 +17,43 @@ public class Pagination {
     return String.format("%s_%s", this, fileId);
   }
 
-  public boolean hasNext(){
+  public boolean hasNext() {
     return nextToken != null;
   }
 
-  public boolean hasPrev(){
+  public boolean hasPrev() {
     return prevToken != null;
   }
 
-  private String getNextKey(){
+  private String getNextKey() {
     return nextToken == null ? "lastPage" : nextToken;
   }
 
-  private String getPrevKey(){
+  private String getPrevKey() {
     return prevToken == null ? "firstPage" : prevToken;
   }
 
-  private String getCurrentKey(){
+  private String getCurrentKey() {
     return currentToken == null ? "lastPage" : currentToken;
   }
 
-    @Override
-    public String toString() {
-      return
-          "pageSize=" + pageSize +
-          "prevToken=" + getPrevKey() +
-          "currentToken=" + getCurrentKey() +
-          "nextToken=" + getNextToken();
-    }
+  @Override
+  public String toString() {
+    return "pageSize="
+        + pageSize
+        + "prevToken="
+        + getPrevKey()
+        + "currentToken="
+        + getCurrentKey()
+        + "nextToken="
+        + getNextToken();
+  }
 
-    public Pagination next(){
-      return this.toBuilder()
-          .nextToken(null)
-          .prevToken(currentToken)
-          .currentToken(nextToken)
-          .build();
-    }
+  public Pagination next() {
+    return this.toBuilder().nextToken(null).prevToken(currentToken).currentToken(nextToken).build();
+  }
 
-    public Pagination prev(){
-        return this
-          .toBuilder()
-          .prevToken(null)
-          .nextToken(currentToken)
-          .currentToken(prevToken)
-          .build();
-    }
+  public Pagination prev() {
+    return this.toBuilder().prevToken(null).nextToken(currentToken).currentToken(prevToken).build();
+  }
 }

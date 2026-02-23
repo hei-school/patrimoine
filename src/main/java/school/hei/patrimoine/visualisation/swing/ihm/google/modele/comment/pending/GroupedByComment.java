@@ -1,14 +1,12 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.modele.comment.pending;
 
-import com.google.api.services.drive.model.Reply;
-import school.hei.patrimoine.google.model.Comment;
-
 import static java.util.Comparator.comparing;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import school.hei.patrimoine.google.model.Comment;
 
 public class GroupedByComment extends AbstractPendingComment {
   private final Map<String, AbstractPendingComment> pendings;
@@ -60,21 +58,19 @@ public class GroupedByComment extends AbstractPendingComment {
         .stream().sorted(comparing(AbstractPendingComment::getCreatedAt)).toList();
   }
 
-  public List<ReplyComment> getSortedReplies(){
-     return getSortedPendings()
-         .stream()
-         .filter(pending -> pending instanceof ReplyComment)
-         .map(pending -> (ReplyComment) pending)
-         .toList();
+  public List<ReplyComment> getSortedReplies() {
+    return getSortedPendings().stream()
+        .filter(pending -> pending instanceof ReplyComment)
+        .map(pending -> (ReplyComment) pending)
+        .toList();
   }
 
-  public Comment getRawComment(){
-    return switch (getSortedPendings().getFirst()){
-      case DeleteComment toDelete ->  toDelete.getComment();
-      case ReplyComment toReply ->  toReply.getComment();
-      case ResolveComment toResolve ->  toResolve.getComment();
+  public Comment getRawComment() {
+    return switch (getSortedPendings().getFirst()) {
+      case DeleteComment toDelete -> toDelete.getComment();
+      case ReplyComment toReply -> toReply.getComment();
+      case ResolveComment toResolve -> toResolve.getComment();
       default -> throw new RuntimeException("Invalid type of sub pending");
     };
   }
-
 }

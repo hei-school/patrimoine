@@ -62,7 +62,8 @@ public class CommentReplyDialog extends Dialog {
     buttonPanel.add(cancelButton);
     add(buttonPanel, BorderLayout.SOUTH);
   }
-  public String getContent(){
+
+  public String getContent() {
     return textArea.getText().trim();
   }
 

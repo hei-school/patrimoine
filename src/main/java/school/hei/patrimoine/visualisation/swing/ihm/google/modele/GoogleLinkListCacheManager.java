@@ -1,12 +1,12 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.modele;
 
+import static java.nio.file.Files.*;
+
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import school.hei.patrimoine.google.GoogleApiUtilities;
-
-import static java.nio.file.Files.*;
 
 @Slf4j
 public record GoogleLinkListCacheManager() {

@@ -13,7 +13,6 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-
 import school.hei.patrimoine.google.model.Comment;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.ChipPanel;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
@@ -59,13 +58,13 @@ public class CommentCard extends JPanel {
   }
 
   private static Color getBackgroundColor(Comment comment) {
-     if(comment.isResolved()) {
-       return RESOLVED_BACKGROUND_COLOR;
-     }
-     if(comment.isApproved()) {
-       return APPROVED_BACKGROUND_COLOR;
-     }
-     return DEFAULT_BACKGROUND_COLOR;
+    if (comment.isResolved()) {
+      return RESOLVED_BACKGROUND_COLOR;
+    }
+    if (comment.isApproved()) {
+      return APPROVED_BACKGROUND_COLOR;
+    }
+    return DEFAULT_BACKGROUND_COLOR;
   }
 
   @Override
@@ -93,7 +92,7 @@ public class CommentCard extends JPanel {
       rightPanel.add(new ChipPanel("Résolu", RESOLVED_FONT_COLOR, BLACK));
     }
 
-    if (comment.getAuthor().me()){
+    if (comment.getAuthor().me()) {
       rightPanel.add(removeButton(file, comment, refresh));
     }
 
@@ -170,8 +169,10 @@ public class CommentCard extends JPanel {
     return new Dimension(parent.getWidth() - 15, pref.height);
   }
 
-  static Button showAnswersButton(SelectedFileSupplier file, Comment comment, Component parent, Runnable refresh) {
-    return new Button("Réponses (" + comment.getAnswers().size() + ")",
+  static Button showAnswersButton(
+      SelectedFileSupplier file, Comment comment, Component parent, Runnable refresh) {
+    return new Button(
+        "Réponses (" + comment.getAnswers().size() + ")",
         e -> new CommentAnswersDialog(file, comment, parent, refresh));
   }
 
@@ -192,7 +193,8 @@ public class CommentCard extends JPanel {
 
   private static Image loadRemoveIcon() {
     try {
-      var removeIcon = ImageIO.read(requireNonNull(CommentCard.class.getResource("/icons/remove.png")));
+      var removeIcon =
+          ImageIO.read(requireNonNull(CommentCard.class.getResource("/icons/remove.png")));
       return removeIcon.getScaledInstance(18, 18, SCALE_SMOOTH);
     } catch (IOException e) {
       throw new RuntimeException(e);

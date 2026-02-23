@@ -6,7 +6,8 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
 public class DateFormatter {
-    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm").withZone(ZoneId.systemDefault());
+  private static final DateTimeFormatter DATE_TIME_FORMATTER =
+      DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm").withZone(ZoneId.systemDefault());
 
   public static String format(LocalDate date) {
     if (LocalDate.MIN.equals(date)) {

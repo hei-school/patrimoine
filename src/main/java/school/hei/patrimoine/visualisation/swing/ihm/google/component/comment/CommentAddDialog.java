@@ -7,9 +7,9 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.Dialog;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.FileSideBar.SelectedFileSupplier;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.comment.PendingCommentManager;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.comment.pending.AddComment;
-import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.FileSideBar.SelectedFileSupplier;
 
 public class CommentAddDialog extends Dialog {
   private final JTextArea textArea;
@@ -64,8 +64,8 @@ public class CommentAddDialog extends Dialog {
     add(buttonPanel, BorderLayout.SOUTH);
   }
 
-  public String getContent(){
-   return textArea.getText().trim();
+  public String getContent() {
+    return textArea.getText().trim();
   }
 
   private void addComment() {
