@@ -1,7 +1,10 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.component.comment;
 
-import static school.hei.patrimoine.google.api.CommentApi.COMMENTS_CACHE_KEY;
+import static javax.swing.JOptionPane.YES_NO_OPTION;
+import static javax.swing.JOptionPane.showConfirmDialog;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.component.files.FileSideBar.getSelectedFile;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.MessageDialog.showError;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.MessageDialog.showInfo;
 
 import java.awt.*;
 import java.time.Instant;
@@ -10,8 +13,6 @@ import java.util.*;
 import java.util.List;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import school.hei.patrimoine.google.api.CommentApi;
-import school.hei.patrimoine.google.cache.ApiCache;
 import school.hei.patrimoine.google.model.Comment;
 import school.hei.patrimoine.google.model.PaginatedResult;
 import school.hei.patrimoine.google.model.Pagination;
@@ -19,36 +20,34 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.component.DatePicker
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.AppContext;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.AsyncTask;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.MessageDialog;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.comment.PendingCommentManager;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.comment.pending.DeleteComment;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.comment.pending.ResolveComment;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangFileContext;
+import school.hei.patrimoine.visualisation.swing.ihm.google.providers.CommentsProvider;
 
 public class CommentSideBar extends JPanel {
   private final State state;
-  private final ApiCache apiCache;
-  private final CommentApi commentApi;
-  private final LocalCommentActions localCommentActions;
-  private final CommentListPanel commentListPanel;
-  private final CommentFooter footer;
   private DatePicker datePicker;
+  private final CommentListPanel commentListPanel;
 
-  private final Map<String, Pagination> paginationByFile = new HashMap<>();
-  private final Map<String, List<String>> previousTokensByFile = new HashMap<>();
-
-  public CommentSideBar(State state, LocalCommentActions localCommentActions) {
+  public CommentSideBar(State state) {
     super(new BorderLayout());
 
     this.state = state;
-    this.apiCache = ApiCache.getInstance();
-    this.commentApi = AppContext.getDefault().getData("comment-api");
-    this.localCommentActions = localCommentActions;
-    this.commentListPanel =
-        new CommentListPanel(localCommentActions, this, true, this::refreshCommentsCache);
-    this.footer = new CommentFooter(this::goToPreviousPage, this::goToNextPage);
+    this.commentListPanel = new CommentListPanel(this, true, this::update);
 
     addTopPanel();
     addCommentList();
     addCommentFooter();
 
-    state.subscribe(Set.of("selectedFile", "selectedFileId"), this::update);
+    state.subscribe(Set.of("pagination", "selectedFile"), this::update);
+  }
+
+  private static LocalDate getDefaultStartDate() {
+    return LocalDate.now().minusMonths(3);
   }
 
   private void addTopPanel() {
@@ -60,12 +59,11 @@ public class CommentSideBar extends JPanel {
     topPanel.add(title, BorderLayout.WEST);
 
     var rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
-
     rightPanel.add(addCommentButton());
 
-    this.datePicker = new DatePicker(LocalDate.now().minusMonths(3));
-    this.datePicker.setPreferredSize(new Dimension(200, 35));
-    this.datePicker.addActionListener(e -> update());
+    datePicker = new DatePicker(getDefaultStartDate());
+    datePicker.setPreferredSize(new Dimension(200, 35));
+    datePicker.addActionListener(e -> update());
     rightPanel.add(datePicker);
 
     topPanel.add(rightPanel, BorderLayout.EAST);
@@ -80,11 +78,20 @@ public class CommentSideBar extends JPanel {
             + "<td style='padding:0; margin:0; padding-left:5'>Ajouter</td>"
             + "</tr>"
             + "</table></html>";
+
     var button = new Button(buttonLabel);
+    button.setToolTipText("Ajouter un commentaire");
     button.setPreferredSize(new Dimension(110, 35));
     button.addActionListener(
-        e -> new CommentAddDialog(localCommentActions, state, this::refreshCommentsCache));
-    button.setToolTipText("Ajouter un commentaire");
+        e -> {
+          if (getSelectedFile(state).isEmpty()) {
+            showInfo(
+                "Information",
+                "Vous devez sélectionner un fichier avant de pouvoir ajouter un commentaire");
+            return;
+          }
+          new CommentAddDialog(() -> getSelectedFile(state), this::update);
+        });
 
     return button;
   }
@@ -94,159 +101,56 @@ public class CommentSideBar extends JPanel {
   }
 
   private void addCommentFooter() {
-    add(footer, BorderLayout.SOUTH);
+    add(new CommentFooter(state), BorderLayout.SOUTH);
   }
 
-  private void update() {
-    String fileId = state.get("selectedFileId");
-    if (fileId == null) return;
+  public void update() {
+    var optionalSelectedFile = getSelectedFile(state);
 
-    resetPaginationForCurrentFile(fileId);
-    loadComments(fileId, datePicker.getInstant());
-  }
+    if (optionalSelectedFile.isEmpty()) {
+      commentListPanel.update(Optional::empty, List.of());
+      return;
+    }
 
-  private void loadComments(String fileId, Instant startDate) {
-    if (fileId == null) return;
-
-    initFilePagination(fileId);
-
-    Pagination filePagination = paginationByFile.get(fileId);
-    List<String> fileTokens = previousTokensByFile.get(fileId);
+    var selectedFile = optionalSelectedFile.get();
+    Pagination pagination = state.get("pagination");
+    Instant startDate = datePicker.getInstant();
 
     AsyncTask.<PaginatedResult<List<Comment>>>builder()
-        .task(() -> commentApi.getByFileId(fileId, filePagination, startDate))
-        .onSuccess(
-            result -> {
-              commentListPanel.update(fileId, result.data());
-
-              paginationByFile.put(fileId, result.getNextPagination());
-
-              previousTokensByFile.put(fileId, fileTokens);
-
-              footer.updateButtons(
-                  fileTokens.size() > 1, result.getNextPagination().pageToken() != null);
-            })
+        .task(() -> CommentsProvider.getByFile(selectedFile, pagination, startDate))
         .withDialogLoading(false)
-        .onError(e -> showError("Error", "Erreur lors de la récupération des commentaires"))
+        .onSuccess(result -> commentListPanel.update(() -> getSelectedFile(state), result.data()))
+        .onError(MessageDialog::showError)
         .build()
         .execute();
   }
 
-  private void initFilePagination(String fileId) {
-    paginationByFile.putIfAbsent(fileId, new Pagination(50, null));
-    previousTokensByFile.putIfAbsent(fileId, new ArrayList<>(List.of("firstPage")));
-  }
-
-  private void resetPaginationForCurrentFile(String fileId) {
-    paginationByFile.put(fileId, new Pagination(50, null));
-    previousTokensByFile.put(fileId, new ArrayList<>(List.of("firstPage")));
-  }
-
-  private void goToNextPage() {
-    String fileId = state.get("selectedFileId");
-    if (fileId == null) return;
-
-    initFilePagination(fileId);
-    Pagination filePagination = paginationByFile.get(fileId);
-    List<String> fileTokens = previousTokensByFile.get(fileId);
-
-    if (filePagination.pageToken() != null) {
-      String token = filePagination.pageToken();
-      if (!fileTokens.contains(token)) {
-        fileTokens.add(token);
-      }
-      loadComments(fileId, datePicker.getInstant());
-    }
-  }
-
-  private void goToPreviousPage() {
-    String fileId = state.get("selectedFileId");
-    if (fileId == null) return;
-
-    initFilePagination(fileId);
-    List<String> fileTokens = previousTokensByFile.get(fileId);
-
-    if (fileTokens.size() > 1) {
-      fileTokens.removeLast();
-      String previousToken = fileTokens.getLast();
-      paginationByFile.put(
-          fileId, new Pagination(50, previousToken.equals("firstPage") ? null : previousToken));
-      loadComments(fileId, datePicker.getInstant());
-    }
-  }
-
-  public void refreshCommentsCache() {
-    this.apiCache.invalidate(COMMENTS_CACHE_KEY);
-
-    this.update();
-  }
-
-  static void resolveComment(
-      LocalCommentActions localCommentActions, String fileId, Comment toResolve, Runnable refresh) {
-    int confirm =
-        JOptionPane.showConfirmDialog(
-            AppContext.getDefault().app(),
-            "Voulez-vous vraiment marquer ce commentaire comme résolu ?",
-            "Résolution de commentaire",
-            JOptionPane.YES_NO_OPTION);
-
-    if (confirm != JOptionPane.YES_OPTION) {
+  static void resolveComment(PatriLangFileContext file, Comment toResolve, Runnable onFinish) {
+    if (isNotConfirmed("Voulez-vous vraiment marquer ce commentaire comme résolu ?")) {
       return;
     }
 
-    AsyncTask.<Void>builder()
-        .task(
-            () -> {
-              localCommentActions.resolve(fileId, toResolve);
-              return null;
-            })
-        .withDialogLoading(false)
-        .onSuccess(
-            result -> {
-              refresh.run();
-            })
-        .onError(
-            error ->
-                showError("Erreur", "Impossible de résoudre le commentaire. Veuillez réessayer."))
-        .build()
-        .execute();
+    PendingCommentManager.add(new ResolveComment(file, toResolve));
+    onFinish.run();
   }
 
-  static void removeComment(
-      LocalCommentActions localCommentActions, String fileId, Comment toRemove, Runnable refresh) {
-    boolean canDelete = localCommentActions.canDelete(toRemove);
-    if (!canDelete) {
-      showError("Erreur", "Vous ne pouvez supprimer que vos propres commentaires.");
+  static void removeComment(PatriLangFileContext file, Comment toDelete, Runnable onFinish) {
+    if (!toDelete.getAuthor().me()) {
+      showError("Vous ne pouvez supprimer que vos propres commentaires.");
       return;
     }
 
-    int confirm =
-        JOptionPane.showConfirmDialog(
-            AppContext.getDefault().app(),
-            "Voulez-vous vraiment supprimer ce commentaire ?",
-            "Suppression de commentaire",
-            JOptionPane.YES_NO_OPTION);
-
-    if (confirm != JOptionPane.YES_OPTION) {
+    if (isNotConfirmed("Voulez-vous vraiment supprimer ce commentaire ?")) {
       return;
     }
 
-    AsyncTask.<Void>builder()
-        .task(
-            () -> {
-              localCommentActions.delete(fileId, toRemove);
-              return null;
-            })
-        .withDialogLoading(false)
-        .onSuccess(
-            result -> {
-              refresh.run();
-            })
-        .onError(
-            error -> {
-              showError("Erreur", "Impossible de supprimer le commentaire. Veuillez réessayer.");
-            })
-        .build()
-        .execute();
+    PendingCommentManager.add(new DeleteComment(file, toDelete));
+    onFinish.run();
+  }
+
+  private static boolean isNotConfirmed(String message) {
+    var confirm =
+        showConfirmDialog(AppContext.getDefault().app(), message, "Confirmation", YES_NO_OPTION);
+    return confirm == JOptionPane.NO_OPTION;
   }
 }

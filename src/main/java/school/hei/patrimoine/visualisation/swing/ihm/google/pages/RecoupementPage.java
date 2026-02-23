@@ -1,9 +1,9 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.pages;
 
-import static school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.AppBar.builtInUserInfoPanel;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.component.files.FileSideBar.getSelectedFile;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.config.EnvironmentConfig.isOnlineMode;
-import static school.hei.patrimoine.visualisation.swing.ihm.google.pages.PatriLangFilesPage.addImprevuButton;
-import static school.hei.patrimoine.visualisation.swing.ihm.google.providers.FilesProvider.getDonePatrilangFilesWithoutCasSet;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangFilesWatcher.*;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.providers.FilesProvider.*;
 
 import java.awt.*;
 import java.awt.event.KeyAdapter;
@@ -13,20 +13,21 @@ import java.util.*;
 import java.util.List;
 import javax.swing.*;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
-import school.hei.patrimoine.modele.possession.Compte;
 import school.hei.patrimoine.modele.possession.Possession;
 import school.hei.patrimoine.modele.recouppement.model.PossessionRecoupee;
 import school.hei.patrimoine.modele.recouppement.model.RecoupementStatus;
-import school.hei.patrimoine.visualisation.swing.ihm.google.component.Footer;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.PlaceholderTextField;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.LazyPage;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.AppBar;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.builtin.AddImprevuButton;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.builtin.UserInfoPanel;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.NavigateButton;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.FileListCellRenderer;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.FileListModel;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.recoupement.PossessionRecoupeeListPanel;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.recoupement.RecoupementFooter;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.*;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangFilesWatcher;
 import school.hei.patrimoine.visualisation.swing.ihm.google.providers.PossessionRecoupeeProvider;
 import school.hei.patrimoine.visualisation.swing.ihm.google.providers.PossessionRecoupeeProvider.*;
 import school.hei.patrimoine.visualisation.swing.ihm.google.providers.model.Pagination;
@@ -37,12 +38,10 @@ public class RecoupementPage extends LazyPage {
   public static final int RECOUPEMENT_ITEM_PER_PAGE = 50;
 
   private final State state;
-  private final CasSetSetter casSetSetter;
   private final PossessionRecoupeeListPanel possessionRecoupeeListPanel;
 
   public RecoupementPage() {
     super(PAGE_NAME);
-    this.casSetSetter = CasSetSetter.getInstance();
 
     this.state =
         new State(
@@ -56,7 +55,8 @@ public class RecoupementPage extends LazyPage {
 
     this.possessionRecoupeeListPanel = new PossessionRecoupeeListPanel(state);
 
-    casSetSetter.addObserver(this::update);
+    PatriLangFilesWatcher.addObserver(this::update);
+
     state.subscribe(
         Set.of("filterStatus", "selectedFile", "pagination", "filterName"), this::update);
 
@@ -89,7 +89,7 @@ public class RecoupementPage extends LazyPage {
     }
   }
 
-  private void addAppBar() {
+  private static JComboBox<PossessionRecoupeeFilterStatus> getStatusFilter(State state) {
     var statusFilter = new JComboBox<>(PossessionRecoupeeFilterStatus.values());
     statusFilter.setSelectedItem(PossessionRecoupeeFilterStatus.TOUT);
     statusFilter.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
@@ -97,23 +97,30 @@ public class RecoupementPage extends LazyPage {
     statusFilter.addActionListener(
         e -> state.update("filterStatus", statusFilter.getSelectedItem()));
 
-    var addImprevuButton = addImprevuButton(state);
-    var nameFilter = getPlaceholderTextField();
+    return statusFilter;
+  }
 
-    var appBar =
-        new AppBar(
-            List.of(
-                new NavigateButton("Retour", "patrilang-files"),
-                statusFilter,
-                addImprevuButton,
-                nameFilter),
-            !isOnlineMode() ? List.of() : List.of(builtInUserInfoPanel()));
+  private static List<Component> leftAppBarControls(State state) {
+    return List.of(
+        new NavigateButton("Retour", "patrilang-files"),
+        getStatusFilter(state),
+        new AddImprevuButton(state),
+        getPlaceholderTextField(state));
+  }
 
+  private static List<Component> rightAppBarControls() {
+    if (isOnlineMode()) {
+      return List.of(new UserInfoPanel());
+    }
+    return List.of();
+  }
+
+  private void addAppBar() {
+    var appBar = new AppBar(leftAppBarControls(state), rightAppBarControls());
     add(appBar, BorderLayout.NORTH);
   }
 
-  // TODO: refactor to a component utilities
-  private @NotNull PlaceholderTextField getPlaceholderTextField() {
+  private static PlaceholderTextField getPlaceholderTextField(State state) {
     var nameFilter = new PlaceholderTextField("Rechercher");
     nameFilter.setPreferredSize(new Dimension(180, 35));
     nameFilter.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
@@ -139,7 +146,7 @@ public class RecoupementPage extends LazyPage {
   }
 
   private void addFooter() {
-    add(new Footer(state), BorderLayout.SOUTH);
+    add(new RecoupementFooter(state), BorderLayout.SOUTH);
   }
 
   private void addMainSplitPane() {
@@ -171,19 +178,37 @@ public class RecoupementPage extends LazyPage {
     add(horizontalSplit, BorderLayout.CENTER);
   }
 
+  private PossessionRecoupeeFilterStatus getStatusFilter() {
+    return state.get("filterStatus");
+  }
+
+  private String getFilterName() {
+    return state.get("filterName");
+  }
+
+  private Pagination getPagination() {
+    return state.get("pagination");
+  }
+
   private List<PossessionRecoupee<Possession>> getFilteredPossessionRecoupees() {
-    var plannedCas = casSetSetter.getCas(state.get("selectedFile"), casSetSetter.plannedCasSet());
-    var doneCas = casSetSetter.getCas(state.get("selectedFile"), casSetSetter.doneCasSet());
-    Set<Compte> casSetComptes = globalState().get("casSetComptes");
-    var filteredStatus = (PossessionRecoupeeFilterStatus) state.get("filterStatus");
+    var optionalSelectedFile = getSelectedFile(state);
+    if (optionalSelectedFile.isEmpty()) {
+      return List.of();
+    }
+
+    var selectedFile = optionalSelectedFile.get();
+
+    var casSetComptes = getDoneCasSetComptes();
+    var doneCas = getCas(getDoneFile(selectedFile));
+    var plannedCas = getCas(getPlannedFile(selectedFile));
 
     state.update(Map.of("plannedCas", plannedCas, "doneCas", doneCas));
 
     Set<RecoupementStatus> statusToKeep = new HashSet<>();
-    switch (filteredStatus) {
-      case TOUT -> statusToKeep.addAll(Set.of(RecoupementStatus.values()));
+    switch (getStatusFilter()) {
       case IMPREVU -> statusToKeep.add(RecoupementStatus.IMPREVU);
       case NON_EXECUTE -> statusToKeep.add(RecoupementStatus.NON_EXECUTE);
+      case TOUT -> statusToKeep.addAll(Set.of(RecoupementStatus.values()));
       case EXECUTE_AVEC_CORRECTION -> statusToKeep.add(RecoupementStatus.EXECUTE_AVEC_CORRECTION);
       case EXECUTE_SANS_CORRECTION -> statusToKeep.add(RecoupementStatus.EXECUTE_SANS_CORRECTION);
     }
@@ -194,10 +219,10 @@ public class RecoupementPage extends LazyPage {
         Filter.builder()
             .statuses(statusToKeep)
             // TODO: add correct filter for performance
-            .debut(LocalDate.MIN)
             .fin(LocalDate.MAX)
-            .pagination(state.get("pagination"))
-            .nom(state.get("filterName"))
+            .debut(LocalDate.MIN)
+            .nom(getFilterName())
+            .pagination(getPagination())
             .build();
 
     var result = provider.getList(meta, filter);
@@ -210,7 +235,7 @@ public class RecoupementPage extends LazyPage {
 
   @Override
   protected void update() {
-    if (state.get("selectedFile") == null) {
+    if (getSelectedFile(state).isEmpty()) {
       return;
     }
 

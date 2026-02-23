@@ -7,26 +7,21 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.Dialog;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
-import school.hei.patrimoine.visualisation.swing.ihm.google.modele.AsyncTask;
-import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.FileSideBar.SelectedFileSupplier;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.comment.PendingCommentManager;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.comment.pending.AddComment;
 
 public class CommentAddDialog extends Dialog {
-  private final LocalCommentActions localCommentActions;
-  private final State state;
-  private final Runnable refresh;
   private final JTextArea textArea;
+  private final Runnable onAddFinish;
+  private final SelectedFileSupplier file;
 
-  public CommentAddDialog(
-      LocalCommentActions localCommentActions, State state, Runnable refreshParent) {
-    super("Ajouter un commentaire", 500, 300, false);
-    this.localCommentActions = localCommentActions;
-    this.state = state;
+  public CommentAddDialog(SelectedFileSupplier file, Runnable refreshUI) {
+    super("Ajouter un commentaire", 600, 400, false);
+    this.file = file;
     this.textArea = new JTextArea();
-    this.refresh =
-        () -> {
-          dispose();
-          refreshParent.run();
-        };
+    this.onAddFinish = refreshUI;
+    ;
 
     setLayout(new BorderLayout());
 
@@ -66,31 +61,25 @@ public class CommentAddDialog extends Dialog {
     add(buttonPanel, BorderLayout.SOUTH);
   }
 
+  public String getContent() {
+    return textArea.getText().trim();
+  }
+
   private void addComment() {
-    if (state.get("selectedFileId") == null) {
-      showError("Erreur", "Veuillez sélectionner un fichier avant d'ajouter un commentaire.");
+    var optionalSelectedFile = file.get();
+    if (optionalSelectedFile.isEmpty()) {
+      showError("Veuillez sélectionner un fichier avant d'ajouter un commentaire.");
       return;
     }
 
-    if (textArea.getText().trim().isBlank()) {
-      showError("Erreur", "Le contenu du commentaire ne peut pas être vide.");
+    if (getContent().isBlank()) {
+      showError("Le contenu du commentaire ne peut pas être vide.");
       return;
     }
 
-    AsyncTask.<Void>builder()
-        .task(
-            () -> {
-              localCommentActions.add(state.get("selectedFileId"), textArea.getText().trim());
-              return null;
-            })
-        .withDialogLoading(false)
-        .onSuccess(
-            result -> {
-              dispose();
-              refresh.run();
-            })
-        .onError(error -> showError("Error", "Erreur lors de l'envoi du commentaire"))
-        .build()
-        .execute();
+    var selectedFile = optionalSelectedFile.get();
+    PendingCommentManager.add(new AddComment(selectedFile, getContent()));
+    dispose();
+    onAddFinish.run();
   }
 }

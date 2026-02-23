@@ -1,4 +1,4 @@
-package school.hei.patrimoine.visualisation.swing.ihm.google.component;
+package school.hei.patrimoine.visualisation.swing.ihm.google.component.recoupement;
 
 import java.awt.*;
 import java.util.Set;
@@ -8,14 +8,14 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.But
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
 import school.hei.patrimoine.visualisation.swing.ihm.google.providers.model.Pagination;
 
-public class Footer extends JPanel {
+public class RecoupementFooter extends JPanel {
   private final State state;
 
   private final Button previousPageButton;
   private final JComboBox<Integer> pageSelector;
   private final Button nextPageButton;
 
-  public Footer(State state) {
+  public RecoupementFooter(State state) {
     this.state = state;
 
     setLayout(new FlowLayout(FlowLayout.RIGHT));

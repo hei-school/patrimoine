@@ -6,19 +6,7 @@ import school.hei.patrimoine.modele.Devise;
 
 public class DeviseMapper {
   public static String deviseToString(Devise devise) {
-    if (MGA.equals(devise)) {
-      return MGA.symbole();
-    }
-
-    if (EUR.equals(devise)) {
-      return EUR.symbole();
-    }
-
-    if (CAD.equals(devise)) {
-      return CAD.symbole();
-    }
-
-    return devise.nom();
+    return devise.symbole();
   }
 
   public static Devise stringToDevise(String devise) {

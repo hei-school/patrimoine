@@ -5,10 +5,11 @@ import org.antlr.v4.runtime.BaseErrorListener;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Recognizer;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
+import school.hei.patrimoine.patrilang.files.PatriLangFile;
 
 @RequiredArgsConstructor
 public class PatrilangErrorListener extends BaseErrorListener {
-  private final String fileName;
+  private final PatriLangFile file;
 
   @Override
   public void syntaxError(
@@ -22,7 +23,7 @@ public class PatrilangErrorListener extends BaseErrorListener {
     var errorMessage =
         String.format(
             "Erreur de syntaxe à la ligne %d, colonne %d dans le fichier '%s', Raison: %s",
-            line, charPositionInLine, fileName, msg);
+            line, charPositionInLine, file.getAbsolutePath(), msg);
 
     throw new ParseCancellationException(errorMessage, e);
   }

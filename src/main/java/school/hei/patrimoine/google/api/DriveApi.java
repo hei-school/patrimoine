@@ -1,5 +1,6 @@
 package school.hei.patrimoine.google.api;
 
+import static java.nio.file.Files.readString;
 import static java.util.UUID.randomUUID;
 import static school.hei.patrimoine.google.api.GoogleApi.*;
 
@@ -9,7 +10,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
 import lombok.extern.slf4j.Slf4j;
 import school.hei.patrimoine.compiler.FileNameExtractor;
 import school.hei.patrimoine.google.GoogleApiUtilities;
@@ -64,7 +64,7 @@ public record DriveApi(Drive driveService) {
         tempOutputStream.write(buffer, 0, bytesRead);
       }
 
-      var fileContent = Files.readString(tempFile.toPath());
+      var fileContent = readString(tempFile.toPath());
       var filename = fileNameExtractor.apply(fileContent);
 
       var finalFile = new File(downloadPath, filename);
@@ -77,7 +77,7 @@ public record DriveApi(Drive driveService) {
     }
   }
 
-  public static void copyFileContent(File sourceFile, File targetFile) {
+  private static void copyFileContent(File sourceFile, File targetFile) {
     byte[] buffer = new byte[1024];
     int bytesRead;
 
