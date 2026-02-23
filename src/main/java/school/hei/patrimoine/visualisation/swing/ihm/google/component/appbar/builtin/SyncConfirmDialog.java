@@ -21,7 +21,7 @@ public class SyncConfirmDialog extends Dialog {
   static final String COMMENT_ICON_PATH = "/icons/comment.png";
 
   public SyncConfirmDialog() {
-    super("Confirmer la synchronisation", 800, 600, false);
+    super("Confirmer la synchronisation", 800, 500, false);
 
     setLayout(new BorderLayout());
     setResizable(false);

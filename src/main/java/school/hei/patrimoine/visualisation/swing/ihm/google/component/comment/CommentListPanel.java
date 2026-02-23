@@ -14,11 +14,14 @@ public class CommentListPanel extends JPanel {
   private final Runnable refresh;
   private final Component parent;
   private final boolean withActions;
+  private final boolean withDeleteButton;
 
-  public CommentListPanel(Component parent, boolean withActions, Runnable refresh) {
+  public CommentListPanel(
+      Component parent, boolean withDeleteButton, boolean withActions, Runnable refresh) {
     this.parent = parent;
     this.refresh = refresh;
     this.withActions = withActions;
+    this.withDeleteButton = withDeleteButton;
 
     setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
     setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -33,7 +36,7 @@ public class CommentListPanel extends JPanel {
     removeAll();
 
     for (var comment : comments) {
-      add(new CommentCard(file, parent, comment, withActions, refresh));
+      add(new CommentCard(file, parent, comment, withActions, withDeleteButton, refresh));
       add(Box.createVerticalStrut(10));
     }
 

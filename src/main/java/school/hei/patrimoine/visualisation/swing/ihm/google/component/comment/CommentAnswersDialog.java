@@ -28,7 +28,7 @@ public class CommentAnswersDialog extends Dialog {
         };
 
     this.comment = comment;
-    this.answersPanel = new CommentListPanel(parent, false, refresh);
+    this.answersPanel = new CommentListPanel(parent, false, false, refresh);
 
     setModal(true);
     setLayout(new BorderLayout());

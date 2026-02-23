@@ -25,6 +25,7 @@ public class CommentCard extends JPanel {
   private final Component parent;
   private final Runnable refresh;
   private final SelectedFileSupplier file;
+  private final boolean withDeleteButton;
 
   private static final Color DEFAULT_BACKGROUND_COLOR = new Color(222, 221, 220);
   private static final Color APPROVED_BACKGROUND_COLOR = new Color(120, 220, 140);
@@ -36,12 +37,14 @@ public class CommentCard extends JPanel {
       Component parent,
       Comment comment,
       boolean withActions,
+      boolean withDeleteButton,
       Runnable refreshUI) {
 
     this.file = file;
     this.parent = parent;
     this.comment = comment;
     this.refresh = refreshUI;
+    this.withDeleteButton = withDeleteButton;
 
     setOpaque(false);
     setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -92,7 +95,7 @@ public class CommentCard extends JPanel {
       rightPanel.add(new ChipPanel("Résolu", RESOLVED_FONT_COLOR, BLACK));
     }
 
-    if (comment.getAuthor().me()) {
+    if (comment.getAuthor().me() && withDeleteButton) {
       rightPanel.add(removeButton(file, comment, refresh));
     }
 

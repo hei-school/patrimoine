@@ -37,7 +37,7 @@ public class CommentSideBar extends JPanel {
     super(new BorderLayout());
 
     this.state = state;
-    this.commentListPanel = new CommentListPanel(this, true, this::update);
+    this.commentListPanel = new CommentListPanel(this, true, true, this::update);
 
     addTopPanel();
     addCommentList();

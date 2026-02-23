@@ -18,7 +18,7 @@ public class EnvironmentConfig {
     }
 
     if (modeValue == null || modeValue.trim().isEmpty()) {
-      return Mode.OFFLINE;
+      return Mode.ONLINE;
     }
 
     try {

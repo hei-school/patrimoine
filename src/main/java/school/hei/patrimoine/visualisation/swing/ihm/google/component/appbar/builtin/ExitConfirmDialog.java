@@ -12,7 +12,7 @@ public class ExitConfirmDialog extends Dialog {
   @Getter private boolean confirmed;
 
   public ExitConfirmDialog() {
-    super("Modifications non synchronisées", 700, 700, false);
+    super("Modifications non synchronisées", 800, 500, false);
 
     setLayout(new BorderLayout());
     setResizable(false);
