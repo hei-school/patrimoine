@@ -98,6 +98,7 @@ TYPE_COMPTABLE
     |   ('Charge' | 'CHG')
     |   ('Produit' | 'PRD')
     |   ('cca' | 'CCA')
+    |   ('Autre' | 'AUTRE')
     ;
 
 MOT_CONTIENT
