@@ -19,11 +19,11 @@ public enum TypeComptable {
     };
   }
 
-  static TypeComptable resolveFlux(FluxArgent fluxArgent) {
+  private static TypeComptable resolveFlux(FluxArgent fluxArgent) {
     return fluxArgentDefaultTypeComptable(fluxArgent);
   }
 
-  static TypeComptable fluxArgentDefaultTypeComptable(FluxArgent fluxArgent) {
+  private static TypeComptable fluxArgentDefaultTypeComptable(FluxArgent fluxArgent) {
     if (fluxArgent.getTypeComptable() != null) {
       return fluxArgent.getTypeComptable();
     }
