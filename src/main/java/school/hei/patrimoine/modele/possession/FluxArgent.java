@@ -1,7 +1,5 @@
 package school.hei.patrimoine.modele.possession;
 
-import static school.hei.patrimoine.modele.comptable.TypeComptable.CHARGE;
-import static school.hei.patrimoine.modele.comptable.TypeComptable.PRODUIT;
 import static school.hei.patrimoine.modele.possession.TypeAgregat.FLUX;
 
 import java.time.LocalDate;
@@ -10,7 +8,6 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import school.hei.patrimoine.Pair;
 import school.hei.patrimoine.modele.Argent;
-import school.hei.patrimoine.modele.comptable.TypeComptable;
 import school.hei.patrimoine.modele.series.DateSeries;
 
 @ToString(callSuper = true)
@@ -22,8 +19,6 @@ public final class FluxArgent extends Possession {
   private final LocalDate fin;
   private final Argent fluxMensuel;
   private final int dateOperation;
-
-  private final TypeComptable typeComptable;
 
   public FluxArgent(
       String nom,
@@ -40,39 +35,6 @@ public final class FluxArgent extends Possession {
     this.fin = fin;
     this.fluxMensuel = fluxMensuel;
     this.dateOperation = dateOperation;
-    this.typeComptable = fluxMensuel.lt(0) ? CHARGE : PRODUIT;
-  }
-
-  public FluxArgent(
-      String nom,
-      Compte compte,
-      LocalDate debut,
-      LocalDate fin,
-      int dateOperation,
-      Argent fluxMensuel,
-      TypeComptable typeComptable) {
-    super(nom, debut, new Argent(0, fluxMensuel.devise()));
-    this.compte = compte;
-    this.compte.addFinancés(this);
-
-    this.debut = debut;
-    this.fin = fin;
-    this.fluxMensuel = fluxMensuel;
-    this.dateOperation = dateOperation;
-    this.typeComptable = typeComptable;
-  }
-
-  public FluxArgent(
-      String nom, Compte compte, LocalDate date, Argent montant, TypeComptable typeComptable) {
-    super(nom, date, new Argent(0, montant.devise()));
-    this.compte = compte;
-    this.compte.addFinancés(this);
-
-    this.debut = date;
-    this.fin = date;
-    this.fluxMensuel = montant;
-    this.dateOperation = date.getDayOfMonth();
-    this.typeComptable = typeComptable;
   }
 
   public FluxArgent(String nom, Compte compte, LocalDate date, Argent montant) {
