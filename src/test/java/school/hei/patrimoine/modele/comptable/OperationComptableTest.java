@@ -3,7 +3,9 @@ package school.hei.patrimoine.modele.comptable;
 import static java.time.Month.DECEMBER;
 import static java.time.Month.JANUARY;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static school.hei.patrimoine.modele.Argent.ariary;
 import static school.hei.patrimoine.modele.Devise.EUR;
+import static school.hei.patrimoine.modele.comptable.OperationComptable.make;
 import static school.hei.patrimoine.modele.comptable.TypeComptable.*;
 
 import java.time.LocalDate;
@@ -26,16 +28,16 @@ class OperationComptableTest {
     var operationComptable = OperationComptable.make(materiel);
 
     assertEquals(materiel, operationComptable.possession());
-    assertEquals(IMMOBILISATION, operationComptable.typeComptable());
+    assertEquals(IMMOBILISATION, operationComptable.type());
   }
 
   @Test
   void operationComptable_accepte_typeComptable_explicite() {
-    Compte compte = monCompte();
+    var compte = monCompte();
     var operationComptable = new OperationComptable(compte, CCA);
 
     assertEquals(compte, operationComptable.possession());
-    assertEquals(CCA, operationComptable.typeComptable());
+    assertEquals(CCA, operationComptable.type());
   }
 
   @Test
@@ -43,14 +45,18 @@ class OperationComptableTest {
     var flux = new FluxArgent("Salaire", monCompte(), DEBUT, FIN, 5, ARGENT);
     OperationComptable operationComptable = OperationComptable.make(flux);
 
-    assertEquals(PRODUIT, operationComptable.typeComptable());
+    assertEquals(PRODUIT, operationComptable.type());
   }
 
   @Test
-  void operationComptable_fluxArgent_explicite() {
-    var flux = new FluxArgent("Loyer", monCompte(), DEBUT, FIN, 5, ARGENT, CHARGE);
-    var operationComptable = new OperationComptable(flux, CHARGE);
+  void fluxArgent_positif_est_produit_par_defaut() {
+    var flux = new FluxArgent("Salaire", monCompte(), DEBUT, FIN, 5, ARGENT);
+    assertEquals(PRODUIT, make(flux).type());
+  }
 
-    assertEquals(CHARGE, operationComptable.typeComptable());
+  @Test
+  void fluxArgent_negatif_est_charge_par_defaut() {
+    var flux = new FluxArgent("Loyer", monCompte(), DEBUT, FIN, 5, ariary(-1000));
+    assertEquals(CHARGE, make(flux).type());
   }
 }

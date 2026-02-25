@@ -90,32 +90,30 @@ class TypeComptableTest {
   }
 
   @Test
-  void fluxArgent_positif_est_produit_par_defaut() {
-    var flux = new FluxArgent("Salaire", monCompte(), DEBUT, FIN, 5, ARGENT_POSITIF);
-    assertEquals(PRODUIT, TypeComptable.from(flux));
-  }
-
-  @Test
-  void fluxArgent_negatif_est_charge_par_defaut() {
-    var flux = new FluxArgent("Loyer", monCompte(), DEBUT, FIN, 5, ARGENT_NEGATIF);
-    assertEquals(CHARGE, TypeComptable.from(flux));
-  }
-
-  @Test
   void fluxArgent_positif_peut_etre_force_en_charge() {
-    var flux = new FluxArgent("Flux forcé", monCompte(), DEBUT, FIN, 5, ARGENT_POSITIF, CHARGE);
-    assertEquals(CHARGE, TypeComptable.from(flux));
+    var flux = new FluxArgent("Flux forcé", monCompte(), DEBUT, FIN, 5, ARGENT_POSITIF);
+    var op = new OperationComptable(flux, CHARGE);
+    assertEquals(CHARGE, op.type());
   }
 
   @Test
   void fluxArgent_negatif_peut_etre_force_en_produit() {
-    var flux = new FluxArgent("Flux forcé", monCompte(), DEBUT, FIN, 5, ARGENT_NEGATIF, PRODUIT);
-    assertEquals(PRODUIT, TypeComptable.from(flux));
+    var flux = new FluxArgent("Flux forcé", monCompte(), DEBUT, FIN, 5, ARGENT_NEGATIF);
+    var op = new OperationComptable(flux, PRODUIT);
+    assertEquals(PRODUIT, op.type());
   }
 
   @Test
   void fluxArgent_peut_etre_force_en_cca() {
-    var flux = new FluxArgent("Flux CCA", monCompte(), DEBUT, FIN, 5, ARGENT_POSITIF, CCA);
-    assertEquals(CCA, TypeComptable.from(flux));
+    var flux = new FluxArgent("Flux CCA", monCompte(), DEBUT, FIN, 5, ARGENT_POSITIF);
+    var op = new OperationComptable(flux, CCA);
+    assertEquals(CCA, op.type());
+  }
+
+  @Test
+  void operationComptable_fluxArgent_explicite() {
+    var flux = new FluxArgent("Loyer", monCompte(), DEBUT, FIN, 5, ARGENT_POSITIF);
+    var op = new OperationComptable(flux, CHARGE);
+    assertEquals(CHARGE, op.type());
   }
 }
