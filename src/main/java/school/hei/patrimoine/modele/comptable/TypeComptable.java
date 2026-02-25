@@ -9,7 +9,7 @@ public enum TypeComptable {
   CHARGE,
   AUTRE;
 
-  static TypeComptable from(Possession possession) {
+  public static TypeComptable from(Possession possession) {
     return switch (possession) {
       case RemboursementDette ignored -> CHARGE;
       case Materiel ignored -> IMMOBILISATION;
