@@ -2,10 +2,10 @@ package school.hei.patrimoine.modele.comptable;
 
 import school.hei.patrimoine.modele.possession.Possession;
 
-public record OperationComptable(Possession possession, TypeComptable typeComptable) {
-  public OperationComptable(Possession possession, TypeComptable typeComptable) {
+public record OperationComptable(Possession possession, TypeComptable type) {
+  public OperationComptable(Possession possession, TypeComptable type) {
     this.possession = possession;
-    this.typeComptable = typeComptable;
+    this.type = type;
   }
 
   public static OperationComptable make(Possession possession) {

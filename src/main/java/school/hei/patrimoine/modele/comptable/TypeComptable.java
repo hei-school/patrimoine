@@ -14,19 +14,8 @@ public enum TypeComptable {
       case RemboursementDette ignored -> CHARGE;
       case Materiel ignored -> IMMOBILISATION;
       case AchatMaterielAuComptant ignored -> IMMOBILISATION;
-      case FluxArgent fluxArgent -> resolveFlux(fluxArgent);
+      case FluxArgent fluxArgent -> fluxArgent.getFluxMensuel().lt(0) ? CHARGE : PRODUIT;
       default -> AUTRE;
     };
-  }
-
-  private static TypeComptable resolveFlux(FluxArgent fluxArgent) {
-    return fluxArgentDefaultTypeComptable(fluxArgent);
-  }
-
-  private static TypeComptable fluxArgentDefaultTypeComptable(FluxArgent fluxArgent) {
-    if (fluxArgent.getTypeComptable() != null) {
-      return fluxArgent.getTypeComptable();
-    }
-    return fluxArgent.getFluxMensuel().lt(0) ? CHARGE : PRODUIT;
   }
 }
