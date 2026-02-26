@@ -3,6 +3,7 @@ package school.hei.patrimoine.patrilang.visitors.possession;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.RembourserDetteContext;
 
 import lombok.RequiredArgsConstructor;
+import school.hei.patrimoine.modele.comptable.OperationComptable;
 import school.hei.patrimoine.modele.possession.RemboursementDette;
 import school.hei.patrimoine.patrilang.visitors.IdVisitor;
 import school.hei.patrimoine.patrilang.visitors.SimpleVisitor;
@@ -10,12 +11,12 @@ import school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor;
 
 @RequiredArgsConstructor
 public class RemboursementDetteVisitor
-    implements SimpleVisitor<RembourserDetteContext, RemboursementDette> {
+    implements SimpleVisitor<RembourserDetteContext, OperationComptable> {
   private final VariableVisitor variableVisitor;
   private final IdVisitor idVisitor;
 
   @Override
-  public RemboursementDette apply(RembourserDetteContext ctx) {
+  public OperationComptable apply(RembourserDetteContext ctx) {
     var id = this.idVisitor.apply(ctx.id());
     var rembourseur = this.variableVisitor.asCompte(ctx.rembourseur);
     var rembourser = this.variableVisitor.asCompte(ctx.rembourse);
@@ -24,7 +25,9 @@ public class RemboursementDetteVisitor
     var date = this.variableVisitor.asDate(ctx.dateValue);
     var valeurComptable = this.variableVisitor.asArgent(ctx.valeurComptable);
 
-    return new RemboursementDette(
-        id, rembourseur, rembourser, dette, creance, date, valeurComptable);
+    var remboursement =
+        new RemboursementDette(id, rembourseur, rembourser, dette, creance, date, valeurComptable);
+
+    return OperationComptable.make(remboursement);
   }
 }
