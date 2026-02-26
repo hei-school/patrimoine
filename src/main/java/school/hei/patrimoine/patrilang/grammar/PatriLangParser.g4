@@ -289,7 +289,7 @@ jourPart
     ;
 
 id
-    : BACKTICK TYPE_COMPTABLE? text (PLUS variable)? BACKTICK
+    : BACKTICK text (PLUS variable)? BACKTICK
     ;
 
 date
