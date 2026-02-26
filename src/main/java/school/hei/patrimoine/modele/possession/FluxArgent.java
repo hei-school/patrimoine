@@ -71,4 +71,8 @@ public final class FluxArgent extends Possession {
   public TypeAgregat typeAgregat() {
     return FLUX;
   }
+
+  public Compte compteAttente() {
+    return new Compte("Compte d'attente", LocalDate.now(), this.compte.valeurComptable());
+  }
 }
