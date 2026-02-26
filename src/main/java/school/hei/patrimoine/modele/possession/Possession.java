@@ -3,6 +3,7 @@ package school.hei.patrimoine.modele.possession;
 import java.io.Serializable;
 import java.time.LocalDate;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.ToString;
 import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.Devise;
@@ -25,7 +26,7 @@ public abstract sealed class Possession extends Objectivable
         TransfertArgent {
   protected final String nom;
   protected final LocalDate t;
-  protected final Argent valeurComptable;
+  @Getter protected final Argent valeurComptable;
   @EqualsAndHashCode.Exclude @ToString.Exclude private CompteCorrection compteCorrection;
 
   public Possession(String nom, LocalDate t, Argent valeurComptable) {
