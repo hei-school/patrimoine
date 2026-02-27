@@ -26,7 +26,7 @@ class EcritureComptableFactoryTest {
   }
 
   @Test
-  void ecriture_comptable_should_content_at_least_two_ligne_ecriture() {
+  void ecriture_comptable_should_contain_at_least_two_ligne_ecriture() {
     var actual = EcritureComptableFactory.make(journal, operation, null);
 
     assertEquals(2, actual.lignes().size());

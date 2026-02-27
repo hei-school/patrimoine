@@ -20,7 +20,7 @@ class JournalTest {
   }
 
   @Test
-  void ecriture_of_journal_should_content_at_least_two_ligne_ecriture() {
+  void ecriture_of_journal_should_contain_at_least_two_ligne_ecriture() {
     var compte = new Compte("Compte principal", now(), Argent.ariary(0));
     var possession = new FluxArgent("Achats", compte, now(), now(), 1, Argent.ariary(4000));
     var operation = OperationComptable.make(possession);
