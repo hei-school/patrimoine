@@ -2,7 +2,6 @@ package school.hei.patrimoine.modele.fec.factory;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import school.hei.patrimoine.modele.comptable.OperationComptable;
 import school.hei.patrimoine.modele.fec.Journal;
@@ -17,12 +16,12 @@ public class JournalFactory {
       String libelle,
       Collection<OperationComptable> operations,
       Map<String, PieceJustificative> pjs) {
-    if (pjs == null) {
-      pjs = Map.of();
+    if (operations == null) {
+      return new Journal(code, libelle);
     }
 
-    if (operations == null) {
-      operations = List.of();
+    if (pjs == null) {
+      pjs = Map.of();
     }
 
     var journal = new Journal(code, libelle, new ArrayList<>());
