@@ -16,7 +16,7 @@ public class FECLineMapper {
       Journal journal, EcritureComptable ecriture, LigneEcriture ligne) {
     var compte = ligne.compte();
     var compAux = ligne.compteAuxiliaire();
-    var pj = ligne.pieceJustificative();
+    var pj = ecriture.pieceJustificative();
     var flux = ligne.flux();
 
     var montantEur = flux.convertir(EUR, now());
@@ -27,7 +27,7 @@ public class FECLineMapper {
         .journalLib(journal.libelle())
         .ecritureNum(ecriture.id())
         .ecritureDate(ecriture.date() != null ? formatDate(ecriture.date()) : "")
-        .compteNum(ligne.type().codePCG())
+        .compteNum(ligne.type().toString())
         .compteLib(compte != null ? compte.nom() : "")
         .compAuxNum(compAux != null ? compAux.nom() : "")
         .compAuxLib(compAux != null ? compAux.nom() : "")
@@ -39,7 +39,7 @@ public class FECLineMapper {
         .ecritureLet(ligne.lettrage() != null ? ligne.lettrage() : "")
         .dateLet(ligne.dateLettrage() != null ? formatDate(ligne.dateLettrage()) : "")
         .validDate(ecriture.dateValidation() != null ? formatDate(ecriture.dateValidation()) : "")
-        .montantDevise(formatAmount(flux.convertir(MGA, LocalDate.now()).montant()))
+        .montantdevise(formatAmount(flux.convertir(MGA, LocalDate.now()).montant()))
         .idevise(flux.devise().codeIso())
         .build();
   }

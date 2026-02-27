@@ -20,7 +20,7 @@ public record FECLine(
     String ecritureLet,
     String dateLet,
     String validDate,
-    String montantDevise,
+    String montantdevise,
     String idevise) {
   public String[] toArray() {
     return new String[] {
@@ -40,7 +40,7 @@ public record FECLine(
       ecritureLet,
       dateLet,
       validDate,
-      montantDevise,
+      montantdevise,
       idevise
     };
   }
