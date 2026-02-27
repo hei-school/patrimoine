@@ -2,14 +2,10 @@ package school.hei.patrimoine.modele.fec;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import lombok.Builder;
-import lombok.Getter;
 import school.hei.patrimoine.modele.comptable.OperationComptable;
 import school.hei.patrimoine.modele.fec.factory.EcritureComptableFactory;
 import school.hei.patrimoine.modele.possession.pj.PieceJustificative;
 
-@Builder
 public record Journal(JournalCode code, String libelle, List<EcritureComptable> ecritures) {
 
   public Journal(JournalCode code, String libelle) {
@@ -21,7 +17,7 @@ public record Journal(JournalCode code, String libelle, List<EcritureComptable> 
     ecritures.add(ecritureToAdd);
   }
 
-  public String getNextId(){
+  public String getNextId() {
     return code().toString() + String.format("%03d", ecritures.size());
   }
 }
