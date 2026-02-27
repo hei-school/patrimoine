@@ -9,16 +9,12 @@ import lombok.Getter;
 import lombok.experimental.Accessors;
 import school.hei.patrimoine.modele.Argent;
 
+@Getter
+@Accessors(fluent = true)
 public final class RemboursementDette extends Possession {
-  private final GroupePossession commeGroupe;
-
-  @Getter
-  @Accessors(fluent = true)
-  private final Compte rembourseur;
-
-  @Getter
-  @Accessors(fluent = true)
   private final Compte remboursé;
+  private final Compte rembourseur;
+  private final GroupePossession commeGroupe;
 
   public RemboursementDette(
       String nom,

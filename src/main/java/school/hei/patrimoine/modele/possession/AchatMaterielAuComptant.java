@@ -50,8 +50,4 @@ public final class AchatMaterielAuComptant extends Possession {
   public TypeAgregat typeAgregat() {
     return IMMOBILISATION;
   }
-
-  public Compte financé() {
-    return new Compte("Matétiel " + this.nom, LocalDate.now(), this.financeur.valeurComptable());
-  }
 }
