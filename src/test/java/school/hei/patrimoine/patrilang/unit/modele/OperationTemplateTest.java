@@ -71,7 +71,7 @@ class OperationTemplateTest {
             15,
             ariary(-40_000));
     for (var operation : operations) {
-      var actual = (FluxArgent) operation;
+      var actual = (FluxArgent) operation.possession();
       assertFluxArgentEquals(expected, actual);
     }
   }
