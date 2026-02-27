@@ -10,10 +10,12 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import school.hei.patrimoine.modele.Argent;
+import school.hei.patrimoine.modele.comptable.OperationComptable;
 import school.hei.patrimoine.modele.fec.EcritureComptable;
 import school.hei.patrimoine.modele.fec.Journal;
 import school.hei.patrimoine.modele.fec.LigneEcriture;
 import school.hei.patrimoine.modele.possession.Compte;
+import school.hei.patrimoine.modele.possession.FluxArgent;
 
 class FECLineMapperTest {
   private Journal journal;
@@ -36,7 +38,9 @@ class FECLineMapperTest {
   void journal_and_ecriture_fields_correctly_mapped() {
     var flux = new Argent(50.00, EUR);
     var compte = new Compte("Compte principal", now(), Argent.ariary(0));
-    var ligne = LigneEcriture.builder().compte(compte).flux(flux).build();
+    var monArgent = new FluxArgent("Vente", compte, LocalDate.of(2026, 2, 2), flux);
+    var operation = OperationComptable.make(monArgent);
+    var ligne = LigneEcriture.builder().compte(compte).flux(flux).type(operation.type()).build();
 
     var fecLine = FECLineMapper.toFECLine(journal, ecriture, ligne);
 
@@ -46,5 +50,7 @@ class FECLineMapperTest {
     assertEquals("20250115", fecLine.ecritureDate());
     assertEquals("20250116", fecLine.validDate());
     assertEquals("Vente marchandises", fecLine.ecritureLib());
+
+    assertEquals("700", fecLine.compteNum());
   }
 }
