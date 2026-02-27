@@ -13,6 +13,7 @@ import java.util.Set;
 import java.util.function.BiFunction;
 import lombok.Builder;
 import lombok.Getter;
+import school.hei.patrimoine.modele.comptable.OperationComptable;
 import school.hei.patrimoine.modele.possession.Possession;
 import school.hei.patrimoine.patrilang.visitors.possession.*;
 import school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor;
@@ -20,7 +21,7 @@ import school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor;
 @Builder
 @Getter
 public class OperationVisitor
-    implements BiFunction<List<OperationsContext>, VariableVisitor, Set<Possession>> {
+    implements BiFunction<List<OperationsContext>, VariableVisitor, Set<OperationComptable>> {
   private final VariableVisitor variableVisitor;
   private final MaterielVisitor materielVisitor;
   private final ObjectifVisitor objectifVisitor;
@@ -33,45 +34,53 @@ public class OperationVisitor
   private final OperationTemplateCallVisitor operationTemplateCallVisitor;
 
   @Override
-  public Set<Possession> apply(List<OperationsContext> contexts, VariableVisitor variableVisitor) {
+  public Set<OperationComptable> apply(
+      List<OperationsContext> contexts, VariableVisitor variableVisitor) {
     return contexts.stream()
         .flatMap(op -> visitOperations(op, variableVisitor).stream())
         .collect(toSet());
   }
 
-  private Set<Possession> visitOperations(OperationsContext ctx, VariableVisitor variableVisitor) {
-    var possessions =
+  private Set<OperationComptable> visitOperations(
+      OperationsContext ctx, VariableVisitor variableVisitor) {
+    var operations =
         ctx.operation().stream()
             .map(operationContext -> visitOperation(operationContext, variableVisitor))
             .flatMap(Set::stream)
             .collect(toSet());
 
     if (isNull(ctx.sousTitre())) {
-      return possessions;
+      return operations;
     }
 
-    return Set.of(this.groupPossessionVisitor.apply(ctx.sousTitre(), possessions));
+    Set<Possession> possessions =
+        operations.stream().map(OperationComptable::possession).collect(toSet());
+
+    return Set.of(
+        OperationComptable.make(this.groupPossessionVisitor.apply(ctx.sousTitre(), possessions)));
   }
 
-  private Set<Possession> visitOperation(OperationContext ctx, VariableVisitor variableVisitor) {
+  private Set<OperationComptable> visitOperation(
+      OperationContext ctx, VariableVisitor variableVisitor) {
     if (nonNull(ctx.fluxArgentTransferer())) {
-      return Set.of(this.transferArgentVisitor.apply(ctx.fluxArgentTransferer()));
+      return Set.of(
+          OperationComptable.make(this.transferArgentVisitor.apply(ctx.fluxArgentTransferer())));
     }
 
     if (nonNull(ctx.fluxArgentEntrer())) {
-      return Set.of(this.fluxArgentVisitor.apply(ctx.fluxArgentEntrer()).possession());
+      return Set.of(this.fluxArgentVisitor.apply(ctx.fluxArgentEntrer()));
     }
 
     if (nonNull(ctx.fluxArgentSortir())) {
-      return Set.of(this.fluxArgentVisitor.apply(ctx.fluxArgentSortir()).possession());
+      return Set.of(this.fluxArgentVisitor.apply(ctx.fluxArgentSortir()));
     }
 
     if (nonNull(ctx.acheterMateriel())) {
-      return Set.of(this.achatMaterielVisitor.apply(ctx.acheterMateriel()).possession());
+      return Set.of(this.achatMaterielVisitor.apply(ctx.acheterMateriel()));
     }
 
     if (nonNull(ctx.possedeMateriel())) {
-      return Set.of(this.materielVisitor.apply(ctx.possedeMateriel()).possession());
+      return Set.of(this.materielVisitor.apply(ctx.possedeMateriel()));
     }
 
     if (nonNull(ctx.correction())) {
@@ -84,7 +93,7 @@ public class OperationVisitor
     }
 
     if (nonNull(ctx.rembourserDette())) {
-      return Set.of(this.remboursementDetteVisitor.apply(ctx.rembourserDette()).possession());
+      return Set.of(this.remboursementDetteVisitor.apply(ctx.rembourserDette()));
     }
 
     if (nonNull(ctx.objectif())) {
@@ -94,13 +103,12 @@ public class OperationVisitor
 
     if (nonNull(ctx.ligneCasOperations())) {
       var cas = this.variableVisitor.asCas(ctx.ligneCasOperations().variable());
-      return cas.possessions();
+      return cas.possessions().stream().map(OperationComptable::make).collect(toSet());
     }
 
     if (nonNull(ctx.ligneVariableDeclaration())) {
       var nom = extractVariableName(ctx.ligneVariableDeclaration().nomEtType.getText());
       var type = extractVariableType(ctx.ligneVariableDeclaration().nomEtType.getText());
-
       variableVisitor.addToScope(
           nom, type, variableVisitor.apply(ctx.ligneVariableDeclaration().valeur).value());
       return Set.of();

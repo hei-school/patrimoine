@@ -7,7 +7,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiFunction;
 import lombok.Builder;
-import school.hei.patrimoine.modele.possession.Possession;
+import school.hei.patrimoine.modele.comptable.OperationComptable;
 import school.hei.patrimoine.patrilang.modele.variable.VariableScope;
 import school.hei.patrimoine.patrilang.visitors.factory.OperationVisitorFactory;
 import school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor;
@@ -15,10 +15,10 @@ import school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor;
 @Builder
 public record OperationTemplate(
     String name, List<OperationTemplateParam> params, List<OperationsContext> contentCtx)
-    implements BiFunction<VariableScope, List<Object>, Set<Possession>> {
+    implements BiFunction<VariableScope, List<Object>, Set<OperationComptable>> {
 
   @Override
-  public Set<Possession> apply(VariableScope parentScope, List<Object> argValues) {
+  public Set<OperationComptable> apply(VariableScope parentScope, List<Object> argValues) {
     var variableVisitor = createNewVariableVisitorWithNewScope(parentScope, argValues);
     var operationVisitor = OperationVisitorFactory.make(variableVisitor);
 
