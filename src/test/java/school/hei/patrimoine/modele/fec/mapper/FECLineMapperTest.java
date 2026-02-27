@@ -3,6 +3,7 @@ package school.hei.patrimoine.modele.fec.mapper;
 import static java.time.LocalDate.now;
 import static org.junit.jupiter.api.Assertions.*;
 import static school.hei.patrimoine.modele.Devise.EUR;
+import static school.hei.patrimoine.modele.comptable.TypeComptable.CHARGE;
 import static school.hei.patrimoine.modele.fec.JournalCode.JN;
 
 import java.time.LocalDate;
