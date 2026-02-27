@@ -1,12 +1,16 @@
 package school.hei.patrimoine.patrilang.visitors.possession;
 
 import static java.util.Optional.ofNullable;
+import static school.hei.patrimoine.modele.comptable.TypeComptable.*;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.*;
 import static school.hei.patrimoine.patrilang.visitors.BaseVisitor.*;
 
 import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
+import org.antlr.v4.runtime.tree.TerminalNode;
 import school.hei.patrimoine.modele.Argent;
+import school.hei.patrimoine.modele.comptable.OperationComptable;
+import school.hei.patrimoine.modele.comptable.TypeComptable;
 import school.hei.patrimoine.modele.possession.Compte;
 import school.hei.patrimoine.modele.possession.FluxArgent;
 import school.hei.patrimoine.patrilang.visitors.IdVisitor;
@@ -17,11 +21,12 @@ public class FluxArgentVisitor {
   private final VariableVisitor variableVisitor;
   private final IdVisitor idVisitor;
 
-  public FluxArgent apply(FluxArgentEntrerContext ctx) {
+  public OperationComptable apply(FluxArgentEntrerContext ctx) {
     String id = this.idVisitor.apply(ctx.id());
     Argent valeurComptable = this.variableVisitor.asArgent(ctx.valeurComptable);
     LocalDate t = this.variableVisitor.asDate(ctx.dateValue);
     Compte compte = this.variableVisitor.asCompte(ctx.compteCrediteurNom);
+    TypeComptable typeExplicite = toTypeComptable(ctx.id().TYPE_COMPTABLE());
     var dateFinOpt =
         ofNullable(ctx.dateFin()).map(dateFin -> visitDateFin(dateFin, this.variableVisitor));
 
@@ -34,19 +39,25 @@ public class FluxArgentVisitor {
               + " n'est pas possible, la valeur est inférieur à 0");
     }
 
-    return dateFinOpt
-        .map(
-            dateFin ->
-                new FluxArgent(
-                    id, compte, t, dateFin.value(), dateFin.dateOperation(), valeurComptable))
-        .orElseGet(() -> new FluxArgent(id, compte, t, valeurComptable));
+    var flux =
+        dateFinOpt
+            .map(
+                dateFin ->
+                    new FluxArgent(
+                        id, compte, t, dateFin.value(), dateFin.dateOperation(), valeurComptable))
+            .orElseGet(() -> new FluxArgent(id, compte, t, valeurComptable));
+
+    var type = typeExplicite != null ? typeExplicite : OperationComptable.make(flux).type();
+
+    return new OperationComptable(flux, type);
   }
 
-  public FluxArgent apply(FluxArgentSortirContext ctx) {
+  public OperationComptable apply(FluxArgentSortirContext ctx) {
     String id = this.idVisitor.apply(ctx.id());
     Argent valeurComptable = this.variableVisitor.asArgent(ctx.valeurComptable).mult(-1);
     LocalDate t = this.variableVisitor.asDate(ctx.dateValue);
     Compte compte = this.variableVisitor.asCompte(ctx.compteDebiteurNom);
+    TypeComptable typeExplicite = toTypeComptable(ctx.id().TYPE_COMPTABLE());
     var dateFinOpt =
         ofNullable(ctx.dateFin()).map(dateFin -> visitDateFin(dateFin, this.variableVisitor));
 
@@ -59,11 +70,28 @@ public class FluxArgentVisitor {
               + " n'est pas possible, la valeur est supérieur à 0");
     }
 
-    return dateFinOpt
-        .map(
-            dateFin ->
-                new FluxArgent(
-                    id, compte, t, dateFin.value(), dateFin.dateOperation(), valeurComptable))
-        .orElseGet(() -> new FluxArgent(id, compte, t, valeurComptable));
+    var flux =
+        dateFinOpt
+            .map(
+                dateFin ->
+                    new FluxArgent(
+                        id, compte, t, dateFin.value(), dateFin.dateOperation(), valeurComptable))
+            .orElseGet(() -> new FluxArgent(id, compte, t, valeurComptable));
+
+    var type = typeExplicite != null ? typeExplicite : OperationComptable.make(flux).type();
+
+    return new OperationComptable(flux, type);
+  }
+
+  protected static TypeComptable toTypeComptable(TerminalNode node) {
+    if (node == null) return null;
+    return switch (node.getText().toUpperCase()) {
+      case "IMMOBILISATION", "IMMO" -> IMMOBILISATION;
+      case "CHARGE", "CHG" -> CHARGE;
+      case "PRODUIT", "PRD" -> PRODUIT;
+      case "CCA" -> CCA;
+      case "AUTRE" -> AUTRE;
+      default -> throw new IllegalArgumentException("Type Comptable inconnu : " + node.getText());
+    };
   }
 }

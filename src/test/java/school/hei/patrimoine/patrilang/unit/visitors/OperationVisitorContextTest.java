@@ -8,7 +8,7 @@ import static school.hei.patrimoine.patrilang.modele.variable.VariableType.DATE;
 import java.time.LocalDate;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
-import school.hei.patrimoine.modele.possession.Possession;
+import school.hei.patrimoine.modele.comptable.OperationComptable;
 import school.hei.patrimoine.patrilang.antlr.PatriLangParser;
 import school.hei.patrimoine.patrilang.utils.UnitTestVisitor;
 import school.hei.patrimoine.patrilang.visitors.OperationVisitor;
@@ -23,7 +23,7 @@ class OperationVisitorContextTest {
   UnitTestVisitor visitor =
       new UnitTestVisitor() {
         @Override
-        public Set<Possession> visitSectionOperations(SectionOperationsContext ctx) {
+        public Set<OperationComptable> visitSectionOperations(SectionOperationsContext ctx) {
           return subject.apply(ctx.operations(), variableVisitor);
         }
       };

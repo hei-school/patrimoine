@@ -2,11 +2,14 @@ package school.hei.patrimoine.patrilang.unit.visitors.possession;
 
 import static java.time.Month.JUNE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static school.hei.patrimoine.modele.Argent.ariary;
+import static school.hei.patrimoine.modele.comptable.TypeComptable.CHARGE;
 import static school.hei.patrimoine.patrilang.modele.variable.VariableType.*;
 
 import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
+import school.hei.patrimoine.modele.comptable.OperationComptable;
 import school.hei.patrimoine.modele.possession.Compte;
 import school.hei.patrimoine.modele.possession.Creance;
 import school.hei.patrimoine.modele.possession.Dette;
@@ -31,7 +34,7 @@ class RemboursementDetteVisitorTest {
   UnitTestVisitor visitor =
       new UnitTestVisitor() {
         @Override
-        public RemboursementDette visitRembourserDette(PatriLangParser.RembourserDetteContext ctx) {
+        public OperationComptable visitRembourserDette(PatriLangParser.RembourserDetteContext ctx) {
           return subject.apply(ctx);
         }
       };
@@ -54,9 +57,9 @@ class RemboursementDetteVisitorTest {
         new RemboursementDette(
             "remboursementDette", COMPTE1, COMPTE2, DETTES, CREANCES, AJD, ariary(15_000));
 
-    var actual = visitor.visit(input, PatriLangParser::rembourserDette);
+    OperationComptable actual = visitor.visit(input, PatriLangParser::rembourserDette);
 
-    assertEquals(expected, actual);
+    assertEquals(expected, actual.possession());
   }
 
   @Test
@@ -70,8 +73,33 @@ class RemboursementDetteVisitorTest {
         new RemboursementDette(
             "remboursementDette", COMPTE1, COMPTE2, DETTES, CREANCES, AJD, ariary(-5_000));
 
-    var actual = visitor.visit(input, PatriLangParser::rembourserDette);
+    OperationComptable actual = visitor.visit(input, PatriLangParser::rembourserDette);
 
-    assertEquals(expected, actual);
+    assertEquals(expected, actual.possession());
+  }
+
+  @Test
+  void rembourser_dette_has_default_type_charge() {
+    var input =
+        """
+    * `remboursement` le 23 du 12-2025, rembourser Dettes:detteCompte de Trésoreries:dummyCompte avec Créances:creanceCompte de Trésoreries:kotoCompte valant 100_000Ar
+""";
+
+    OperationComptable actual = visitor.visit(input, PatriLangParser::rembourserDette);
+
+    assertInstanceOf(RemboursementDette.class, actual.possession());
+    assertEquals(CHARGE, actual.type());
+  }
+
+  @Test
+  void rembourser_dette_reject_defined_type() {
+    var input =
+        """
+    * `AUTRE remboursement` le 21 du 11-2025, Dettes:detteCompte de Trésoreries:dummyCompte avec Créances:creanceCompte de Trésoreries:kotoCompte valant 100_000Ar
+""";
+
+    OperationComptable actual = visitor.visit(input, PatriLangParser::rembourserDette);
+
+    assertEquals(CHARGE, actual.type());
   }
 }

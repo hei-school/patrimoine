@@ -2,12 +2,15 @@ package school.hei.patrimoine.patrilang.unit.visitors.possession;
 
 import static java.time.Month.JANUARY;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static school.hei.patrimoine.modele.Argent.ariary;
+import static school.hei.patrimoine.modele.comptable.TypeComptable.*;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.AcheterMaterielContext;
 import static school.hei.patrimoine.patrilang.modele.variable.VariableType.TRESORERIES;
 
 import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
+import school.hei.patrimoine.modele.comptable.OperationComptable;
 import school.hei.patrimoine.modele.possession.AchatMaterielAuComptant;
 import school.hei.patrimoine.modele.possession.Compte;
 import school.hei.patrimoine.patrilang.antlr.PatriLangParser;
@@ -23,7 +26,7 @@ class AchatMaterielVisitorTest {
   UnitTestVisitor visitor =
       new UnitTestVisitor() {
         @Override
-        public AchatMaterielAuComptant visitAcheterMateriel(AcheterMaterielContext ctx) {
+        public OperationComptable visitAcheterMateriel(AcheterMaterielContext ctx) {
           return subject.apply(ctx);
         }
       };
@@ -50,5 +53,30 @@ class AchatMaterielVisitorTest {
     assertEquals(ariary(-300_000), actualFluxArgent.getFluxMensuel());
     assertEquals(MON_COMPTE, actualFluxArgent.getCompte());
     assertEquals(LocalDate.of(2025, JANUARY, 1), actualFluxArgent.getDebut());
+  }
+
+  @Test
+  void acheter_materiel_has_default_type_immobilisation() {
+    var input =
+        """
+    * `achatMateriel` le 5 du 2-2026, acheter Voiture valant 20_000_000Ar depuis Trésoreries:monCompte s'appréciant annuellement de 0%
+""";
+
+    OperationComptable actual = visitor.visit(input, PatriLangParser::acheterMateriel);
+
+    assertInstanceOf(AchatMaterielAuComptant.class, actual.possession());
+    assertEquals(IMMOBILISATION, actual.type());
+  }
+
+  @Test
+  void acheter_materiel_reject_defined_type() {
+    var input =
+        """
+    * `CHG achatMateriel` le 10 du 1-2026, acheter Voiture valant 20_000_000Ar depuis Trésoreries:monCompte s'appréciant annuellement de 0%
+""";
+
+    OperationComptable actual = visitor.visit(input, PatriLangParser::acheterMateriel);
+
+    assertEquals(IMMOBILISATION, actual.type());
   }
 }

@@ -10,7 +10,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import lombok.RequiredArgsConstructor;
-import school.hei.patrimoine.modele.possession.Possession;
+import school.hei.patrimoine.modele.comptable.OperationComptable;
 import school.hei.patrimoine.patrilang.modele.PatriLangCas;
 
 @RequiredArgsConstructor
@@ -62,32 +62,37 @@ public class PatriLangCasVisitor implements Function<CasContext, PatriLangCas> {
           }
         };
 
-    Supplier<Set<Possession>> possessionsSupplier =
+    Supplier<Set<OperationComptable>> operationsSupplier =
         () -> {
           var chilSectionVisitor = sectionVisitor.createChildSectionVisitor();
-          Set<Possession> possessions = new HashSet<>();
+          Set<OperationComptable> operations = new HashSet<>();
 
           if (nonNull(ctx.sectionTresoreries())) {
-            possessions.addAll(
-                chilSectionVisitor.visitSectionTrésoreries(ctx.sectionTresoreries()));
+            chilSectionVisitor.visitSectionTrésoreries(ctx.sectionTresoreries()).stream()
+                .map(OperationComptable::make)
+                .forEach(operations::add);
           }
 
           if (nonNull(ctx.sectionCreances())) {
-            possessions.addAll(chilSectionVisitor.visitSectionCréances(ctx.sectionCreances()));
+            chilSectionVisitor.visitSectionCréances(ctx.sectionCreances()).stream()
+                .map(OperationComptable::make)
+                .forEach(operations::add);
           }
 
           if (nonNull(ctx.sectionDettes())) {
-            possessions.addAll(chilSectionVisitor.visitSectionDettes(ctx.sectionDettes()));
+            chilSectionVisitor.visitSectionDettes(ctx.sectionDettes()).stream()
+                .map(OperationComptable::make)
+                .forEach(operations::add);
           }
 
           if (nonNull(ctx.sectionOperations())) {
-            possessions.addAll(chilSectionVisitor.visitSectionOperations(ctx.sectionOperations()));
+            operations.addAll(chilSectionVisitor.visitSectionOperations(ctx.sectionOperations()));
           }
 
-          return possessions;
+          return operations;
         };
 
     return new PatriLangCas(
-        nom, devise, ajd, finSimulation, possesseurs, init, suivi, possessionsSupplier);
+        nom, devise, ajd, finSimulation, possesseurs, init, suivi, operationsSupplier);
   }
 }

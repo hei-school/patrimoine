@@ -7,16 +7,17 @@ import static school.hei.patrimoine.patrilang.visitors.BaseVisitor.*;
 import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import school.hei.patrimoine.modele.Argent;
+import school.hei.patrimoine.modele.comptable.OperationComptable;
 import school.hei.patrimoine.modele.possession.Materiel;
 import school.hei.patrimoine.patrilang.visitors.SimpleVisitor;
 import school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor;
 
 @RequiredArgsConstructor
-public class MaterielVisitor implements SimpleVisitor<PossedeMaterielContext, Materiel> {
+public class MaterielVisitor implements SimpleVisitor<PossedeMaterielContext, OperationComptable> {
   private final VariableVisitor variableVisitor;
 
   @Override
-  public Materiel apply(PossedeMaterielContext ctx) {
+  public OperationComptable apply(PossedeMaterielContext ctx) {
     String nom = visitText(ctx.materielNom);
     double facteurTauxDAppreciation = visitMaterielAppreciationFacteur(ctx.MATERIEL_APPRECIATION());
     double tauxDAppreciation = this.variableVisitor.asNombre(ctx.pourcentageAppreciation);
@@ -25,11 +26,14 @@ public class MaterielVisitor implements SimpleVisitor<PossedeMaterielContext, Ma
     LocalDate dateAcquisition =
         nonNull(ctx.dateObtention) ? this.variableVisitor.asDate(ctx.dateObtention) : t;
 
-    return new Materiel(
-        nom,
-        dateAcquisition,
-        t,
-        valeurComptable,
-        tauxDAppreciation / 100 * facteurTauxDAppreciation);
+    var materiel =
+        new Materiel(
+            nom,
+            dateAcquisition,
+            t,
+            valeurComptable,
+            tauxDAppreciation / 100 * facteurTauxDAppreciation);
+
+    return OperationComptable.make(materiel);
   }
 }
