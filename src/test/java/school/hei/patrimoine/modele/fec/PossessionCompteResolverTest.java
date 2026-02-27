@@ -2,6 +2,7 @@ package school.hei.patrimoine.modele.fec;
 
 import static java.time.LocalDate.now;
 import static org.junit.jupiter.api.Assertions.*;
+import static school.hei.patrimoine.modele.fec.PossessionCompteResolver.Comptes;
 import static school.hei.patrimoine.modele.fec.PossessionCompteResolver.resolve;
 
 import org.junit.jupiter.api.Test;
@@ -20,6 +21,6 @@ class PossessionCompteResolverTest {
 
     var actual = resolve(operation);
 
-    assertInstanceOf(PossessionCompteResolver.Comptes.class, actual);
+    assertInstanceOf(Comptes.class, actual);
   }
 }
