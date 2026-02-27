@@ -27,7 +27,7 @@ public class FECLineMapper {
         .journalLib(journal.libelle())
         .ecritureNum(ecriture.id())
         .ecritureDate(ecriture.date() != null ? formatDate(ecriture.date()) : "")
-        .compteNum(ligne.type().toString())
+        .compteNum(ligne.type().codePCG())
         .compteLib(compte != null ? compte.nom() : "")
         .compAuxNum(compAux != null ? compAux.nom() : "")
         .compAuxLib(compAux != null ? compAux.nom() : "")
