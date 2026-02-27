@@ -23,11 +23,38 @@ class JournalFactoryTest {
   }
 
   @Test
-  void journal_content_at_least_two_ligne_ecriture() {
+  void journal_contains_ecriture_comptable() {
+    var journal = JournalFactory.make(JN, "Journal", operations, Map.of());
+
+    var actual = journal.ecritures().isEmpty();
+
+    assertFalse(actual);
+  }
+
+  @Test
+  void journal_contains_at_least_two_ligne_ecriture() {
     var journal = JournalFactory.make(JN, "Journal", operations, Map.of());
 
     var actual = journal.ecritures().getFirst().lignes().size();
 
     assertEquals(2, actual);
+  }
+
+  @Test
+  void pjs_could_be_null() {
+    var journal = JournalFactory.make(JN, "Journal", operations, null);
+
+    var actual = journal.ecritures().getFirst().lignes().size();
+
+    assertEquals(2, actual);
+  }
+
+  @Test
+  void empty_ecritures_if_operations_is_null() {
+    var journal = JournalFactory.make(JN, "Journal", null, Map.of());
+
+    var actual = journal.ecritures().isEmpty();
+
+    assertTrue(actual);
   }
 }
