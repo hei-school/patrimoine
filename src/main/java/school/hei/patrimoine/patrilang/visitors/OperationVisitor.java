@@ -68,19 +68,19 @@ public class OperationVisitor
     }
 
     if (nonNull(ctx.fluxArgentEntrer())) {
-      return Set.of(this.fluxArgentVisitor.apply(ctx.fluxArgentEntrer()).possession());
+      return Set.of(this.fluxArgentVisitor.apply(ctx.fluxArgentEntrer()));
     }
 
     if (nonNull(ctx.fluxArgentSortir())) {
-      return Set.of(this.fluxArgentVisitor.apply(ctx.fluxArgentSortir()).possession());
+      return Set.of(this.fluxArgentVisitor.apply(ctx.fluxArgentSortir()));
     }
 
     if (nonNull(ctx.acheterMateriel())) {
-      return Set.of(this.achatMaterielVisitor.apply(ctx.acheterMateriel()).possession());
+      return Set.of(this.achatMaterielVisitor.apply(ctx.acheterMateriel()));
     }
 
     if (nonNull(ctx.possedeMateriel())) {
-      return Set.of(this.materielVisitor.apply(ctx.possedeMateriel()).possession());
+      return Set.of(this.materielVisitor.apply(ctx.possedeMateriel()));
     }
 
     if (nonNull(ctx.correction())) {
@@ -93,7 +93,7 @@ public class OperationVisitor
     }
 
     if (nonNull(ctx.rembourserDette())) {
-      return Set.of(this.remboursementDetteVisitor.apply(ctx.rembourserDette()).possession());
+      return Set.of(this.remboursementDetteVisitor.apply(ctx.rembourserDette()));
     }
 
     if (nonNull(ctx.objectif())) {
