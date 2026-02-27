@@ -1,9 +1,9 @@
-package school.hei.patrimoine.visualisation.swing.ihm.google.modele.fec;
+package school.hei.patrimoine.modele.fec;
 
 import lombok.Builder;
 
 @Builder
-public record FecLine(
+public record FECLine(
     String journalCode,
     String journalLib,
     String ecritureNum,

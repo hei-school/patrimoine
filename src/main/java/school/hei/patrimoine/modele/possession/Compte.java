@@ -66,8 +66,4 @@ public sealed class Compte extends Possession permits Dette, Creance {
   void addFinancés(FluxArgent fluxArgent) {
     fluxArgents.add(fluxArgent);
   }
-
-  public Compte capitalSocial() {
-    return new Compte("Capital social", LocalDate.now(), valeurComptable);
-  }
 }

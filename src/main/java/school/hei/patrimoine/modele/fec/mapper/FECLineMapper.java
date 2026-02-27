@@ -1,4 +1,4 @@
-package school.hei.patrimoine.visualisation.swing.ihm.google.modele.fec.mapper;
+package school.hei.patrimoine.modele.fec.mapper;
 
 import static java.time.LocalDate.now;
 import static school.hei.patrimoine.modele.Devise.EUR;
@@ -7,12 +7,12 @@ import static school.hei.patrimoine.modele.Devise.MGA;
 import java.time.LocalDate;
 import java.util.Locale;
 import school.hei.patrimoine.modele.fec.EcritureComptable;
+import school.hei.patrimoine.modele.fec.FECLine;
 import school.hei.patrimoine.modele.fec.Journal;
 import school.hei.patrimoine.modele.fec.LigneEcriture;
-import school.hei.patrimoine.visualisation.swing.ihm.google.modele.fec.FecLine;
 
-public class FecLineMapper {
-  public static FecLine toFecLine(
+public class FECLineMapper {
+  public static FECLine toFECLine(
       Journal journal, EcritureComptable ecriture, LigneEcriture ligne) {
     var compte = ligne.compte();
     var compAux = ligne.compteAuxiliaire();
@@ -22,12 +22,12 @@ public class FecLineMapper {
     var montantEur = flux.convertir(EUR, now());
     var isDebit = montantEur.montant() >= 0;
 
-    return FecLine.builder()
+    return FECLine.builder()
         .journalCode(journal.code().toString())
         .journalLib(journal.libelle())
         .ecritureNum(ecriture.id())
         .ecritureDate(ecriture.date() != null ? formatDate(ecriture.date()) : "")
-        .compteNum(compte != null ? compte.nom() : "")
+        .compteNum(ligne.type().toString())
         .compteLib(compte != null ? compte.nom() : "")
         .compAuxNum(compAux != null ? compAux.nom() : "")
         .compAuxLib(compAux != null ? compAux.nom() : "")
