@@ -2,11 +2,11 @@ package school.hei.patrimoine.modele.fec.factory;
 
 import static java.time.LocalDate.now;
 import static org.junit.jupiter.api.Assertions.*;
+import static school.hei.patrimoine.modele.Argent.ariary;
 import static school.hei.patrimoine.modele.fec.JournalCode.JN;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.comptable.OperationComptable;
 import school.hei.patrimoine.modele.fec.Journal;
 import school.hei.patrimoine.modele.possession.Compte;
@@ -19,8 +19,8 @@ class EcritureComptableFactoryTest {
 
   @BeforeEach
   void setUp() {
-    var compte = new Compte("Compte principal", now(), Argent.ariary(0));
-    flux = new FluxArgent("Achats", compte, now(), now(), 1, Argent.ariary(4000));
+    var compte = new Compte("Compte principal", now(), ariary(0));
+    flux = new FluxArgent("Achats", compte, now(), now(), 1, ariary(4000));
     operation = OperationComptable.make(flux);
     journal = new Journal(JN, "Journal");
   }
