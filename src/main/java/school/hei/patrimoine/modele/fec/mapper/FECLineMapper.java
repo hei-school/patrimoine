@@ -5,6 +5,7 @@ import static school.hei.patrimoine.modele.Devise.EUR;
 import static school.hei.patrimoine.modele.Devise.MGA;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Locale;
 import school.hei.patrimoine.modele.fec.EcritureComptable;
 import school.hei.patrimoine.modele.fec.FECLine;
@@ -16,32 +17,32 @@ public class FECLineMapper {
       Journal journal, EcritureComptable ecriture, LigneEcriture ligne) {
     var compte = ligne.compte();
     var compAux = ligne.compteAuxiliaire();
-    var pj = ecriture.pieceJustificative();
+    var pj = ecriture.pj();
     var flux = ligne.flux();
 
     var montantEur = flux.convertir(EUR, now());
     var isDebit = montantEur.montant() >= 0;
 
-    return FECLine.builder()
-        .journalCode(journal.code().toString())
-        .journalLib(journal.libelle())
-        .ecritureNum(ecriture.id())
-        .ecritureDate(ecriture.date() != null ? formatDate(ecriture.date()) : "")
-        .compteNum(ligne.type().toString())
-        .compteLib(compte != null ? compte.nom() : "")
-        .compAuxNum(compAux != null ? compAux.nom() : "")
-        .compAuxLib(compAux != null ? compAux.nom() : "")
-        .pieceRef(pj != null ? pj.id() : "")
-        .pieceDate(pj != null ? formatDate(pj.date()) : "")
-        .ecritureLib(ecriture.libelle())
-        .debit(isDebit ? formatAmount(montantEur.montant()) : "")
-        .credit(isDebit ? "" : formatAmount(montantEur.montant()))
-        .ecritureLet(ligne.lettrage() != null ? ligne.lettrage() : "")
-        .dateLet(ligne.dateLettrage() != null ? formatDate(ligne.dateLettrage()) : "")
-        .validDate(ecriture.dateValidation() != null ? formatDate(ecriture.dateValidation()) : "")
-        .montantdevise(formatAmount(flux.convertir(MGA, LocalDate.now()).montant()))
-        .idevise(flux.devise().codeIso())
-        .build();
+    return new FECLine(
+        List.of(
+            journal.code().toString(),
+            journal.libelle(),
+            ecriture.id(),
+            ecriture.date() != null ? formatDate(ecriture.date()) : "",
+            ligne.type().toString(),
+            compte != null ? compte.nom() : "",
+            compAux != null ? compAux.nom() : "",
+            compAux != null ? compAux.nom() : "",
+            pj != null ? pj.id() : "",
+            pj != null ? formatDate(pj.date()) : "",
+            ecriture.libelle(),
+            isDebit ? formatAmount(montantEur.montant()) : "",
+            isDebit ? "" : formatAmount(montantEur.montant()),
+            ligne.lettrage() != null ? ligne.lettrage() : "",
+            ligne.dateLettrage() != null ? formatDate(ligne.dateLettrage()) : "",
+            ecriture.dateValidation() != null ? formatDate(ecriture.dateValidation()) : "",
+            formatAmount(flux.convertir(MGA, LocalDate.now()).montant()),
+            MGA.codeIso()));
   }
   ;
 

@@ -1,47 +1,20 @@
 package school.hei.patrimoine.modele.fec;
 
-import lombok.Builder;
+import java.util.Arrays;
+import java.util.List;
 
-@Builder
-public record FECLine(
-    String journalCode,
-    String journalLib,
-    String ecritureNum,
-    String ecritureDate,
-    String compteNum,
-    String compteLib,
-    String compAuxNum,
-    String compAuxLib,
-    String pieceRef,
-    String pieceDate,
-    String ecritureLib,
-    String debit,
-    String credit,
-    String ecritureLet,
-    String dateLet,
-    String validDate,
-    String montantdevise,
-    String idevise) {
+public class FECLine {
+  private final List<String> values;
+
+  public FECLine(List<String> values) {
+    this.values = values;
+  }
+
   public String[] toArray() {
-    return new String[] {
-      journalCode,
-      journalLib,
-      ecritureNum,
-      ecritureDate,
-      compteNum,
-      compteLib,
-      compAuxNum,
-      compAuxLib,
-      pieceRef,
-      pieceDate,
-      ecritureLib,
-      debit,
-      credit,
-      ecritureLet,
-      dateLet,
-      validDate,
-      montantdevise,
-      idevise
-    };
+    return values.toArray(String[]::new);
+  }
+
+  public static String[] header() {
+    return Arrays.stream(FECColumn.values()).map(FECColumn::label).toArray(String[]::new);
   }
 }

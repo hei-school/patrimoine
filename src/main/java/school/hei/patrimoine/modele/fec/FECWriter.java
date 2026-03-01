@@ -1,11 +1,13 @@
 package school.hei.patrimoine.modele.fec;
 
+import static com.opencsv.ICSVWriter.*;
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.nio.file.Files.newOutputStream;
+import static school.hei.patrimoine.modele.fec.FECLine.header;
 import static school.hei.patrimoine.modele.fec.mapper.FECLineMapper.toFECLine;
 
 import com.opencsv.CSVWriter;
 import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
 
@@ -13,38 +15,14 @@ public class FECWriter implements Closeable {
   private final Writer writer;
   private final CSVWriter csvWriter;
 
-  private static final String[] FEC_HEADER = {
-    "JournalCode",
-    "JournalLib",
-    "EcritureNum",
-    "EcritureDate",
-    "CompteNum",
-    "CompteLib",
-    "CompAuxNum",
-    "CompAuxLib",
-    "PieceRef",
-    "PieceDate",
-    "EcritureLib",
-    "Debit",
-    "Credit",
-    "EcritureLet",
-    "DateLet",
-    "ValidDate",
-    "Montantdevise",
-    "Idevise"
-  };
+  private static final char UTF8_BOM = '\uFEFF';
 
   public FECWriter(Path path) throws IOException {
-    this.writer = new OutputStreamWriter(Files.newOutputStream(path), StandardCharsets.UTF_8);
-    writer.write('\uFEFF');
+    this.writer = new OutputStreamWriter(newOutputStream(path), UTF_8);
+    writer.write(UTF8_BOM);
 
     this.csvWriter =
-        new CSVWriter(
-            writer,
-            '|',
-            CSVWriter.NO_QUOTE_CHARACTER,
-            CSVWriter.DEFAULT_ESCAPE_CHARACTER,
-            CSVWriter.DEFAULT_LINE_END);
+        new CSVWriter(writer, '|', NO_QUOTE_CHARACTER, DEFAULT_ESCAPE_CHARACTER, DEFAULT_LINE_END);
   }
 
   public void writeFEC(Collection<Journal> journals) {
@@ -63,7 +41,7 @@ public class FECWriter implements Closeable {
   }
 
   private void writeHeader() {
-    csvWriter.writeNext(FEC_HEADER);
+    csvWriter.writeNext(header());
   }
 
   private void writeLine(Journal journal, EcritureComptable ecriture, LigneEcriture ligne) {
