@@ -47,7 +47,7 @@ public class FluxArgentVisitor {
                         id, compte, t, dateFin.value(), dateFin.dateOperation(), valeurComptable))
             .orElseGet(() -> new FluxArgent(id, compte, t, valeurComptable));
 
-    var type = typeExplicite != null ? typeExplicite : OperationComptable.make(flux).type();
+    var type = addTypeComptableIfNotNull(typeExplicite, flux);
 
     return new OperationComptable(flux, type);
   }
@@ -78,13 +78,19 @@ public class FluxArgentVisitor {
                         id, compte, t, dateFin.value(), dateFin.dateOperation(), valeurComptable))
             .orElseGet(() -> new FluxArgent(id, compte, t, valeurComptable));
 
-    var type = typeExplicite != null ? typeExplicite : OperationComptable.make(flux).type();
+    var type = addTypeComptableIfNotNull(typeExplicite, flux);
 
     return new OperationComptable(flux, type);
   }
 
+  private static TypeComptable addTypeComptableIfNotNull(TypeComptable type, FluxArgent flux) {
+    if (type != null) {
+      return type;
+    }
+    return OperationComptable.make(flux).type();
+  }
+
   protected static TypeComptable toTypeComptable(TerminalNode node) {
-    if (node == null) return null;
     return switch (node.getText().toUpperCase()) {
       case "IMMOBILISATION", "IMMO" -> IMMOBILISATION;
       case "CHARGE", "CHG" -> CHARGE;
