@@ -17,6 +17,7 @@ public final class PatriLangCas extends Cas {
   private final Runnable init;
   private final Runnable suivi;
   private final Supplier<Set<OperationComptable>> operationsSupplier;
+  private Set<Possession> possessions;
 
   public PatriLangCas(
       String nom,
@@ -58,9 +59,13 @@ public final class PatriLangCas extends Cas {
 
   @Override
   public Set<Possession> possessions() {
-    return operationsSupplier.get().stream()
-        .map(OperationComptable::possession)
-        .collect(Collectors.toSet());
+    if (possessions == null) {
+      possessions =
+          operationsSupplier.get().stream()
+              .map(OperationComptable::possession)
+              .collect(Collectors.toSet());
+    }
+    return possessions;
   }
 
   public Set<OperationComptable> operations() {
