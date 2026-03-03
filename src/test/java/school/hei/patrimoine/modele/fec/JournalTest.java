@@ -2,11 +2,12 @@ package school.hei.patrimoine.modele.fec;
 
 import static java.time.LocalDate.now;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static school.hei.patrimoine.modele.Argent.ariary;
+import static school.hei.patrimoine.modele.comptable.TypeComptable.PRODUIT;
 import static school.hei.patrimoine.modele.fec.JournalCode.JN;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.comptable.OperationComptable;
 import school.hei.patrimoine.modele.possession.Compte;
 import school.hei.patrimoine.modele.possession.FluxArgent;
@@ -20,9 +21,9 @@ class JournalTest {
   }
 
   @Test
-  void ecriture_of_journal_should_contain_at_least_two_ligne_ecriture() {
-    var compte = new Compte("Compte principal", now(), ariary(0));
-    var possession = new FluxArgent("Achats", compte, now(), now(), 1, ariary(4000));
+  void ecriture_of_journal_should_content_at_least_two_ligne_ecriture() {
+    var compte = new Compte("Compte principal", now(), Argent.ariary(0));
+    var possession = new FluxArgent("Achats", compte, now(), now(), 1, Argent.ariary(4000));
     var operation = OperationComptable.make(possession);
 
     subject.addEcriture(operation, null);
@@ -33,8 +34,8 @@ class JournalTest {
 
   @Test
   void ecriture_ids_should_be_sequential() {
-    var compte = new Compte("Compte principal", now(), ariary(0));
-    var possession = new FluxArgent("Achats", compte, now(), now(), 1, ariary(4000));
+    var compte = new Compte("Compte principal", now(), Argent.ariary(0));
+    var possession = new FluxArgent("Achats", compte, now(), now(), 1, Argent.ariary(4000));
     var operation = OperationComptable.make(possession);
 
     subject.addEcriture(operation, null);
@@ -46,5 +47,28 @@ class JournalTest {
     assertEquals("JN000", actual.getFirst().id());
     assertEquals("JN001", actual.get(1).id());
     assertEquals("JN002", actual.get(2).id());
+  }
+
+  @Test
+  void compte_num_increments_per_compte() {
+    var compte = new Compte("Compte A", now(), Argent.ariary(0));
+
+    assertEquals("700000", subject.getNextCompteNum(compte, PRODUIT));
+    assertEquals("700000", subject.getNextCompteNum(compte, PRODUIT));
+  }
+
+  @Test
+  void compte_num_independent_per_compte() {
+    var compteA = new Compte("Compte A", now(), Argent.ariary(0));
+    var compteB = new Compte("Compte B", now(), Argent.ariary(0));
+
+    assertEquals("700000", subject.getNextCompteNum(compteA, PRODUIT));
+    assertEquals("700001", subject.getNextCompteNum(compteB, PRODUIT));
+  }
+
+  @Test
+  void compte_num_with_null_compte_uses_inconnu() {
+    assertEquals("700000", subject.getNextCompteNum(null, PRODUIT));
+    assertEquals("700000", subject.getNextCompteNum(null, PRODUIT));
   }
 }
