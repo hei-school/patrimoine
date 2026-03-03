@@ -9,7 +9,9 @@ import static school.hei.patrimoine.modele.fec.mapper.FECLineMapper.toFECLine;
 import com.opencsv.CSVWriter;
 import java.io.*;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 public class FECWriter implements Closeable {
   private final Writer writer;
@@ -26,26 +28,21 @@ public class FECWriter implements Closeable {
   }
 
   public void writeFEC(Collection<Journal> journals) {
-    writeHeader();
-    writeLines(journals);
-  }
+    List<String[]> allLines = new ArrayList<>();
+    allLines.add(header());
 
-  private void writeLines(Collection<Journal> journals) {
     for (var journal : journals) {
       for (var ecriture : journal.ecritures()) {
         for (var ligne : ecriture.lignes()) {
-          writeLine(journal, ecriture, ligne);
+          allLines.add(toFECLine(journal, ecriture, ligne).toArray());
         }
       }
     }
-  }
 
-  private void writeHeader() {
-    csvWriter.writeNext(header());
-  }
-
-  private void writeLine(Journal journal, EcritureComptable ecriture, LigneEcriture ligne) {
-    csvWriter.writeNext(toFECLine(journal, ecriture, ligne).toArray());
+    int chunckSize = 1_000;
+    for (int i = 0; i < allLines.size(); i += chunckSize) {
+      csvWriter.writeAll(allLines.subList(i, Math.min(i + chunckSize, allLines.size())));
+    }
   }
 
   @Override
