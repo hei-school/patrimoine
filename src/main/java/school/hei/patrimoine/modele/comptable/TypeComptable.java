@@ -9,6 +9,16 @@ public enum TypeComptable {
   CHARGE,
   AUTRE;
 
+  public String codePCG() {
+    return switch (this) {
+      case IMMOBILISATION -> "2183";
+      case CHARGE -> "600";
+      case PRODUIT -> "700";
+      case CCA -> "455";
+      case AUTRE -> "512";
+    };
+  }
+
   public static TypeComptable from(Possession possession) {
     return switch (possession) {
       case RemboursementDette ignored -> CHARGE;
