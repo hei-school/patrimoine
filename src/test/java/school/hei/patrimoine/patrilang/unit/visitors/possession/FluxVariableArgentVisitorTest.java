@@ -52,7 +52,7 @@ class FluxVariableArgentVisitorTest {
   void parse_entrer_flux_argent_without_date_fin() {
     var input =
         """
-            * `fluxArgentEntrer` Dates:ajd, entrer 500000Ar vers Trésoreries:comptePersonnel
+            * `PRD fluxArgentEntrer` Dates:ajd, entrer 500000Ar vers Trésoreries:comptePersonnel
         """;
     var expected = new FluxArgent("fluxArgentEntrer", COMPTE_PERSONNEL, AJD, ariary(500_000));
 
@@ -66,7 +66,7 @@ class FluxVariableArgentVisitorTest {
     var formatter = DateTimeFormatter.ofPattern("yyyy_MM_dd");
     var input =
         """
-    * `fluxArgentSortir + Dates:ajd` Dates:ajd, sortir 500000Ar depuis Trésoreries:comptePersonnel
+    * `CHG fluxArgentSortir + Dates:ajd` Dates:ajd, sortir 500000Ar depuis Trésoreries:comptePersonnel
 """;
     var expected =
         new FluxArgent(
@@ -82,7 +82,7 @@ class FluxVariableArgentVisitorTest {
     var formatter = DateTimeFormatter.ofPattern("yyyy_MM_dd");
     var input =
         """
-    * `fluxArgentEntrer + Dates:ajd` Dates:ajd, entrer 500000Ar vers Trésoreries:comptePersonnel, jusqu'à DATE_MAX tous les 2 du mois
+    * `PRD fluxArgentEntrer + Dates:ajd` Dates:ajd, entrer 500000Ar vers Trésoreries:comptePersonnel, jusqu'à DATE_MAX tous les 2 du mois
 """;
     var expected =
         new FluxArgent(
@@ -103,7 +103,7 @@ class FluxVariableArgentVisitorTest {
     var formatter = DateTimeFormatter.ofPattern("yyyy_MM_dd");
     var input =
         """
-    * `fluxArgentSortir + Dates:ajd` Dates:ajd, sortir 500000Ar depuis Trésoreries:comptePersonnel, jusqu'à DATE_MAX tous les 2 du mois
+    * `CHG fluxArgentSortir + Dates:ajd` Dates:ajd, sortir 500000Ar depuis Trésoreries:comptePersonnel, jusqu'à DATE_MAX tous les 2 du mois
 """;
     var expected =
         new FluxArgent(
@@ -124,7 +124,7 @@ class FluxVariableArgentVisitorTest {
     var formatter = DateTimeFormatter.ofPattern("yyyy_MM_dd");
     var input =
         """
-    * `fluxArgentSortir + Dates:ajd` Dates:ajd, sortir 500000Ar depuis Trésoreries:comptePersonnel, jusqu'à DATE_MAX tous les fin du mois
+    * `CHG fluxArgentSortir + Dates:ajd` Dates:ajd, sortir 500000Ar depuis Trésoreries:comptePersonnel, jusqu'à DATE_MAX tous les fin du mois
 """;
     var expected =
         new FluxArgent(

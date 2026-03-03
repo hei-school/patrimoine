@@ -50,7 +50,7 @@ class OperationTemplateTest {
     parentScope.add("ajd", DATE, ajd);
 
     var templateContentInput =
-        "* `abonnementWifi + Dates:ajd` Dates:ajd, sortir 40000Ar depuis Trésoreries:compte,"
+        "* `CHG abonnementWifi + Dates:ajd` Dates:ajd, sortir 40000Ar depuis Trésoreries:compte,"
             + " jusqu'à Dates:dateFin tous les 15 du mois";
     var parser = createParser(templateContentInput);
 
