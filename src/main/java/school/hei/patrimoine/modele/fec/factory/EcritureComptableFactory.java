@@ -36,6 +36,7 @@ public class EcritureComptableFactory {
         .libelle(possession.nom())
         .lignes(List.of(debit, credit))
         .dateValidation(pj != null ? pj.date() : null)
+        .pj(pj)
         .build();
   }
 }
