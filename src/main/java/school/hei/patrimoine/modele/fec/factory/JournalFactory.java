@@ -1,6 +1,5 @@
 package school.hei.patrimoine.modele.fec.factory;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 import school.hei.patrimoine.modele.comptable.OperationComptable;
@@ -24,9 +23,9 @@ public class JournalFactory {
       pjs = Map.of();
     }
 
-    var journal = new Journal(code, libelle, new ArrayList<>());
+    var journal = new Journal(code, libelle);
     for (var operation : operations) {
-      var pj = pjs.get(operation.possession().nom());
+      var pj = pjs.get(operation.getPossession().nom());
       journal.addEcriture(operation, pj);
     }
 
