@@ -11,9 +11,9 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
-import school.hei.patrimoine.modele.comptable.OperationComptable;
 import school.hei.patrimoine.modele.possession.Compte;
 import school.hei.patrimoine.modele.possession.FluxArgent;
+import school.hei.patrimoine.modele.possession.Possession;
 import school.hei.patrimoine.patrilang.antlr.PatriLangParser;
 import school.hei.patrimoine.patrilang.modele.template.OperationTemplate;
 import school.hei.patrimoine.patrilang.modele.template.OperationTemplateParam;
@@ -32,8 +32,7 @@ class OperationTemplateCallVisitorTest {
   UnitTestVisitor visitor =
       new UnitTestVisitor() {
         @Override
-        public Set<OperationComptable> visitOperationTemplateCall(
-            OperationTemplateCallContext ctx) {
+        public Set<Possession> visitOperationTemplateCall(OperationTemplateCallContext ctx) {
           return subject.apply(ctx);
         }
       };
@@ -56,10 +55,9 @@ class OperationTemplateCallVisitorTest {
     var input = "* `myTemplate()`";
     var expected =
         new FluxArgent("salaireMensuel", COMPTE_PERSONNEL, AJD, LocalDate.MAX, 31, ariary(4_000));
-    Set<OperationComptable> operations =
-        visitor.visit(input, PatriLangParser::operationTemplateCall);
+    Set<FluxArgent> operations = visitor.visit(input, PatriLangParser::operationTemplateCall);
 
-    var actual = (FluxArgent) operations.iterator().next().possession();
+    var actual = operations.iterator().next();
     assertFluxArgentEquals(expected, actual);
   }
 
@@ -80,10 +78,9 @@ class OperationTemplateCallVisitorTest {
     var input = "* `charges(Trésoreries:comptePersonnel, le 23 du 12-2025)`";
     var expected =
         new FluxArgent("salaireMensuel", COMPTE_PERSONNEL, AJD, DATE_FIN, 31, ariary(4_000));
-    Set<OperationComptable> operations =
-        visitor.visit(input, PatriLangParser::operationTemplateCall);
+    Set<FluxArgent> operations = visitor.visit(input, PatriLangParser::operationTemplateCall);
 
-    var actual = (FluxArgent) operations.iterator().next().possession();
+    var actual = operations.iterator().next();
     assertFluxArgentEquals(expected, actual);
   }
 
