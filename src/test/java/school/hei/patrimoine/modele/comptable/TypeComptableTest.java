@@ -3,12 +3,10 @@ package school.hei.patrimoine.modele.comptable;
 import static java.time.Month.DECEMBER;
 import static java.time.Month.JANUARY;
 import static org.junit.jupiter.api.Assertions.*;
-import static school.hei.patrimoine.modele.Argent.ariary;
 import static school.hei.patrimoine.modele.Devise.EUR;
 import static school.hei.patrimoine.modele.comptable.TypeComptable.*;
 
 import java.time.LocalDate;
-import java.util.Set;
 import org.junit.jupiter.api.Test;
 import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.possession.*;
@@ -26,94 +24,83 @@ class TypeComptableTest {
   }
 
   @Test
-  void materiel_est_immobilisation() {
-    var materiel = new Materiel("Ordinateur", DEBUT, DEBUT.plusDays(3), ARGENT_POSITIF, 10);
-    assertEquals(IMMOBILISATION, TypeComptable.from(materiel));
-  }
-
-  @Test
-  void achatMaterielAuComptant_est_immobilisation() {
+  void achatMaterielAuComptant_actif_est_materiel() {
     var achat = new AchatMaterielAuComptant("Achat PC", DEBUT, ARGENT_POSITIF, 10, monCompte());
-    assertEquals(IMMOBILISATION, TypeComptable.from(achat));
+    var op = OperationComptable.make(achat);
+    assertEquals(MATERIEL, op.getCompteActif().typeComptable());
   }
 
   @Test
-  void remboursementDette_est_charge() {
+  void achatMaterielAuComptant_passif_est_banque() {
+    var achat = new AchatMaterielAuComptant("Achat PC", DEBUT, ARGENT_POSITIF, 10, monCompte());
+    var op = OperationComptable.make(achat);
+    assertEquals(BANQUE, op.getComptePassif().typeComptable());
+  }
+
+  @Test
+  void remboursementDette_actif_est_remboursement_dette() {
     var remboursement =
         new RemboursementDette(
             "Remb. prêt", monCompte(), monCompte(), DETTE, CREANCE, DEBUT, ARGENT_POSITIF);
-    assertEquals(CHARGE, TypeComptable.from(remboursement));
+    var op = OperationComptable.make(remboursement);
+    assertEquals(REMBOURSEMENT_DETTE, op.getCompteActif().typeComptable());
   }
 
   @Test
-  void compte_est_autre() {
-    var compte = monCompte();
-    assertEquals(AUTRE, TypeComptable.from(compte));
+  void remboursementDette_passif_est_banque() {
+    var remboursement =
+        new RemboursementDette(
+            "Remb. prêt", monCompte(), monCompte(), DETTE, CREANCE, DEBUT, ARGENT_POSITIF);
+    var op = OperationComptable.make(remboursement);
+    assertEquals(BANQUE, op.getComptePassif().typeComptable());
   }
 
   @Test
-  void compteCorrection_est_autre() {
-    var compteCorrection = new CompteCorrection("Correction", EUR);
-    assertEquals(AUTRE, TypeComptable.from(compteCorrection));
+  void compte_actif_est_banque() {
+    var op = OperationComptable.make(monCompte());
+    assertEquals(BANQUE, op.getCompteActif().typeComptable());
   }
 
   @Test
-  void correction_est_autre() {
-    var correction = new Correction(monCompte(), "Correction de compte", DEBUT, ariary(20000));
-    assertEquals(AUTRE, TypeComptable.from(correction));
+  void compte_passif_est_banque() {
+    var op = OperationComptable.make(monCompte());
+    assertEquals(BANQUE, op.getComptePassif().typeComptable());
   }
 
   @Test
-  void groupePossession_est_autre() {
-    var groupe =
-        new GroupePossession(
-            "Mon groupe",
-            EUR,
-            DEBUT,
-            Set.of(
-                new Materiel("Matériel 1", DEBUT, DEBUT.plusDays(3), ARGENT_POSITIF, 10),
-                new Compte("Compte dans groupe", DEBUT, ARGENT_POSITIF)));
-    assertEquals(AUTRE, TypeComptable.from(groupe));
-  }
-
-  @Test
-  void personneMorale_est_autre() {
-    var monEntreprise = new PersonneMorale("Société");
-    assertEquals(AUTRE, TypeComptable.from(monEntreprise));
-  }
-
-  @Test
-  void transfertArgent_est_autre() {
+  void transfert_actif_et_passif_sont_virement_interne() {
     var transfert =
         new TransfertArgent("Transfert", monCompte(), monCompte(), DEBUT, ARGENT_POSITIF);
-    assertEquals(AUTRE, TypeComptable.from(transfert));
+    var op = OperationComptable.make(transfert);
+    assertEquals(VIREMENT_INTERNE, op.getCompteActif().typeComptable());
+    assertEquals(VIREMENT_INTERNE, op.getComptePassif().typeComptable());
   }
 
   @Test
-  void fluxArgent_positif_peut_etre_force_en_charge() {
-    var flux = new FluxArgent("Flux forcé", monCompte(), DEBUT, FIN, 5, ARGENT_POSITIF);
-    var op = new OperationComptable(flux, CHARGE);
-    assertEquals(CHARGE, op.type());
+  void fluxArgent_positif_actif_est_banque() {
+    var flux = new FluxArgent("Salaire", monCompte(), DEBUT, FIN, 5, ARGENT_POSITIF);
+    var op = OperationComptable.make(flux);
+    assertEquals(BANQUE, op.getCompteActif().typeComptable());
   }
 
   @Test
-  void fluxArgent_negatif_peut_etre_force_en_produit() {
-    var flux = new FluxArgent("Flux forcé", monCompte(), DEBUT, FIN, 5, ARGENT_NEGATIF);
-    var op = new OperationComptable(flux, PRODUIT);
-    assertEquals(PRODUIT, op.type());
+  void fluxArgent_positif_passif_est_pca() {
+    var flux = new FluxArgent("Salaire", monCompte(), DEBUT, FIN, 5, ARGENT_POSITIF);
+    var op = OperationComptable.make(flux);
+    assertEquals(PCA, op.getComptePassif().typeComptable());
   }
 
   @Test
-  void fluxArgent_peut_etre_force_en_cca() {
-    var flux = new FluxArgent("Flux CCA", monCompte(), DEBUT, FIN, 5, ARGENT_POSITIF);
-    var op = new OperationComptable(flux, CCA);
-    assertEquals(CCA, op.type());
+  void fluxArgent_negatif_actif_est_cca() {
+    var flux = new FluxArgent("Loyer", monCompte(), DEBUT, FIN, 5, ARGENT_NEGATIF);
+    var op = OperationComptable.make(flux);
+    assertEquals(CCA, op.getCompteActif().typeComptable());
   }
 
   @Test
-  void operationComptable_fluxArgent_explicite() {
-    var flux = new FluxArgent("Loyer", monCompte(), DEBUT, FIN, 5, ARGENT_POSITIF);
-    var op = new OperationComptable(flux, CHARGE);
-    assertEquals(CHARGE, op.type());
+  void fluxArgent_negatif_passif_est_banque() {
+    var flux = new FluxArgent("Loyer", monCompte(), DEBUT, FIN, 5, ARGENT_NEGATIF);
+    var op = OperationComptable.make(flux);
+    assertEquals(BANQUE, op.getComptePassif().typeComptable());
   }
 }
