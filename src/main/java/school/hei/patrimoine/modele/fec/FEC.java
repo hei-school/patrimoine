@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import school.hei.patrimoine.modele.fec.io.FECWriter;
 
 @RequiredArgsConstructor
 public class FEC {

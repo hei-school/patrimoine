@@ -1,4 +1,4 @@
-package school.hei.patrimoine.modele.fec;
+package school.hei.patrimoine.modele.fec.io;
 
 import static com.opencsv.ICSVWriter.*;
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -12,6 +12,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import school.hei.patrimoine.modele.fec.Journal;
 
 public class FECWriter implements Closeable {
   private final Writer writer;
