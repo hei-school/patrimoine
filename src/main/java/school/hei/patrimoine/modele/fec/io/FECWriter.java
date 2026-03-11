@@ -24,7 +24,7 @@ public class FECWriter implements Closeable {
     writer.write(UTF8_BOM);
 
     this.csvWriter =
-        new CSVWriter(writer, '|', NO_QUOTE_CHARACTER, DEFAULT_ESCAPE_CHARACTER, DEFAULT_LINE_END);
+        new CSVWriter(writer, '\t', NO_QUOTE_CHARACTER, DEFAULT_ESCAPE_CHARACTER, DEFAULT_LINE_END);
   }
 
   public void writeFEC(Collection<Journal> journals) {
@@ -34,7 +34,8 @@ public class FECWriter implements Closeable {
     for (var journal : journals) {
       for (var ecriture : journal.ecritures()) {
         for (var ligne : ecriture.lignes()) {
-          allLines.add(toFECLine(journal, ecriture, ligne).toArray());
+          var line = toFECLine(journal, ecriture, ligne);
+          allLines.add(line.toArray());
         }
       }
     }
