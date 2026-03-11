@@ -91,14 +91,7 @@ MOT_OBJECTIF_DE
 ENTETE_TRESORERIES
     :   'Trésoreries'
     ;
-/* --------------------  Types comptable des possessions  --------------------  */
-TYPE_COMPTABLE
-    :   ('Immobilisation' | 'IMMO')
-    |   ('Charge' | 'CHG')
-    |   ('Produit' | 'PRD')
-    |   ('cca' | 'CCA')
-    |   ('Autre' | 'AUTRE')
-    ;
+
 MOT_CONTIENT
     :   'contient'
     ;
