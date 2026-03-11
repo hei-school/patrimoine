@@ -59,7 +59,7 @@ public final class PatriLangCas extends Cas {
   @Override
   public Set<Possession> possessions() {
     return operationsSupplier.get().stream()
-        .map(OperationComptable::possession)
+        .map(OperationComptable::getPossession)
         .collect(Collectors.toSet());
   }
 

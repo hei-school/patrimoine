@@ -54,7 +54,7 @@ public class OperationVisitor
     }
 
     Set<Possession> possessions =
-        operations.stream().map(OperationComptable::possession).collect(toSet());
+        operations.stream().map(OperationComptable::getPossession).collect(toSet());
 
     return Set.of(
         OperationComptable.make(this.groupPossessionVisitor.apply(ctx.sousTitre(), possessions)));

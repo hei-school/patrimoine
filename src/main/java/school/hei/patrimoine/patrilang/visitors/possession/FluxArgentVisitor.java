@@ -26,7 +26,6 @@ public class FluxArgentVisitor {
     Argent valeurComptable = this.variableVisitor.asArgent(ctx.valeurComptable);
     LocalDate t = this.variableVisitor.asDate(ctx.dateValue);
     Compte compte = this.variableVisitor.asCompte(ctx.compteCrediteurNom);
-    TypeComptable typeExplicite = toTypeComptable(ctx.id().TYPE_COMPTABLE());
     var dateFinOpt =
         ofNullable(ctx.dateFin()).map(dateFin -> visitDateFin(dateFin, this.variableVisitor));
 
@@ -47,9 +46,7 @@ public class FluxArgentVisitor {
                         id, compte, t, dateFin.value(), dateFin.dateOperation(), valeurComptable))
             .orElseGet(() -> new FluxArgent(id, compte, t, valeurComptable));
 
-    var type = typeExplicite != null ? typeExplicite : OperationComptable.make(flux).type();
-
-    return new OperationComptable(flux, type);
+    return new OperationComptable(flux);
   }
 
   public OperationComptable apply(FluxArgentSortirContext ctx) {
@@ -57,7 +54,6 @@ public class FluxArgentVisitor {
     Argent valeurComptable = this.variableVisitor.asArgent(ctx.valeurComptable).mult(-1);
     LocalDate t = this.variableVisitor.asDate(ctx.dateValue);
     Compte compte = this.variableVisitor.asCompte(ctx.compteDebiteurNom);
-    TypeComptable typeExplicite = toTypeComptable(ctx.id().TYPE_COMPTABLE());
     var dateFinOpt =
         ofNullable(ctx.dateFin()).map(dateFin -> visitDateFin(dateFin, this.variableVisitor));
 
@@ -78,9 +74,7 @@ public class FluxArgentVisitor {
                         id, compte, t, dateFin.value(), dateFin.dateOperation(), valeurComptable))
             .orElseGet(() -> new FluxArgent(id, compte, t, valeurComptable));
 
-    var type = typeExplicite != null ? typeExplicite : OperationComptable.make(flux).type();
-
-    return new OperationComptable(flux, type);
+    return new OperationComptable(flux);
   }
 
   protected static TypeComptable toTypeComptable(TerminalNode node) {
