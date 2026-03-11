@@ -4,11 +4,9 @@ import java.time.LocalDate;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 import school.hei.patrimoine.cas.Cas;
 import school.hei.patrimoine.modele.Devise;
 import school.hei.patrimoine.modele.Personne;
-import school.hei.patrimoine.modele.comptable.OperationComptable;
 import school.hei.patrimoine.modele.possession.Possession;
 
 public final class PatriLangCas extends Cas {
@@ -16,7 +14,7 @@ public final class PatriLangCas extends Cas {
   private final String nom;
   private final Runnable init;
   private final Runnable suivi;
-  private final Supplier<Set<OperationComptable>> operationsSupplier;
+  private final Supplier<Set<Possession>> possessionsSupplier;
 
   public PatriLangCas(
       String nom,
@@ -26,14 +24,14 @@ public final class PatriLangCas extends Cas {
       Map<Personne, Double> possesseurs,
       Runnable init,
       Runnable suivi,
-      Supplier<Set<OperationComptable>> operationsSupplier) {
+      Supplier<Set<Possession>> possessionsSupplier) {
     super(ajd, finSimulation, possesseurs);
 
     this.devise = devise;
     this.nom = nom;
     this.init = init;
     this.suivi = suivi;
-    this.operationsSupplier = operationsSupplier;
+    this.possessionsSupplier = possessionsSupplier;
   }
 
   @Override
@@ -58,13 +56,7 @@ public final class PatriLangCas extends Cas {
 
   @Override
   public Set<Possession> possessions() {
-    return operationsSupplier.get().stream()
-        .map(OperationComptable::getPossession)
-        .collect(Collectors.toSet());
-  }
-
-  public Set<OperationComptable> operations() {
-    return operationsSupplier.get();
+    return possessionsSupplier.get();
   }
 
   public void validate() {

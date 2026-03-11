@@ -16,7 +16,6 @@ import lombok.Builder;
 import lombok.Getter;
 import school.hei.patrimoine.cas.Cas;
 import school.hei.patrimoine.modele.Personne;
-import school.hei.patrimoine.modele.comptable.OperationComptable;
 import school.hei.patrimoine.modele.possession.*;
 import school.hei.patrimoine.patrilang.modele.variable.VariableType;
 import school.hei.patrimoine.patrilang.visitors.factory.SectionVisitorFactory;
@@ -119,7 +118,7 @@ public class SectionVisitor {
         DETTE, ctx.compteElement(), this.detteVisitor, this.variableVisitor::asDette);
   }
 
-  public Set<OperationComptable> visitSectionOperations(SectionOperationsContext ctx) {
+  public Set<Possession> visitSectionOperations(SectionOperationsContext ctx) {
     return this.operationVisitor.apply(ctx.operations(), variableVisitor);
   }
 

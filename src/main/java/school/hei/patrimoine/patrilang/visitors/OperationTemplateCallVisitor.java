@@ -10,18 +10,18 @@ import static school.hei.patrimoine.patrilang.visitors.BaseVisitor.visitText;
 import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
-import school.hei.patrimoine.modele.comptable.OperationComptable;
+import school.hei.patrimoine.modele.possession.Possession;
 import school.hei.patrimoine.patrilang.modele.template.OperationTemplate;
 import school.hei.patrimoine.patrilang.modele.variable.Variable;
 import school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor;
 
 @RequiredArgsConstructor
 public class OperationTemplateCallVisitor
-    implements SimpleVisitor<OperationTemplateCallContext, Set<OperationComptable>> {
+    implements SimpleVisitor<OperationTemplateCallContext, Set<Possession>> {
   private final VariableVisitor variableVisitor;
 
   @Override
-  public Set<OperationComptable> apply(OperationTemplateCallContext ctx) {
+  public Set<Possession> apply(OperationTemplateCallContext ctx) {
     var parentScope = this.variableVisitor.getVariableScope();
     var argValues = visitArgValues(ctx.operationTemplateCallArg());
     var operationTemplateName = visitText(ctx.templateName);

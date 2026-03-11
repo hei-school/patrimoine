@@ -7,10 +7,7 @@ import static school.hei.patrimoine.patrilang.visitors.BaseVisitor.*;
 
 import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
-import org.antlr.v4.runtime.tree.TerminalNode;
 import school.hei.patrimoine.modele.Argent;
-import school.hei.patrimoine.modele.comptable.OperationComptable;
-import school.hei.patrimoine.modele.comptable.TypeComptable;
 import school.hei.patrimoine.modele.possession.Compte;
 import school.hei.patrimoine.modele.possession.FluxArgent;
 import school.hei.patrimoine.patrilang.visitors.IdVisitor;
@@ -21,7 +18,7 @@ public class FluxArgentVisitor {
   private final VariableVisitor variableVisitor;
   private final IdVisitor idVisitor;
 
-  public OperationComptable apply(FluxArgentEntrerContext ctx) {
+  public FluxArgent apply(FluxArgentEntrerContext ctx) {
     String id = this.idVisitor.apply(ctx.id());
     Argent valeurComptable = this.variableVisitor.asArgent(ctx.valeurComptable);
     LocalDate t = this.variableVisitor.asDate(ctx.dateValue);
@@ -38,18 +35,15 @@ public class FluxArgentVisitor {
               + " n'est pas possible, la valeur est inférieur à 0");
     }
 
-    var flux =
-        dateFinOpt
-            .map(
-                dateFin ->
-                    new FluxArgent(
-                        id, compte, t, dateFin.value(), dateFin.dateOperation(), valeurComptable))
-            .orElseGet(() -> new FluxArgent(id, compte, t, valeurComptable));
-
-    return new OperationComptable(flux);
+    return dateFinOpt
+        .map(
+            dateFin ->
+                new FluxArgent(
+                    id, compte, t, dateFin.value(), dateFin.dateOperation(), valeurComptable))
+        .orElseGet(() -> new FluxArgent(id, compte, t, valeurComptable));
   }
 
-  public OperationComptable apply(FluxArgentSortirContext ctx) {
+  public FluxArgent apply(FluxArgentSortirContext ctx) {
     String id = this.idVisitor.apply(ctx.id());
     Argent valeurComptable = this.variableVisitor.asArgent(ctx.valeurComptable).mult(-1);
     LocalDate t = this.variableVisitor.asDate(ctx.dateValue);
@@ -66,26 +60,11 @@ public class FluxArgentVisitor {
               + " n'est pas possible, la valeur est supérieur à 0");
     }
 
-    var flux =
-        dateFinOpt
-            .map(
-                dateFin ->
-                    new FluxArgent(
-                        id, compte, t, dateFin.value(), dateFin.dateOperation(), valeurComptable))
-            .orElseGet(() -> new FluxArgent(id, compte, t, valeurComptable));
-
-    return new OperationComptable(flux);
-  }
-
-  protected static TypeComptable toTypeComptable(TerminalNode node) {
-    if (node == null) return null;
-    return switch (node.getText().toUpperCase()) {
-      case "IMMOBILISATION", "IMMO" -> IMMOBILISATION;
-      case "CHARGE", "CHG" -> CHARGE;
-      case "PRODUIT", "PRD" -> PRODUIT;
-      case "CCA" -> CCA;
-      case "AUTRE" -> AUTRE;
-      default -> throw new IllegalArgumentException("Type Comptable inconnu : " + node.getText());
-    };
+    return dateFinOpt
+        .map(
+            dateFin ->
+                new FluxArgent(
+                    id, compte, t, dateFin.value(), dateFin.dateOperation(), valeurComptable))
+        .orElseGet(() -> new FluxArgent(id, compte, t, valeurComptable));
   }
 }
