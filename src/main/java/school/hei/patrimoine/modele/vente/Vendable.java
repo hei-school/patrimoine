@@ -14,11 +14,11 @@ public interface Vendable {
 
   Compte getCompteBeneficiaire();
 
-  void addValeurMarche(ValeurMarchee v);
+  void addValeurMarche(ValeurMarche v);
 
-  Set<ValeurMarchee> getValeurMarches();
+  Set<ValeurMarche> getValeurMarches();
 
-  ValeurMarchee getValeurMarche(LocalDate t);
+  ValeurMarche getValeurMarche(LocalDate t);
 
   void vendre(Argent valeurDeVente, LocalDate dateDeVente, Compte compteBeneficiaire);
 }
