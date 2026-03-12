@@ -12,13 +12,12 @@ import lombok.Getter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
 
+@Getter
 @ToString
 @AllArgsConstructor
+@Accessors(fluent = true)
 public class Argent implements Serializable {
   private final double montant;
-
-  @Accessors(fluent = true)
-  @Getter
   private final Devise devise;
 
   @Override
