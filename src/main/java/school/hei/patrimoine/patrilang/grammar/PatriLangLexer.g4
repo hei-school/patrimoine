@@ -156,6 +156,15 @@ PERCENT
     :   '%'
     ;
 
+MOT_VENDRE
+    :   'vendre'
+    |   'Vendre'
+    ;
+MOT_VENDU
+    :   'vendu'
+    |   'Vendu'
+    ;
+
 /* -------------------- Commun --------------------  */
 /* Date */
 MOT_LE
