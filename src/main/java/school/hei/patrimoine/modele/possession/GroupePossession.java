@@ -8,6 +8,7 @@ import java.util.Set;
 import lombok.Getter;
 import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.Devise;
+import school.hei.patrimoine.modele.vente.InformationDeVente;
 
 @Getter
 public final class GroupePossession extends Possession {
@@ -24,13 +25,31 @@ public final class GroupePossession extends Possession {
     typeAgregat(possessions); // sanity check: fails if set is inconsistent
   }
 
+  public GroupePossession(
+      String nom,
+      Devise devise,
+      LocalDate t,
+      Set<Possession> possessions,
+      InformationDeVente informationDeVente) {
+    super(
+        nom,
+        t,
+        possessions.stream()
+            .map(Possession::valeurComptable)
+            .reduce(new Argent(0, devise), (a1, a2) -> a1.add(a2, t)),
+        informationDeVente);
+    this.possessions = possessions;
+    typeAgregat(possessions);
+  }
+
   @Override
   public GroupePossession projectionFuture(LocalDate tFutur) {
     return new GroupePossession(
         nom,
         valeurComptable.devise(),
         tFutur,
-        possessions.stream().map(p -> p.projectionFuture(tFutur)).collect(toSet()));
+        possessions.stream().map(p -> p.projectionFuture(tFutur)).collect(toSet()),
+        informationDeVente);
   }
 
   @Override

@@ -9,6 +9,7 @@ import java.util.Set;
 import lombok.Getter;
 import lombok.ToString;
 import school.hei.patrimoine.modele.Argent;
+import school.hei.patrimoine.modele.vente.InformationDeVente;
 
 @ToString(callSuper = true)
 @Getter
@@ -31,6 +32,18 @@ public sealed class Compte extends Possession permits Dette, Creance {
     this.dateOuverture = dateOuverture;
   }
 
+  private Compte(
+      String nom,
+      LocalDate dateOuverture,
+      LocalDate t,
+      Argent valeurComptable,
+      Set<FluxArgent> fluxArgents,
+      InformationDeVente informationDeVente) {
+    super(nom, t, valeurComptable, informationDeVente);
+    this.fluxArgents = fluxArgents;
+    this.dateOuverture = dateOuverture;
+  }
+
   public Compte(String nom, LocalDate dateOuverture, LocalDate t, Argent valeurComptable) {
     this(nom, dateOuverture, t, valeurComptable, new HashSet<>());
   }
@@ -46,7 +59,8 @@ public sealed class Compte extends Possession permits Dette, Creance {
         dateOuverture,
         tFutur,
         valeurComptable.minus(financementsFuturs(tFutur), tFutur),
-        fluxArgents.stream().map(f -> f.projectionFuture(tFutur)).collect(toSet()));
+        fluxArgents.stream().map(f -> f.projectionFuture(tFutur)).collect(toSet()),
+        informationDeVente);
   }
 
   @Override

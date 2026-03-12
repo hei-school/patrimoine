@@ -5,6 +5,7 @@ import static school.hei.patrimoine.modele.possession.TypeAgregat.IMMOBILISATION
 
 import java.time.LocalDate;
 import school.hei.patrimoine.modele.Argent;
+import school.hei.patrimoine.modele.vente.InformationDeVente;
 
 public final class Materiel extends Possession {
   private final LocalDate dateAcquisition;
@@ -21,6 +22,18 @@ public final class Materiel extends Possession {
     this.tauxDAppreciationAnnuelle = tauxDAppreciationAnnuelle;
   }
 
+  private Materiel(
+      String nom,
+      LocalDate dateAcquisition,
+      LocalDate t,
+      Argent valeurComptable,
+      double tauxDAppreciationAnnuelle,
+      InformationDeVente informationDeVente) {
+    super(nom, t, valeurComptable, informationDeVente);
+    this.dateAcquisition = dateAcquisition;
+    this.tauxDAppreciationAnnuelle = tauxDAppreciationAnnuelle;
+  }
+
   @Override
   public Possession projectionFuture(LocalDate tFutur) {
     if (tFutur.isBefore(dateAcquisition)) {
@@ -29,7 +42,8 @@ public final class Materiel extends Possession {
           dateAcquisition,
           tFutur,
           new Argent(0, valeurComptable.devise()),
-          tauxDAppreciationAnnuelle);
+          tauxDAppreciationAnnuelle,
+          informationDeVente);
     }
     var joursEcoules = DAYS.between(t, tFutur);
     var valeurAjouteeJournaliere = valeurComptable.mult((tauxDAppreciationAnnuelle / 365.));
@@ -39,7 +53,8 @@ public final class Materiel extends Possession {
         dateAcquisition,
         tFutur,
         valeurFutureUnbound.lt(0) ? new Argent(0, devise()) : valeurFutureUnbound,
-        tauxDAppreciationAnnuelle);
+        tauxDAppreciationAnnuelle,
+        informationDeVente);
   }
 
   @Override
