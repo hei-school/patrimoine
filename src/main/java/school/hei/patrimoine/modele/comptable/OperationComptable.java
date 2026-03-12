@@ -7,8 +7,4 @@ public record OperationComptable(Possession possession, TypeComptable type) {
     this.possession = possession;
     this.type = type;
   }
-
-  public static OperationComptable make(Possession possession) {
-    return new OperationComptable(possession, TypeComptable.from(possession));
-  }
 }
