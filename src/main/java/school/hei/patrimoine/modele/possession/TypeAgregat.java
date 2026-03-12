@@ -6,5 +6,6 @@ public enum TypeAgregat {
   IMMOBILISATION,
   OBLIGATION,
   FLUX,
-  CORRECTION
+  CORRECTION,
+  ENTREPRISE
 }
