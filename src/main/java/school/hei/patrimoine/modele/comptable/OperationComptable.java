@@ -1,6 +1,6 @@
 package school.hei.patrimoine.modele.comptable;
 
-import static school.hei.patrimoine.modele.fec.PossessionCompteResolver.resolve;
+import static school.hei.patrimoine.modele.comptable.fec.PossessionCompteResolver.resolve;
 
 import lombok.Getter;
 import school.hei.patrimoine.modele.possession.Possession;
