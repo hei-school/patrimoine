@@ -3,7 +3,7 @@ package school.hei.patrimoine.modele.fec.io;
 import static com.opencsv.ICSVWriter.*;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.nio.file.Files.newOutputStream;
-import static school.hei.patrimoine.modele.fec.FECLine.header;
+import static school.hei.patrimoine.modele.fec.FECLine.headers;
 import static school.hei.patrimoine.modele.fec.mapper.FECLineMapper.toFECLine;
 
 import com.opencsv.CSVWriter;
@@ -30,13 +30,13 @@ public class FECWriter implements Closeable {
 
   public void writeFEC(Collection<Journal> journals) {
     List<String[]> allLines = new ArrayList<>();
-    allLines.add(header());
+    allLines.add(headers());
 
     for (var journal : journals) {
       for (var ecriture : journal.ecritures()) {
         for (var ligne : ecriture.lignes()) {
           var line = toFECLine(journal, ecriture, ligne);
-          allLines.add(line.toArray());
+          allLines.add(line.values());
         }
       }
     }

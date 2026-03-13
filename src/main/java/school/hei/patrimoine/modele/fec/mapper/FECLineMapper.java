@@ -3,14 +3,12 @@ package school.hei.patrimoine.modele.fec.mapper;
 import static java.time.LocalDate.now;
 import static school.hei.patrimoine.modele.Devise.EUR;
 import static school.hei.patrimoine.modele.Devise.MGA;
+import static school.hei.patrimoine.modele.fec.FECColumn.*;
 
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Locale;
-import school.hei.patrimoine.modele.fec.EcritureComptable;
-import school.hei.patrimoine.modele.fec.FECLine;
-import school.hei.patrimoine.modele.fec.Journal;
-import school.hei.patrimoine.modele.fec.LigneEcriture;
+import java.util.*;
+import school.hei.patrimoine.modele.comptable.Sens;
+import school.hei.patrimoine.modele.fec.*;
 
 public class FECLineMapper {
   public static FECLine toFECLine(
@@ -21,29 +19,30 @@ public class FECLineMapper {
 
     var montantEUR = compte.compte().valeurComptable().convertir(EUR, now());
     var montantMGA = montantEUR.convertir(MGA, now()).montant();
-    var debit = compte.isDebit() ? formatAmount(montantEUR.montant()) : "";
-    var credit = !compte.isDebit() ? formatAmount(montantEUR.montant()) : "";
+    var debit = compte.sens() == Sens.DEBIT ? formatAmount(montantEUR.montant()) : "";
+    var credit = compte.sens() == Sens.CREDIT ? formatAmount(montantEUR.montant()) : "";
 
-    return new FECLine(
-        List.of(
-            journal.code().toString(),
-            journal.libelle(),
-            ecriture.id(),
-            formatDate(ecriture.date()),
-            compte.typeComptable().toString(),
-            compte.compte().nom(),
-            compAux != null ? compAux.typeComptable().toString() : "",
-            compAux != null ? compAux.compte().nom() : "",
-            pj != null ? pj.id() : "",
-            formatDate(pj != null ? pj.date() : null),
-            ecriture.libelle(),
-            debit,
-            credit,
-            ligne.lettrage() != null ? ligne.lettrage() : "",
-            formatDate(ligne.dateLettrage()),
-            formatDate(ecriture.dateValidation()),
-            formatAmount(montantMGA),
-            MGA.codeIso()));
+    Map<FECColumn, String> values = new EnumMap<>(FECColumn.class);
+    values.put(JOURNAL_CODE, journal.code().toString());
+    values.put(JOURNAL_LIB, journal.libelle());
+    values.put(ECRITURE_NUM, ecriture.id());
+    values.put(ECRITURE_DATE, formatDate(ecriture.date()));
+    values.put(COMPTE_NUM, compte.typeComptable().toString());
+    values.put(COMPTE_LIB, compte.compte().nom());
+    values.put(COMP_AUX_NUM, compAux != null ? compAux.typeComptable().toString() : "");
+    values.put(COMP_AUX_LIB, compAux != null ? compAux.compte().nom() : "");
+    values.put(PIECE_REF, pj != null ? pj.id() : "");
+    values.put(PIECE_DATE, formatDate(pj != null ? pj.date() : null));
+    values.put(ECRITURE_LIB, ecriture.libelle());
+    values.put(DEBIT, debit);
+    values.put(CREDIT, credit);
+    values.put(ECRITURE_LET, ligne.lettrage() != null ? ligne.lettrage() : "");
+    values.put(DATE_LET, formatDate(ligne.dateLettrage()));
+    values.put(VALID_DATE, formatDate(ecriture.dateValidation()));
+    values.put(MONTANT_DEVISE, formatAmount(montantMGA));
+    values.put(IDEVISE, MGA.codeIso());
+
+    return new FECLine(values);
   }
 
   private static String formatDate(LocalDate date) {
