@@ -5,7 +5,7 @@ import school.hei.patrimoine.visualisation.xchart.GrapheConf;
 
 @Getter
 public final class GrapheConfObservable extends ChangingObservable {
-  private GrapheConf grapheConf = new GrapheConf(false, true, true, true, true);
+  private GrapheConf grapheConf = new GrapheConf(false, true, true, true, true, true);
 
   public GrapheConfObservable() {
     super();

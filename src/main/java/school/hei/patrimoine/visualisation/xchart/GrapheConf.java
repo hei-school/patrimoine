@@ -8,4 +8,5 @@ public record GrapheConf(
     boolean avecAgregat,
     boolean avecTresorerie,
     boolean avecImmobilisations,
-    boolean avecObligations) {}
+    boolean avecObligations,
+    boolean avecValeurMarche) {}

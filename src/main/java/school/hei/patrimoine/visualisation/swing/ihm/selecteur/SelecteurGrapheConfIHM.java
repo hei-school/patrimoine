@@ -21,7 +21,7 @@ public class SelecteurGrapheConfIHM extends JPanel implements Observer {
     this.grapheConfObservable = grapheConfObservable;
 
     grapheConfObservable.addObserver(this);
-    new FixedSizer().accept(this, new Dimension(500, 35));
+    new FixedSizer().accept(this, new Dimension(530, 35));
 
     configureCheckBox(
         "Agrégat",
@@ -32,7 +32,8 @@ public class SelecteurGrapheConfIHM extends JPanel implements Observer {
                 isSelected,
                 currentGrapheConf.avecTresorerie(),
                 currentGrapheConf.avecImmobilisations(),
-                currentGrapheConf.avecObligations()));
+                currentGrapheConf.avecObligations(),
+                currentGrapheConf.avecValeurMarche()));
     configureCheckBox(
         "Trésorerie",
         GrapheConf::avecTresorerie,
@@ -42,7 +43,8 @@ public class SelecteurGrapheConfIHM extends JPanel implements Observer {
                 currentGrapheConf.avecAgregat(),
                 isSelected,
                 currentGrapheConf.avecImmobilisations(),
-                currentGrapheConf.avecObligations()));
+                currentGrapheConf.avecObligations(),
+                currentGrapheConf.avecValeurMarche()));
     configureCheckBox(
         "Immobilisations",
         GrapheConf::avecImmobilisations,
@@ -52,7 +54,8 @@ public class SelecteurGrapheConfIHM extends JPanel implements Observer {
                 currentGrapheConf.avecAgregat(),
                 currentGrapheConf.avecTresorerie(),
                 isSelected,
-                currentGrapheConf.avecObligations()));
+                currentGrapheConf.avecObligations(),
+                currentGrapheConf.avecValeurMarche()));
     configureCheckBox(
         "Obligations",
         GrapheConf::avecObligations,
@@ -62,6 +65,18 @@ public class SelecteurGrapheConfIHM extends JPanel implements Observer {
                 currentGrapheConf.avecAgregat(),
                 currentGrapheConf.avecTresorerie(),
                 currentGrapheConf.avecImmobilisations(),
+                isSelected,
+                currentGrapheConf.avecValeurMarche()));
+    configureCheckBox(
+        "Valeur marché",
+        GrapheConf::avecValeurMarche,
+        (GrapheConf currentGrapheConf, Boolean isSelected) ->
+            new GrapheConf(
+                false,
+                currentGrapheConf.avecAgregat(),
+                currentGrapheConf.avecTresorerie(),
+                currentGrapheConf.avecImmobilisations(),
+                currentGrapheConf.avecObligations(),
                 isSelected));
   }
 
