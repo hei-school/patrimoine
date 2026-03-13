@@ -5,6 +5,7 @@ import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toSet;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.OperationContext;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.OperationsContext;
+import static school.hei.patrimoine.patrilang.modele.variable.VariableType.MATERIEL;
 import static school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor.extractVariableName;
 import static school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor.extractVariableType;
 
@@ -71,11 +72,15 @@ public class OperationVisitor
     }
 
     if (nonNull(ctx.acheterMateriel())) {
-      return Set.of(this.achatMaterielVisitor.apply(ctx.acheterMateriel()));
+      var materiel = this.achatMaterielVisitor.apply(ctx.acheterMateriel());
+      variableVisitor.addToScope(materiel.nom(), MATERIEL, materiel);
+      return Set.of(materiel);
     }
 
     if (nonNull(ctx.possedeMateriel())) {
-      return Set.of(this.materielVisitor.apply(ctx.possedeMateriel()));
+      var materiel = this.materielVisitor.apply(ctx.possedeMateriel());
+      variableVisitor.addToScope(materiel.nom(), MATERIEL, materiel);
+      return Set.of(materiel);
     }
 
     if (nonNull(ctx.correction())) {
