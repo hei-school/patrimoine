@@ -10,6 +10,6 @@ public record EcritureComptable(
     String id,
     LocalDate date,
     String libelle,
+    PieceJustificative pj,
     LocalDate dateValidation,
-    List<LigneEcriture> lignes,
-    PieceJustificative pj) {}
+    List<LigneEcriture> lignes) {}
