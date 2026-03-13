@@ -1,10 +1,10 @@
-package school.hei.patrimoine.modele.fec.io;
+package school.hei.patrimoine.modele.comptable.fec.io;
 
 import static com.opencsv.ICSVWriter.*;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.nio.file.Files.newOutputStream;
-import static school.hei.patrimoine.modele.fec.FECLine.headers;
-import static school.hei.patrimoine.modele.fec.mapper.FECLineMapper.toFECLine;
+import static school.hei.patrimoine.modele.comptable.fec.FECLine.headers;
+import static school.hei.patrimoine.modele.comptable.fec.mapper.FECLineMapper.toFECLine;
 
 import com.opencsv.CSVWriter;
 import java.io.*;
@@ -12,7 +12,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import school.hei.patrimoine.modele.fec.Journal;
+import school.hei.patrimoine.modele.comptable.fec.Journal;
 
 public class FECWriter implements Closeable {
   private final Writer writer;

@@ -1,9 +1,9 @@
-package school.hei.patrimoine.modele.fec;
+package school.hei.patrimoine.modele.comptable.fec;
 
 import java.util.ArrayList;
 import java.util.List;
 import school.hei.patrimoine.modele.comptable.OperationComptable;
-import school.hei.patrimoine.modele.fec.factory.EcritureComptableFactory;
+import school.hei.patrimoine.modele.comptable.fec.factory.EcritureComptableFactory;
 import school.hei.patrimoine.modele.possession.pj.PieceJustificative;
 
 public record Journal(JournalCode code, String libelle, List<EcritureComptable> ecritures) {

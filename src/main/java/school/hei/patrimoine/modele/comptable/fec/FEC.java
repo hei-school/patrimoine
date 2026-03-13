@@ -1,11 +1,11 @@
-package school.hei.patrimoine.modele.fec;
+package school.hei.patrimoine.modele.comptable.fec;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import school.hei.patrimoine.modele.fec.io.FECWriter;
+import school.hei.patrimoine.modele.comptable.fec.io.FECWriter;
 
 @RequiredArgsConstructor
 public class FEC {

@@ -1,10 +1,10 @@
-package school.hei.patrimoine.modele.fec.factory;
+package school.hei.patrimoine.modele.comptable.fec.factory;
 
-import static school.hei.patrimoine.modele.fec.JournalCode.JN;
+import static school.hei.patrimoine.modele.comptable.fec.JournalCode.JN;
 
 import java.util.*;
 import school.hei.patrimoine.modele.comptable.OperationComptable;
-import school.hei.patrimoine.modele.fec.FEC;
+import school.hei.patrimoine.modele.comptable.fec.FEC;
 import school.hei.patrimoine.modele.possession.pj.PieceJustificative;
 
 public class FECFactory {

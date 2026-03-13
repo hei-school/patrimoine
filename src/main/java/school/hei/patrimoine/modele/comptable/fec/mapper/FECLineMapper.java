@@ -1,18 +1,18 @@
-package school.hei.patrimoine.modele.fec.mapper;
+package school.hei.patrimoine.modele.comptable.fec.mapper;
 
 import static java.time.LocalDate.now;
 import static school.hei.patrimoine.modele.Devise.EUR;
 import static school.hei.patrimoine.modele.Devise.MGA;
-import static school.hei.patrimoine.modele.fec.FECColumn.*;
+import static school.hei.patrimoine.modele.comptable.fec.FECColumn.*;
 
 import java.time.LocalDate;
 import java.util.*;
 import school.hei.patrimoine.modele.comptable.Sens;
-import school.hei.patrimoine.modele.fec.*;
+import school.hei.patrimoine.modele.comptable.fec.*;
 
 public class FECLineMapper {
   public static FECLine toFECLine(
-      Journal journal, EcritureComptable ecriture, LigneEcriture ligne) {
+          Journal journal, EcritureComptable ecriture, LigneEcriture ligne) {
     var compte = ligne.compte();
     var compAux = ligne.compteAuxiliaire();
     var pj = ecriture.pj();

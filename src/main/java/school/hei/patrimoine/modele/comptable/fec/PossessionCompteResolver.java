@@ -1,4 +1,4 @@
-package school.hei.patrimoine.modele.fec;
+package school.hei.patrimoine.modele.comptable.fec;
 
 import static java.time.LocalDate.now;
 import static school.hei.patrimoine.modele.comptable.Sens.CREDIT;

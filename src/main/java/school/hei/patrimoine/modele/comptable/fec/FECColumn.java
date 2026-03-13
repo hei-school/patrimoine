@@ -1,4 +1,4 @@
-package school.hei.patrimoine.modele.fec;
+package school.hei.patrimoine.modele.comptable.fec;
 
 public enum FECColumn {
   JOURNAL_CODE("JournalCode"),

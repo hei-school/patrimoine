@@ -1,10 +1,10 @@
-package school.hei.patrimoine.modele.fec.factory;
+package school.hei.patrimoine.modele.comptable.fec.factory;
 
 import java.util.Collection;
 import java.util.Map;
 import school.hei.patrimoine.modele.comptable.OperationComptable;
-import school.hei.patrimoine.modele.fec.Journal;
-import school.hei.patrimoine.modele.fec.JournalCode;
+import school.hei.patrimoine.modele.comptable.fec.Journal;
+import school.hei.patrimoine.modele.comptable.fec.JournalCode;
 import school.hei.patrimoine.modele.possession.pj.PieceJustificative;
 
 public class JournalFactory {
