@@ -1,6 +1,8 @@
 package school.hei.patrimoine.modele.fec;
 
 import static java.time.LocalDate.now;
+import static school.hei.patrimoine.modele.comptable.Sens.CREDIT;
+import static school.hei.patrimoine.modele.comptable.Sens.DEBIT;
 import static school.hei.patrimoine.modele.comptable.TypeComptable.CCA;
 
 import org.jspecify.annotations.NonNull;
@@ -20,20 +22,20 @@ public class PossessionCompteResolver {
       case FluxArgent flux -> getComptes(flux);
       case TransfertArgent transfert ->
           new Comptes(
-              CompteComptable.of(transfert.getVersCompte(), CCA, true),
-              CompteComptable.of(transfert.getDepuisCompte(), CCA, false));
+              CompteComptable.of(transfert.getVersCompte(), CCA, DEBIT),
+              CompteComptable.of(transfert.getDepuisCompte(), CCA, CREDIT));
       case Compte compte ->
           new Comptes(
-              CompteComptable.of(compte, CCA, true),
-              CompteComptable.of(CAPITAL_SOCIAL, CCA, false));
+              CompteComptable.of(compte, CCA, DEBIT),
+              CompteComptable.of(CAPITAL_SOCIAL, CCA, CREDIT));
       case RemboursementDette remboursement ->
           new Comptes(
-              CompteComptable.of(remboursement.getRemboursé(), CCA, true),
-              CompteComptable.of(remboursement.getRembourseur(), CCA, false));
+              CompteComptable.of(remboursement.getRemboursé(), CCA, DEBIT),
+              CompteComptable.of(remboursement.getRembourseur(), CCA, CREDIT));
       case AchatMaterielAuComptant achat ->
           new Comptes(
-              CompteComptable.of(FINANCÉ, CCA, true),
-              CompteComptable.of(achat.getFinanceur(), CCA, false));
+              CompteComptable.of(FINANCÉ, CCA, DEBIT),
+              CompteComptable.of(achat.getFinanceur(), CCA, CREDIT));
       default ->
           throw new IllegalArgumentException(
               "Impossible de déterminer les comptes pour " + possession.getClass().getSimpleName());
@@ -43,12 +45,12 @@ public class PossessionCompteResolver {
   private static @NonNull Comptes getComptes(FluxArgent flux) {
     if (flux.getFluxMensuel().montant() < 0) {
       return new Comptes(
-          CompteComptable.of(COMPTE_ATTENTE, CCA, true),
-          CompteComptable.of(flux.getCompte(), CCA, false));
+          CompteComptable.of(COMPTE_ATTENTE, CCA, DEBIT),
+          CompteComptable.of(flux.getCompte(), CCA, CREDIT));
     }
     return new Comptes(
-        CompteComptable.of(flux.getCompte(), CCA, true),
-        CompteComptable.of(COMPTE_ATTENTE, CCA, false));
+        CompteComptable.of(flux.getCompte(), CCA, DEBIT),
+        CompteComptable.of(COMPTE_ATTENTE, CCA, CREDIT));
   }
 
   public record Comptes(CompteComptable compteDébiteur, CompteComptable compteCréditeur) {}
