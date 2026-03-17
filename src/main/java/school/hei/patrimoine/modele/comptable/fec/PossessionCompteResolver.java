@@ -1,8 +1,8 @@
 package school.hei.patrimoine.modele.comptable.fec;
 
 import static java.time.LocalDate.now;
-import static school.hei.patrimoine.modele.comptable.Sens.CREDIT;
-import static school.hei.patrimoine.modele.comptable.Sens.DEBIT;
+import static school.hei.patrimoine.modele.comptable.MouvementComptable.CREDIT;
+import static school.hei.patrimoine.modele.comptable.MouvementComptable.DEBIT;
 import static school.hei.patrimoine.modele.comptable.TypeComptable.CCA;
 
 import org.jspecify.annotations.NonNull;
@@ -22,20 +22,52 @@ public class PossessionCompteResolver {
       case FluxArgent flux -> getComptes(flux);
       case TransfertArgent transfert ->
           new Comptes(
-              CompteComptable.of(transfert.getVersCompte(), CCA, DEBIT),
-              CompteComptable.of(transfert.getDepuisCompte(), CCA, CREDIT));
+              CompteComptable.builder()
+                  .compte(transfert.getVersCompte())
+                  .typeComptable(CCA)
+                  .mouvementComptable(DEBIT)
+                  .build(),
+              CompteComptable.builder()
+                  .compte(transfert.getDepuisCompte())
+                  .typeComptable(CCA)
+                  .mouvementComptable(CREDIT)
+                  .build());
       case Compte compte ->
           new Comptes(
-              CompteComptable.of(compte, CCA, DEBIT),
-              CompteComptable.of(CAPITAL_SOCIAL, CCA, CREDIT));
+              CompteComptable.builder()
+                  .compte(compte)
+                  .typeComptable(CCA)
+                  .mouvementComptable(DEBIT)
+                  .build(),
+              CompteComptable.builder()
+                  .compte(CAPITAL_SOCIAL)
+                  .typeComptable(CCA)
+                  .mouvementComptable(CREDIT)
+                  .build());
       case RemboursementDette remboursement ->
           new Comptes(
-              CompteComptable.of(remboursement.getRemboursé(), CCA, DEBIT),
-              CompteComptable.of(remboursement.getRembourseur(), CCA, CREDIT));
+              CompteComptable.builder()
+                  .compte(remboursement.getRemboursé())
+                  .typeComptable(CCA)
+                  .mouvementComptable(DEBIT)
+                  .build(),
+              CompteComptable.builder()
+                  .compte(remboursement.getRembourseur())
+                  .typeComptable(CCA)
+                  .mouvementComptable(CREDIT)
+                  .build());
       case AchatMaterielAuComptant achat ->
           new Comptes(
-              CompteComptable.of(FINANCÉ, CCA, DEBIT),
-              CompteComptable.of(achat.getFinanceur(), CCA, CREDIT));
+              CompteComptable.builder()
+                  .compte(FINANCÉ)
+                  .typeComptable(CCA)
+                  .mouvementComptable(DEBIT)
+                  .build(),
+              CompteComptable.builder()
+                  .compte(achat.getFinanceur())
+                  .typeComptable(CCA)
+                  .mouvementComptable(CREDIT)
+                  .build());
       default ->
           throw new IllegalArgumentException(
               "Impossible de déterminer les comptes pour " + possession.getClass().getSimpleName());
@@ -45,12 +77,28 @@ public class PossessionCompteResolver {
   private static @NonNull Comptes getComptes(FluxArgent flux) {
     if (flux.getFluxMensuel().montant() < 0) {
       return new Comptes(
-          CompteComptable.of(COMPTE_ATTENTE, CCA, DEBIT),
-          CompteComptable.of(flux.getCompte(), CCA, CREDIT));
+          CompteComptable.builder()
+              .compte(COMPTE_ATTENTE)
+              .typeComptable(CCA)
+              .mouvementComptable(DEBIT)
+              .build(),
+          CompteComptable.builder()
+              .compte(flux.getCompte())
+              .typeComptable(CCA)
+              .mouvementComptable(CREDIT)
+              .build());
     }
     return new Comptes(
-        CompteComptable.of(flux.getCompte(), CCA, DEBIT),
-        CompteComptable.of(COMPTE_ATTENTE, CCA, CREDIT));
+        CompteComptable.builder()
+            .compte(flux.getCompte())
+            .typeComptable(CCA)
+            .mouvementComptable(DEBIT)
+            .build(),
+        CompteComptable.builder()
+            .compte(COMPTE_ATTENTE)
+            .typeComptable(CCA)
+            .mouvementComptable(CREDIT)
+            .build());
   }
 
   public record Comptes(CompteComptable compteDébiteur, CompteComptable compteCréditeur) {}
