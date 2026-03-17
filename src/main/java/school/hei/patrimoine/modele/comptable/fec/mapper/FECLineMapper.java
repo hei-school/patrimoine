@@ -7,20 +7,26 @@ import static school.hei.patrimoine.modele.comptable.fec.FECColumn.*;
 
 import java.time.LocalDate;
 import java.util.*;
-import school.hei.patrimoine.modele.comptable.Sens;
+import school.hei.patrimoine.modele.comptable.MouvementComptable;
 import school.hei.patrimoine.modele.comptable.fec.*;
 
 public class FECLineMapper {
   public static FECLine toFECLine(
-          Journal journal, EcritureComptable ecriture, LigneEcriture ligne) {
+      Journal journal, EcritureComptable ecriture, LigneEcriture ligne) {
     var compte = ligne.compte();
     var compAux = ligne.compteAuxiliaire();
     var pj = ecriture.pj();
 
     var montantEUR = compte.compte().valeurComptable().convertir(EUR, now());
     var montantMGA = montantEUR.convertir(MGA, now()).montant();
-    var debit = compte.sens() == Sens.DEBIT ? formatAmount(montantEUR.montant()) : "";
-    var credit = compte.sens() == Sens.CREDIT ? formatAmount(montantEUR.montant()) : "";
+    var debit =
+        compte.mouvementComptable() == MouvementComptable.DEBIT
+            ? formatAmount(montantEUR.montant())
+            : "";
+    var credit =
+        compte.mouvementComptable() == MouvementComptable.CREDIT
+            ? formatAmount(montantEUR.montant())
+            : "";
 
     Map<FECColumn, String> values = new EnumMap<>(FECColumn.class);
     values.put(JOURNAL_CODE, journal.code().toString());
