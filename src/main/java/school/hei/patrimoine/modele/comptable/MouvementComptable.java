@@ -1,6 +1,6 @@
 package school.hei.patrimoine.modele.comptable;
 
-public enum Sens {
+public enum MouvementComptable {
   DEBIT,
   CREDIT
 }
