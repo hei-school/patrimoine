@@ -11,11 +11,9 @@ import school.hei.patrimoine.modele.comptable.fec.io.FECWriter;
 public class FEC {
   private final List<Journal> journals;
 
-  public File export(Path outputPath) {
+  public File export(Path outputPath) throws IOException {
     try (var fecWriter = new FECWriter(outputPath)) {
       fecWriter.writeFEC(journals);
-    } catch (IOException e) {
-      throw new RuntimeException(e);
     }
     return outputPath.toFile();
   }
