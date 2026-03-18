@@ -7,8 +7,11 @@ import static school.hei.patrimoine.modele.comptable.fec.FECColumn.*;
 
 import java.time.LocalDate;
 import java.util.*;
+import org.jspecify.annotations.NonNull;
+import school.hei.patrimoine.modele.comptable.CompteComptable;
 import school.hei.patrimoine.modele.comptable.MouvementComptable;
 import school.hei.patrimoine.modele.comptable.fec.*;
+import school.hei.patrimoine.modele.possession.pj.PieceJustificative;
 
 public class FECLineMapper {
   public static FECLine toFECLine(
@@ -28,6 +31,23 @@ public class FECLineMapper {
             ? formatAmount(montantEUR.montant())
             : "";
 
+    var values =
+        getFecColumnStringMap(
+            journal, ecriture, ligne, compte, compAux, pj, debit, credit, montantMGA);
+
+    return new FECLine(values);
+  }
+
+  private static @NonNull Map<FECColumn, String> getFecColumnStringMap(
+      Journal journal,
+      EcritureComptable ecriture,
+      LigneEcriture ligne,
+      CompteComptable compte,
+      CompteComptable compAux,
+      PieceJustificative pj,
+      String debit,
+      String credit,
+      double montantMGA) {
     Map<FECColumn, String> values = new EnumMap<>(FECColumn.class);
     values.put(JOURNAL_CODE, journal.code().toString());
     values.put(JOURNAL_LIB, journal.libelle());
@@ -48,7 +68,7 @@ public class FECLineMapper {
     values.put(MONTANT_DEVISE, formatAmount(montantMGA));
     values.put(IDEVISE, MGA.codeIso());
 
-    return new FECLine(values);
+    return values;
   }
 
   private static String formatDate(LocalDate date) {
