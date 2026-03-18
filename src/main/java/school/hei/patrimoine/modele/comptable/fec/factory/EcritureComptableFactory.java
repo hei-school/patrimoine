@@ -8,6 +8,8 @@ import school.hei.patrimoine.modele.comptable.fec.LigneEcriture;
 import school.hei.patrimoine.modele.possession.pj.PieceJustificative;
 
 public class EcritureComptableFactory {
+  private EcritureComptableFactory() {}
+
   public static EcritureComptable make(
       Journal journal, OperationComptable operation, PieceJustificative pj) {
     var possession = operation.getPossession();
