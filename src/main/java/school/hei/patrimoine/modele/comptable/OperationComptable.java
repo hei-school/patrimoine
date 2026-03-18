@@ -18,10 +18,6 @@ public class OperationComptable {
     this.compteCrediteur = comptes.compteCrediteur;
   }
 
-  public static OperationComptable make(Possession possession) {
-    return new OperationComptable(possession);
-  }
-
   private ComptesComptables getComptesComptables() {
     var comptes = resolve(possession);
     return new ComptesComptables(comptes.compteDébiteur(), comptes.compteCréditeur());
