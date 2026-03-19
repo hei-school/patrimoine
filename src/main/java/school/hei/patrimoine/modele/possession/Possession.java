@@ -46,6 +46,14 @@ public abstract sealed class Possession extends Objectivable
     this.valeursMarche = new HashSet<>();
   }
 
+  protected Possession(
+      String nom, LocalDate t, Argent valeurComptable, Set<ValeurMarche> valeursMarche) {
+    this.nom = nom;
+    this.t = t;
+    this.valeurComptable = valeurComptable;
+    this.valeursMarche = new HashSet<>(valeursMarche);
+  }
+
   public CompteCorrection getCompteCorrection() {
     if (compteCorrection == null) {
       compteCorrection = new CompteCorrection(nom, valeurComptable.devise());

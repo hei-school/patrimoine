@@ -24,13 +24,31 @@ public final class GroupePossession extends Possession {
     typeAgregat(possessions); // sanity check: fails if set is inconsistent
   }
 
+  private GroupePossession(
+      String nom,
+      Devise devise,
+      LocalDate t,
+      Set<Possession> possessions,
+      java.util.Set<school.hei.patrimoine.modele.vente.ValeurMarche> valeursMarche) {
+    super(
+        nom,
+        t,
+        possessions.stream()
+            .map(Possession::valeurComptable)
+            .reduce(new Argent(0, devise), (a1, a2) -> a1.add(a2, t)),
+        valeursMarche);
+    this.possessions = possessions;
+    typeAgregat(possessions);
+  }
+
   @Override
   public GroupePossession projectionFuture(LocalDate tFutur) {
     return new GroupePossession(
         nom,
         valeurComptable.devise(),
         tFutur,
-        possessions.stream().map(p -> p.projectionFuture(tFutur)).collect(toSet()));
+        possessions.stream().map(p -> p.projectionFuture(tFutur)).collect(toSet()),
+        valeursMarche);
   }
 
   @Override

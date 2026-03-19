@@ -21,6 +21,19 @@ public final class PatrimoinePersonnel extends Possession {
     this.personne = personne;
   }
 
+  private PatrimoinePersonnel(
+      Patrimoine patrimoine,
+      Personne personne,
+      java.util.Set<school.hei.patrimoine.modele.vente.ValeurMarche> valeursMarche) {
+    super(
+        String.format("Patrimoine %s de %s", patrimoine.nom(), personne.nom()),
+        patrimoine.getT(),
+        patrimoine.getValeurComptable(),
+        valeursMarche);
+    this.patrimoine = patrimoine;
+    this.personne = personne;
+  }
+
   @Override
   public Argent valeurComptable() {
     var valeurComptablePourToutPossesseurs = super.valeurComptable();
@@ -30,7 +43,7 @@ public final class PatrimoinePersonnel extends Possession {
 
   @Override
   public Possession projectionFuture(LocalDate tFutur) {
-    return new PatrimoinePersonnel(patrimoine.projectionFuture(tFutur), personne);
+    return new PatrimoinePersonnel(patrimoine.projectionFuture(tFutur), personne, valeursMarche);
   }
 
   @Override

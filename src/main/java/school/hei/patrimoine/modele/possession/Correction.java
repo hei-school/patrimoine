@@ -45,7 +45,7 @@ public final class Correction extends Possession {
   }
 
   private Correction(Possession possession, CompteCorrection compteCorrection) {
-    super(possession.nom, possession.t, possession.valeurComptable);
+    super(possession.nom, possession.t, possession.valeurComptable, possession.valeursMarche);
     this.possession = possession;
     this.compteCorrection = compteCorrection;
   }

@@ -21,6 +21,18 @@ public final class Materiel extends Possession {
     this.tauxDAppreciationAnnuelle = tauxDAppreciationAnnuelle;
   }
 
+  private Materiel(
+      String nom,
+      LocalDate dateAcquisition,
+      LocalDate t,
+      Argent valeurComptable,
+      double tauxDAppreciationAnnuelle,
+      java.util.Set<school.hei.patrimoine.modele.vente.ValeurMarche> valeursMarche) {
+    super(nom, t, valeurComptable, valeursMarche);
+    this.dateAcquisition = dateAcquisition;
+    this.tauxDAppreciationAnnuelle = tauxDAppreciationAnnuelle;
+  }
+
   @Override
   public Possession projectionFuture(LocalDate tFutur) {
     if (tFutur.isBefore(dateAcquisition)) {
@@ -29,7 +41,8 @@ public final class Materiel extends Possession {
           dateAcquisition,
           tFutur,
           new Argent(0, valeurComptable.devise()),
-          tauxDAppreciationAnnuelle);
+          tauxDAppreciationAnnuelle,
+          valeursMarche);
     }
     var joursEcoules = DAYS.between(t, tFutur);
     var valeurAjouteeJournaliere = valeurComptable.mult((tauxDAppreciationAnnuelle / 365.));
@@ -39,7 +52,8 @@ public final class Materiel extends Possession {
         dateAcquisition,
         tFutur,
         valeurFutureUnbound.lt(0) ? new Argent(0, devise()) : valeurFutureUnbound,
-        tauxDAppreciationAnnuelle);
+        tauxDAppreciationAnnuelle,
+        valeursMarche);
   }
 
   @Override
