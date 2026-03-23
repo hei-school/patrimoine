@@ -4,7 +4,9 @@ import static java.time.temporal.ChronoUnit.DAYS;
 import static school.hei.patrimoine.modele.possession.TypeAgregat.IMMOBILISATION;
 
 import java.time.LocalDate;
+import java.util.Set;
 import school.hei.patrimoine.modele.Argent;
+import school.hei.patrimoine.modele.vente.ValeurMarche;
 
 public final class Materiel extends Possession {
   private final LocalDate dateAcquisition;
@@ -27,7 +29,7 @@ public final class Materiel extends Possession {
       LocalDate t,
       Argent valeurComptable,
       double tauxDAppreciationAnnuelle,
-      java.util.Set<school.hei.patrimoine.modele.vente.ValeurMarche> valeursMarche) {
+      Set<ValeurMarche> valeursMarche) {
     super(nom, t, valeurComptable, valeursMarche);
     this.dateAcquisition = dateAcquisition;
     this.tauxDAppreciationAnnuelle = tauxDAppreciationAnnuelle;

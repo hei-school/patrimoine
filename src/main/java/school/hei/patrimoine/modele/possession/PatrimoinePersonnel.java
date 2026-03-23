@@ -3,9 +3,11 @@ package school.hei.patrimoine.modele.possession;
 import static school.hei.patrimoine.modele.possession.TypeAgregat.PATRIMOINE;
 
 import java.time.LocalDate;
+import java.util.Set;
 import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.Patrimoine;
 import school.hei.patrimoine.modele.Personne;
+import school.hei.patrimoine.modele.vente.ValeurMarche;
 
 public final class PatrimoinePersonnel extends Possession {
 
@@ -22,9 +24,7 @@ public final class PatrimoinePersonnel extends Possession {
   }
 
   private PatrimoinePersonnel(
-      Patrimoine patrimoine,
-      Personne personne,
-      java.util.Set<school.hei.patrimoine.modele.vente.ValeurMarche> valeursMarche) {
+      Patrimoine patrimoine, Personne personne, Set<ValeurMarche> valeursMarche) {
     super(
         String.format("Patrimoine %s de %s", patrimoine.nom(), personne.nom()),
         patrimoine.getT(),
