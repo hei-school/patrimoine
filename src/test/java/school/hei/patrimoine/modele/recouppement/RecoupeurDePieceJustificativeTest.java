@@ -193,8 +193,6 @@ class RecoupeurDePieceJustificativeTest {
         "Sans PJ, getPossessionWithPj devrait retourner un ensemble vide");
   }
 
-  // ─── getPossessionsWithoutPj ─────────────────────────────────────────────────
-
   @Test
   void getPossessionsWithoutPj_retourne_meme_instance_en_cache() {
     var date = LocalDate.of(2025, JANUARY, 1);
@@ -236,8 +234,6 @@ class RecoupeurDePieceJustificativeTest {
         subject.getPossessionsWithoutPj().size(),
         "Sans aucune PJ, toutes les possessions doivent être dans le résultat");
   }
-
-  // ─── getRecouped ─────────────────────────────────────────────────────────────
 
   @Test
   void getRecouped_retourne_ensemble_vide_si_possessions_et_pj_vides() {

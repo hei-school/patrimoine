@@ -14,7 +14,7 @@ import school.hei.patrimoine.modele.possession.Materiel;
 
 class VMGraphDebugTest {
   @Test
-  void debug_valeurMarche_apres_projection() {
+  void valeurMarche_apres_projection_materiel_retourne_valeur_marche() {
     var t0 = LocalDate.of(2025, JANUARY, 1);
     var tVm = LocalDate.of(2025, MARCH, 1);
     var tFut = LocalDate.of(2025, JUNE, 1);
@@ -22,19 +22,16 @@ class VMGraphDebugTest {
     var materiel = new Materiel("Ordi", t0, t0, ariary(10_000_000), 0.0);
     new ValeurMarche(materiel, tVm, ariary(52_000_000));
 
-    System.out.println("Avant projection: " + materiel.getValeurMarche(tFut));
-    System.out.println("Historique avant: " + materiel.historiqueValeurMarche().size());
+    assertEquals(ariary(52_000_000), materiel.getValeurMarche(tFut));
+    assertEquals(1, materiel.historiqueValeurMarche().size());
 
     var projection = (Materiel) materiel.projectionFuture(tFut);
-
-    System.out.println("Après projection: " + projection.getValeurMarche(tFut));
-    System.out.println("Historique après: " + projection.historiqueValeurMarche().size());
-
     assertEquals(ariary(52_000_000), projection.getValeurMarche(tFut));
+    assertEquals(1, projection.historiqueValeurMarche().size());
   }
 
   @Test
-  void debug_valeurMarche_patrimoine_projete() {
+  void valeurMarche_patrimoine_projete_retourne_valeur_marche_correcte() {
     var t0 = LocalDate.of(2025, JANUARY, 1);
     var tVm = LocalDate.of(2025, MARCH, 1);
     var tFut = LocalDate.of(2025, JUNE, 1);
@@ -44,25 +41,23 @@ class VMGraphDebugTest {
 
     var patrimoine = Patrimoine.of("test", MGA, t0, new Personne("Dyh"), Set.of(materiel));
 
-    System.out.println("Patrimoine t0 VM: " + patrimoine.getValeurMarche());
+    assertEquals(ariary(10_000_000), patrimoine.getValeurMarche());
 
     var projection = patrimoine.projectionFuture(tFut);
-    System.out.println("Patrimoine projeté VM: " + projection.getValeurMarche());
 
-    projection
-        .getPossessions()
-        .forEach(
-            p ->
-                System.out.println(
-                    p.nom()
-                        + " → historique: "
-                        + p.historiqueValeurMarche().size()
-                        + " → getValeurMarche: "
-                        + p.getValeurMarche(tFut)));
+    assertEquals(ariary(52_000_000), projection.getValeurMarche());
+
+    var ordiProjecte =
+        projection.getPossessions().stream()
+            .filter(p -> p.nom().equals("Ordi"))
+            .findFirst()
+            .orElseThrow();
+    assertEquals(1, ordiProjecte.historiqueValeurMarche().size());
+    assertEquals(ariary(52_000_000), ordiProjecte.getValeurMarche(tFut));
   }
 
   @Test
-  void debug_meme_instance_dans_patrimoine() {
+  void meme_instance_materiel_dans_patrimoine_apres_ajout_valeurMarche() {
     var t0 = LocalDate.of(2025, JANUARY, 1);
     var tVm = LocalDate.of(2025, MARCH, 1);
 
@@ -70,17 +65,14 @@ class VMGraphDebugTest {
     var patrimoine = Patrimoine.of("test", MGA, t0, new Personne("Dyh"), Set.of(materiel));
 
     new ValeurMarche(materiel, tVm, ariary(52_000_000));
+    var ordiDansPatrimoine =
+        patrimoine.getPossessions().stream()
+            .filter(p -> p.nom().equals("Ordi"))
+            .findFirst()
+            .orElseThrow();
 
-    System.out.println("materiel id: " + System.identityHashCode(materiel));
-    patrimoine
-        .getPossessions()
-        .forEach(
-            p ->
-                System.out.println(
-                    p.nom()
-                        + " id: "
-                        + System.identityHashCode(p)
-                        + " historique: "
-                        + p.historiqueValeurMarche().size()));
+    assertEquals(System.identityHashCode(materiel), System.identityHashCode(ordiDansPatrimoine));
+
+    assertEquals(1, ordiDansPatrimoine.historiqueValeurMarche().size());
   }
 }
