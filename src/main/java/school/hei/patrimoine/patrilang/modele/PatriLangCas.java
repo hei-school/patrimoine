@@ -16,6 +16,8 @@ public final class PatriLangCas extends Cas {
   private final Runnable suivi;
   private final Supplier<Set<Possession>> possessionsSupplier;
 
+  private Set<Possession> cachedPossessions;
+
   public PatriLangCas(
       String nom,
       Devise devise,
@@ -56,7 +58,10 @@ public final class PatriLangCas extends Cas {
 
   @Override
   public Set<Possession> possessions() {
-    return possessionsSupplier.get();
+    if (cachedPossessions == null) {
+      cachedPossessions = possessionsSupplier.get();
+    }
+    return cachedPossessions;
   }
 
   public void validate() {

@@ -8,6 +8,7 @@ import java.util.Set;
 import lombok.Getter;
 import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.Devise;
+import school.hei.patrimoine.modele.vente.ValeurMarche;
 
 @Getter
 public final class GroupePossession extends Possession {
@@ -29,7 +30,7 @@ public final class GroupePossession extends Possession {
       Devise devise,
       LocalDate t,
       Set<Possession> possessions,
-      java.util.Set<school.hei.patrimoine.modele.vente.ValeurMarche> valeursMarche) {
+      Set<ValeurMarche> valeursMarche) {
     super(
         nom,
         t,
