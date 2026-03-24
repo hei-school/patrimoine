@@ -12,8 +12,12 @@ public class VariableContainer {
 
   public void add(Variable<?> variable) {
     if (exists(variable)) {
-      throw new IllegalArgumentException(
-          "La variable " + variable.name() + " a déjà été définie pour le type " + variable.type());
+      //      throw new IllegalArgumentException(
+      //          "La variable " + variable.name() + " a déjà été définie pour le type " +
+      // variable.type());
+      // TODO: À voir si on veut vraiment empêcher la redéfinition de variable ou si on veut juste
+      // écraser l'ancienne valeur
+      return;
     }
 
     var container = this.values.getOrDefault(variable.type(), new HashSet<>());
