@@ -30,6 +30,7 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.generator.Possession
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.AsyncTask;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.MessageDialog;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangFilesWatcher;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.formatter.ArgentFormatter;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.formatter.DateFormatter;
 
@@ -224,6 +225,7 @@ public class PossessionRecoupeeRealisationsDialog extends Dialog {
             result -> {
               showInfo("Succès", "L'opération a été exécutée avec succès");
               AppContext.getDefault().globalState().update("isAnyFileModified", true);
+              PatriLangFilesWatcher.dispatch();
               dispose();
             })
         .build()
