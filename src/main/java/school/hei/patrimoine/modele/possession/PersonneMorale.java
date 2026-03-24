@@ -21,11 +21,15 @@ public final class PersonneMorale extends Possession {
 
   @Override
   public Possession projectionFuture(LocalDate tFutur) {
-    return new GroupePossession(
-        personne.nom() + " " + tFutur,
-        devise(),
-        tFutur,
-        personne.patrimoine(devise(), tFutur).getPossessions());
+    var groupe =
+        new GroupePossession(
+            personne.nom() + " " + tFutur,
+            devise(),
+            tFutur,
+            personne.patrimoine(devise(), tFutur).getPossessions());
+    valeursMarche.forEach(groupe::ajouterValeurMarche);
+
+    return groupe;
   }
 
   @Override

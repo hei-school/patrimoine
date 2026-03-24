@@ -20,7 +20,7 @@ public final class CompteCorrection extends Possession {
   }
 
   private CompteCorrection(String nom, Compte compte) {
-    super(nom, compte.t, compte.valeurComptable);
+    super(nom, compte.t, compte.valeurComptable, compte.valeursMarche);
     this.compte = compte;
   }
 

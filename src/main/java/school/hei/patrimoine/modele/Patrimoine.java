@@ -66,6 +66,17 @@ public final class Patrimoine extends Objectivable
         .reduce(new Argent(0, autreDevise), (a1, a2) -> a1.add(a2, t));
   }
 
+  public Argent getValeurMarche() {
+    return getValeurMarche(devise);
+  }
+
+  public Argent getValeurMarche(Devise autreDevise) {
+    return possessions.stream()
+        .filter(not(p -> p instanceof CompteCorrection))
+        .map(p -> p.getValeurMarche(t).convertir(autreDevise, t))
+        .reduce(new Argent(0, autreDevise), (a1, a2) -> a1.add(a2, t));
+  }
+
   public Patrimoine projectionFuture(LocalDate tFutur) {
     return new Patrimoine(
         nom,

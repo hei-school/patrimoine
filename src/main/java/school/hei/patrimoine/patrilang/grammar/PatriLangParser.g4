@@ -131,6 +131,15 @@ compteElement
     :   compte
     |   MUL variable
     ;
+
+valeurMarche
+    :   MUL id COMMA? dateValue=variable COMMA? possession=variable MOT_VALANT valeur=variable
+    ;
+
+vente
+    :   MUL id COMMA? dateValue=variable COMMA? MOT_VENDRE possession=variable MOT_POUR prixVente=variable MOT_VERS compteBeneficiaire=variable
+    ;
+
 /* Opérations */
 sectionOperationTemplateDeclaration
     :   HASHES ENTETE_CONTSTRUCTEUR_D_OPERATIONS operationTemplate*
@@ -180,6 +189,8 @@ operation
     |   operationTemplateCall
     |   ligneVariableDeclaration
     |   ligneCasOperations
+    |   valeurMarche
+    |   vente
     ;
 
 ligneCasOperations

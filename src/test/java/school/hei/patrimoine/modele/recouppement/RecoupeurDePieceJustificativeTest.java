@@ -99,10 +99,8 @@ class RecoupeurDePieceJustificativeTest {
   @Test
   void find_piece_for_possession_via_association() {
     var date = LocalDate.of(2025, JANUARY, 1);
-
     var compte = new Compte("comptePersonnel", date, ariary(0));
     var salaire = new FluxArgent("salaire", compte, date, ariary(200));
-
     var pj = new PieceJustificative("salaire", date, "http://example.com/salaire.pdf");
 
     var subject = new RecoupeurDePieceJustificative(Set.of(pj), Set.of(compte, salaire));
@@ -120,9 +118,7 @@ class RecoupeurDePieceJustificativeTest {
   @Test
   void absent_piece_justificative_est_detectee() {
     var date = LocalDate.of(2025, JANUARY, 1);
-
     var compte = new Compte("comptePersonnel", date, ariary(0));
-
     var subject = new RecoupeurDePieceJustificative(Set.of(), Set.of(compte));
 
     var actual = subject.getPossessionsWithoutPj();
@@ -134,14 +130,11 @@ class RecoupeurDePieceJustificativeTest {
   @Test
   void getPossessionsWithoutPj_retourne_uniquement_les_possessions_sans_pj() {
     var date = LocalDate.of(2025, JANUARY, 1);
-
     var compte = new Compte("comptePersonnel", date, ariary(0));
     var salaire = new FluxArgent("salaire", compte, date, ariary(200));
-
     var pj = new PieceJustificative("salaire", date, "http://example.com/salaire.pdf");
 
     var subject = new RecoupeurDePieceJustificative(Set.of(pj), Set.of(compte, salaire));
-
     var actual = subject.getPossessionsWithoutPj();
 
     assertTrue(actual.stream().anyMatch(p -> p.nom().equals("comptePersonnel")));
@@ -150,15 +143,128 @@ class RecoupeurDePieceJustificativeTest {
   @Test
   void getPossessionWithPj_ne_associe_pas_si_nom_different() {
     var date = LocalDate.of(2025, JANUARY, 1);
-
     var compte = new Compte("comptePersonnel", date, ariary(0));
-
     var pj = new PieceJustificative("salaire", date, "http://example.com/autre.pdf");
 
     var subject = new RecoupeurDePieceJustificative(Set.of(pj), Set.of(compte));
-
     var actual = subject.getPossessionWithPj();
 
     assertEquals(1, actual.size());
+  }
+
+  @Test
+  void getPossessionWithPj_retourne_meme_instance_en_cache() {
+    var date = LocalDate.of(2025, JANUARY, 1);
+    var compte = new Compte("compte", date, ariary(0));
+    var pj = new PieceJustificative("compte", date, "http://example.com/compte.pdf");
+
+    var subject = new RecoupeurDePieceJustificative(Set.of(pj), Set.of(compte));
+
+    assertSame(
+        subject.getPossessionWithPj(),
+        subject.getPossessionWithPj(),
+        "Le résultat devrait être mis en cache et retourner la même instance");
+  }
+
+  @Test
+  void getPossessionWithPj_pj_sans_possession_correspondante_a_possession_null() {
+    var date = LocalDate.of(2025, JANUARY, 1);
+    var compte = new Compte("compte", date, ariary(0));
+    var pjOrpheline = new PieceJustificative("inexistant", date, "http://example.com/x.pdf");
+
+    var subject = new RecoupeurDePieceJustificative(Set.of(pjOrpheline), Set.of(compte));
+    var actual = subject.getPossessionWithPj();
+
+    assertEquals(1, actual.size());
+    assertNull(
+        actual.iterator().next().possession(),
+        "Une PJ sans possession correspondante doit avoir possession == null");
+  }
+
+  @Test
+  void getPossessionWithPj_liste_vide_si_aucune_pj() {
+    var date = LocalDate.of(2025, JANUARY, 1);
+    var compte = new Compte("compte", date, ariary(0));
+
+    var subject = new RecoupeurDePieceJustificative(Set.of(), Set.of(compte));
+
+    assertTrue(
+        subject.getPossessionWithPj().isEmpty(),
+        "Sans PJ, getPossessionWithPj devrait retourner un ensemble vide");
+  }
+
+  @Test
+  void getPossessionsWithoutPj_retourne_meme_instance_en_cache() {
+    var date = LocalDate.of(2025, JANUARY, 1);
+    var compte = new Compte("compte", date, ariary(0));
+
+    var subject = new RecoupeurDePieceJustificative(Set.of(), Set.of(compte));
+
+    assertSame(
+        subject.getPossessionsWithoutPj(),
+        subject.getPossessionsWithoutPj(),
+        "Le résultat devrait être mis en cache et retourner la même instance");
+  }
+
+  @Test
+  void getPossessionsWithoutPj_vide_quand_toutes_les_possessions_ont_une_pj() {
+    var date = LocalDate.of(2025, JANUARY, 1);
+    var compte = new Compte("compte", date, ariary(0));
+    var salaire = new FluxArgent("salaire", compte, date, ariary(200));
+    var pj1 = new PieceJustificative("compte", date, "http://example.com/compte.pdf");
+    var pj2 = new PieceJustificative("salaire", date, "http://example.com/salaire.pdf");
+
+    var subject = new RecoupeurDePieceJustificative(Set.of(pj1, pj2), Set.of(compte, salaire));
+
+    assertTrue(
+        subject.getPossessionsWithoutPj().isEmpty(),
+        "Toutes les possessions ayant une PJ, le résultat doit être vide");
+  }
+
+  @Test
+  void getPossessionsWithoutPj_toutes_retournees_si_aucune_pj() {
+    var date = LocalDate.of(2025, JANUARY, 1);
+    var compte = new Compte("compte", date, ariary(0));
+    var salaire = new FluxArgent("salaire", compte, date, ariary(200));
+
+    var subject = new RecoupeurDePieceJustificative(Set.of(), Set.of(compte, salaire));
+
+    assertEquals(
+        2,
+        subject.getPossessionsWithoutPj().size(),
+        "Sans aucune PJ, toutes les possessions doivent être dans le résultat");
+  }
+
+  @Test
+  void getRecouped_retourne_ensemble_vide_si_possessions_et_pj_vides() {
+    var subject = new RecoupeurDePieceJustificative(Set.of(), Set.of());
+
+    assertTrue(subject.getRecouped().isEmpty());
+  }
+
+  @Test
+  void getRecouped_inclut_pj_orpheline_avec_possession_null() {
+    var date = LocalDate.of(2025, JANUARY, 1);
+    var pjOrpheline = new PieceJustificative("inexistant", date, "http://example.com/x.pdf");
+
+    var subject = new RecoupeurDePieceJustificative(Set.of(pjOrpheline), Set.of());
+
+    var actual = subject.getRecouped();
+    assertEquals(1, actual.size());
+    assertNull(actual.iterator().next().possession());
+  }
+
+  @Test
+  void getRecouped_taille_egale_union_possessions_et_pj_orphelines() {
+    var date = LocalDate.of(2025, JANUARY, 1);
+    var compte = new Compte("compte", date, ariary(0));
+    var salaire = new FluxArgent("salaire", compte, date, ariary(200));
+    var pjSalaire = new PieceJustificative("salaire", date, "http://example.com/salaire.pdf");
+    var pjOrpheline = new PieceJustificative("inexistant", date, "http://example.com/x.pdf");
+
+    var subject =
+        new RecoupeurDePieceJustificative(Set.of(pjSalaire, pjOrpheline), Set.of(compte, salaire));
+
+    assertEquals(3, subject.getRecouped().size());
   }
 }

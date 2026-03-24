@@ -30,7 +30,7 @@ public final class RemboursementDette extends Possession {
   }
 
   private RemboursementDette(GroupePossession commeGroupe) {
-    super(commeGroupe.nom, LocalDate.MIN, euro(0));
+    super(commeGroupe.nom, LocalDate.MIN, euro(0), commeGroupe.valeursMarche);
     this.commeGroupe = commeGroupe;
   }
 

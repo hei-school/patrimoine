@@ -45,9 +45,18 @@ public final class TransfertArgent extends Possession {
     this(nom, depuisCompte, versCompte, t, t, t.getDayOfMonth(), fluxMensuel);
   }
 
+  private TransfertArgent(GroupePossession transfertCommeGroupe) {
+    super(
+        transfertCommeGroupe.nom,
+        transfertCommeGroupe.t,
+        transfertCommeGroupe.valeurComptable,
+        transfertCommeGroupe.valeursMarche);
+    this.transfertCommeGroupe = transfertCommeGroupe;
+  }
+
   @Override
   public Possession projectionFuture(LocalDate tFutur) {
-    return transfertCommeGroupe.projectionFuture(tFutur);
+    return new TransfertArgent(transfertCommeGroupe.projectionFuture(tFutur));
   }
 
   @Override
