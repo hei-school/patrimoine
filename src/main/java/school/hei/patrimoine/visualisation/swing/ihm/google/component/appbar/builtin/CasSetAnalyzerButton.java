@@ -12,21 +12,47 @@ import school.hei.patrimoine.cas.CasSetAnalyzer;
 import school.hei.patrimoine.modele.objectif.ObjectifExeption;
 import school.hei.patrimoine.modele.recouppement.RecoupeurDeCasSet;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.ObjectifNonAtteintsDialog;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.html.HtmlViewer;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.html.ViewMode;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.popup.PopupItem;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.popup.PopupMenuButton;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.AsyncTask;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangFilesWatcher;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.UnsavedChangesChecker;
 
 public class CasSetAnalyzerButton extends PopupMenuButton {
-  public CasSetAnalyzerButton() {
-    super("Évolution graphique", getItems());
+  public CasSetAnalyzerButton(ViewMode currentMode, HtmlViewer htmlViewer) {
+    super("Évolution graphique", getItems(currentMode, htmlViewer));
     setToolTipText("Afficher différentes analyses graphiques des cas");
   }
 
-  private static List<JMenuItem> getItems() {
+  private static List<JMenuItem> getItems(ViewMode currentMode, HtmlViewer htmlViewer) {
     return List.of(
-        new PopupItem("Analyse planifiée uniquement", e -> showPlannedOnly()),
-        new PopupItem("Analyse recoupée (Planifié + Réalisé)", e -> showRecouped()));
+        new PopupItem(
+            "Analyse planifiée uniquement",
+            e -> {
+              if (checkUnsavedAndConfirm("Analyse planifiée uniquement", currentMode, htmlViewer)) {
+                showPlannedOnly();
+              }
+            }),
+        new PopupItem(
+            "Analyse recoupée (Planifié + Réalisé)",
+            e -> {
+              if (checkUnsavedAndConfirm(
+                  "Analyse recoupée (Planifié + Réalisé)", currentMode, htmlViewer)) {
+                showRecouped();
+              }
+            }));
+  }
+
+  private static boolean checkUnsavedAndConfirm(
+      String actionLabel, ViewMode currentMode, HtmlViewer htmlViewer) {
+    if (!UnsavedChangesChecker.hasUnsavedChanges(currentMode, htmlViewer)) {
+      return true;
+    }
+    return new UnsavedChangesConfirmDialog(
+            actionLabel, UnsavedChangesChecker.getUnsavedFileNames(currentMode, htmlViewer))
+        .isConfirmed();
   }
 
   private static void showRecouped() {

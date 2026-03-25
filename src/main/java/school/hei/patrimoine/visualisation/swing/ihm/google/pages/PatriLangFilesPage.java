@@ -24,6 +24,7 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.File
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.html.HtmlViewer;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangFilesWatcher;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.UnsavedChangesChecker;
 
 @Getter
 @Slf4j
@@ -88,7 +89,7 @@ public class PatriLangFilesPage extends LazyPage {
     return List.of(
         new ViewModeSelect(state),
         saveAndSyncFileButton(),
-        new CasSetAnalyzerButton(),
+        new CasSetAnalyzerButton(state.get("viewMode"), htmlViewer),
         new SearchTextBar(state),
         recoupementButton(),
         addImprevuButton);
@@ -131,6 +132,15 @@ public class PatriLangFilesPage extends LazyPage {
     return new Button(
         "Recoupement",
         e -> {
+          if (UnsavedChangesChecker.hasUnsavedChanges(state.get("viewMode"), htmlViewer)) {
+            var dialog =
+                new UnsavedChangesConfirmDialog(
+                    "Recoupement",
+                    UnsavedChangesChecker.getUnsavedFileNames(state.get("viewMode"), htmlViewer));
+            if (!dialog.isConfirmed()) {
+              return;
+            }
+          }
           state.invalidate("selectedFile");
           pageManager().navigate(RecoupementPage.PAGE_NAME);
         });
