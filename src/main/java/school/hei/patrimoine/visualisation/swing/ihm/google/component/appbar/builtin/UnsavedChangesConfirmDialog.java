@@ -78,7 +78,7 @@ public class UnsavedChangesConfirmDialog extends Dialog {
 
   private void addButtons() {
     var buttonPanel = new JPanel(new BorderLayout());
-    buttonPanel.setBorder(CustomBorder.builder().thickness(0).padding(5,0,10,15).build());
+    buttonPanel.setBorder(CustomBorder.builder().thickness(0).padding(5, 0, 10, 15).build());
     var resterButton =
         new Button(
             "Rester",
