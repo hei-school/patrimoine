@@ -7,7 +7,6 @@ import static school.hei.patrimoine.visualisation.swing.ihm.google.providers.Fil
 
 import java.util.*;
 import javax.swing.*;
-import org.antlr.v4.runtime.misc.ParseCancellationException;
 import school.hei.patrimoine.cas.Cas;
 import school.hei.patrimoine.cas.CasSet;
 import school.hei.patrimoine.modele.possession.Compte;
@@ -33,7 +32,7 @@ public class PatriLangFilesWatcher {
 
     try {
       done = transpileToutCas(getDoneCasSetFile());
-    } catch (ParseCancellationException e) {
+    } catch (Exception e) {
       log.warn("Fichier done ignoré au démarrage : {}", e.getMessage());
       SwingUtilities.invokeLater(
           () ->
@@ -43,7 +42,7 @@ public class PatriLangFilesWatcher {
 
     try {
       planned = transpileToutCas(getPlannedCasSetFile());
-    } catch (ParseCancellationException e) {
+    } catch (Exception e) {
       log.warn("Fichier planned ignoré au démarrage : {}", e.getMessage());
       SwingUtilities.invokeLater(
           () ->

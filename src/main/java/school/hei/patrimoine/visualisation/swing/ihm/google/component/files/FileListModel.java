@@ -19,8 +19,6 @@ public class FileListModel extends AbstractListModel<PatriLangFileContext> {
   public void refresh(List<PatriLangFileContext> newFiles) {
     this.files = newFiles;
     fireContentsChanged(this, 0, getSize());
-
-    System.out.println("refreshed");
   }
 
   @Override
