@@ -47,6 +47,11 @@ public class FileSideBar extends JPanel {
         });
   }
 
+  public void refresh() {
+    ((FileListModel) doneList.getModel()).refresh(getPatriLangDoneFiles());
+    ((FileListModel) plannedList.getModel()).refresh(getPatriLangPlannedFiles());
+  }
+
   public static Optional<PatriLangFileContext> getSelectedFile(State state) {
     return Optional.ofNullable(state.get("selectedFile"));
   }

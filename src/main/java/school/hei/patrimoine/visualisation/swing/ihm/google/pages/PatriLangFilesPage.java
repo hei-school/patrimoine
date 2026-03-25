@@ -4,6 +4,7 @@ import static school.hei.patrimoine.visualisation.swing.ihm.google.component.fil
 import static school.hei.patrimoine.visualisation.swing.ihm.google.component.html.ViewMode.VIEW;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.config.EnvironmentConfig.isOfflineMode;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.config.EnvironmentConfig.isOnlineMode;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangFileContentManager.hasUnsavedChanges;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangFilesWatcher.getCas;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.providers.FilesProvider.getDoneFile;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.providers.FilesProvider.getPlannedFile;
@@ -24,7 +25,6 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.File
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.html.HtmlViewer;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangFilesWatcher;
-import school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.UnsavedChangesChecker;
 
 @Getter
 @Slf4j
@@ -36,6 +36,7 @@ public class PatriLangFilesPage extends LazyPage {
   private Button addImprevuButton;
   private final HtmlViewer htmlViewer;
   private CommentSideBar commentSideBar;
+  private final FileSideBar fileSideBar;
 
   public PatriLangFilesPage() {
     super(PAGE_NAME);
@@ -50,7 +51,8 @@ public class PatriLangFilesPage extends LazyPage {
                 "pagination",
                 Pagination.builder().pageSize(COMMENT_PAGE_SIZE).build()));
 
-    this.htmlViewer = new HtmlViewer(state);
+    this.fileSideBar = new FileSideBar(state);
+    this.htmlViewer = new HtmlViewer(state, fileSideBar);
 
     state.subscribe(
         "selectedFile",
@@ -89,7 +91,7 @@ public class PatriLangFilesPage extends LazyPage {
     return List.of(
         new ViewModeSelect(state),
         saveAndSyncFileButton(),
-        new CasSetAnalyzerButton(state.get("viewMode"), htmlViewer),
+        new CasSetAnalyzerButton(),
         new SearchTextBar(state),
         recoupementButton(),
         addImprevuButton);
@@ -111,7 +113,7 @@ public class PatriLangFilesPage extends LazyPage {
 
   private void addMainSplitPane() {
     var horizontalSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-    horizontalSplit.setLeftComponent(new FileSideBar(state));
+    horizontalSplit.setLeftComponent(fileSideBar);
 
     var rightSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
     rightSplit.setLeftComponent(new JScrollPane(htmlViewer));
@@ -132,11 +134,8 @@ public class PatriLangFilesPage extends LazyPage {
     return new Button(
         "Recoupement",
         e -> {
-          if (UnsavedChangesChecker.hasUnsavedChanges(state.get("viewMode"), htmlViewer)) {
-            var dialog =
-                new UnsavedChangesConfirmDialog(
-                    "Recoupement",
-                    UnsavedChangesChecker.getUnsavedFileNames(state.get("viewMode"), htmlViewer));
+          if (hasUnsavedChanges()) {
+            var dialog = new UnsavedChangesConfirmDialog("Recoupement");
             if (!dialog.isConfirmed()) {
               return;
             }

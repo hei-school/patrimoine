@@ -5,7 +5,7 @@ import javax.swing.*;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangFileContext;
 
 public class FileListModel extends AbstractListModel<PatriLangFileContext> {
-  private final List<PatriLangFileContext> files;
+  private List<PatriLangFileContext> files;
 
   public FileListModel(List<PatriLangFileContext> files) {
     this.files = files;
@@ -14,6 +14,13 @@ public class FileListModel extends AbstractListModel<PatriLangFileContext> {
   @Override
   public int getSize() {
     return files.size();
+  }
+
+  public void refresh(List<PatriLangFileContext> newFiles) {
+    this.files = newFiles;
+    fireContentsChanged(this, 0, getSize());
+
+    System.out.println("refreshed");
   }
 
   @Override

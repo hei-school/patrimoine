@@ -47,5 +47,9 @@ public class PatriLangFileContentManager {
     tempContents.remove(file.getDriveId());
   }
 
+  public static boolean hasUnsavedChanges() {
+    return !getAllModifiedFiles().isEmpty();
+  }
+
   public record TypedContent(FileWriterInput input, boolean original) {}
 }

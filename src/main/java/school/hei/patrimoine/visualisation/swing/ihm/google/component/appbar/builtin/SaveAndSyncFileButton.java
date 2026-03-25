@@ -1,6 +1,5 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.builtin;
 
-import static school.hei.patrimoine.visualisation.swing.ihm.google.component.html.ViewMode.EDIT;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.config.EnvironmentConfig.isOfflineMode;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.MessageDialog.*;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangFileContentManager.getAllModifiedFiles;
@@ -45,10 +44,6 @@ public class SaveAndSyncFileButton extends PopupMenuButton {
   }
 
   private static void saveAllModifiedFiles(ViewMode currentMode, HtmlViewer htmlViewer) {
-    if (EDIT.equals(currentMode)) {
-      htmlViewer.saveLastFileToTempContent();
-    }
-
     var modifiedFilesData = getAllModifiedFiles();
     if (modifiedFilesData.isEmpty()) {
       showInfo("Information", "Aucune modification à sauvegarder.");

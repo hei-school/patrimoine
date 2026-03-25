@@ -13,26 +13,26 @@ import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangFilesWatcher.ANY_FILE_MODIFIED;
 
 import java.awt.*;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.io.IOException;
-import java.util.Optional;
 import java.util.Set;
 import javax.swing.*;
 import lombok.extern.slf4j.Slf4j;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.AppContext;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.FileSideBar;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.MarkdownToHtmlConverter;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
-import school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangFileContext;
 
 @Slf4j
 public class HtmlViewer extends JEditorPane {
   private final State state;
+  private final FileSideBar fileSidebar;
   private final MarkdownToHtmlConverter markdownToHtmlConverter;
 
-  private ViewMode lastViewMode;
-  private PatriLangFileContext lastSelectedFile;
-
-  public HtmlViewer(State state) {
+  public HtmlViewer(State state, FileSideBar fileSidebar) {
     this.state = state;
+    this.fileSidebar = fileSidebar;
     this.markdownToHtmlConverter = new MarkdownToHtmlConverter();
 
     showEmptyContent();
@@ -45,6 +45,17 @@ public class HtmlViewer extends JEditorPane {
           }
 
           new LinkOpener().accept(e.getURL().toString());
+        });
+
+    addFocusListener(
+        new FocusAdapter() {
+          @Override
+          public void focusLost(FocusEvent e) {
+            if (!e.isTemporary() && EDIT.equals(getViewMode())) {
+              saveCurrentFileToTemp();
+              update();
+            }
+          }
         });
 
     state.subscribe(Set.of("viewMode", "fontSize", "selectedFile", "searchText"), this::update);
@@ -88,19 +99,6 @@ public class HtmlViewer extends JEditorPane {
 
   private String getSearchText() {
     return state.get("searchText") == null ? "" : state.get("searchText");
-  }
-
-  private Optional<ViewMode> getLastViewMode() {
-    return Optional.ofNullable(lastViewMode);
-  }
-
-  private Optional<PatriLangFileContext> getLastSelectedFile() {
-    return Optional.ofNullable(lastSelectedFile);
-  }
-
-  private void updateLastViewModeAndFile() {
-    lastViewMode = getViewMode();
-    lastSelectedFile = getSelectedFile(state).orElse(null);
   }
 
   private void showEmptyContent() {
@@ -148,12 +146,6 @@ public class HtmlViewer extends JEditorPane {
   public void update() {
     getHighlighter().removeAllHighlights();
 
-    if (EDIT.equals(getLastViewMode().orElse(VIEW))
-        && !getViewMode().equals(getLastViewMode().orElse(VIEW))) {
-      saveLastFileToTempContent();
-    }
-    updateLastViewModeAndFile();
-
     if (getSelectedFile(state).isEmpty()) {
       showEmptyContent();
       return;
@@ -172,20 +164,22 @@ public class HtmlViewer extends JEditorPane {
     }
   }
 
-  public void saveLastFileToTempContent() {
-    if (getLastSelectedFile().isEmpty()) {
+  public void saveCurrentFileToTemp() {
+    var selectedFile = getSelectedFile(state);
+    if (selectedFile.isEmpty()) {
       return;
     }
 
-    var lastFile = getLastSelectedFile().orElseThrow();
-    var lastContent = getContent(lastFile);
+    var currentFile = selectedFile.orElseThrow();
+    var lastContent = getContent(currentFile);
 
     var currentContent = getText();
-    if (lastContent.original() && currentContent.equals(lastContent.input().content().trim())) {
-      removeInTempContent(lastFile);
+    if (lastContent.original() && currentContent.equals(lastContent.input().content())) {
+      removeInTempContent(currentFile);
       return;
     }
 
-    saveTempContent(lastFile, currentContent);
+    saveTempContent(currentFile, currentContent);
+    fileSidebar.refresh();
   }
 }

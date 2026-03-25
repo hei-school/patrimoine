@@ -10,9 +10,7 @@ import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangFileContext.PatriLangFileContextType.*;
 
 import java.io.File;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import school.hei.patrimoine.patrilang.files.PatriLangFile;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.AppContext;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.GoogleLinkList;
@@ -109,11 +107,15 @@ public class FilesProvider {
     return new PatriLangFileContext(file, getDriveId(file, context), context);
   }
 
+  private static final Map<PatriLangFileContextType, Map<String, String>> LOCAL_CACHE =
+      new HashMap<>();
+
   private static String getDriveId(PatriLangFile file, PatriLangFileContextType context) {
+    var baseFileName = file.getBaseFileName();
     var ids = getIds(context);
     var id =
         ids.stream()
-            .filter(nameId -> nameId.name().equals(file.getBaseFileName()))
+            .filter(nameId -> nameId.name().equals(baseFileName))
             .map(GoogleLinkList.NamedID::id)
             .findFirst();
 
@@ -125,6 +127,15 @@ public class FilesProvider {
       throw new RuntimeException("Online mode without id");
     }
 
-    return randomUUID().toString();
+    LOCAL_CACHE.putIfAbsent(context, new HashMap<>());
+    var contextCache = LOCAL_CACHE.get(context);
+    if (contextCache.containsKey(baseFileName)) {
+      return contextCache.get(baseFileName);
+    }
+
+    var generatedId = randomUUID().toString();
+    contextCache.put(baseFileName, generatedId);
+
+    return generatedId;
   }
 }

@@ -1,7 +1,8 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.builtin;
 
+import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangFileContentManager.getAllModifiedFiles;
+
 import java.awt.*;
-import java.util.Set;
 import javax.swing.*;
 import lombok.Getter;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.CustomBorder;
@@ -15,13 +16,13 @@ public class UnsavedChangesConfirmDialog extends Dialog {
 
   private boolean confirmed = false;
 
-  public UnsavedChangesConfirmDialog(String actionLabel, Set<String> unsavedFileNames) {
+  public UnsavedChangesConfirmDialog(String actionLabel) {
     super("Modifications non sauvegardées", 600, 400, false);
 
     setLayout(new BorderLayout());
     setResizable(false);
 
-    addContentPanel(this, unsavedFileNames, actionLabel);
+    addContentPanel(this, actionLabel);
     addButtons();
 
     pack();
@@ -29,8 +30,7 @@ public class UnsavedChangesConfirmDialog extends Dialog {
     setVisible(true);
   }
 
-  private static void addContentPanel(
-      Dialog parent, Set<String> unsavedFileNames, String actionLabel) {
+  private static void addContentPanel(Dialog parent, String actionLabel) {
     var messagePanel = new JPanel(new BorderLayout(15, 0));
     messagePanel.setBorder(CustomBorder.builder().thickness(0).padding(10, 15).build());
 
@@ -44,7 +44,7 @@ public class UnsavedChangesConfirmDialog extends Dialog {
     contentPanel.add(sectionTitle);
 
     var icon = getFileIcon();
-    for (var fileName : unsavedFileNames) {
+    for (var fileInput : getAllModifiedFiles()) {
       var filePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
       filePanel.setBorder(
           CustomBorder.builder()
@@ -55,7 +55,7 @@ public class UnsavedChangesConfirmDialog extends Dialog {
               .build());
       filePanel.setAlignmentX(Component.LEFT_ALIGNMENT);
       filePanel.add(new JLabel(icon));
-      filePanel.add(new JLabel(fileName));
+      filePanel.add(new JLabel(fileInput.file().getBaseFileName()));
       contentPanel.add(filePanel);
       contentPanel.add(Box.createVerticalStrut(5));
     }
@@ -69,7 +69,7 @@ public class UnsavedChangesConfirmDialog extends Dialog {
         new JLabel(
             "<html>Si vous continuez vers <b>\""
                 + actionLabel
-                + "\"</b>, ces modifications seront perdues.</html>");
+                + "\"</b>, ces modifications ne seront pas prises en compte.</html>");
     questionLabel.setBorder(CustomBorder.builder().thickness(0).padding(10, 0, 0, 0).build());
     messagePanel.add(questionLabel, BorderLayout.SOUTH);
 
