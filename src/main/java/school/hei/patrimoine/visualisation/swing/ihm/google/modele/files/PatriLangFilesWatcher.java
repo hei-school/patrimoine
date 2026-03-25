@@ -1,13 +1,13 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.modele.files;
 
+import static org.reflections.Reflections.log;
 import static school.hei.patrimoine.patrilang.PatriLangTranspiler.transpileToutCas;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.providers.FilesProvider.getDoneCasSetFile;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.providers.FilesProvider.getPlannedCasSetFile;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import javax.swing.*;
+import org.antlr.v4.runtime.misc.ParseCancellationException;
 import school.hei.patrimoine.cas.Cas;
 import school.hei.patrimoine.cas.CasSet;
 import school.hei.patrimoine.modele.possession.Compte;
@@ -27,15 +27,40 @@ public class PatriLangFilesWatcher {
     if (!isAnyFileModified()) {
       return;
     }
-    var done = transpileToutCas(getDoneCasSetFile());
-    var planned = transpileToutCas(getPlannedCasSetFile());
 
-    globalState()
-        .update(
-            Map.of(
-                DONE_CAS_SET, done,
-                PLANNED_CAS_SET, planned,
-                DONE_CAS_SET_COMPTES, CompteGetter.getComptes(done)));
+    CasSet done = null;
+    CasSet planned = null;
+
+    try {
+      done = transpileToutCas(getDoneCasSetFile());
+    } catch (ParseCancellationException e) {
+      log.warn("Fichier done ignoré au démarrage : {}", e.getMessage());
+      SwingUtilities.invokeLater(
+          () ->
+              JOptionPane.showMessageDialog(
+                  null, e.getMessage(), "Erreur de syntaxe", JOptionPane.WARNING_MESSAGE));
+    }
+
+    try {
+      planned = transpileToutCas(getPlannedCasSetFile());
+    } catch (ParseCancellationException e) {
+      log.warn("Fichier planned ignoré au démarrage : {}", e.getMessage());
+      SwingUtilities.invokeLater(
+          () ->
+              JOptionPane.showMessageDialog(
+                  null, e.getMessage(), "Erreur de syntaxe", JOptionPane.WARNING_MESSAGE));
+    }
+
+    var updates = new HashMap<String, Object>();
+    if (done != null) {
+      updates.put(DONE_CAS_SET, done);
+      updates.put(DONE_CAS_SET_COMPTES, CompteGetter.getComptes(done));
+    }
+    if (planned != null) updates.put(PLANNED_CAS_SET, planned);
+
+    if (!updates.isEmpty()) {
+      globalState().update(updates);
+    }
     this.observers.forEach(State.StateObserverCallbackRunnable::run);
     globalState().update(ANY_FILE_MODIFIED, false);
   }
@@ -57,6 +82,9 @@ public class PatriLangFilesWatcher {
   }
 
   public static Cas getCas(PatriLangFileContext file) {
+    var casSet = getCasSet(file);
+    if (casSet == null) return null;
+
     var baseName = file.getBaseFileName();
     // TODO: throw if PJ
     return getCasSet(file).set().stream()

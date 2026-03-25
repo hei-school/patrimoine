@@ -18,16 +18,22 @@ import java.awt.event.FocusEvent;
 import java.io.IOException;
 import java.util.Set;
 import javax.swing.*;
+import javax.swing.event.UndoableEditListener;
+import javax.swing.undo.UndoManager;
 import lombok.extern.slf4j.Slf4j;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.AppContext;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.FileSideBar;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.MarkdownToHtmlConverter;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangUndoActions;
 
 @Slf4j
 public class HtmlViewer extends JEditorPane {
+  private UndoableEditListener undoableEditListener;
+
   private final State state;
   private final FileSideBar fileSidebar;
+  private final UndoManager undoManager = new UndoManager();
   private final MarkdownToHtmlConverter markdownToHtmlConverter;
 
   public HtmlViewer(State state, FileSideBar fileSidebar) {
@@ -87,6 +93,8 @@ public class HtmlViewer extends JEditorPane {
               setCaretPosition(0);
               showEditMode();
             });
+
+    PatriLangUndoActions.register(this, undoManager);
   }
 
   private ViewMode getViewMode() {
@@ -112,14 +120,24 @@ public class HtmlViewer extends JEditorPane {
   private void showEditMode() {
     setEditable(true);
     setContentType("text/plain");
-    var content = getContent(getSelectedFile(state).orElseThrow()).input().content();
 
+    if (undoableEditListener != null) {
+      getDocument().removeUndoableEditListener(undoableEditListener);
+    }
+
+    var file = getSelectedFile(state).orElseThrow();
+    var content = getContent(file).input().content();
     setText(content);
+    setCaretPosition(0);
+
+    undoManager.discardAllEdits();
+
+    undoableEditListener = e -> undoManager.addEdit(e.getEdit());
+    getDocument().addUndoableEditListener(undoableEditListener);
+
     if (!getSearchText().isBlank()) {
       highlightInTextComponent(this, getSearchText());
     }
-
-    setCaretPosition(0);
   }
 
   private void showReadMode() {

@@ -4,7 +4,9 @@ import static school.hei.patrimoine.visualisation.swing.ihm.google.component.fil
 import static school.hei.patrimoine.visualisation.swing.ihm.google.component.html.ViewMode.VIEW;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.config.EnvironmentConfig.isOfflineMode;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.config.EnvironmentConfig.isOnlineMode;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangFileContentManager.clearAllTempContents;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangFileContentManager.hasUnsavedChanges;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangFilesWatcher.dispatch;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangFilesWatcher.getCas;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.providers.FilesProvider.getDoneFile;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.providers.FilesProvider.getPlannedFile;
@@ -25,6 +27,7 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.File
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.html.HtmlViewer;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangFilesWatcher;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.RestoreConfirmDialog;
 
 @Getter
 @Slf4j
@@ -94,7 +97,8 @@ public class PatriLangFilesPage extends LazyPage {
         new CasSetAnalyzerButton(),
         new SearchTextBar(state),
         recoupementButton(),
-        addImprevuButton);
+        addImprevuButton,
+        restoreButton());
   }
 
   private List<Component> rightAppBarControls(State state) {
@@ -145,6 +149,19 @@ public class PatriLangFilesPage extends LazyPage {
         });
   }
 
+  private Button restoreButton() {
+    return new Button(
+        "Restaurer",
+        e -> {
+          var dialog = new RestoreConfirmDialog();
+          if (dialog.isConfirmed()) {
+            clearAllTempContents();
+            htmlViewer.update();
+            dispatch();
+          }
+        });
+  }
+
   private void updateAddImprevuButtonVisibility() {
     var optionalSelectedFile = getSelectedFile(state);
 
@@ -179,6 +196,8 @@ public class PatriLangFilesPage extends LazyPage {
 
     var doneCas = getCas(getDoneFile(selectedFile));
     var plannedCas = getCas(getPlannedFile(selectedFile));
+
+    if (doneCas == null || plannedCas == null) return;
     state.update(Map.of("plannedCas", plannedCas, "doneCas", doneCas));
   }
 }
