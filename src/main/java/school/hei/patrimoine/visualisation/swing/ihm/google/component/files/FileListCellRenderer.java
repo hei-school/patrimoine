@@ -47,7 +47,7 @@ public class FileListCellRenderer extends DefaultListCellRenderer {
   }
 
   private ImageIcon getModifiedIcon() {
-    int dotSize = 10;
+    int dotSize = 8;
     int gap = 4;
     int totalWidth = icon.getIconWidth() + dotSize + gap;
     int height = icon.getIconHeight();
@@ -56,7 +56,7 @@ public class FileListCellRenderer extends DefaultListCellRenderer {
     var g = combined.createGraphics();
     g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-    g.setColor(new Color(45, 45, 45));
+    g.setColor(new Color(215, 1, 1, 255));
     g.fillOval(0, (height - dotSize) / 2, dotSize, dotSize);
 
     g.drawImage(icon.getImage(), dotSize + gap, 0, null);
