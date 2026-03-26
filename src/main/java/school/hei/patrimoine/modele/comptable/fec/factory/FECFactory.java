@@ -13,7 +13,7 @@ public class FECFactory {
   // TODO: use multiple journals
   public static FEC make(
       Collection<OperationComptable> operations, Map<String, PieceJustificative> pjs) {
-    var journal = JournalFactory.make(JN, "journal", operations, pjs);
+    var journal = JournalFactory.make(JN, "Journal", operations, pjs);
     return new FEC(List.of(journal));
   }
 }
