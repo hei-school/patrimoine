@@ -66,6 +66,7 @@ public class PatriLangFilesPage extends LazyPage {
 
     PatriLangFilesWatcher.addObserver(
         () -> {
+          this.fileSideBar.refresh();
           this.htmlViewer.update();
 
           this.updateCas();

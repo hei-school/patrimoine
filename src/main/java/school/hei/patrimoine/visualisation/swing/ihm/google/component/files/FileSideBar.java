@@ -45,6 +45,13 @@ public class FileSideBar extends JPanel {
             plannedList.clearSelection();
           }
         });
+
+    state.subscribe(
+        "unsavedFiles",
+        () -> {
+          doneList.repaint();
+          plannedList.repaint();
+        });
   }
 
   public void refresh() {
