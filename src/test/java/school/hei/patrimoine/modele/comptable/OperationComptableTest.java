@@ -1,62 +1,60 @@
 package school.hei.patrimoine.modele.comptable;
 
-import static java.time.Month.DECEMBER;
-import static java.time.Month.JANUARY;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static school.hei.patrimoine.modele.Argent.ariary;
-import static school.hei.patrimoine.modele.Devise.EUR;
-import static school.hei.patrimoine.modele.comptable.OperationComptable.make;
-import static school.hei.patrimoine.modele.comptable.TypeComptable.*;
+import static school.hei.patrimoine.modele.comptable.MouvementComptable.CREDIT;
+import static school.hei.patrimoine.modele.comptable.MouvementComptable.DEBIT;
+import static school.hei.patrimoine.modele.comptable.TypeComptable.CCA;
 
 import java.time.LocalDate;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import school.hei.patrimoine.modele.Argent;
-import school.hei.patrimoine.modele.possession.*;
+import school.hei.patrimoine.modele.possession.Compte;
+import school.hei.patrimoine.modele.possession.TransfertArgent;
 
 class OperationComptableTest {
-  private static final LocalDate DEBUT = LocalDate.of(2025, JANUARY, 1);
-  private static final LocalDate FIN = LocalDate.of(2025, DECEMBER, 31);
-  private static final Argent ARGENT = new Argent(1000, EUR);
+  private OperationComptable subject;
+  private static final Compte COMPTE_COURANT =
+      new Compte("Compte courant", LocalDate.of(2026, 1, 1), ariary(5_000_000));
+  private static final Compte COMPTE_EPARGNE =
+      new Compte("Compte épargne", LocalDate.of(2025, 1, 1), ariary(700_000));
+  private static final TransfertArgent TRANSFERT =
+      new TransfertArgent(
+          "Transfert vers épargne",
+          COMPTE_COURANT,
+          COMPTE_EPARGNE,
+          LocalDate.of(2026, 3, 10),
+          LocalDate.of(2026, 3, 10),
+          5,
+          ariary(1_000_000));
 
-  private Compte monCompte() {
-    return new Compte("mon compte", DEBUT, ARGENT);
+  @BeforeEach
+  void setup() {
+    subject = new OperationComptable(TRANSFERT);
   }
 
   @Test
-  void operationComptable_resout_typeComptable_automatiquement() {
-    var materiel = new Materiel("Voiture", DEBUT, DEBUT, ARGENT, 5);
-    var operationComptable = OperationComptable.make(materiel);
-
-    assertEquals(materiel, operationComptable.possession());
-    assertEquals(IMMOBILISATION, operationComptable.type());
+  void should_have_a_possesssion_and_two_compte() {
+    assertEquals(TRANSFERT.nom(), subject.getPossession().nom());
+    assertEquals(TRANSFERT.getDepuisCompte(), subject.getCompteCrediteur().compte());
+    assertEquals(TRANSFERT.getVersCompte(), subject.getCompteDebiteur().compte());
   }
 
   @Test
-  void operationComptable_accepte_typeComptable_explicite() {
-    var compte = monCompte();
-    var operationComptable = new OperationComptable(compte, CCA);
+  void each_compte_comptable_has_different_sens() {
+    var credit = subject.getCompteCrediteur();
+    var debit = subject.getCompteDebiteur();
 
-    assertEquals(compte, operationComptable.possession());
-    assertEquals(CCA, operationComptable.type());
+    assertEquals(CREDIT, credit.mouvementComptable());
+    assertEquals(DEBIT, debit.mouvementComptable());
   }
 
   @Test
-  void operationComptable_fluxArgent_deduit() {
-    var flux = new FluxArgent("Salaire", monCompte(), DEBUT, FIN, 5, ARGENT);
-    OperationComptable operationComptable = OperationComptable.make(flux);
+  void each_compte_comptable_has_different_type() {
+    var credit = subject.getCompteCrediteur();
+    var debit = subject.getCompteDebiteur();
 
-    assertEquals(PRODUIT, operationComptable.type());
-  }
-
-  @Test
-  void fluxArgent_positif_est_produit_par_defaut() {
-    var flux = new FluxArgent("Salaire", monCompte(), DEBUT, FIN, 5, ARGENT);
-    assertEquals(PRODUIT, make(flux).type());
-  }
-
-  @Test
-  void fluxArgent_negatif_est_charge_par_defaut() {
-    var flux = new FluxArgent("Loyer", monCompte(), DEBUT, FIN, 5, ariary(-1000));
-    assertEquals(CHARGE, make(flux).type());
+    assertEquals(CCA, credit.typeComptable());
+    assertEquals(CCA, debit.typeComptable());
   }
 }
