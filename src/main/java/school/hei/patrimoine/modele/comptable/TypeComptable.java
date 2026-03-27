@@ -1,21 +1,20 @@
 package school.hei.patrimoine.modele.comptable;
 
-import school.hei.patrimoine.modele.possession.*;
-
 public enum TypeComptable {
-  CCA,
-  PRODUIT,
-  IMMOBILISATION,
-  CHARGE,
-  AUTRE;
+  CCA(486),
+  PCA(487),
+  MATERIEL(2183),
+  BANQUE(512),
+  VIREMENT_INTERNE(580),
+  REMBOURSEMENT_DETTE(164);
 
-  public static TypeComptable from(Possession possession) {
-    return switch (possession) {
-      case RemboursementDette ignored -> CHARGE;
-      case Materiel ignored -> IMMOBILISATION;
-      case AchatMaterielAuComptant ignored -> IMMOBILISATION;
-      case FluxArgent fluxArgent -> fluxArgent.getFluxMensuel().lt(0) ? CHARGE : PRODUIT;
-      default -> AUTRE;
-    };
+  private final int codePCG;
+
+  TypeComptable(int codePCG) {
+    this.codePCG = codePCG;
+  }
+
+  public int codePCG() {
+    return codePCG;
   }
 }
