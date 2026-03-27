@@ -53,7 +53,7 @@ public class FECLineMapper {
     values.put(JOURNAL_LIB, journal.libelle());
     values.put(ECRITURE_NUM, ecriture.id());
     values.put(ECRITURE_DATE, formatDate(ecriture.date()));
-    values.put(COMPTE_NUM, compte.typeComptable().toString());
+    values.put(COMPTE_NUM, String.valueOf(compte.typeComptable().codePCG()));
     values.put(COMPTE_LIB, compte.compte().nom());
     values.put(COMP_AUX_NUM, compAux != null ? compAux.typeComptable().toString() : "");
     values.put(COMP_AUX_LIB, compAux != null ? compAux.compte().nom() : "");
