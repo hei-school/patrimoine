@@ -1,10 +1,13 @@
 package school.hei.patrimoine.modele.comptable.fec.mapper;
 
+import static java.time.LocalDate.now;
 import static org.junit.jupiter.api.Assertions.*;
 import static school.hei.patrimoine.modele.Argent.ariary;
+import static school.hei.patrimoine.modele.Devise.EUR;
 import static school.hei.patrimoine.modele.comptable.fec.mapper.FECLineMapper.toFECLine;
 
 import java.time.LocalDate;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
@@ -38,6 +41,8 @@ class FECLineMapperTest {
             JournalCode.JN, "Journal", Set.of(OPERATION), Map.of("Transfert Argent BNI", PJ));
     var ecriture = journal.ecritures().getFirst();
     var ligne = ecriture.lignes().getFirst();
+    var montantEur =
+        formatAmount(ligne.compte().compte().valeurComptable().convertir(EUR, now()).montant());
 
     var fecLine = toFECLine(journal, ecriture, ligne);
     var values = fecLine.values();
@@ -46,19 +51,23 @@ class FECLineMapperTest {
     assertEquals("Journal", values[1], "JournalLib");
     assertEquals("JN000", values[2], "EcritureNum");
     assertEquals("20260503", values[3], "EcritureDate");
-    assertEquals("CCA", values[4], "CompteNum");
+    assertEquals("486", values[4], "CompteNum");
     assertEquals("Compte destinataire", values[5], "CompteLib");
     assertEquals("", values[6], "CompAuxNum");
     assertEquals("", values[7], "CompAuxLib");
     assertEquals("Transfert Argent BNI", values[8], "PieceRef");
     assertEquals("20260405", values[9], "PieceDate");
     assertEquals("Transfert Argent BNI", values[10], "EcritureLib");
-    assertEquals("19.72", values[11], "Debit");
+    assertEquals(montantEur, values[11], "Debit");
     assertEquals("", values[12], "Credit");
     assertEquals("", values[13], "EcritureLet");
     assertEquals("", values[14], "DateLet");
     assertEquals("20260405", values[15], "ValidDate");
     assertEquals("100000.00", values[16], "Montantdevise");
     assertEquals("MGA", values[17], "Idevise");
+  }
+
+  private static String formatAmount(double montant) {
+    return String.format(Locale.US, "%.2f", Math.abs(montant));
   }
 }
