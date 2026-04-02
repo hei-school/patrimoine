@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static school.hei.patrimoine.modele.Argent.ariary;
 import static school.hei.patrimoine.modele.comptable.MouvementComptable.CREDIT;
 import static school.hei.patrimoine.modele.comptable.MouvementComptable.DEBIT;
-import static school.hei.patrimoine.modele.comptable.TypeComptable.CCA;
+import static school.hei.patrimoine.modele.comptable.TypeComptable.VIREMENT_INTERNE;
 
 import java.time.LocalDate;
 import org.junit.jupiter.api.BeforeEach;
@@ -54,7 +54,7 @@ class OperationComptableTest {
     var credit = subject.getCompteCrediteur();
     var debit = subject.getCompteDebiteur();
 
-    assertEquals(CCA, credit.typeComptable());
-    assertEquals(CCA, debit.typeComptable());
+    assertEquals(VIREMENT_INTERNE, credit.typeComptable());
+    assertEquals(VIREMENT_INTERNE, debit.typeComptable());
   }
 }
