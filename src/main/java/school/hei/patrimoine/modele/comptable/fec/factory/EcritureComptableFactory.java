@@ -14,8 +14,8 @@ public class EcritureComptableFactory {
       Journal journal, OperationComptable operation, PieceJustificative pj) {
     var possession = operation.getPossession();
 
-    var debit = LigneEcriture.builder().compte(operation.getCompteDebiteur()).build();
-    var credit = LigneEcriture.builder().compte(operation.getCompteCrediteur()).build();
+    var debit = LigneEcriture.builder().compteComptable(operation.getCompteDebiteur()).build();
+    var credit = LigneEcriture.builder().compteComptable(operation.getCompteCrediteur()).build();
 
     return EcritureComptable.builder()
         .id((journal.getNextId()))

@@ -14,15 +14,14 @@ import school.hei.patrimoine.modele.comptable.fec.*;
 import school.hei.patrimoine.modele.possession.pj.PieceJustificative;
 
 public class FECLineMapper {
+    private final CompteNumResolver compteNumResolver;
 
-  private final CompteNumResolver compteNumResolver;
-
-  public FECLineMapper(CompteNumResolver compteNumResolver) {
-    this.compteNumResolver = compteNumResolver;
-  }
+    public FECLineMapper(CompteNumResolver compteNumResolver) {
+        this.compteNumResolver = compteNumResolver;
+    }
 
   public FECLine toFECLine(Journal journal, EcritureComptable ecriture, LigneEcriture ligne) {
-    var compte = ligne.compte();
+    var compte = ligne.compteComptable();
     var compAux = ligne.compteAuxiliaire();
     var pj = ecriture.pj();
 

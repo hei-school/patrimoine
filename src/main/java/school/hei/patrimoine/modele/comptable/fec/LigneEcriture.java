@@ -6,7 +6,7 @@ import school.hei.patrimoine.modele.comptable.CompteComptable;
 
 @Builder
 public record LigneEcriture(
-    CompteComptable compte,
+    CompteComptable compteComptable,
     CompteComptable compteAuxiliaire,
     String lettrage,
     LocalDate dateLettrage) {}
