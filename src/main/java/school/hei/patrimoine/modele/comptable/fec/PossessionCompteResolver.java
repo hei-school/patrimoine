@@ -3,7 +3,7 @@ package school.hei.patrimoine.modele.comptable.fec;
 import static java.time.LocalDate.now;
 import static school.hei.patrimoine.modele.comptable.MouvementComptable.CREDIT;
 import static school.hei.patrimoine.modele.comptable.MouvementComptable.DEBIT;
-import static school.hei.patrimoine.modele.comptable.TypeComptable.CCA;
+import static school.hei.patrimoine.modele.comptable.TypeComptable.*;
 
 import org.jspecify.annotations.NonNull;
 import school.hei.patrimoine.modele.Argent;
@@ -24,48 +24,48 @@ public class PossessionCompteResolver {
           new Comptes(
               CompteComptable.builder()
                   .compte(transfert.getVersCompte())
-                  .typeComptable(CCA)
+                  .typeComptable(VIREMENT_INTERNE)
                   .mouvementComptable(DEBIT)
                   .build(),
               CompteComptable.builder()
                   .compte(transfert.getDepuisCompte())
-                  .typeComptable(CCA)
+                  .typeComptable(VIREMENT_INTERNE)
                   .mouvementComptable(CREDIT)
                   .build());
       case Compte compte ->
           new Comptes(
               CompteComptable.builder()
                   .compte(compte)
-                  .typeComptable(CCA)
+                  .typeComptable(BANQUE)
                   .mouvementComptable(DEBIT)
                   .build(),
               CompteComptable.builder()
                   .compte(CAPITAL_SOCIAL)
-                  .typeComptable(CCA)
+                  .typeComptable(BANQUE)
                   .mouvementComptable(CREDIT)
                   .build());
       case RemboursementDette remboursement ->
           new Comptes(
               CompteComptable.builder()
                   .compte(remboursement.getRemboursé())
-                  .typeComptable(CCA)
+                  .typeComptable(REMBOURSEMENT_DETTE)
                   .mouvementComptable(DEBIT)
                   .build(),
               CompteComptable.builder()
                   .compte(remboursement.getRembourseur())
-                  .typeComptable(CCA)
+                  .typeComptable(BANQUE)
                   .mouvementComptable(CREDIT)
                   .build());
       case AchatMaterielAuComptant achat ->
           new Comptes(
               CompteComptable.builder()
                   .compte(FINANCÉ)
-                  .typeComptable(CCA)
+                  .typeComptable(MATERIEL)
                   .mouvementComptable(DEBIT)
                   .build(),
               CompteComptable.builder()
                   .compte(achat.getFinanceur())
-                  .typeComptable(CCA)
+                  .typeComptable(BANQUE)
                   .mouvementComptable(CREDIT)
                   .build());
       default ->
@@ -84,19 +84,19 @@ public class PossessionCompteResolver {
               .build(),
           CompteComptable.builder()
               .compte(flux.getCompte())
-              .typeComptable(CCA)
+              .typeComptable(BANQUE)
               .mouvementComptable(CREDIT)
               .build());
     }
     return new Comptes(
         CompteComptable.builder()
             .compte(flux.getCompte())
-            .typeComptable(CCA)
+            .typeComptable(BANQUE)
             .mouvementComptable(DEBIT)
             .build(),
         CompteComptable.builder()
             .compte(COMPTE_ATTENTE)
-            .typeComptable(CCA)
+            .typeComptable(PCA)
             .mouvementComptable(CREDIT)
             .build());
   }
