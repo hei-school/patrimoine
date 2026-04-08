@@ -25,7 +25,7 @@ public class FECLineMapper {
     var compAux = ligne.compteAuxiliaire();
     var pj = ecriture.pj();
 
-    var montantEUR = compte.compte().valeurComptable().convertir(EUR, now());
+    var montantEUR = ecriture.valeur().convertir(EUR, now());
     var montantMGA = montantEUR.convertir(MGA, now()).montant();
     var debit =
         compte.mouvementComptable() == MouvementComptable.DEBIT

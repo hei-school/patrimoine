@@ -1,5 +1,7 @@
 package school.hei.patrimoine.modele.comptable.fec.factory;
 
+import static school.hei.patrimoine.modele.comptable.fec.PossessionFluxResolver.resolve;
+
 import java.util.List;
 import school.hei.patrimoine.modele.comptable.OperationComptable;
 import school.hei.patrimoine.modele.comptable.fec.EcritureComptable;
@@ -21,6 +23,7 @@ public class EcritureComptableFactory {
         .id((journal.getNextId()))
         .date(possession.t())
         .libelle(possession.nom())
+        .valeur(resolve(possession))
         .lignes(List.of(debit, credit))
         .dateValidation(pj != null ? pj.date() : null)
         .pj(pj)
