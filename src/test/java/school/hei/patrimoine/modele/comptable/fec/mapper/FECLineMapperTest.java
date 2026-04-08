@@ -4,11 +4,11 @@ import static java.time.Month.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static school.hei.patrimoine.modele.Argent.ariary;
 import static school.hei.patrimoine.modele.comptable.fec.JournalCode.JN;
-import static school.hei.patrimoine.modele.comptable.fec.mapper.FECLineMapper.toFECLine;
 
 import java.time.LocalDate;
 import java.util.Map;
 import java.util.Set;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import school.hei.patrimoine.modele.comptable.OperationComptable;
 import school.hei.patrimoine.modele.comptable.fec.factory.JournalFactory;
@@ -31,6 +31,14 @@ class FECLineMapperTest {
   private static final PieceJustificative PJ =
       new PieceJustificative("Transfert Argent BNI", LocalDate.of(2026, APRIL, 5), "lien-facture");
 
+  // Un mapper frais par test pour éviter les interférences de séquence
+  private FECLineMapper mapper;
+
+  @BeforeEach
+  void setUp() {
+    mapper = new FECLineMapper(new CompteNumResolver());
+  }
+
   @Test
   void transfert_compte_num_est_virement_interne_580() {
     var journal =
@@ -38,9 +46,9 @@ class FECLineMapperTest {
     var ecriture = journal.ecritures().getFirst();
     var ligne = ecriture.lignes().getFirst();
 
-    var fecLine = toFECLine(journal, ecriture, ligne);
+    var fecLine = mapper.toFECLine(journal, ecriture, ligne);
 
-    assertEquals("580", fecLine.values()[4]);
+    assertEquals("580001", fecLine.values()[4]);
   }
 
   @Test
@@ -50,7 +58,7 @@ class FECLineMapperTest {
     var ecriture = journal.ecritures().getFirst();
     var ligne = ecriture.lignes().getFirst();
 
-    var fecLine = toFECLine(journal, ecriture, ligne);
+    var fecLine = mapper.toFECLine(journal, ecriture, ligne);
 
     assertEquals("Compte destinataire", fecLine.values()[5]);
     assertFalse(fecLine.values()[11].isEmpty());
@@ -64,9 +72,9 @@ class FECLineMapperTest {
     var ecriture = journal.ecritures().getFirst();
     var ligne = ecriture.lignes().get(1);
 
-    var fecLine = toFECLine(journal, ecriture, ligne);
+    var fecLine = mapper.toFECLine(journal, ecriture, ligne);
 
-    assertEquals("580", fecLine.values()[4]);
+    assertEquals("580001", fecLine.values()[4]);
     assertEquals("Compte expéditeur", fecLine.values()[5]);
     assertTrue(fecLine.values()[11].isEmpty());
     assertFalse(fecLine.values()[12].isEmpty());
@@ -79,7 +87,7 @@ class FECLineMapperTest {
     var ecriture = journal.ecritures().getFirst();
     var ligne = ecriture.lignes().getFirst();
 
-    var fecLine = toFECLine(journal, ecriture, ligne);
+    var fecLine = mapper.toFECLine(journal, ecriture, ligne);
 
     assertEquals("Transfert Argent BNI", fecLine.values()[8]);
     assertEquals("20260405", fecLine.values()[9]);
@@ -96,9 +104,9 @@ class FECLineMapperTest {
     var ecriture = journal.ecritures().getFirst();
     var ligne = ecriture.lignes().getFirst();
 
-    var fecLine = toFECLine(journal, ecriture, ligne);
+    var fecLine = mapper.toFECLine(journal, ecriture, ligne);
 
-    assertEquals("512", fecLine.values()[4]);
+    assertEquals("512001", fecLine.values()[4]);
     assertFalse(fecLine.values()[11].isEmpty());
     assertTrue(fecLine.values()[12].isEmpty());
   }
@@ -113,9 +121,9 @@ class FECLineMapperTest {
     var ecriture = journal.ecritures().getFirst();
     var ligne = ecriture.lignes().get(1);
 
-    var fecLine = toFECLine(journal, ecriture, ligne);
+    var fecLine = mapper.toFECLine(journal, ecriture, ligne);
 
-    assertEquals("487", fecLine.values()[4]);
+    assertEquals("487001", fecLine.values()[4]);
     assertTrue(fecLine.values()[11].isEmpty());
     assertFalse(fecLine.values()[12].isEmpty());
   }
@@ -130,9 +138,9 @@ class FECLineMapperTest {
     var ecriture = journal.ecritures().getFirst();
     var ligne = ecriture.lignes().getFirst();
 
-    var fecLine = toFECLine(journal, ecriture, ligne);
+    var fecLine = mapper.toFECLine(journal, ecriture, ligne);
 
-    assertEquals("486", fecLine.values()[4]);
+    assertEquals("486001", fecLine.values()[4]);
     assertFalse(fecLine.values()[11].isEmpty());
     assertTrue(fecLine.values()[12].isEmpty());
   }
@@ -147,9 +155,9 @@ class FECLineMapperTest {
     var ecriture = journal.ecritures().getFirst();
     var ligne = ecriture.lignes().get(1);
 
-    var fecLine = toFECLine(journal, ecriture, ligne);
+    var fecLine = mapper.toFECLine(journal, ecriture, ligne);
 
-    assertEquals("512", fecLine.values()[4]);
+    assertEquals("512001", fecLine.values()[4]);
   }
 
   @Test
@@ -162,9 +170,9 @@ class FECLineMapperTest {
     var ecriture = journal.ecritures().getFirst();
     var ligne = ecriture.lignes().getFirst();
 
-    var fecLine = toFECLine(journal, ecriture, ligne);
+    var fecLine = mapper.toFECLine(journal, ecriture, ligne);
 
-    assertEquals("2183", fecLine.values()[4]);
+    assertEquals("2183001", fecLine.values()[4]);
     assertFalse(fecLine.values()[11].isEmpty());
   }
 
@@ -178,9 +186,9 @@ class FECLineMapperTest {
     var ecriture = journal.ecritures().getFirst();
     var ligne = ecriture.lignes().get(1);
 
-    var fecLine = toFECLine(journal, ecriture, ligne);
+    var fecLine = mapper.toFECLine(journal, ecriture, ligne);
 
-    assertEquals("512", fecLine.values()[4]);
+    assertEquals("512001", fecLine.values()[4]);
   }
 
   @Test
@@ -201,8 +209,30 @@ class FECLineMapperTest {
     var ecriture = journal.ecritures().getFirst();
     var ligne = ecriture.lignes().getFirst();
 
-    var fecLine = toFECLine(journal, ecriture, ligne);
+    var fecLine = mapper.toFECLine(journal, ecriture, ligne);
 
-    assertEquals("164", fecLine.values()[4]);
+    assertEquals("164001", fecLine.values()[4]);
+  }
+
+  @Test
+  void meme_compte_recoit_toujours_le_meme_numero_dans_un_export() {
+    var flux1 =
+        new FluxArgent(
+            "Vente A", COMPTE_EXPEDITEUR, LocalDate.of(2026, JANUARY, 10), ariary(200_000));
+    var flux2 =
+        new FluxArgent(
+            "Vente B", COMPTE_EXPEDITEUR, LocalDate.of(2026, FEBRUARY, 10), ariary(300_000));
+    var op1 = new OperationComptable(flux1);
+    var op2 = new OperationComptable(flux2);
+    var journal = JournalFactory.make(JN, "Journal", Set.of(op1, op2), Map.of());
+
+    var ecriture1 = journal.ecritures().getFirst();
+    var ecriture2 = journal.ecritures().get(1);
+
+    var fecLine1 = mapper.toFECLine(journal, ecriture1, ecriture1.lignes().getFirst());
+    var fecLine2 = mapper.toFECLine(journal, ecriture2, ecriture2.lignes().getFirst());
+
+    // Le même compte expéditeur doit avoir le même numéro dans tout l'export
+    assertEquals(fecLine1.values()[4], fecLine2.values()[4]);
   }
 }

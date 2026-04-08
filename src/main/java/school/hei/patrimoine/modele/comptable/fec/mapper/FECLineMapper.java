@@ -14,8 +14,14 @@ import school.hei.patrimoine.modele.comptable.fec.*;
 import school.hei.patrimoine.modele.possession.pj.PieceJustificative;
 
 public class FECLineMapper {
-  public static FECLine toFECLine(
-      Journal journal, EcritureComptable ecriture, LigneEcriture ligne) {
+
+  private final CompteNumResolver compteNumResolver;
+
+  public FECLineMapper(CompteNumResolver compteNumResolver) {
+    this.compteNumResolver = compteNumResolver;
+  }
+
+  public FECLine toFECLine(Journal journal, EcritureComptable ecriture, LigneEcriture ligne) {
     var compte = ligne.compte();
     var compAux = ligne.compteAuxiliaire();
     var pj = ecriture.pj();
@@ -38,7 +44,7 @@ public class FECLineMapper {
     return new FECLine(values);
   }
 
-  private static @NonNull Map<FECColumn, String> getFecColumnStringMap(
+  private @NonNull Map<FECColumn, String> getFecColumnStringMap(
       Journal journal,
       EcritureComptable ecriture,
       LigneEcriture ligne,
@@ -53,7 +59,7 @@ public class FECLineMapper {
     values.put(JOURNAL_LIB, journal.libelle());
     values.put(ECRITURE_NUM, ecriture.id());
     values.put(ECRITURE_DATE, formatDate(ecriture.date()));
-    values.put(COMPTE_NUM, String.valueOf(compte.typeComptable().codePCG()));
+    values.put(COMPTE_NUM, compteNumResolver.resolve(compte));
     values.put(COMPTE_LIB, compte.compte().nom());
     values.put(COMP_AUX_NUM, compAux != null ? compAux.typeComptable().toString() : "");
     values.put(COMP_AUX_LIB, compAux != null ? compAux.compte().nom() : "");
