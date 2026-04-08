@@ -31,7 +31,6 @@ class FECLineMapperTest {
   private static final PieceJustificative PJ =
       new PieceJustificative("Transfert Argent BNI", LocalDate.of(2026, APRIL, 5), "lien-facture");
 
-  // Un mapper frais par test pour éviter les interférences de séquence
   private FECLineMapper mapper;
 
   @BeforeEach
@@ -232,7 +231,6 @@ class FECLineMapperTest {
     var fecLine1 = mapper.toFECLine(journal, ecriture1, ecriture1.lignes().getFirst());
     var fecLine2 = mapper.toFECLine(journal, ecriture2, ecriture2.lignes().getFirst());
 
-    // Le même compte expéditeur doit avoir le même numéro dans tout l'export
     assertEquals(fecLine1.values()[4], fecLine2.values()[4]);
   }
 }
