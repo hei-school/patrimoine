@@ -8,6 +8,7 @@ import static school.hei.patrimoine.modele.comptable.TypeComptable.*;
 import org.jspecify.annotations.NonNull;
 import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.comptable.CompteComptable;
+import school.hei.patrimoine.modele.comptable.PairCompteComptable;
 import school.hei.patrimoine.modele.possession.*;
 
 public class PossessionCompteResolver {
@@ -17,11 +18,11 @@ public class PossessionCompteResolver {
       new Compte("Compte d'attente", now(), Argent.ariary(0));
   private static final Compte FINANCÉ = new Compte("Matériel", now(), Argent.ariary(0));
 
-  public static Comptes resolve(Possession possession) {
+  public static PairCompteComptable resolve(Possession possession) {
     return switch (possession) {
       case FluxArgent flux -> getComptes(flux);
       case TransfertArgent transfert ->
-          new Comptes(
+          new PairCompteComptable(
               CompteComptable.builder()
                   .compte(transfert.getVersCompte())
                   .typeComptable(VIREMENT_INTERNE)
@@ -33,7 +34,7 @@ public class PossessionCompteResolver {
                   .mouvementComptable(CREDIT)
                   .build());
       case Compte compte ->
-          new Comptes(
+          new PairCompteComptable(
               CompteComptable.builder()
                   .compte(compte)
                   .typeComptable(BANQUE)
@@ -45,7 +46,7 @@ public class PossessionCompteResolver {
                   .mouvementComptable(CREDIT)
                   .build());
       case RemboursementDette remboursement ->
-          new Comptes(
+          new PairCompteComptable(
               CompteComptable.builder()
                   .compte(remboursement.getRemboursé())
                   .typeComptable(REMBOURSEMENT_DETTE)
@@ -57,7 +58,7 @@ public class PossessionCompteResolver {
                   .mouvementComptable(CREDIT)
                   .build());
       case AchatMaterielAuComptant achat ->
-          new Comptes(
+          new PairCompteComptable(
               CompteComptable.builder()
                   .compte(FINANCÉ)
                   .typeComptable(MATERIEL)
@@ -74,9 +75,9 @@ public class PossessionCompteResolver {
     };
   }
 
-  private static @NonNull Comptes getComptes(FluxArgent flux) {
+  private static @NonNull PairCompteComptable getComptes(FluxArgent flux) {
     if (flux.getFluxMensuel().montant() < 0) {
-      return new Comptes(
+      return new PairCompteComptable(
           CompteComptable.builder()
               .compte(COMPTE_ATTENTE)
               .typeComptable(CCA)
@@ -88,7 +89,7 @@ public class PossessionCompteResolver {
               .mouvementComptable(CREDIT)
               .build());
     }
-    return new Comptes(
+    return new PairCompteComptable(
         CompteComptable.builder()
             .compte(flux.getCompte())
             .typeComptable(BANQUE)
@@ -100,6 +101,4 @@ public class PossessionCompteResolver {
             .mouvementComptable(CREDIT)
             .build());
   }
-
-  public record Comptes(CompteComptable compteDébiteur, CompteComptable compteCréditeur) {}
 }

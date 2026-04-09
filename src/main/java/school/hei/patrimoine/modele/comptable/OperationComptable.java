@@ -13,15 +13,8 @@ public class OperationComptable {
 
   public OperationComptable(Possession possession) {
     this.possession = possession;
-    var comptes = getComptesComptables();
-    this.compteDebiteur = comptes.compteDebiteur;
-    this.compteCrediteur = comptes.compteCrediteur;
-  }
-
-  private ComptesComptables getComptesComptables() {
     var comptes = resolve(possession);
-    return new ComptesComptables(comptes.compteDébiteur(), comptes.compteCréditeur());
+    this.compteDebiteur = comptes.compteDebiteur();
+    this.compteCrediteur = comptes.compteCrediteur();
   }
-
-  record ComptesComptables(CompteComptable compteDebiteur, CompteComptable compteCrediteur) {}
 }
