@@ -124,7 +124,7 @@ sectionPiecesJustificatives
     ;
 
 piecesJustificativesItem
-    :   MUL id COMMA? dateValue=date COMMA? URL_START URL_CONTENT URL_END
+    :   MUL id COMMA? dateValue=date COMMA? reference=REFERENCE COMMA? URL_START URL_CONTENT URL_END
     ;
 
 compteElement
