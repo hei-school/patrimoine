@@ -13,24 +13,15 @@ import school.hei.patrimoine.modele.possession.FluxArgent;
 import school.hei.patrimoine.modele.possession.pj.PieceJustificative;
 
 class JournalTest {
+  private Compte compte;
   private Journal subject;
-  private static final Compte COMPTE =
-      new Compte("Epargne", LocalDate.of(2024, 6, 9), ariary(200_000));
-  private static final FluxArgent FLUX =
-      new FluxArgent(
-          "Entrée",
-          COMPTE,
-          LocalDate.of(2026, 1, 20),
-          LocalDate.of(2026, 1, 20),
-          6,
-          ariary(30_000));
-  private static final OperationComptable OPERATION = new OperationComptable(FLUX);
-  private static final PieceJustificative PJ =
-      new PieceJustificative("FAC251229", LocalDate.of(2025, 12, 29), "link1");
+  private PieceJustificative pj;
 
   @BeforeEach
   void setup() {
     subject = new Journal(JN, "Journal");
+    pj = new PieceJustificative("FAC251229", LocalDate.of(2025, 12, 29), "link1");
+    compte = new Compte("Epargne", LocalDate.of(2024, 6, 9), ariary(200_000));
   }
 
   @Test
@@ -42,18 +33,38 @@ class JournalTest {
 
   @Test
   void add_ecriture_to_a_journal() {
-    subject.addEcriture(OPERATION, PJ);
-    subject.addEcriture(OPERATION, PJ);
-    subject.addEcriture(OPERATION, PJ);
+    var flux =
+        new FluxArgent(
+            "Entrée",
+            compte,
+            LocalDate.of(2026, 1, 20),
+            LocalDate.of(2026, 1, 20),
+            6,
+            ariary(30_000));
+    var operation = new OperationComptable(flux);
+
+    subject.addEcriture(operation, pj);
+    subject.addEcriture(operation, pj);
+    subject.addEcriture(operation, pj);
 
     assertEquals(3, subject.ecritures().size());
   }
 
   @Test
   void ecriture_ids_should_be_sequential() {
-    subject.addEcriture(OPERATION, PJ);
-    subject.addEcriture(OPERATION, PJ);
-    subject.addEcriture(OPERATION, PJ);
+    var flux =
+        new FluxArgent(
+            "Entrée",
+            compte,
+            LocalDate.of(2026, 1, 20),
+            LocalDate.of(2026, 1, 20),
+            6,
+            ariary(30_000));
+    var operation = new OperationComptable(flux);
+
+    subject.addEcriture(operation, pj);
+    subject.addEcriture(operation, pj);
+    subject.addEcriture(operation, pj);
     var actual = subject.ecritures();
 
     assertEquals("JN000", actual.get(0).id());
@@ -62,8 +73,18 @@ class JournalTest {
   }
 
   @Test
-  void ecriture_of_journal_should_contain_at_least_two_ligne_ecriture() {
-    subject.addEcriture(OPERATION, PJ);
+  void ecriture_should_contain_at_least_two_ligne_ecriture() {
+    var flux =
+        new FluxArgent(
+            "Entrée",
+            compte,
+            LocalDate.of(2026, 1, 20),
+            LocalDate.of(2026, 1, 20),
+            6,
+            ariary(30_000));
+    var operation = new OperationComptable(flux);
+
+    subject.addEcriture(operation, pj);
     var actual = subject.ecritures().getFirst().lignes().size();
 
     assertEquals(2, actual);

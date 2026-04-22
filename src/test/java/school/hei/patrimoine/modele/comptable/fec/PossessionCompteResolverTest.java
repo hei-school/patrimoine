@@ -30,11 +30,11 @@ class PossessionCompteResolverTest {
             ariary(100_000));
 
     var comptes = resolve(flux);
-    var debiteur = comptes.compteDébiteur().compte();
-    var crediteur = comptes.compteCréditeur().compte();
+    var debiteur = comptes.compteDebiteur().compte();
+    var crediteur = comptes.compteCrediteur().compte();
 
     assertEquals(flux.getCompte(), debiteur);
-    assertEquals("Compte d'attente", crediteur.nom());
+    assertEquals("PCA_Entrée argent", crediteur.nom());
   }
 
   @Test
@@ -52,8 +52,8 @@ class PossessionCompteResolverTest {
             ariary(1_000_000));
 
     var comptes = resolve(transfert);
-    var debiteur = comptes.compteDébiteur().compte();
-    var crediteur = comptes.compteCréditeur().compte();
+    var debiteur = comptes.compteDebiteur().compte();
+    var crediteur = comptes.compteCrediteur().compte();
 
     assertEquals(transfert.getVersCompte(), debiteur);
     assertEquals(transfert.getDepuisCompte(), crediteur);
@@ -64,7 +64,7 @@ class PossessionCompteResolverTest {
     var compte = new Compte("Compte épargne", LocalDate.of(2025, JANUARY, 1), ariary(700_000));
 
     var comptes = resolve(compte);
-    var debiteur = comptes.compteDébiteur().compte();
+    var debiteur = comptes.compteDebiteur().compte();
 
     assertEquals(compte, debiteur);
   }
@@ -86,8 +86,8 @@ class PossessionCompteResolverTest {
             ariary(500_000));
 
     var comptes = resolve(remboursement);
-    var debiteur = comptes.compteDébiteur().compte();
-    var crediteur = comptes.compteCréditeur().compte();
+    var debiteur = comptes.compteDebiteur().compte();
+    var crediteur = comptes.compteCrediteur().compte();
 
     assertEquals(remboursement.getRemboursé(), debiteur);
     assertEquals(remboursement.getRembourseur(), crediteur);
@@ -99,8 +99,8 @@ class PossessionCompteResolverTest {
         new AchatMaterielAuComptant(
             "Achat ordinateur", LocalDate.of(2026, JANUARY, 31), ariary(500_000), 2.4, compte);
     var comptes = resolve(achat);
-    var debiteur = comptes.compteDébiteur().compte();
-    var crediteur = comptes.compteCréditeur().compte();
+    var debiteur = comptes.compteDebiteur().compte();
+    var crediteur = comptes.compteCrediteur().compte();
 
     assertEquals("Matériel", debiteur.nom());
     assertEquals(achat.getFinanceur(), crediteur);

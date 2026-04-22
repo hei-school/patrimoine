@@ -2,6 +2,7 @@ package school.hei.patrimoine.modele.comptable.fec.io;
 
 import static java.time.Month.JANUARY;
 import static org.junit.jupiter.api.Assertions.*;
+import static school.hei.patrimoine.modele.Argent.ariary;
 import static school.hei.patrimoine.modele.comptable.MouvementComptable.DEBIT;
 import static school.hei.patrimoine.modele.comptable.TypeComptable.BANQUE;
 import static school.hei.patrimoine.modele.comptable.fec.JournalCode.JN;
@@ -16,7 +17,6 @@ import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.comptable.CompteComptable;
 import school.hei.patrimoine.modele.comptable.fec.EcritureComptable;
 import school.hei.patrimoine.modele.comptable.fec.Journal;
@@ -35,6 +35,7 @@ class FECWriterTest {
               .id("AC" + String.format("%03d", i))
               .date(LocalDate.of(2024, JANUARY, 1))
               .libelle("Libellé " + i)
+              .valeur(ariary(100_000))
               .pj(null)
               .dateValidation(LocalDate.of(2024, JANUARY, 2))
               .lignes(List.of(makeLigne()))
@@ -44,7 +45,7 @@ class FECWriterTest {
   }
 
   private LigneEcriture makeLigne() {
-    var compte = new Compte("Banque test", LocalDate.of(2024, JANUARY, 1), Argent.ariary(100));
+    var compte = new Compte("Banque test", LocalDate.of(2024, JANUARY, 1), ariary(100));
     var compteComptable =
         CompteComptable.builder()
             .compte(compte)
@@ -52,7 +53,7 @@ class FECWriterTest {
             .mouvementComptable(DEBIT)
             .build();
     return LigneEcriture.builder()
-        .compte(compteComptable)
+        .compteComptable(compteComptable)
         .compteAuxiliaire(null)
         .lettrage(null)
         .dateLettrage(null)
