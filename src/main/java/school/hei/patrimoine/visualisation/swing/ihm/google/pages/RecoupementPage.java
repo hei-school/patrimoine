@@ -14,6 +14,7 @@ import java.util.List;
 import javax.swing.*;
 import lombok.extern.slf4j.Slf4j;
 import school.hei.patrimoine.modele.possession.Possession;
+import school.hei.patrimoine.modele.possession.pj.PieceJustificative;
 import school.hei.patrimoine.modele.recouppement.model.PossessionRecoupee;
 import school.hei.patrimoine.modele.recouppement.model.RecoupementStatus;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.PlaceholderTextField;
@@ -27,7 +28,11 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.File
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.recoupement.PossessionRecoupeeListPanel;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.recoupement.RecoupementFooter;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.*;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangFileContext;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangFilesWatcher;
+import school.hei.patrimoine.visualisation.swing.ihm.google.pages.filters.PossessionRecoupeeFilterPj;
+import school.hei.patrimoine.visualisation.swing.ihm.google.pages.filters.PossessionRecoupeeFilterStatus;
+import school.hei.patrimoine.visualisation.swing.ihm.google.providers.PJProvider;
 import school.hei.patrimoine.visualisation.swing.ihm.google.providers.PossessionRecoupeeProvider;
 import school.hei.patrimoine.visualisation.swing.ihm.google.providers.PossessionRecoupeeProvider.*;
 import school.hei.patrimoine.visualisation.swing.ihm.google.providers.model.Pagination;
@@ -50,6 +55,8 @@ public class RecoupementPage extends LazyPage {
                 1,
                 "filterStatus",
                 PossessionRecoupeeFilterStatus.TOUT,
+                "filterPj",
+                PossessionRecoupeeFilterPj.TOUT,
                 "pagination",
                 new Pagination(1, RECOUPEMENT_ITEM_PER_PAGE)));
 
@@ -58,7 +65,8 @@ public class RecoupementPage extends LazyPage {
     PatriLangFilesWatcher.addObserver(this::update);
 
     state.subscribe(
-        Set.of("filterStatus", "selectedFile", "pagination", "filterName"), this::update);
+        Set.of("filterStatus", "filterPj", "selectedFile", "pagination", "filterName"),
+        this::update);
 
     setLayout(new BorderLayout());
   }
@@ -68,25 +76,6 @@ public class RecoupementPage extends LazyPage {
     addAppBar();
     addMainSplitPane();
     addFooter();
-  }
-
-  public enum PossessionRecoupeeFilterStatus {
-    TOUT("Tout"),
-    IMPREVU("Imprévu"),
-    NON_EXECUTE("Non Éxecuté"),
-    EXECUTE_AVEC_CORRECTION("Éxecuté avec correction"),
-    EXECUTE_SANS_CORRECTION("Éxecuté sans correction");
-
-    public final String label;
-
-    PossessionRecoupeeFilterStatus(String label) {
-      this.label = label;
-    }
-
-    @Override
-    public String toString() {
-      return label;
-    }
   }
 
   private static JComboBox<PossessionRecoupeeFilterStatus> getStatusFilter(State state) {
@@ -104,8 +93,20 @@ public class RecoupementPage extends LazyPage {
     return List.of(
         new NavigateButton("Retour", "patrilang-files"),
         getStatusFilter(state),
+        getPjFilter(state),
         new AddImprevuButton(state),
         getPlaceholderTextField(state));
+  }
+
+  private static JComboBox<PossessionRecoupeeFilterPj> getPjFilter(State state) {
+    var pjFilter = new JComboBox<>(PossessionRecoupeeFilterPj.values());
+    pjFilter.setSelectedItem(PossessionRecoupeeFilterPj.TOUT);
+    pjFilter.setPreferredSize(new Dimension(120, 35));
+    pjFilter.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
+    pjFilter.setCursor(new Cursor(Cursor.HAND_CURSOR));
+    pjFilter.setToolTipText("Filtrer par pièce justificative");
+    pjFilter.addActionListener(e -> state.update("filterPj", pjFilter.getSelectedItem()));
+    return pjFilter;
   }
 
   private static List<Component> rightAppBarControls() {
@@ -187,7 +188,25 @@ public class RecoupementPage extends LazyPage {
   }
 
   private Pagination getPagination() {
-    return state.get("pagination");
+    Pagination p = state.get("pagination");
+    return p != null ? p : new Pagination(1, RECOUPEMENT_ITEM_PER_PAGE);
+  }
+
+  private PossessionRecoupeeFilterPj getPjFilter() {
+    PossessionRecoupeeFilterPj filter = state.get("filterPj");
+    return filter != null ? filter : PossessionRecoupeeFilterPj.TOUT;
+  }
+
+  private Map<String, PieceJustificative> buildPjMap(PatriLangFileContext selectedFile) {
+    try {
+      return new PJProvider().apply(selectedFile);
+    } catch (Exception e) {
+      log.warn(
+          "Impossible de charger les PJ pour {}: {}",
+          selectedFile.getBaseFileName(),
+          e.getMessage());
+      return Map.of();
+    }
   }
 
   private List<PossessionRecoupee<Possession>> getFilteredPossessionRecoupees() {
@@ -231,7 +250,16 @@ public class RecoupementPage extends LazyPage {
       state.update("totalPages", result.totalPage());
     }
 
-    return result.data();
+    var pjMap = buildPjMap(selectedFile);
+    state.update("currentPjMap", pjMap);
+
+    return switch (getPjFilter()) {
+      case AVEC_PJ ->
+          result.data().stream().filter(r -> pjMap.containsKey(r.possession().nom())).toList();
+      case SANS_PJ ->
+          result.data().stream().filter(r -> !pjMap.containsKey(r.possession().nom())).toList();
+      case TOUT -> result.data();
+    };
   }
 
   @Override
@@ -244,7 +272,11 @@ public class RecoupementPage extends LazyPage {
         .withDialogLoading(false)
         .onError(MessageDialog::showError)
         .task(this::getFilteredPossessionRecoupees)
-        .onSuccess(list -> possessionRecoupeeListPanel.update(list, Map.of()))
+        .onSuccess(
+            list -> {
+              Map<String, PieceJustificative> pjMap = state.get("currentPjMap");
+              possessionRecoupeeListPanel.update(list, pjMap != null ? pjMap : Map.of());
+            })
         .build()
         .execute();
   }

@@ -20,6 +20,9 @@ public class FileSideBar extends JPanel {
   @Getter(AccessLevel.PRIVATE)
   private final JList<PatriLangFileContext> plannedList;
 
+  @Getter(AccessLevel.PRIVATE)
+  private final JList<PatriLangFileContext> pieceJustificativeList;
+
   public FileSideBar(State state) {
     super(new BorderLayout());
 
@@ -28,12 +31,23 @@ public class FileSideBar extends JPanel {
     this.plannedList =
         createList(getPatriLangPlannedFiles(), state, () -> getDoneList().clearSelection());
 
+    this.pieceJustificativeList =
+        createList(
+            getPatriLangJustificativeFiles(),
+            state,
+            () -> {
+              getDoneList().clearSelection();
+              getPlannedList().clearSelection();
+            });
+
     var panel = new JPanel();
     panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
     addPanel(panel, "Journaux planifiés", plannedList);
     panel.add(Box.createVerticalStrut(20));
     addPanel(panel, "Journaux réalisés", doneList);
+    panel.add(Box.createVerticalStrut(20));
+    addPanel(panel, "Pièces justificatives", pieceJustificativeList);
 
     add(panel, BorderLayout.CENTER);
 
@@ -43,6 +57,7 @@ public class FileSideBar extends JPanel {
           if (getSelectedFile(state).isEmpty()) {
             doneList.clearSelection();
             plannedList.clearSelection();
+            pieceJustificativeList.clearSelection();
           }
         });
 
@@ -51,12 +66,14 @@ public class FileSideBar extends JPanel {
         () -> {
           doneList.repaint();
           plannedList.repaint();
+          pieceJustificativeList.repaint();
         });
   }
 
   public void refresh() {
     ((FileListModel) doneList.getModel()).refresh(getPatriLangDoneFiles());
     ((FileListModel) plannedList.getModel()).refresh(getPatriLangPlannedFiles());
+    ((FileListModel) pieceJustificativeList.getModel()).refresh(getPatriLangJustificativeFiles());
   }
 
   public static Optional<PatriLangFileContext> getSelectedFile(State state) {
