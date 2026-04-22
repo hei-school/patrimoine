@@ -14,11 +14,11 @@ import school.hei.patrimoine.modele.comptable.fec.*;
 import school.hei.patrimoine.modele.possession.pj.PieceJustificative;
 
 public class FECLineMapper {
-    private final CompteNumResolver compteNumResolver;
+  private final CompteNumResolver compteNumResolver;
 
-    public FECLineMapper(CompteNumResolver compteNumResolver) {
-        this.compteNumResolver = compteNumResolver;
-    }
+  public FECLineMapper(CompteNumResolver compteNumResolver) {
+    this.compteNumResolver = compteNumResolver;
+  }
 
   public FECLine toFECLine(Journal journal, EcritureComptable ecriture, LigneEcriture ligne) {
     var compte = ligne.compteComptable();
@@ -30,11 +30,11 @@ public class FECLineMapper {
     var debit =
         compte.mouvementComptable() == MouvementComptable.DEBIT
             ? formatAmount(montantEUR.montant())
-            : "";
+            : formatAmount(0);
     var credit =
         compte.mouvementComptable() == MouvementComptable.CREDIT
             ? formatAmount(montantEUR.montant())
-            : "";
+            : formatAmount(0);
 
     var values =
         getFecColumnStringMap(
