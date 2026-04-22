@@ -78,20 +78,6 @@ class FECWriterTest {
   }
 
   @Test
-  void le_fichier_commence_par_le_BOM_UTF8() throws IOException {
-    var file = tempDir.resolve("bom.csv");
-    try (var writer = new FECWriter(file)) {
-      writer.writeFEC(Collections.emptyList());
-    }
-
-    var bytes = bytesOf(file);
-    assertTrue(bytes.length >= 3, "Le fichier ne doit pas être vide");
-    assertEquals((byte) 0xEF, bytes[0], "Octet BOM[0] attendu : 0xEF");
-    assertEquals((byte) 0xBB, bytes[1], "Octet BOM[1] attendu : 0xBB");
-    assertEquals((byte) 0xBF, bytes[2], "Octet BOM[2] attendu : 0xBF");
-  }
-
-  @Test
   void collection_vide_produit_uniquement_le_header() throws IOException {
     var file = tempDir.resolve("vide.csv");
     try (var writer = new FECWriter(file)) {

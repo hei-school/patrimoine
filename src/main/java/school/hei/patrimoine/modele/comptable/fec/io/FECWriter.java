@@ -19,11 +19,8 @@ public class FECWriter implements Closeable {
   private final Writer writer;
   private final CSVWriter csvWriter;
 
-  private static final char UTF8_BOM = '\uFEFF';
-
   public FECWriter(Path path) throws IOException {
     this.writer = new OutputStreamWriter(newOutputStream(path), UTF_8);
-    writer.write(UTF8_BOM);
 
     this.csvWriter =
         new CSVWriter(writer, '\t', NO_QUOTE_CHARACTER, DEFAULT_ESCAPE_CHARACTER, DEFAULT_LINE_END);
