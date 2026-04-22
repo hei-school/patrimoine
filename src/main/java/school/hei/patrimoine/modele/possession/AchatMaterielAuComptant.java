@@ -7,9 +7,10 @@ import java.util.Set;
 import lombok.Getter;
 import school.hei.patrimoine.modele.Argent;
 
+@Getter
 public final class AchatMaterielAuComptant extends Possession {
-
-  @Getter private final Compte financeur;
+  private final Compte financeur;
+  private final Argent valeurComptableALAchat;
   private final GroupePossession achatCommeGroupe;
 
   public AchatMaterielAuComptant(
@@ -20,6 +21,7 @@ public final class AchatMaterielAuComptant extends Possession {
       Compte financeur) {
     super(nom, dateAchat, valeurComptableALAchat);
     this.financeur = financeur;
+    this.valeurComptableALAchat = valeurComptableALAchat;
     this.achatCommeGroupe =
         new GroupePossession(
             nom,

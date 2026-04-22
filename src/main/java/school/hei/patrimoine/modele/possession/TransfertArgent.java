@@ -10,6 +10,7 @@ import school.hei.patrimoine.modele.Argent;
 @Getter
 public final class TransfertArgent extends Possession {
   private final Compte versCompte;
+  private final Argent fluxMensuel;
   private final Compte depuisCompte;
   private final GroupePossession transfertCommeGroupe;
 
@@ -24,6 +25,7 @@ public final class TransfertArgent extends Possession {
     super(nom, debut, new Argent(0, fluxMensuel.devise()));
     this.depuisCompte = depuisCompte;
     this.versCompte = versCompte;
+    this.fluxMensuel = fluxMensuel;
     this.transfertCommeGroupe =
         new GroupePossession(
             nom,
@@ -52,7 +54,10 @@ public final class TransfertArgent extends Possession {
   }
 
   private TransfertArgent(
-      Compte versCompte, Compte depuisCompte, GroupePossession transfertCommeGroupe) {
+      Compte versCompte,
+      Compte depuisCompte,
+      Argent fluxMensuel,
+      GroupePossession transfertCommeGroupe) {
     super(
         transfertCommeGroupe.nom,
         transfertCommeGroupe.t,
@@ -60,6 +65,7 @@ public final class TransfertArgent extends Possession {
         transfertCommeGroupe.valeursMarche);
     this.versCompte = versCompte;
     this.depuisCompte = depuisCompte;
+    this.fluxMensuel = fluxMensuel;
     this.transfertCommeGroupe = transfertCommeGroupe;
   }
 
@@ -68,6 +74,7 @@ public final class TransfertArgent extends Possession {
     return new TransfertArgent(
         versCompte.projectionFuture(tFutur),
         depuisCompte.projectionFuture(tFutur),
+        fluxMensuel,
         transfertCommeGroupe.projectionFuture(tFutur));
   }
 

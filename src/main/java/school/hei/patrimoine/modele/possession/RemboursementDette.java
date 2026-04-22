@@ -10,6 +10,7 @@ import school.hei.patrimoine.modele.Argent;
 
 @Getter
 public final class RemboursementDette extends Possession {
+  private final Argent montant;
   private final Compte remboursé;
   private final Compte rembourseur;
   private final GroupePossession commeGroupe;
@@ -32,19 +33,26 @@ public final class RemboursementDette extends Possession {
                 new FluxArgent(nom + " (annulation dette)", dette, t, montant),
                 new FluxArgent(nom + " (annulation créance)", creance, t, montant.mult(-1)))),
         rembourseur,
-        remboursé);
+        remboursé,
+        montant);
   }
 
-  private RemboursementDette(GroupePossession commeGroupe, Compte rembourseur, Compte remboursé) {
-    super(commeGroupe.nom, LocalDate.MIN, euro(0), commeGroupe.valeursMarche);
+  private RemboursementDette(
+      GroupePossession commeGroupe, Compte rembourseur, Compte remboursé, Argent montant) {
+    super(commeGroupe.nom, commeGroupe.t, euro(0), commeGroupe.valeursMarche);
     this.commeGroupe = commeGroupe;
     this.rembourseur = rembourseur;
     this.remboursé = remboursé;
+    this.montant = montant;
   }
 
   @Override
   public RemboursementDette projectionFuture(LocalDate tFutur) {
-    return new RemboursementDette(commeGroupe.projectionFuture(tFutur), rembourseur, remboursé);
+    return new RemboursementDette(
+        commeGroupe.projectionFuture(tFutur),
+        rembourseur.projectionFuture(tFutur),
+        remboursé.projectionFuture(tFutur),
+        montant);
   }
 
   @Override
