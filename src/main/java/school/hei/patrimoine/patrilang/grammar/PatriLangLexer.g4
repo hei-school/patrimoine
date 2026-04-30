@@ -328,6 +328,7 @@ MOT_AVEC
 MOT_DE
     :   'de'
     ;
+
 TEXT
     :   STRING
     ;
