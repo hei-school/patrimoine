@@ -328,9 +328,7 @@ MOT_AVEC
 MOT_DE
     :   'de'
     ;
-REFERENCE
-    :   [\p{L}]+ ('-' [\p{L}\p{N}]+)+
-    ;
+
 TEXT
     :   STRING
     ;
