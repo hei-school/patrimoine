@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.ToString;
 import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.Devise;
@@ -33,7 +34,7 @@ public abstract sealed class Possession extends Objectivable
         TransfertArgent {
   protected final String nom;
   protected final LocalDate t;
-  protected final Argent valeurComptable;
+  @Getter protected final Argent valeurComptable;
   @EqualsAndHashCode.Exclude protected final Set<ValeurMarche> valeursMarche;
   @EqualsAndHashCode.Exclude @ToString.Exclude private CompteCorrection compteCorrection;
   @EqualsAndHashCode.Exclude @ToString.Exclude private LocalDate dateVente;

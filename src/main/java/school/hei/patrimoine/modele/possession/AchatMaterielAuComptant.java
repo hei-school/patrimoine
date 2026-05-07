@@ -4,10 +4,13 @@ import static school.hei.patrimoine.modele.possession.TypeAgregat.IMMOBILISATION
 
 import java.time.LocalDate;
 import java.util.Set;
+import lombok.Getter;
 import school.hei.patrimoine.modele.Argent;
 
+@Getter
 public final class AchatMaterielAuComptant extends Possession {
-
+  private final Compte financeur;
+  private final Argent valeurComptableALAchat;
   private final GroupePossession achatCommeGroupe;
 
   public AchatMaterielAuComptant(
@@ -17,6 +20,8 @@ public final class AchatMaterielAuComptant extends Possession {
       double tauxAppreciationAnnuelle,
       Compte financeur) {
     super(nom, dateAchat, valeurComptableALAchat);
+    this.financeur = financeur;
+    this.valeurComptableALAchat = valeurComptableALAchat;
     this.achatCommeGroupe =
         new GroupePossession(
             nom,
