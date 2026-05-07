@@ -21,7 +21,9 @@ class FECFactoryTest {
 
   @BeforeEach
   void setup() {
-    pj = new PieceJustificative("Transfert Argent BFV", LocalDate.of(2026, 4, 5), "lien-facture");
+    pj =
+        new PieceJustificative(
+            "Transfert Argent BFV", LocalDate.of(2026, 4, 5), "FAC0001", "lien-facture");
     compteExpediteur =
         new Compte("Compte expéditeur", LocalDate.of(2025, 1, 31), ariary(5_000_000));
     compteDestinataire =

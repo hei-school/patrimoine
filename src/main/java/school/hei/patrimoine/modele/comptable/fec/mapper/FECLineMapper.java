@@ -62,7 +62,7 @@ public class FECLineMapper {
     values.put(COMPTE_LIB, compte.compte().nom());
     values.put(COMP_AUX_NUM, compAux != null ? compAux.typeComptable().toString() : "");
     values.put(COMP_AUX_LIB, compAux != null ? compAux.compte().nom() : "");
-    values.put(PIECE_REF, pj != null ? pj.id() : "");
+    values.put(PIECE_REF, pj != null ? pj.reference() : "");
     values.put(PIECE_DATE, formatDate(pj != null ? pj.date() : null));
     values.put(ECRITURE_LIB, ecriture.libelle());
     values.put(DEBIT, debit);

@@ -26,7 +26,9 @@ class EcritureComptableFactoryTest {
     journal = new Journal(JN, "Journal");
     compteCredit = new Compte("Créditeur", LocalDate.of(2025, 1, 31), ariary(5_000_000));
     compteDebit = new Compte("Débiteur", LocalDate.of(2026, 1, 1), ariary(100_000));
-    pj = new PieceJustificative("Transfert Argent BFV", LocalDate.of(2026, 4, 5), "lien-facture");
+    pj =
+        new PieceJustificative(
+            "Transfert Argent BFV", LocalDate.of(2026, 4, 5), "FAC0001", "lien-facture");
   }
 
   @Test

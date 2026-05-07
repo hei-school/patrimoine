@@ -20,7 +20,7 @@ class JournalTest {
   @BeforeEach
   void setup() {
     subject = new Journal(JN, "Journal");
-    pj = new PieceJustificative("FAC251229", LocalDate.of(2025, 12, 29), "link1");
+    pj = new PieceJustificative("FAC251229", LocalDate.of(2025, 12, 29), "FAC0001", "link1");
     compte = new Compte("Epargne", LocalDate.of(2024, 6, 9), ariary(200_000));
   }
 

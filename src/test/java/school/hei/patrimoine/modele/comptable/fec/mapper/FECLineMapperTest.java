@@ -27,7 +27,9 @@ class FECLineMapperTest {
   @BeforeEach
   void setup() {
     mapper = new FECLineMapper(new CompteNumResolver());
-    pj = new PieceJustificative("Transfert Argent BNI", LocalDate.of(2026, 4, 5), "lien-facture");
+    pj =
+        new PieceJustificative(
+            "Transfert Argent BNI", LocalDate.of(2026, 4, 5), "FAC0001", "lien-facture");
     compteDebiteur = new Compte("Compte débiteur", LocalDate.of(2026, 1, 1), ariary(100_000));
     compteCrediteur = new Compte("Compte créditeur", LocalDate.of(2025, 1, 31), ariary(5_000_000));
   }
@@ -61,7 +63,7 @@ class FECLineMapperTest {
     assertEquals("Compte débiteur", values[5], "CompteLib");
     assertEquals("", values[6], "CompAuxNum");
     assertEquals("", values[7], "CompAuxLib");
-    assertEquals("Transfert Argent BNI", values[8], "PieceRef");
+    assertEquals("FAC0001", values[8], "PieceRef");
     assertEquals("20260405", values[9], "PieceDate");
     assertEquals("Transfert Argent BNI", values[10], "EcritureLib");
     assertEquals(montantEUR, values[11], "Debit");
@@ -183,7 +185,7 @@ class FECLineMapperTest {
 
     var fecLine = mapper.toFECLine(journal, ecriture, ligne);
 
-    assertEquals("Transfert Argent BNI", fecLine.values()[8]);
+    assertEquals("FAC0001", fecLine.values()[8]);
     assertEquals("20260405", fecLine.values()[9]);
     assertEquals("20260405", fecLine.values()[15]);
   }
