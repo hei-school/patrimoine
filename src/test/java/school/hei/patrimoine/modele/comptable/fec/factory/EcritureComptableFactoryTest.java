@@ -38,7 +38,8 @@ class EcritureComptableFactoryTest {
             compteDebit,
             LocalDate.of(2026, 5, 3),
             ariary(1_000_000));
-    var operation = new OperationComptable(transfert);
+    var optionalOperation = OperationComptable.of(transfert);
+    var operation = optionalOperation.orElseThrow();
     var possession = (TransfertArgent) operation.getPossession();
 
     var ecriture = EcritureComptableFactory.make(journal, operation, pj);
@@ -55,7 +56,8 @@ class EcritureComptableFactoryTest {
   @Test
   void pj_could_be_null() {
     var flux = new FluxArgent("Versement", compteDebit, LocalDate.of(2026, 2, 14), ariary(300_000));
-    var operation = new OperationComptable(flux);
+    var optionalOperation = OperationComptable.of(flux);
+    var operation = optionalOperation.orElseThrow();
 
     var ecriture = EcritureComptableFactory.make(journal, operation, null);
 

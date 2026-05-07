@@ -41,7 +41,8 @@ class JournalTest {
             LocalDate.of(2026, 1, 20),
             6,
             ariary(30_000));
-    var operation = new OperationComptable(flux);
+    var optionalOperation = OperationComptable.of(flux);
+    var operation = optionalOperation.orElseThrow();
 
     subject.addEcriture(operation, pj);
     subject.addEcriture(operation, pj);
@@ -60,7 +61,8 @@ class JournalTest {
             LocalDate.of(2026, 1, 20),
             6,
             ariary(30_000));
-    var operation = new OperationComptable(flux);
+    var optionalOperation = OperationComptable.of(flux);
+    var operation = optionalOperation.orElseThrow();
 
     subject.addEcriture(operation, pj);
     subject.addEcriture(operation, pj);
@@ -82,7 +84,8 @@ class JournalTest {
             LocalDate.of(2026, 1, 20),
             6,
             ariary(30_000));
-    var operation = new OperationComptable(flux);
+    var optionalOperation = OperationComptable.of(flux);
+    var operation = optionalOperation.orElseThrow();
 
     subject.addEcriture(operation, pj);
     var actual = subject.ecritures().getFirst().lignes().size();

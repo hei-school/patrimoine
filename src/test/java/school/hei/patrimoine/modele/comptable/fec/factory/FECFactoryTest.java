@@ -37,7 +37,8 @@ class FECFactoryTest {
             compteDestinataire,
             LocalDate.of(2026, 5, 3),
             ariary(1_000_000));
-    var operation = new OperationComptable(transfert);
+    var optionalOperation = OperationComptable.of(transfert);
+    var operation = optionalOperation.orElseThrow();
 
     var fec = FECFactory.make(List.of(operation), Map.of("Transfert Argent BFV", pj));
     var journal = fec.journals().getFirst();

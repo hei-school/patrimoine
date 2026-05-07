@@ -6,70 +6,71 @@ import static school.hei.patrimoine.modele.comptable.MouvementComptable.CREDIT;
 import static school.hei.patrimoine.modele.comptable.MouvementComptable.DEBIT;
 import static school.hei.patrimoine.modele.comptable.TypeComptable.*;
 
+import java.util.Optional;
 import org.jspecify.annotations.NonNull;
 import school.hei.patrimoine.modele.comptable.CompteComptable;
 import school.hei.patrimoine.modele.comptable.PairCompteComptable;
 import school.hei.patrimoine.modele.possession.*;
 
 public class PossessionCompteResolver {
-  private static final Compte CAPITAL_SOCIAL = new Compte("Capital social", now(), ariary(0));
   private static final Compte FINANCÉ = new Compte("Matériel", now(), ariary(0));
+  private static final Compte CAPITAL_SOCIAL = new Compte("Capital social", now(), ariary(0));
 
-  public static PairCompteComptable resolve(Possession possession) {
-    return switch (possession) {
-      case FluxArgent flux -> getComptes(flux);
-      case TransfertArgent transfert ->
-          new PairCompteComptable(
-              CompteComptable.builder()
-                  .compte(transfert.getVersCompte())
-                  .typeComptable(CHARGE_DIVERSE)
-                  .mouvementComptable(DEBIT)
-                  .build(),
-              CompteComptable.builder()
-                  .compte(transfert.getDepuisCompte())
-                  .typeComptable(BANQUE)
-                  .mouvementComptable(CREDIT)
-                  .build());
-      case Compte compte ->
-          new PairCompteComptable(
-              CompteComptable.builder()
-                  .compte(compte)
-                  .typeComptable(BANQUE)
-                  .mouvementComptable(DEBIT)
-                  .build(),
-              CompteComptable.builder()
-                  .compte(CAPITAL_SOCIAL)
-                  .typeComptable(CAPITAL)
-                  .mouvementComptable(CREDIT)
-                  .build());
-      case RemboursementDette remboursement ->
-          new PairCompteComptable(
-              CompteComptable.builder()
-                  .compte(remboursement.getRemboursé())
-                  .typeComptable(DETTE)
-                  .mouvementComptable(DEBIT)
-                  .build(),
-              CompteComptable.builder()
-                  .compte(remboursement.getRembourseur())
-                  .typeComptable(BANQUE)
-                  .mouvementComptable(CREDIT)
-                  .build());
-      case AchatMaterielAuComptant achat ->
-          new PairCompteComptable(
-              CompteComptable.builder()
-                  .compte(FINANCÉ)
-                  .typeComptable(MATERIEL)
-                  .mouvementComptable(DEBIT)
-                  .build(),
-              CompteComptable.builder()
-                  .compte(achat.getFinanceur())
-                  .typeComptable(BANQUE)
-                  .mouvementComptable(CREDIT)
-                  .build());
-      default ->
-          throw new IllegalArgumentException(
-              "Impossible de déterminer les comptes pour " + possession.getClass().getSimpleName());
-    };
+  public static Optional<PairCompteComptable> resolve(Possession possession) {
+    var pairCompte =
+        switch (possession) {
+          case FluxArgent flux -> getComptes(flux);
+          case TransfertArgent transfert ->
+              new PairCompteComptable(
+                  CompteComptable.builder()
+                      .compte(transfert.getVersCompte())
+                      .typeComptable(CHARGE_DIVERSE)
+                      .mouvementComptable(DEBIT)
+                      .build(),
+                  CompteComptable.builder()
+                      .compte(transfert.getDepuisCompte())
+                      .typeComptable(BANQUE)
+                      .mouvementComptable(CREDIT)
+                      .build());
+          case Compte compte ->
+              new PairCompteComptable(
+                  CompteComptable.builder()
+                      .compte(compte)
+                      .typeComptable(BANQUE)
+                      .mouvementComptable(DEBIT)
+                      .build(),
+                  CompteComptable.builder()
+                      .compte(CAPITAL_SOCIAL)
+                      .typeComptable(CAPITAL)
+                      .mouvementComptable(CREDIT)
+                      .build());
+          case RemboursementDette remboursement ->
+              new PairCompteComptable(
+                  CompteComptable.builder()
+                      .compte(remboursement.getRemboursé())
+                      .typeComptable(DETTE)
+                      .mouvementComptable(DEBIT)
+                      .build(),
+                  CompteComptable.builder()
+                      .compte(remboursement.getRembourseur())
+                      .typeComptable(BANQUE)
+                      .mouvementComptable(CREDIT)
+                      .build());
+          case AchatMaterielAuComptant achat ->
+              new PairCompteComptable(
+                  CompteComptable.builder()
+                      .compte(FINANCÉ)
+                      .typeComptable(MATERIEL)
+                      .mouvementComptable(DEBIT)
+                      .build(),
+                  CompteComptable.builder()
+                      .compte(achat.getFinanceur())
+                      .typeComptable(BANQUE)
+                      .mouvementComptable(CREDIT)
+                      .build());
+          default -> null;
+        };
+    return Optional.ofNullable(pairCompte);
   }
 
   private static @NonNull PairCompteComptable getComptes(FluxArgent flux) {

@@ -30,14 +30,15 @@ class JournalFactoryTest {
 
   @Test
   void create_a_journal() {
-    var tranfert =
+    var transfert =
         new TransfertArgent(
             "Transfert Argent BFV",
             compteExpediteur,
             compteDestinataire,
             LocalDate.of(2026, 5, 3),
             ariary(1_000_000));
-    var operation = new OperationComptable(tranfert);
+    var optionalOperation = OperationComptable.of(transfert);
+    var operation = optionalOperation.orElseThrow();
 
     var journal =
         JournalFactory.make(JN, "Journal", List.of(operation), Map.of("Transfert Argent BFV", pj));
@@ -49,14 +50,15 @@ class JournalFactoryTest {
 
   @Test
   void a_journal_should_contain_at_least_two_ligne_ecriture() {
-    var tranfert =
+    var transfert =
         new TransfertArgent(
             "Transfert Argent BFV",
             compteExpediteur,
             compteDestinataire,
             LocalDate.of(2026, 5, 3),
             ariary(1_000_000));
-    var operation = new OperationComptable(tranfert);
+    var optionalOperation = OperationComptable.of(transfert);
+    var operation = optionalOperation.orElseThrow();
 
     var journal =
         JournalFactory.make(JN, "Journal", List.of(operation), Map.of("Transfert Argent BFV", pj));

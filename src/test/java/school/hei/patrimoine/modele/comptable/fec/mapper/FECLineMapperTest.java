@@ -41,7 +41,8 @@ class FECLineMapperTest {
             compteDebiteur,
             LocalDate.of(2026, 5, 3),
             ariary(1_000_000));
-    var operation = new OperationComptable(transfert);
+    var optionalOperation = OperationComptable.of(transfert);
+    var operation = optionalOperation.orElseThrow();
     var journal =
         JournalFactory.make(JN, "Journal", Set.of(operation), Map.of("Transfert Argent BNI", pj));
     var ecriture = journal.ecritures().getFirst();
@@ -77,7 +78,8 @@ class FECLineMapperTest {
     var achat =
         new AchatMaterielAuComptant(
             "Voiture", LocalDate.of(2025, 6, 18), ariary(500_000_000), 1.5, compteCrediteur);
-    var operation = new OperationComptable(achat);
+    var optionalOperation = OperationComptable.of(achat);
+    var operation = optionalOperation.orElseThrow();
     var journal =
         JournalFactory.make(JN, "Journal", Set.of(operation), Map.of("Achat d'une voiture", pj));
     var ecriture = journal.ecritures().getFirst();
@@ -104,7 +106,8 @@ class FECLineMapperTest {
             compteDebiteur,
             LocalDate.of(2026, 5, 3),
             ariary(1_000_000));
-    var operation = new OperationComptable(transfert);
+    var optionalOperation = OperationComptable.of(transfert);
+    var operation = optionalOperation.orElseThrow();
     var journal =
         JournalFactory.make(JN, "Journal", Set.of(operation), Map.of("Transfert Argent BNI", pj));
     var ecriture = journal.ecritures().getFirst();
@@ -124,7 +127,8 @@ class FECLineMapperTest {
             compteDebiteur,
             LocalDate.of(2026, 5, 3),
             ariary(1_000_000));
-    var operation = new OperationComptable(transfert);
+    var optionalOperation = OperationComptable.of(transfert);
+    var operation = optionalOperation.orElseThrow();
     var journal =
         JournalFactory.make(JN, "Journal", Set.of(operation), Map.of("Transfert Argent BNI", pj));
     var ecriture = journal.ecritures().getFirst();
@@ -146,7 +150,8 @@ class FECLineMapperTest {
             compteDebiteur,
             LocalDate.of(2026, 5, 3),
             ariary(1_000_000));
-    var operation = new OperationComptable(transfert);
+    var optionalOperation = OperationComptable.of(transfert);
+    var operation = optionalOperation.orElseThrow();
     var journal =
         JournalFactory.make(JN, "Journal", Set.of(operation), Map.of("Transfert Argent BNI", pj));
     var ecriture = journal.ecritures().getFirst();
@@ -169,7 +174,8 @@ class FECLineMapperTest {
             compteDebiteur,
             LocalDate.of(2026, 5, 3),
             ariary(1_000_000));
-    var operation = new OperationComptable(transfert);
+    var optionalOperation = OperationComptable.of(transfert);
+    var operation = optionalOperation.orElseThrow();
     var journal =
         JournalFactory.make(JN, "Journal", Set.of(operation), Map.of("Transfert Argent BNI", pj));
     var ecriture = journal.ecritures().getFirst();
@@ -186,8 +192,9 @@ class FECLineMapperTest {
   void flux_positif_compte_num_est_banque_512() {
     var flux =
         new FluxArgent("Vente", compteCrediteur, LocalDate.of(2026, JANUARY, 10), ariary(200_000));
-    var op = new OperationComptable(flux);
-    var journal = JournalFactory.make(JN, "Journal", Set.of(op), Map.of());
+    var optionalOperation = OperationComptable.of(flux);
+    var operation = optionalOperation.orElseThrow();
+    var journal = JournalFactory.make(JN, "Journal", Set.of(operation), Map.of());
     var ecriture = journal.ecritures().getFirst();
     var ligne = ecriture.lignes().getFirst();
 
@@ -202,8 +209,9 @@ class FECLineMapperTest {
   void flux_positif_passif_compte_num_est_pca_487() {
     var flux =
         new FluxArgent("Vente", compteCrediteur, LocalDate.of(2026, JANUARY, 10), ariary(200_000));
-    var op = new OperationComptable(flux);
-    var journal = JournalFactory.make(JN, "Journal", Set.of(op), Map.of());
+    var optionalOperation = OperationComptable.of(flux);
+    var operation = optionalOperation.orElseThrow();
+    var journal = JournalFactory.make(JN, "Journal", Set.of(operation), Map.of());
     var ecriture = journal.ecritures().getFirst();
     var ligne = ecriture.lignes().get(1);
 
@@ -218,8 +226,9 @@ class FECLineMapperTest {
   void flux_negatif_compte_num_est_cca_486() {
     var flux =
         new FluxArgent("Loyer", compteCrediteur, LocalDate.of(2026, JANUARY, 10), ariary(-200_000));
-    var op = new OperationComptable(flux);
-    var journal = JournalFactory.make(JN, "Journal", Set.of(op), Map.of());
+    var optionalOperation = OperationComptable.of(flux);
+    var operation = optionalOperation.orElseThrow();
+    var journal = JournalFactory.make(JN, "Journal", Set.of(operation), Map.of());
     var ecriture = journal.ecritures().getFirst();
     var ligne = ecriture.lignes().getFirst();
 
@@ -234,8 +243,9 @@ class FECLineMapperTest {
   void flux_negatif_passif_compte_num_est_banque_512() {
     var flux =
         new FluxArgent("Loyer", compteCrediteur, LocalDate.of(2026, JANUARY, 10), ariary(-200_000));
-    var op = new OperationComptable(flux);
-    var journal = JournalFactory.make(JN, "Journal", Set.of(op), Map.of());
+    var optionalOperation = OperationComptable.of(flux);
+    var operation = optionalOperation.orElseThrow();
+    var journal = JournalFactory.make(JN, "Journal", Set.of(operation), Map.of());
     var ecriture = journal.ecritures().getFirst();
     var ligne = ecriture.lignes().get(1);
 
@@ -249,8 +259,9 @@ class FECLineMapperTest {
     var achat =
         new AchatMaterielAuComptant(
             "Ordinateur", LocalDate.of(2026, JANUARY, 10), ariary(500_000), 2.4, compteCrediteur);
-    var op = new OperationComptable(achat);
-    var journal = JournalFactory.make(JN, "Journal", Set.of(op), Map.of());
+    var optionalOperation = OperationComptable.of(achat);
+    var operation = optionalOperation.orElseThrow();
+    var journal = JournalFactory.make(JN, "Journal", Set.of(operation), Map.of());
     var ecriture = journal.ecritures().getFirst();
     var ligne = ecriture.lignes().getFirst();
 
@@ -265,8 +276,9 @@ class FECLineMapperTest {
     var achat =
         new AchatMaterielAuComptant(
             "Ordinateur", LocalDate.of(2026, JANUARY, 10), ariary(500_000), 2.4, compteCrediteur);
-    var op = new OperationComptable(achat);
-    var journal = JournalFactory.make(JN, "Journal", Set.of(op), Map.of());
+    var optionalOperation = OperationComptable.of(achat);
+    var operation = optionalOperation.orElseThrow();
+    var journal = JournalFactory.make(JN, "Journal", Set.of(operation), Map.of());
     var ecriture = journal.ecritures().getFirst();
     var ligne = ecriture.lignes().get(1);
 
@@ -288,8 +300,9 @@ class FECLineMapperTest {
             creance,
             LocalDate.of(2026, JANUARY, 31),
             ariary(500_000));
-    var op = new OperationComptable(remboursement);
-    var journal = JournalFactory.make(JN, "Journal", Set.of(op), Map.of());
+    var optionalOperation = OperationComptable.of(remboursement);
+    var operation = optionalOperation.orElseThrow();
+    var journal = JournalFactory.make(JN, "Journal", Set.of(operation), Map.of());
     var ecriture = journal.ecritures().getFirst();
     var ligne = ecriture.lignes().getFirst();
 
@@ -306,9 +319,11 @@ class FECLineMapperTest {
     var flux2 =
         new FluxArgent(
             "Vente B", compteCrediteur, LocalDate.of(2026, FEBRUARY, 10), ariary(300_000));
-    var op1 = new OperationComptable(flux1);
-    var op2 = new OperationComptable(flux2);
-    var journal = JournalFactory.make(JN, "Journal", Set.of(op1, op2), Map.of());
+    var optionalOperation1 = OperationComptable.of(flux1);
+    var operation1 = optionalOperation1.orElseThrow();
+    var optionalOperation2 = OperationComptable.of(flux2);
+    var operation2 = optionalOperation2.orElseThrow();
+    var journal = JournalFactory.make(JN, "Journal", Set.of(operation1, operation2), Map.of());
 
     var ecriture1 = journal.ecritures().getFirst();
     var ecriture2 = journal.ecritures().get(1);

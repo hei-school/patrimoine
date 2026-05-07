@@ -36,7 +36,8 @@ class OperationComptableTest {
             LocalDate.of(2026, 3, 10),
             5,
             ariary(1_000_000));
-    subject = new OperationComptable(transfert);
+    var optionalOperation = OperationComptable.of(transfert);
+    subject = optionalOperation.orElseThrow();
 
     assertEquals(transfert.nom(), subject.getPossession().nom());
     assertEquals(transfert.getDepuisCompte(), subject.getCompteCrediteur().compte());
@@ -48,7 +49,8 @@ class OperationComptableTest {
     var achat =
         new AchatMaterielAuComptant(
             "Matériel informatique", LocalDate.of(2026, 3, 10), ariary(90_000), 5, compteCourant);
-    subject = new OperationComptable(achat);
+    var optionalOperation = OperationComptable.of(achat);
+    subject = optionalOperation.orElseThrow();
 
     var credit = subject.getCompteCrediteur();
     var debit = subject.getCompteDebiteur();
@@ -67,7 +69,8 @@ class OperationComptableTest {
             LocalDate.of(2026, 3, 10),
             10,
             ariary(10_000));
-    subject = new OperationComptable(flux);
+    var optionalOperation = OperationComptable.of(flux);
+    subject = optionalOperation.orElseThrow();
 
     var credit = subject.getCompteCrediteur();
     var debit = subject.getCompteDebiteur();

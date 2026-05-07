@@ -29,7 +29,8 @@ class PossessionCompteResolverTest {
             5,
             ariary(100_000));
 
-    var comptes = resolve(flux);
+    var optionalComptes = resolve(flux);
+    var comptes = optionalComptes.orElseThrow();
     var debiteur = comptes.compteDebiteur().compte();
     var crediteur = comptes.compteCrediteur().compte();
 
@@ -51,7 +52,8 @@ class PossessionCompteResolverTest {
             5,
             ariary(1_000_000));
 
-    var comptes = resolve(transfert);
+    var optionalComptes = resolve(transfert);
+    var comptes = optionalComptes.orElseThrow();
     var debiteur = comptes.compteDebiteur().compte();
     var crediteur = comptes.compteCrediteur().compte();
 
@@ -63,7 +65,8 @@ class PossessionCompteResolverTest {
   void should_handle_compte_operation() {
     var compte = new Compte("Compte épargne", LocalDate.of(2025, JANUARY, 1), ariary(700_000));
 
-    var comptes = resolve(compte);
+    var optionalComptes = resolve(compte);
+    var comptes = optionalComptes.orElseThrow();
     var debiteur = comptes.compteDebiteur().compte();
 
     assertEquals(compte, debiteur);
@@ -85,7 +88,8 @@ class PossessionCompteResolverTest {
             LocalDate.of(2026, JANUARY, 31),
             ariary(500_000));
 
-    var comptes = resolve(remboursement);
+    var optionalComptes = resolve(remboursement);
+    var comptes = optionalComptes.orElseThrow();
     var debiteur = comptes.compteDebiteur().compte();
     var crediteur = comptes.compteCrediteur().compte();
 
@@ -98,7 +102,8 @@ class PossessionCompteResolverTest {
     var achat =
         new AchatMaterielAuComptant(
             "Achat ordinateur", LocalDate.of(2026, JANUARY, 31), ariary(500_000), 2.4, compte);
-    var comptes = resolve(achat);
+    var optionalComptes = resolve(achat);
+    var comptes = optionalComptes.orElseThrow();
     var debiteur = comptes.compteDebiteur().compte();
     var crediteur = comptes.compteCrediteur().compte();
 
