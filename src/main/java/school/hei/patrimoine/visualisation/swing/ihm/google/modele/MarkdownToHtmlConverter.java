@@ -2,6 +2,7 @@ package school.hei.patrimoine.visualisation.swing.ihm.google.modele;
 
 import com.vladsch.flexmark.html.HtmlRenderer;
 import com.vladsch.flexmark.parser.Parser;
+import com.vladsch.flexmark.util.data.MutableDataSet;
 import java.util.function.Function;
 
 public class MarkdownToHtmlConverter implements Function<String, String> {
@@ -9,8 +10,10 @@ public class MarkdownToHtmlConverter implements Function<String, String> {
   private final HtmlRenderer renderer;
 
   public MarkdownToHtmlConverter() {
-    this.parser = Parser.builder().build();
-    this.renderer = HtmlRenderer.builder().build();
+    MutableDataSet options = new MutableDataSet();
+    options.set(Parser.ASTERISK_DELIMITER_PROCESSOR, false);
+    this.parser = Parser.builder(options).build();
+    this.renderer = HtmlRenderer.builder(options).build();
   }
 
   @Override
