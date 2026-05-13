@@ -199,8 +199,7 @@ public class RecoupementPage extends LazyPage {
 
   private Map<String, PieceJustificative> buildPjMap(PatriLangFileContext selectedFile) {
     try {
-      var result = new PJProvider().apply(selectedFile);
-      return result;
+      return new PJProvider().apply(selectedFile);
     } catch (Exception e) {
       log.warn(
           "Impossible de charger les PJ pour {}: {}",
