@@ -4,8 +4,6 @@ import static javax.swing.ListSelectionModel.SINGLE_SELECTION;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.providers.FilesProvider.*;
 
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -29,9 +27,21 @@ public class FileSideBar extends JPanel {
     super(new BorderLayout());
 
     this.doneList =
-        createList(getPatriLangDoneFiles(), state, () -> getPlannedList().clearSelection());
+        createList(
+            getPatriLangDoneFiles(),
+            state,
+            () -> {
+              getPlannedList().clearSelection();
+              getPieceJustificativeList().clearSelection();
+            });
     this.plannedList =
-        createList(getPatriLangPlannedFiles(), state, () -> getDoneList().clearSelection());
+        createList(
+            getPatriLangPlannedFiles(),
+            state,
+            () -> {
+              getDoneList().clearSelection();
+              getPieceJustificativeList().clearSelection();
+            });
 
     this.pieceJustificativeList =
         createList(
@@ -61,14 +71,6 @@ public class FileSideBar extends JPanel {
             plannedList.clearSelection();
             pieceJustificativeList.clearSelection();
           }
-        });
-
-    state.subscribe(
-        "unsavedFiles",
-        () -> {
-          doneList.repaint();
-          plannedList.repaint();
-          pieceJustificativeList.repaint();
         });
   }
 
@@ -104,25 +106,7 @@ public class FileSideBar extends JPanel {
     list.addListSelectionListener(
         e -> {
           if (!e.getValueIsAdjusting()) {
-            if (list.isSelectionEmpty()) {
-              return;
-            }
             debouncer.restart();
-          }
-        });
-
-    list.addMouseListener(
-        new MouseAdapter() {
-          @Override
-          public void mouseClicked(MouseEvent e) {
-            var clickedIndex = list.locationToIndex(e.getPoint());
-            if (clickedIndex >= 0 && clickedIndex == list.getSelectedIndex()) {
-              var selectedFile = list.getSelectedValue();
-              if (selectedFile != null) {
-                state.update("selectedFile", selectedFile);
-                onSuccess.run();
-              }
-            }
           }
         });
 
