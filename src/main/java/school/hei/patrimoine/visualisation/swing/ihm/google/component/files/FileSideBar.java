@@ -4,6 +4,8 @@ import static javax.swing.ListSelectionModel.SINGLE_SELECTION;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.providers.FilesProvider.*;
 
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -95,7 +97,6 @@ public class FileSideBar extends JPanel {
               if (selectedFile == null) {
                 return;
               }
-
               state.update("selectedFile", selectedFile);
               onSuccess.run();
             });
@@ -103,9 +104,28 @@ public class FileSideBar extends JPanel {
     list.addListSelectionListener(
         e -> {
           if (!e.getValueIsAdjusting()) {
+            if (list.isSelectionEmpty()) {
+              return;
+            }
             debouncer.restart();
           }
         });
+
+    list.addMouseListener(
+        new MouseAdapter() {
+          @Override
+          public void mouseClicked(MouseEvent e) {
+            var clickedIndex = list.locationToIndex(e.getPoint());
+            if (clickedIndex >= 0 && clickedIndex == list.getSelectedIndex()) {
+              var selectedFile = list.getSelectedValue();
+              if (selectedFile != null) {
+                state.update("selectedFile", selectedFile);
+                onSuccess.run();
+              }
+            }
+          }
+        });
+
     return list;
   }
 
