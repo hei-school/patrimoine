@@ -41,14 +41,14 @@ public class CommentDialogSection implements DialogSection {
     return panel;
   }
 
-  private static ImageIcon getIcon(String path) {
+  private ImageIcon getIcon(String path) {
     var url = CommentDialogSection.class.getResource(path);
     var icon = new ImageIcon(Objects.requireNonNull(url));
     var scaled = icon.getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH);
     return new ImageIcon(scaled);
   }
 
-  private static JLabel getSectionTitle(String message) {
+  private JLabel getSectionTitle(String message) {
     var label = new JLabel(message);
     label.setFont(new Font("Arial", Font.BOLD, 15));
     label.setAlignmentX(Component.LEFT_ALIGNMENT);
