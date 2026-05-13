@@ -27,10 +27,6 @@ public class ConfirmDialog extends Dialog {
     setVisible(true);
   }
 
-  public ConfirmDialog(String title, String question, String confirmLabel) {
-    this(List.of(), title, question, confirmLabel);
-  }
-
   private void addContentPanel(List<DialogSection> sections, String question) {
     var messagePanel = new JPanel(new BorderLayout(15, 0));
     messagePanel.setBorder(CustomBorder.builder().thickness(0).padding(10, 15).build());
