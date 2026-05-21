@@ -20,13 +20,37 @@ public class FileSideBar extends JPanel {
   @Getter(AccessLevel.PRIVATE)
   private final JList<PatriLangFileContext> plannedList;
 
+  @Getter(AccessLevel.PRIVATE)
+  private final JList<PatriLangFileContext> pieceJustificativeList;
+
   public FileSideBar(State state) {
     super(new BorderLayout());
 
     this.doneList =
-        createList(getPatriLangDoneFiles(), state, () -> getPlannedList().clearSelection());
+        createList(
+            getPatriLangDoneFiles(),
+            state,
+            () -> {
+              getPlannedList().clearSelection();
+              getPieceJustificativeList().clearSelection();
+            });
     this.plannedList =
-        createList(getPatriLangPlannedFiles(), state, () -> getDoneList().clearSelection());
+        createList(
+            getPatriLangPlannedFiles(),
+            state,
+            () -> {
+              getDoneList().clearSelection();
+              getPieceJustificativeList().clearSelection();
+            });
+
+    this.pieceJustificativeList =
+        createList(
+            getPatriLangJustificativeFiles(),
+            state,
+            () -> {
+              getDoneList().clearSelection();
+              getPlannedList().clearSelection();
+            });
 
     var panel = new JPanel();
     panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
@@ -34,6 +58,8 @@ public class FileSideBar extends JPanel {
     addPanel(panel, "Journaux planifiés", plannedList);
     panel.add(Box.createVerticalStrut(20));
     addPanel(panel, "Journaux réalisés", doneList);
+    panel.add(Box.createVerticalStrut(20));
+    addPanel(panel, "Pièces justificatives", pieceJustificativeList);
 
     add(panel, BorderLayout.CENTER);
 
@@ -43,20 +69,15 @@ public class FileSideBar extends JPanel {
           if (getSelectedFile(state).isEmpty()) {
             doneList.clearSelection();
             plannedList.clearSelection();
+            pieceJustificativeList.clearSelection();
           }
-        });
-
-    state.subscribe(
-        "unsavedFiles",
-        () -> {
-          doneList.repaint();
-          plannedList.repaint();
         });
   }
 
   public void refresh() {
     ((FileListModel) doneList.getModel()).refresh(getPatriLangDoneFiles());
     ((FileListModel) plannedList.getModel()).refresh(getPatriLangPlannedFiles());
+    ((FileListModel) pieceJustificativeList.getModel()).refresh(getPatriLangJustificativeFiles());
   }
 
   public static Optional<PatriLangFileContext> getSelectedFile(State state) {
@@ -78,7 +99,6 @@ public class FileSideBar extends JPanel {
               if (selectedFile == null) {
                 return;
               }
-
               state.update("selectedFile", selectedFile);
               onSuccess.run();
             });
@@ -89,6 +109,7 @@ public class FileSideBar extends JPanel {
             debouncer.restart();
           }
         });
+
     return list;
   }
 

@@ -5,7 +5,6 @@ import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.Google
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.MessageDialog.showError;
 
 import java.awt.*;
-import java.util.List;
 import javax.swing.*;
 import lombok.extern.slf4j.Slf4j;
 import school.hei.patrimoine.google.DriveLinkIdParser;
@@ -24,21 +23,26 @@ public class LinkValidityPage extends Page {
 
   private final DefaultListModel<NamedLink> doneNamedLinksModel;
   private final DefaultListModel<NamedLink> plannedNamedLinksModel;
+  private final DefaultListModel<NamedLink> justificativeNamedLinksModel;
 
   private final JList<NamedLink> plannedNamedLinksList;
   private final JList<NamedLink> doneNamedLinksList;
+  private final JList<NamedLink> justificativeNamedLinksList;
 
   public LinkValidityPage() {
     super(LinkValidityPage.PAGE_NAME);
 
     this.plannedNamedLinksModel = new DefaultListModel<>();
     this.doneNamedLinksModel = new DefaultListModel<>();
+    this.justificativeNamedLinksModel = new DefaultListModel<>();
 
     this.plannedNamedLinksList = new JList<>(plannedNamedLinksModel);
     this.doneNamedLinksList = new JList<>(doneNamedLinksModel);
+    this.justificativeNamedLinksList = new JList<>(justificativeNamedLinksModel);
 
     this.plannedNamedLinksList.setCellRenderer(new NameLinkRenderer());
     this.doneNamedLinksList.setCellRenderer(new NameLinkRenderer());
+    this.justificativeNamedLinksList.setCellRenderer(new NameLinkRenderer());
 
     setLayout(new BorderLayout());
     setBorder(BorderFactory.createEmptyBorder(10, 50, 10, 50));
@@ -86,6 +90,18 @@ public class LinkValidityPage extends Page {
     doneScroll.setAlignmentX(Component.LEFT_ALIGNMENT);
     panel.add(doneScroll);
 
+    panel.add(Box.createVerticalStrut(20));
+
+    var justificativeLabel = new JLabel("Liens vers les pièces justificatives :");
+    justificativeLabel.setFont(new Font("Arial", BOLD, 18));
+    justificativeLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+    panel.add(justificativeLabel);
+
+    var justificativeScroll = new JScrollPane(justificativeNamedLinksList);
+    justificativeScroll.setPreferredSize(new Dimension(400, 150));
+    justificativeScroll.setAlignmentX(Component.LEFT_ALIGNMENT);
+    panel.add(justificativeScroll);
+
     add(panel, BorderLayout.CENTER);
   }
 
@@ -108,8 +124,8 @@ public class LinkValidityPage extends Page {
 
   private Button returnButton() {
     var returnButton = new NavigateButton("Retour", SubmitLinkPage.PAGE_NAME);
-    returnButton.setPreferredSize(new Dimension(200, 50));
     returnButton.setFont(new Font("Arial", BOLD, 18));
+    returnButton.setPreferredSize(new Dimension(200, 50));
 
     return returnButton;
   }
@@ -119,15 +135,17 @@ public class LinkValidityPage extends Page {
 
     doneNamedLinksModel.clear();
     plannedNamedLinksModel.clear();
+    justificativeNamedLinksModel.clear();
 
     links.done().forEach(doneNamedLinksModel::addElement);
     links.planned().forEach(plannedNamedLinksModel::addElement);
+    links.justificative().forEach(justificativeNamedLinksModel::addElement);
     super.update();
   }
 
   private GoogleLinkList<NamedID> parseNamedIds() {
-    GoogleLinkList<NamedLink> namedLinks = globalState().get("named-links");
     DriveLinkIdParser idParser = new DriveLinkIdParser();
+    GoogleLinkList<NamedLink> namedLinks = globalState().get("named-links");
 
     var plannedIds =
         namedLinks.planned().stream()
@@ -139,7 +157,12 @@ public class LinkValidityPage extends Page {
             .map(l -> new NamedID(l.name(), idParser.apply(l.link())))
             .toList();
 
-    return new GoogleLinkList<>(plannedIds, doneIds, List.of());
+    var justificativeIds =
+        namedLinks.justificative().stream()
+            .map(l -> new NamedID(l.name(), idParser.apply(l.link())))
+            .toList();
+
+    return new GoogleLinkList<>(plannedIds, doneIds, justificativeIds);
   }
 
   private void downloadFilesInBackground() {

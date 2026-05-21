@@ -52,6 +52,9 @@ public class PossessionRecoupeeItem extends JPanel {
                 + pieceJustificative.id()
                 + "</a>"
                 + ",&nbsp&nbsp&nbsp"
+                + "<b>Référence:</b> "
+                + pieceJustificative.reference()
+                + ",&nbsp&nbsp&nbsp"
                 + "<b>Date d'insertion:</b> "
                 + DateFormatter.format(pieceJustificative.date())
                 + "</div>";

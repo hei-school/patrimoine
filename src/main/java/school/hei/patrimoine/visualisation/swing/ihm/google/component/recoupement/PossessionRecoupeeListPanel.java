@@ -27,7 +27,8 @@ public class PossessionRecoupeeListPanel extends JPanel {
 
     recoupees.forEach(
         possession -> {
-          add(new PossessionRecoupeeItem(state, possession, null));
+          var pj = pjs.getOrDefault(possession.possession().nom(), null);
+          add(new PossessionRecoupeeItem(state, possession, pj));
           add(Box.createVerticalStrut(10));
         });
 

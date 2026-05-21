@@ -66,7 +66,7 @@ public class FilesProvider {
   }
 
   public static Optional<PatriLangFileContext> getPJ(PatriLangFileContext file) {
-    if (!CAS.equals(file.getType()) || DONE.equals(file.getContext())) {
+    if (!CAS.equals(file.getType())) {
       return Optional.empty();
     }
 

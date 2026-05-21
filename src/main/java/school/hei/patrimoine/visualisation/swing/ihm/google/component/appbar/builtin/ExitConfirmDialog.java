@@ -1,54 +1,24 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.builtin;
 
-import static school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.builtin.SyncConfirmDialog.addContentPanel;
+import java.util.List;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.comment.PendingCommentManager;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangStagingFileManager;
 
-import java.awt.*;
-import javax.swing.*;
-import lombok.Getter;
-import school.hei.patrimoine.visualisation.swing.ihm.google.component.Dialog;
-import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
-
-public class ExitConfirmDialog extends Dialog {
-  @Getter private boolean confirmed;
+public class ExitConfirmDialog extends ConfirmDialog {
+  static final String FILE_ICON_PATH = "/icons/file.png";
 
   public ExitConfirmDialog() {
-    super("Modifications non synchronisées", 800, 500, false);
-
-    setLayout(new BorderLayout());
-    setResizable(false);
-
-    addContentPanel(
-        this, "Il reste des modifications non synchronisées. Voulez-vous vraiment quitter ?");
-
-    addButtons();
-    setVisible(true);
-  }
-
-  private void addButtons() {
-    var buttonPanel = new JPanel(new BorderLayout());
-
-    var cancelButton =
-        new school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button(
-            "Annuler",
-            e -> {
-              confirmed = false;
-              dispose();
-            });
-
-    var confirmButton =
-        new Button(
-            "Quitter",
-            e -> {
-              confirmed = true;
-              dispose();
-            });
-
-    var rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
-    rightPanel.add(cancelButton);
-    rightPanel.add(Box.createRigidArea(new Dimension(10, 0)));
-    rightPanel.add(confirmButton);
-    buttonPanel.add(rightPanel, BorderLayout.EAST);
-
-    add(buttonPanel, BorderLayout.SOUTH);
+    super(
+        List.of(
+            new FileDialogSection(
+                "Planifiés", PatriLangStagingFileManager.getPlannedFiles(), FILE_ICON_PATH),
+            new FileDialogSection(
+                "Réalisés", PatriLangStagingFileManager.getDoneFiles(), FILE_ICON_PATH),
+            new FileDialogSection(
+                "Pièces justificatives", PatriLangStagingFileManager.getPJFiles(), FILE_ICON_PATH),
+            new CommentDialogSection(PendingCommentManager.getPendings())),
+        "Modifications non synchronisées",
+        "Il reste des modifications non synchronisées. Voulez-vous vraiment quitter ?",
+        "Quitter");
   }
 }
