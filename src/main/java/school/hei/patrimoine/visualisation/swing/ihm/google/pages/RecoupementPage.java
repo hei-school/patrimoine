@@ -101,7 +101,7 @@ public class RecoupementPage extends LazyPage {
   private static JComboBox<PossessionRecoupeeFilterPj> getPjFilter(State state) {
     var pjFilter = new JComboBox<>(PossessionRecoupeeFilterPj.values());
     pjFilter.setSelectedItem(PossessionRecoupeeFilterPj.TOUT);
-    pjFilter.setPreferredSize(new Dimension(120, 35));
+    pjFilter.setPreferredSize(new Dimension(120, 40));
     pjFilter.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
     pjFilter.setCursor(new Cursor(Cursor.HAND_CURSOR));
     pjFilter.setToolTipText("Filtrer par pièce justificative");
@@ -123,7 +123,7 @@ public class RecoupementPage extends LazyPage {
 
   private static PlaceholderTextField getPlaceholderTextField(State state) {
     var nameFilter = new PlaceholderTextField("Rechercher");
-    nameFilter.setPreferredSize(new Dimension(180, 35));
+    nameFilter.setPreferredSize(new Dimension(180, 40));
     nameFilter.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
 
     var fileSearchDebouncer =

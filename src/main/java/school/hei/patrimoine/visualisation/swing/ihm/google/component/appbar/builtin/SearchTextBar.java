@@ -12,7 +12,7 @@ public class SearchTextBar extends PlaceholderTextField {
   public SearchTextBar(State state) {
     super("Rechercher");
 
-    setPreferredSize(new Dimension(180, 35));
+    setPreferredSize(new Dimension(180, 45));
     setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
 
     var contentSearchDebouncer = new Debouncer(() -> state.update("searchText", getText().trim()));
