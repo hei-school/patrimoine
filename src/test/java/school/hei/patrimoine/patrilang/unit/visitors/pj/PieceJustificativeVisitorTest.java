@@ -1,5 +1,6 @@
 package school.hei.patrimoine.patrilang.unit.visitors.pj;
 
+import static java.time.Month.DECEMBER;
 import static lombok.AccessLevel.PRIVATE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -33,7 +34,7 @@ class PieceJustificativeVisitorTest {
   void setup() {
     var variableVisitor = new VariableVisitor();
     var variableScope = variableVisitor.getVariableScope();
-    variableVisitor.addToScope("ajd", DATE, LocalDate.of(2025, 12, 24));
+    variableVisitor.addToScope("ajd", DATE, LocalDate.of(2025, DECEMBER, 24));
 
     var idVisitor = new IdVisitor(variableVisitor);
     expressionVisitor = new VariableExpressionVisitor(variableScope, this::getVariableDateVisitor);
@@ -59,8 +60,8 @@ class PieceJustificativeVisitorTest {
 * Cas de Taxi
 
 # Pièces Justificatives
-* `assuranceChauffeur + Dates:ajd`, le 25 décembre 2025, "https://docs.google.com/document/d/1602Ett7xFepplxuCau_9aRGCRcDNwE5TLx7W3FuXyXI/edit?tab=t.0"
-* `assuranceVoiture + Dates:ajd`, le 24 décembre 2025, "https://docs.google.com/document/d/1602Ett7xFepplxuCau_9aRGCRcDNwE5TLx7W3FuXyXI/edit?tab=t.0"
+* `assuranceChauffeur + Dates:ajd`, le 25 décembre 2025, FAC102-156, "https://docs.google.com/document/d/1602Ett7xFepplxuCau_9aRGCRcDNwE5TLx7W3FuXyXI/edit?tab=t.0"
+* `assuranceVoiture + Dates:ajd`, le 24 décembre 2025, FAC102-157, "https://docs.google.com/document/d/1602Ett7xFepplxuCau_9aRGCRcDNwE5TLx7W3FuXyXI/edit?tab=t.0"
 """;
 
     List<PieceJustificative> result = visitor.visit(input, PatriLangParser::piecesJustificatives);
@@ -70,14 +71,14 @@ class PieceJustificativeVisitorTest {
     var pj1 = result.getFirst();
 
     assertEquals("assuranceChauffeur2025_12_24", pj1.id());
-    assertEquals(LocalDate.of(2025, 12, 25), pj1.date());
+    assertEquals(LocalDate.of(2025, DECEMBER, 25), pj1.date());
     assertEquals(
         "https://docs.google.com/document/d/1602Ett7xFepplxuCau_9aRGCRcDNwE5TLx7W3FuXyXI/edit?tab=t.0",
         pj1.link());
 
     var pj2 = result.get(1);
     assertEquals("assuranceVoiture2025_12_24", pj2.id());
-    assertEquals(LocalDate.of(2025, 12, 24), pj2.date());
+    assertEquals(LocalDate.of(2025, DECEMBER, 24), pj2.date());
     assertTrue(pj2.link().contains("https://docs.google.com/document"));
   }
 
