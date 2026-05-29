@@ -1,6 +1,7 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.component.recoupement;
 
 import java.awt.*;
+import java.net.URI;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import school.hei.patrimoine.modele.possession.Correction;
@@ -15,7 +16,7 @@ public class PossessionRecoupeeDetailDialog extends Dialog {
   private final PossessionRecoupee<Possession> possessionRecoupee;
 
   public PossessionRecoupeeDetailDialog(PossessionRecoupee<Possession> possessionRecoupee) {
-    super("Détails de l'opération", 900, 600, false);
+    super("Détails de l'opération", 1000, 600, false);
     this.possessionRecoupee = possessionRecoupee;
 
     setLayout(new BorderLayout());
@@ -45,7 +46,12 @@ public class PossessionRecoupeeDetailDialog extends Dialog {
     mainPanel.setBackground(Color.WHITE);
 
     mainPanel.add(createInfoPanel(), BorderLayout.WEST);
-    mainPanel.add(createListsPanel(), BorderLayout.CENTER);
+
+    var listsScrollPane = new JScrollPane(createListsPanel());
+    listsScrollPane.setBorder(null);
+    listsScrollPane.getViewport().setBackground(Color.WHITE);
+
+    mainPanel.add(listsScrollPane, BorderLayout.CENTER);
 
     add(mainPanel, BorderLayout.CENTER);
   }
@@ -69,6 +75,8 @@ public class PossessionRecoupeeDetailDialog extends Dialog {
     infoPanel.add(Box.createVerticalStrut(10));
     infoPanel.add(
         makeInfoRow("Écart", ArgentFormatter.format(possessionRecoupee.ecartValeurAvecRealises())));
+    infoPanel.add(Box.createVerticalStrut(10));
+    infoPanel.add(makeInfoRow("Référence de la pièce", "TES2026-120-20"));
 
     return infoPanel;
   }
@@ -101,6 +109,16 @@ public class PossessionRecoupeeDetailDialog extends Dialog {
             possessionRecoupee.corrections().stream().map(Correction::nom).toArray(String[]::new),
             new Color(255, 245, 200)));
 
+    listPanel.add(Box.createVerticalStrut(20));
+
+    listPanel.add(
+        createList(
+            "Commentaires",
+            possessionRecoupee.corrections().stream()
+                .flatMap(correction -> correction.toString().lines())
+                .toArray(String[]::new),
+            new Color(255, 245, 200)));
+
     return listPanel;
   }
 
@@ -129,9 +147,26 @@ public class PossessionRecoupeeDetailDialog extends Dialog {
     buttonPanel.setOpaque(true);
     buttonPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 
+    var pjButton =
+        new Button(
+            "Voir la pièce justificative",
+            e ->
+                openLink(
+                    "https://www.youtube.com/"));
+    buttonPanel.add(pjButton);
+
     buttonPanel.add(new Button("Fermer", e -> dispose()));
 
     add(buttonPanel, BorderLayout.SOUTH);
+  }
+
+  private void openLink(String url) {
+    try {
+      Desktop.getDesktop().browse(new URI(url));
+    } catch (Exception e) {
+      JOptionPane.showMessageDialog(
+          this, "Impossible d'ouvrir le lien : " + url, "Erreur", JOptionPane.ERROR_MESSAGE);
+    }
   }
 
   private JPanel makeInfoRow(String labelText, String valueText) {

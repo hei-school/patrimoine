@@ -43,7 +43,7 @@ public class AddImprevuDialog extends Dialog {
   private final JComboBox<NamedCompte> compteSelect;
 
   public AddImprevuDialog(State state) {
-    super("Ajouter un imprévu", 800, 700, false);
+    super("Ajouter un imprévu", 800, 900, false);
     this.state = state;
     this.querier = new PatriLangFileQuerier();
     this.writer = new PatriLangFileWriter();
@@ -170,7 +170,10 @@ public class AddImprevuDialog extends Dialog {
         "date", form.getDate(),
         "valeur", form.getValeur(),
         "nom", form.getNom(),
-        "compte", named.compte());
+        "compte", named.compte(),
+        "linkPJ", form.getLinkPJ(),
+        "referencePJ", form.getReferencePJ(),
+        "comment", form.getComment());
   }
 
   private record NamedCompte(Compte compte) {
