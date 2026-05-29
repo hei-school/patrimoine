@@ -148,11 +148,7 @@ public class PossessionRecoupeeDetailDialog extends Dialog {
     buttonPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 
     var pjButton =
-        new Button(
-            "Voir la pièce justificative",
-            e ->
-                openLink(
-                    "https://www.youtube.com/"));
+        new Button("Voir la pièce justificative", e -> openLink("https://www.youtube.com/"));
     buttonPanel.add(pjButton);
 
     buttonPanel.add(new Button("Fermer", e -> dispose()));
