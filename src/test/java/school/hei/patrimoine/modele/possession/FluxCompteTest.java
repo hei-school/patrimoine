@@ -7,8 +7,8 @@ import static school.hei.patrimoine.modele.Argent.ariary;
 
 import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
-import school.hei.patrimoine.modele.recouppement.PossessionRecoupee;
-import school.hei.patrimoine.modele.recouppement.RecoupementStatus;
+import school.hei.patrimoine.modele.recouppement.model.PossessionRecoupee;
+import school.hei.patrimoine.modele.recouppement.model.RecoupementStatus;
 
 class FluxCompteTest {
   @Test

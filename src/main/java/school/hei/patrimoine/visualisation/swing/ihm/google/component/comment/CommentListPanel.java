@@ -1,20 +1,27 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.component.comment;
 
+import static javax.swing.SwingUtilities.invokeLater;
+
 import java.awt.*;
 import java.util.List;
+import java.util.Optional;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import school.hei.patrimoine.google.model.Comment;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.FileSideBar.SelectedFileSupplier;
 
 public class CommentListPanel extends JPanel {
+  private final Runnable refresh;
   private final Component parent;
   private final boolean withActions;
-  private final Runnable refresh;
+  private final boolean withDeleteButton;
 
-  public CommentListPanel(Component parent, boolean withActions, Runnable refresh) {
+  public CommentListPanel(
+      Component parent, boolean withDeleteButton, boolean withActions, Runnable refresh) {
     this.parent = parent;
     this.refresh = refresh;
     this.withActions = withActions;
+    this.withDeleteButton = withDeleteButton;
 
     setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
     setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -22,18 +29,14 @@ public class CommentListPanel extends JPanel {
     setDoubleBuffered(true);
     setAutoscrolls(true);
 
-    update(null, List.of());
+    update(Optional::empty, List.of());
   }
 
-  public void update(String fileId, List<Comment> comments) {
-    update(fileId, comments, true);
-  }
-
-  public void update(String fileId, List<Comment> comments, boolean withRemoveBtn) {
+  public void update(SelectedFileSupplier file, List<Comment> comments) {
     removeAll();
 
     for (var comment : comments) {
-      add(new CommentCard(parent, fileId, comment, withActions, withRemoveBtn, refresh));
+      add(new CommentCard(file, parent, comment, withActions, withDeleteButton, refresh));
       add(Box.createVerticalStrut(10));
     }
 
@@ -44,7 +47,7 @@ public class CommentListPanel extends JPanel {
 
   // reset scroll position to the top
   private void scrollToTop() {
-    SwingUtilities.invokeLater(
+    invokeLater(
         () -> {
           Container parent = getParent();
           if (parent instanceof JViewport viewport) {

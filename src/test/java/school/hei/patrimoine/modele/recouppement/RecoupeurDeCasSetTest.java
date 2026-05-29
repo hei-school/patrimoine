@@ -1,6 +1,6 @@
 package school.hei.patrimoine.modele.recouppement;
 
-import static java.time.Month.*;
+import static java.time.Month.JANUARY;
 import static org.junit.jupiter.api.Assertions.*;
 import static school.hei.patrimoine.modele.Argent.ariary;
 import static school.hei.patrimoine.modele.Devise.MGA;
@@ -8,424 +8,174 @@ import static school.hei.patrimoine.modele.Devise.MGA;
 import java.time.LocalDate;
 import java.util.Map;
 import java.util.Set;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import school.hei.patrimoine.cas.Cas;
 import school.hei.patrimoine.cas.CasSet;
 import school.hei.patrimoine.modele.Devise;
+import school.hei.patrimoine.modele.Personne;
 import school.hei.patrimoine.modele.possession.Compte;
 import school.hei.patrimoine.modele.possession.FluxArgent;
 import school.hei.patrimoine.modele.possession.Possession;
 
 class RecoupeurDeCasSetTest {
-  @Test
-  void sans_correction_si_prevu_et_réel_sont_identiques() {
-    var debut = LocalDate.of(2025, JANUARY, 1);
-    var fin = LocalDate.of(2025, MARCH, 1);
+  private static final Personne POSSESSEUR = new Personne("testeur");
+  private static final LocalDate DATE = LocalDate.of(2025, JANUARY, 1);
+  private static final LocalDate FIN = LocalDate.of(2025, JANUARY, 31);
 
-    var doneCompte = new Compte("comptePersonnel", debut, ariary(0));
-    var plannedCompte = new Compte("comptePersonnel", debut, ariary(0));
+  /** Fabrique un Cas minimal avec le nom et les possessions fournis. */
+  private static Cas casWith(String nom, Set<Possession> possessions) {
+    return new Cas(DATE, FIN, Map.of(POSSESSEUR, 1.)) {
+      @Override
+      protected Devise devise() {
+        return MGA;
+      }
 
-    var plannedCas =
-        new Cas(debut, fin, Map.of()) {
-          @Override
-          protected void init() {}
+      @Override
+      protected String nom() {
+        return nom;
+      }
 
-          @Override
-          protected void suivi() {}
+      @Override
+      protected void init() {}
 
-          @Override
-          public Set<Possession> possessions() {
-            return Set.of(
-                plannedCompte, new FluxArgent("salaire", plannedCompte, fin, ariary(200)));
-          }
+      @Override
+      protected void suivi() {}
 
-          @Override
-          protected Devise devise() {
-            return MGA;
-          }
+      @Override
+      public Set<Possession> possessions() {
+        return possessions;
+      }
+    };
+  }
 
-          @Override
-          protected String nom() {
-            return "Zety";
-          }
-        };
-
-    var doneCas =
-        new Cas(debut, fin, Map.of()) {
-          @Override
-          protected void init() {}
-
-          @Override
-          protected void suivi() {}
-
-          @Override
-          public Set<Possession> possessions() {
-            return Set.of(doneCompte, new FluxArgent("salaire", doneCompte, fin, ariary(200)));
-          }
-
-          @Override
-          protected Devise devise() {
-            return MGA;
-          }
-
-          @Override
-          protected String nom() {
-            return "Zety";
-          }
-        };
-
-    var plannedSet = new CasSet(Set.of(plannedCas), ariary(0));
-    var doneSet = new CasSet(Set.of(doneCas), ariary(0));
-    var donePatrimoine = doneSet.set().iterator().next().patrimoine();
-
-    var subject = RecoupeurDeCasSet.of(plannedSet, doneSet);
-    var recouped = subject.getRecouped();
-    var recoupedCas = recouped.set().iterator().next();
-
-    assertEquals(
-        donePatrimoine.getPossessions().size(), recoupedCas.patrimoine().getPossessions().size());
+  private static CasSet casSetOf(Cas... cas) {
+    return new CasSet(Set.of(cas), ariary(0));
   }
 
   @Test
-  void ajoute_correction_si_valeurs_différentes() {
-    var debut = LocalDate.of(2025, JANUARY, 1);
-    var fin = LocalDate.of(2025, MARCH, 1);
+  void getRecouped_retourne_autant_de_cas_que_done() {
+    var compte = new Compte("banque", DATE, ariary(1000));
+    var done = casSetOf(casWith("patrimoine-A", Set.of(compte)));
+    var planned = casSetOf(casWith("patrimoine-A", Set.of(compte)));
 
-    var doneCompte = new Compte("comptePersonnel", debut, ariary(100));
-    var plannedCompte = new Compte("comptePersonnel", debut, ariary(100));
+    var result = RecoupeurDeCasSet.of(DATE, FIN, planned, done).getRecouped();
 
-    var plannedCas =
-        new Cas(debut, fin, Map.of()) {
-          @Override
-          protected void init() {}
-
-          @Override
-          protected void suivi() {}
-
-          @Override
-          public Set<Possession> possessions() {
-            return Set.of(
-                plannedCompte, new FluxArgent("salaire", plannedCompte, fin, ariary(300)));
-          }
-
-          @Override
-          protected Devise devise() {
-            return MGA;
-          }
-
-          @Override
-          protected String nom() {
-            return "Zety";
-          }
-        };
-
-    var doneCas =
-        new Cas(debut, fin, Map.of()) {
-          @Override
-          protected void init() {}
-
-          @Override
-          protected void suivi() {}
-
-          @Override
-          public Set<Possession> possessions() {
-            return Set.of(doneCompte, new FluxArgent("salaire", doneCompte, fin, ariary(200)));
-          }
-
-          @Override
-          protected Devise devise() {
-            return MGA;
-          }
-
-          @Override
-          protected String nom() {
-            return "Zety";
-          }
-        };
-
-    var plannedSet = new CasSet(Set.of(plannedCas), ariary(0));
-    var doneSet = new CasSet(Set.of(doneCas), ariary(0));
-    var donePatrimoine = doneSet.set().iterator().next().patrimoine();
-
-    var subject = RecoupeurDeCasSet.of(plannedSet, doneSet);
-    var recouped = subject.getRecouped();
-    var recoupedCas = recouped.set().iterator().next();
-
-    assertEquals(
-        donePatrimoine.getPossessions().size(), recoupedCas.patrimoine().getPossessions().size());
+    assertEquals(1, result.set().size());
   }
 
-  @Disabled
   @Test
-  void ajoute_correction_si_possession_manquante_dans_reel() {
-    var debut = LocalDate.of(2025, JANUARY, 1);
-    var fin = LocalDate.of(2025, MARCH, 1);
+  void getRecouped_preserve_objectifFinal_de_done() {
+    var objectif = ariary(999_000);
+    var compte = new Compte("banque", DATE, ariary(500));
+    var done = new CasSet(Set.of(casWith("patrimoine-A", Set.of(compte))), objectif);
+    var planned = new CasSet(Set.of(casWith("patrimoine-A", Set.of(compte))), ariary(0));
 
-    var doneCompte = new Compte("comptePersonnel", debut, ariary(0));
-    var plannedCompte = new Compte("comptePersonnel", debut, ariary(0));
+    var result = RecoupeurDeCasSet.of(DATE, FIN, planned, done).getRecouped();
 
-    var plannedCas =
-        new Cas(debut, fin, Map.of()) {
-          @Override
-          protected void init() {}
+    assertEquals(objectif, result.objectifFinal());
+  }
 
-          @Override
-          protected void suivi() {}
+  @Test
+  void getRecouped_preserve_nom_du_patrimoine() {
+    var compte = new Compte("banque", DATE, ariary(0));
+    var done = casSetOf(casWith("mon-patrimoine", Set.of(compte)));
+    var planned = casSetOf(casWith("mon-patrimoine", Set.of(compte)));
 
-          @Override
-          public Set<Possession> possessions() {
-            return Set.of(plannedCompte, new FluxArgent("prime", plannedCompte, fin, ariary(100)));
-          }
+    var result = RecoupeurDeCasSet.of(DATE, FIN, planned, done).getRecouped();
+    var nomRetourne = result.set().iterator().next().patrimoine().getNom();
 
-          @Override
-          protected Devise devise() {
-            return MGA;
-          }
+    assertEquals("mon-patrimoine", nomRetourne);
+  }
 
-          @Override
-          protected String nom() {
-            return "Zety";
-          }
-        };
+  @Test
+  void getRecouped_preserve_devise_du_patrimoine() {
+    var compte = new Compte("banque", DATE, ariary(0));
+    var done = casSetOf(casWith("patrimoine-A", Set.of(compte)));
+    var planned = casSetOf(casWith("patrimoine-A", Set.of(compte)));
 
-    var doneCas =
-        new Cas(debut, fin, Map.of()) {
-          @Override
-          protected void init() {}
+    var result = RecoupeurDeCasSet.of(DATE, FIN, planned, done).getRecouped();
+    var devise = result.set().iterator().next().patrimoine().getDevise();
 
-          @Override
-          protected void suivi() {}
+    assertEquals(MGA, devise);
+  }
 
-          @Override
-          public Set<Possession> possessions() {
-            return Set.of(doneCompte);
-          }
+  @Test
+  void getRecouped_possessions_sont_sans_compteCorrections() {
+    var compte = new Compte("banque", DATE, ariary(1000));
+    var done = casSetOf(casWith("patrimoine-A", Set.of(compte)));
+    var planned = casSetOf(casWith("patrimoine-A", Set.of(compte)));
 
-          @Override
-          protected Devise devise() {
-            return MGA;
-          }
+    var result = RecoupeurDeCasSet.of(DATE, FIN, planned, done).getRecouped();
 
-          @Override
-          protected String nom() {
-            return "Zety";
-          }
-        };
+    var possessions = result.set().iterator().next().possessions();
+    assertTrue(
+        possessions.stream()
+            .noneMatch(p -> p instanceof school.hei.patrimoine.modele.possession.CompteCorrection),
+        "Les CompteCorrection doivent être filtrées par withoutCompteCorrections");
+  }
 
-    var plannedSet = new CasSet(Set.of(plannedCas), ariary(0));
-    var doneSet = new CasSet(Set.of(doneCas), ariary(0));
+  @Test
+  void getRecouped_fonctionne_avec_plusieurs_cas() {
+    var compteA = new Compte("banqueA", DATE, ariary(100));
+    var compteB = new Compte("banqueB", DATE, ariary(200));
+    var casA_done = casWith("patrimoine-A", Set.of(compteA));
+    var casB_done = casWith("patrimoine-B", Set.of(compteB));
+    var casA_planned = casWith("patrimoine-A", Set.of(compteA));
+    var casB_planned = casWith("patrimoine-B", Set.of(compteB));
 
-    var subject = RecoupeurDeCasSet.of(plannedSet, doneSet);
-    var recouped = subject.getRecouped();
-    var recoupedCas = recouped.set().iterator().next();
+    var done = casSetOf(casA_done, casB_done);
+    var planned = casSetOf(casA_planned, casB_planned);
+
+    var result = RecoupeurDeCasSet.of(DATE, FIN, planned, done).getRecouped();
+
+    assertEquals(2, result.set().size());
+  }
+
+  @Test
+  void getRecouped_leve_exception_si_cas_planned_introuvable() {
+    var compte = new Compte("banque", DATE, ariary(0));
+    var done = casSetOf(casWith("patrimoine-X", Set.of(compte)));
+    var planned = casSetOf(casWith("patrimoine-Y", Set.of(compte)));
+
+    var subject = RecoupeurDeCasSet.of(DATE, FIN, planned, done);
+    var ex = assertThrows(IllegalArgumentException.class, subject::getRecouped);
 
     assertTrue(
-        recoupedCas.patrimoine().getPossessions().size()
-            > doneCas.patrimoine().getPossessions().size());
-  }
-
-  @Disabled
-  @Test
-  void ajoute_correction_si_possession_en_trop_dans_reel() {
-    var debut = LocalDate.of(2025, JANUARY, 1);
-    var fin = LocalDate.of(2025, MARCH, 1);
-
-    var compte = new Compte("comptePersonnel", debut, ariary(0));
-    var flux1 = new FluxArgent("prime", compte, fin, ariary(100));
-    var flux2 = new FluxArgent("bonus", compte, fin, ariary(50));
-
-    var plannedCas =
-        new Cas(debut, fin, Map.of()) {
-          @Override
-          protected void init() {}
-
-          @Override
-          protected void suivi() {}
-
-          @Override
-          public Set<Possession> possessions() {
-            return Set.of(compte, flux1);
-          }
-
-          @Override
-          protected Devise devise() {
-            return MGA;
-          }
-
-          @Override
-          protected String nom() {
-            return "Zety";
-          }
-        };
-
-    var doneCas =
-        new Cas(debut, fin, Map.of()) {
-          @Override
-          protected void init() {}
-
-          @Override
-          protected void suivi() {}
-
-          @Override
-          public Set<Possession> possessions() {
-            return Set.of(compte, flux1, flux2);
-          }
-
-          @Override
-          protected Devise devise() {
-            return MGA;
-          }
-
-          @Override
-          protected String nom() {
-            return "Zety";
-          }
-        };
-
-    var plannedSet = new CasSet(Set.of(plannedCas), ariary(0));
-    var doneSet = new CasSet(Set.of(doneCas), ariary(0));
-
-    var subject = RecoupeurDeCasSet.of(plannedSet, doneSet);
-    var recouped = subject.getRecouped();
-    var recoupedCas = recouped.set().iterator().next();
-
-    assertTrue(
-        recoupedCas.patrimoine().getPossessions().size() - 4
-            < doneCas.patrimoine().getPossessions().size());
+        ex.getMessage().contains("patrimoine-X"),
+        "Le message doit mentionner le nom du cas introuvable");
   }
 
   @Test
-  void exception_si_nom_patrimoine_différent() {
-    var debut = LocalDate.of(2025, JANUARY, 1);
-    var fin = LocalDate.of(2025, MARCH, 1);
+  void getRecouped_appele_deux_fois_retourne_des_cassets_equivalents() {
+    var compte = new Compte("banque", DATE, ariary(0));
+    var done = casSetOf(casWith("patrimoine-A", Set.of(compte)));
+    var planned = casSetOf(casWith("patrimoine-A", Set.of(compte)));
 
-    var compte = new Compte("comptePersonnel", debut, ariary(0));
+    var subject = RecoupeurDeCasSet.of(DATE, FIN, planned, done);
+    var first = subject.getRecouped();
+    var second = subject.getRecouped();
 
-    var plannedCas =
-        new Cas(debut, fin, Map.of()) {
-          @Override
-          protected void init() {}
-
-          @Override
-          protected void suivi() {}
-
-          @Override
-          public Set<Possession> possessions() {
-            return Set.of(compte);
-          }
-
-          @Override
-          protected Devise devise() {
-            return MGA;
-          }
-
-          @Override
-          protected String nom() {
-            return "Zety";
-          }
-        };
-
-    var doneCas =
-        new Cas(debut, fin, Map.of()) {
-          @Override
-          protected void init() {}
-
-          @Override
-          protected void suivi() {}
-
-          @Override
-          public Set<Possession> possessions() {
-            return Set.of(compte);
-          }
-
-          @Override
-          protected Devise devise() {
-            return MGA;
-          }
-
-          @Override
-          protected String nom() {
-            return "Autre";
-          }
-        };
-
-    var plannedSet = new CasSet(Set.of(plannedCas), ariary(0));
-    var doneSet = new CasSet(Set.of(doneCas), ariary(0));
-
-    assertThrows(
-        java.util.NoSuchElementException.class,
-        () -> RecoupeurDeCasSet.of(plannedSet, doneSet).getRecouped());
+    assertEquals(first.set().size(), second.set().size());
+    assertEquals(first.objectifFinal(), second.objectifFinal());
   }
 
-  @Disabled
   @Test
-  void ajoute_corrections_multiples_si_plusieurs_ecarts() {
-    var debut = LocalDate.of(2025, JANUARY, 1);
-    var fin = LocalDate.of(2025, MARCH, 1);
+  void getRecouped_cas_avec_fluxArgent_ne_leve_pas_dexception() {
+    var compte = new Compte("banque", DATE, ariary(0));
+    var flux = new FluxArgent("salaire", compte, DATE, ariary(200));
 
-    var compte = new Compte("comptePersonnel", debut, ariary(0));
-    var flux1 = new FluxArgent("prime", compte, fin, ariary(100));
-    var flux2 = new FluxArgent("bonus", compte, fin, ariary(50));
+    var done = casSetOf(casWith("patrimoine-A", Set.of(compte, flux)));
+    var planned = casSetOf(casWith("patrimoine-A", Set.of(compte, flux)));
 
-    var plannedCas =
-        new Cas(debut, fin, Map.of()) {
-          @Override
-          protected void init() {}
+    assertDoesNotThrow(() -> RecoupeurDeCasSet.of(DATE, FIN, planned, done).getRecouped());
+  }
 
-          @Override
-          protected void suivi() {}
+  @Test
+  void of_retourne_instance_non_nulle() {
+    var compte = new Compte("banque", DATE, ariary(0));
+    var done = casSetOf(casWith("patrimoine-A", Set.of(compte)));
+    var planned = casSetOf(casWith("patrimoine-A", Set.of(compte)));
 
-          @Override
-          public Set<Possession> possessions() {
-            return Set.of(compte, flux1, flux2);
-          }
-
-          @Override
-          protected Devise devise() {
-            return MGA;
-          }
-
-          @Override
-          protected String nom() {
-            return "Zety";
-          }
-        };
-
-    var doneCas =
-        new Cas(debut, fin, Map.of()) {
-          @Override
-          protected void init() {}
-
-          @Override
-          protected void suivi() {}
-
-          @Override
-          public Set<Possession> possessions() {
-            return Set.of(compte);
-          }
-
-          @Override
-          protected Devise devise() {
-            return MGA;
-          }
-
-          @Override
-          protected String nom() {
-            return "Zety";
-          }
-        };
-
-    var plannedSet = new CasSet(Set.of(plannedCas), ariary(0));
-    var doneSet = new CasSet(Set.of(doneCas), ariary(0));
-
-    var subject = RecoupeurDeCasSet.of(plannedSet, doneSet);
-    var recouped = subject.getRecouped();
-    var recoupedCas = recouped.set().iterator().next();
-
-    assertTrue(
-        recoupedCas.patrimoine().getPossessions().size()
-            > doneCas.patrimoine().getPossessions().size());
-    assertEquals(6, recoupedCas.patrimoine().getPossessions().size());
+    assertNotNull(RecoupeurDeCasSet.of(DATE, FIN, planned, done));
   }
 }

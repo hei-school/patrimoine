@@ -9,6 +9,7 @@ import java.util.Set;
 import lombok.Getter;
 import lombok.ToString;
 import school.hei.patrimoine.modele.Argent;
+import school.hei.patrimoine.modele.vente.ValeurMarche;
 
 @ToString(callSuper = true)
 @Getter
@@ -35,6 +36,18 @@ public sealed class Compte extends Possession permits Dette, Creance {
     this(nom, dateOuverture, t, valeurComptable, new HashSet<>());
   }
 
+  protected Compte(
+      String nom,
+      LocalDate dateOuverture,
+      LocalDate t,
+      Argent valeurComptable,
+      Set<FluxArgent> fluxArgents,
+      Set<ValeurMarche> valeursMarche) {
+    super(nom, t, valeurComptable, valeursMarche);
+    this.fluxArgents = fluxArgents;
+    this.dateOuverture = dateOuverture;
+  }
+
   @Override
   public Compte projectionFuture(LocalDate tFutur) {
     if (tFutur.isBefore(dateOuverture)) {
@@ -46,7 +59,8 @@ public sealed class Compte extends Possession permits Dette, Creance {
         dateOuverture,
         tFutur,
         valeurComptable.minus(financementsFuturs(tFutur), tFutur),
-        fluxArgents.stream().map(f -> f.projectionFuture(tFutur)).collect(toSet()));
+        fluxArgents.stream().map(f -> f.projectionFuture(tFutur)).collect(toSet()),
+        valeursMarche);
   }
 
   @Override

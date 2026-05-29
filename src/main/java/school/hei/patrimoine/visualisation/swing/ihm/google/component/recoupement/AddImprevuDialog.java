@@ -1,10 +1,16 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.component.recoupement;
 
 import static java.util.Objects.requireNonNull;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.component.files.FileSideBar.getSelectedFile;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.MessageDialog.*;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangFileContentManager.clearAllTempContents;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangFilesWatcher.getDoneCasSetComptes;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangStagingFileManager.stage;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.providers.FilesProvider.getDoneCasSetFile;
 
 import java.awt.*;
-import java.io.File;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import javax.swing.*;
@@ -15,23 +21,23 @@ import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.Patrimoine;
 import school.hei.patrimoine.modele.possession.Compte;
 import school.hei.patrimoine.modele.possession.FluxArgent;
-import school.hei.patrimoine.patrilang.files.PatriLangFileQuerier;
-import school.hei.patrimoine.patrilang.files.PatriLangFileWritter;
-import school.hei.patrimoine.patrilang.files.PatriLangFileWritter.FileWritterInput;
+import school.hei.patrimoine.patrilang.files.io.PatriLangFileQuerier;
+import school.hei.patrimoine.patrilang.files.io.PatriLangFileWriter;
+import school.hei.patrimoine.patrilang.files.io.PatriLangFileWriter.FileWriterInput;
 import school.hei.patrimoine.patrilang.generator.PatriLangGeneratorFactory;
 import school.hei.patrimoine.patrilang.modele.PatriLangCas;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.Dialog;
-import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.AppContext;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
-import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.FileSideBar;
 import school.hei.patrimoine.visualisation.swing.ihm.google.generator.possession.FluxArgentExecutionGenerator;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.AsyncTask;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.MessageDialog;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangFilesWatcher;
 
 public class AddImprevuDialog extends Dialog {
   private final State state;
+  private final PatriLangFileWriter writer;
   private final PatriLangFileQuerier querier;
-  private final PatriLangFileWritter writter;
 
   private AddRecoupementExecutionForm form;
   private final JComboBox<NamedCompte> compteSelect;
@@ -40,8 +46,8 @@ public class AddImprevuDialog extends Dialog {
     super("Ajouter un imprévu", 800, 700, false);
     this.state = state;
     this.querier = new PatriLangFileQuerier();
-    this.writter = new PatriLangFileWritter();
-    this.compteSelect = compteSelect();
+    this.writer = new PatriLangFileWriter();
+    this.compteSelect = getCompteSelect();
 
     setLayout(new BorderLayout());
 
@@ -53,7 +59,7 @@ public class AddImprevuDialog extends Dialog {
   }
 
   private void addForm() {
-    var patrimoine = getPlannedPatrimoine();
+    var patrimoine = getDonePatrimoine();
     this.form =
         new AddRecoupementExecutionForm(
             "",
@@ -64,8 +70,8 @@ public class AddImprevuDialog extends Dialog {
     add(form, BorderLayout.CENTER);
   }
 
-  private Patrimoine getPlannedPatrimoine() {
-    PatriLangCas cas = state.get("plannedCas");
+  private Patrimoine getDonePatrimoine() {
+    PatriLangCas cas = state.get("doneCas");
     return cas.patrimoine();
   }
 
@@ -98,17 +104,20 @@ public class AddImprevuDialog extends Dialog {
     add(buttonPanel, BorderLayout.SOUTH);
   }
 
-  private JComboBox<NamedCompte> compteSelect() {
+  private JComboBox<NamedCompte> getCompteSelect() {
     PatriLangCas plannedCas = state.get("plannedCas");
 
-    var comptes =
+    var comptes = new ArrayList<>(getDoneCasSetComptes());
+    var casComptes =
         plannedCas.patrimoine().getPossessions().stream()
             .filter(p -> p instanceof Compte)
             .map(compte -> (Compte) compte)
-            .map(NamedCompte::new)
-            .toArray(NamedCompte[]::new);
+            .toList();
 
-    return new JComboBox<>(comptes);
+    comptes.addAll(casComptes);
+
+    var array = new HashSet<>(comptes).stream().map(NamedCompte::new).toArray(NamedCompte[]::new);
+    return new JComboBox<>(array);
   }
 
   private void addExecution() {
@@ -120,41 +129,35 @@ public class AddImprevuDialog extends Dialog {
   private void saveExecutions(FluxArgent fluxArgent) {
     var lineGenerator = PatriLangGeneratorFactory.make(fluxArgent);
     var line = lineGenerator.apply(fluxArgent);
-    File casSet = FileSideBar.getDoneCasSetFile();
-    File selectedFile = state.get("selectedFile");
+
+    var selectedFile = getSelectedFile(state).orElseThrow();
 
     AsyncTask.<Void>builder()
         .task(
             () -> {
               var sectionOperation =
-                  querier.query(
-                      selectedFile.getAbsolutePath(),
-                      document -> document.cas().sectionOperations());
+                  querier.query(selectedFile, document -> document.cas().sectionOperations());
               if (sectionOperation.isEmpty()) {
                 throw new RuntimeException("Section Operations introuvable dans le fichier");
               }
 
-              writter.insertAtLine(
-                  FileWritterInput.builder()
+              var input =
+                  FileWriterInput.builder()
                       .content(line)
                       .file(selectedFile)
-                      .casSet(casSet)
-                      .build(),
-                  sectionOperation.get().endLine());
+                      .casSet(getDoneCasSetFile())
+                      .build();
+
+              writer.insertAtLine(input, sectionOperation.get().endLine());
+              clearAllTempContents();
+              stage(selectedFile);
               return null;
             })
-        .onError(
-            error -> {
-              if (showExceptionMessageIfRecognizedException(error)) {
-                return;
-              }
-
-              showError("Erreur", "Une erreur est survenue lors de l'enregistrement");
-            })
+        .onError(MessageDialog::showError)
         .onSuccess(
             result -> {
               showInfo("Succès", "L'opération a été exécutée avec succès");
-              AppContext.getDefault().globalState().update("isAnyFileModified", true);
+              PatriLangFilesWatcher.dispatch();
               dispose();
             })
         .build()

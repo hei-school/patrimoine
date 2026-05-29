@@ -6,10 +6,13 @@ import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NonNull;
+import school.hei.patrimoine.modele.possession.Possession;
 import school.hei.patrimoine.modele.possession.pj.PieceJustificative;
-import school.hei.patrimoine.modele.recouppement.PossessionRecoupee;
-import school.hei.patrimoine.modele.recouppement.RecoupementStatus;
+import school.hei.patrimoine.modele.recouppement.model.PossessionRecoupee;
+import school.hei.patrimoine.modele.recouppement.model.RecoupementStatus;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.html.LinkOpener;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.formatter.ArgentFormatter;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.formatter.DateFormatter;
@@ -17,11 +20,13 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.modele.formatter.Dat
 @Slf4j
 public class PossessionRecoupeeItem extends JPanel {
   private final State state;
-  private final PossessionRecoupee possessionRecoupee;
   private final PieceJustificative pieceJustificative;
+  private final PossessionRecoupee<Possession> possessionRecoupee;
 
   public PossessionRecoupeeItem(
-      State state, PossessionRecoupee possessionRecoupee, PieceJustificative pieceJustificative) {
+      State state,
+      PossessionRecoupee<Possession> possessionRecoupee,
+      PieceJustificative pieceJustificative) {
     this.state = state;
     this.possessionRecoupee = possessionRecoupee;
     this.pieceJustificative = pieceJustificative;
@@ -47,6 +52,9 @@ public class PossessionRecoupeeItem extends JPanel {
                 + pieceJustificative.id()
                 + "</a>"
                 + ",&nbsp&nbsp&nbsp"
+                + "<b>Référence:</b> "
+                + pieceJustificative.reference()
+                + ",&nbsp&nbsp&nbsp"
                 + "<b>Date d'insertion:</b> "
                 + DateFormatter.format(pieceJustificative.date())
                 + "</div>";
@@ -71,6 +79,12 @@ public class PossessionRecoupeeItem extends JPanel {
             ArgentFormatter.format(possessionRecoupee.prevu().valeur()),
             ArgentFormatter.format(possessionRecoupee.valeurRealisee()));
 
+    var title = getJEditorPane(titleString);
+
+    add(title, BorderLayout.WEST);
+  }
+
+  private static @NonNull JEditorPane getJEditorPane(String titleString) {
     var title = new JEditorPane();
     title.setContentType("text/html");
     title.setText(titleString);
@@ -80,17 +94,12 @@ public class PossessionRecoupeeItem extends JPanel {
     title.setFont(new Font("Arial", Font.PLAIN, 16));
 
     title.addHyperlinkListener(
-        e -> {
-          if (e.getEventType() == ACTIVATED) {
-            try {
-              java.awt.Desktop.getDesktop().browse(e.getURL().toURI());
-            } catch (Exception ex) {
-              ex.printStackTrace();
-            }
+        event -> {
+          if (event.getEventType() == ACTIVATED) {
+            new LinkOpener().accept(event.getURL().toString());
           }
         });
-
-    add(title, BorderLayout.WEST);
+    return title;
   }
 
   private void addActionsButton() {

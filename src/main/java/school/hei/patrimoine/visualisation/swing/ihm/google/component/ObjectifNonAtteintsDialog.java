@@ -6,15 +6,16 @@ import javax.swing.*;
 import school.hei.patrimoine.modele.objectif.ObjectifNonAtteint;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
 
-public class ObjectifNonAtteintsDialog extends JDialog {
+public class ObjectifNonAtteintsDialog extends Dialog {
   public ObjectifNonAtteintsDialog(Set<ObjectifNonAtteint> objectifs) {
-    setTitle("Objectifs Non Atteints");
+    super("Objectifs Non Atteints", 1200, 700, false);
 
     var listPanel = createListPanel();
-    fillObjetifs(listPanel, objectifs);
 
+    fillObjectifs(listPanel, objectifs);
     setupLayout(listPanel);
-    finalizeDialog();
+    setLocationRelativeTo(null);
+    setVisible(true);
   }
 
   private JPanel createListPanel() {
@@ -25,7 +26,7 @@ public class ObjectifNonAtteintsDialog extends JDialog {
     return panel;
   }
 
-  private void fillObjetifs(JPanel panel, Set<ObjectifNonAtteint> objectifs) {
+  private void fillObjectifs(JPanel panel, Set<ObjectifNonAtteint> objectifs) {
     objectifs.forEach(obj -> panel.add(new ObjectifItemPanel(obj)));
   }
 
@@ -47,11 +48,5 @@ public class ObjectifNonAtteintsDialog extends JDialog {
 
     getContentPane().add(scrollPane, BorderLayout.CENTER);
     getContentPane().add(bottom, BorderLayout.SOUTH);
-  }
-
-  private void finalizeDialog() {
-    setSize(700, 500);
-    setLocationRelativeTo(null);
-    setVisible(true);
   }
 }

@@ -20,6 +20,8 @@ import school.hei.patrimoine.modele.possession.*;
 import school.hei.patrimoine.patrilang.modele.variable.VariableType;
 import school.hei.patrimoine.patrilang.visitors.factory.SectionVisitorFactory;
 import school.hei.patrimoine.patrilang.visitors.possession.*;
+import school.hei.patrimoine.patrilang.visitors.possession.vente.ValeurMarcheVisitor;
+import school.hei.patrimoine.patrilang.visitors.possession.vente.VenteVisitor;
 import school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor;
 
 @Builder
@@ -32,6 +34,8 @@ public class SectionVisitor {
   private final DetteVisitor detteVisitor;
   private final OperationVisitor operationVisitor;
   private final OperationTemplateVisitor operationTemplateVisitor;
+  private final ValeurMarcheVisitor valeurMarcheVisitor;
+  private final VenteVisitor venteVisitor;
 
   public SectionVisitor createChildSectionVisitor() {
     return SectionVisitorFactory.make(

@@ -1,9 +1,10 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.component.recoupement;
 
 import static java.util.stream.Collectors.joining;
-import static school.hei.patrimoine.modele.recouppement.RecoupementStatus.IMPREVU;
+import static school.hei.patrimoine.modele.recouppement.model.RecoupementStatus.IMPREVU;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.component.app.ViewFactory.make;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.MessageDialog.*;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.providers.FilesProvider.getDoneCasSetFile;
 
 import java.awt.*;
 import java.io.File;
@@ -13,40 +14,43 @@ import java.util.Set;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import school.hei.patrimoine.modele.possession.FluxArgent;
-import school.hei.patrimoine.modele.recouppement.PossessionRecoupee;
-import school.hei.patrimoine.modele.recouppement.PossessionRecoupee.Info;
-import school.hei.patrimoine.patrilang.files.PatriLangFileQuerier;
-import school.hei.patrimoine.patrilang.files.PatriLangFileWritter;
-import school.hei.patrimoine.patrilang.files.PatriLangFileWritter.FileWritterInput;
+import school.hei.patrimoine.modele.possession.Possession;
+import school.hei.patrimoine.modele.recouppement.model.Info;
+import school.hei.patrimoine.modele.recouppement.model.PossessionRecoupee;
+import school.hei.patrimoine.patrilang.files.PatriLangFile;
+import school.hei.patrimoine.patrilang.files.io.PatriLangFileQuerier;
+import school.hei.patrimoine.patrilang.files.io.PatriLangFileWriter;
+import school.hei.patrimoine.patrilang.files.io.PatriLangFileWriter.FileWriterInput;
 import school.hei.patrimoine.patrilang.generator.PatriLangGeneratorFactory;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.Dialog;
-import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.AppContext;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.MultiViews;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
-import school.hei.patrimoine.visualisation.swing.ihm.google.component.files.FileSideBar;
 import school.hei.patrimoine.visualisation.swing.ihm.google.generator.PossessionGeneratorFactory;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.AsyncTask;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.MessageDialog;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangFilesWatcher;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.formatter.ArgentFormatter;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.formatter.DateFormatter;
 
 public class PossessionRecoupeeRealisationsDialog extends Dialog {
   private final State state;
-  private final Set<Info> pendingInfos;
-  private final PatriLangFileWritter writter;
+  private final Set<Info<Possession>> pendingInfos;
+  private final PatriLangFileWriter writter;
   private final PatriLangFileQuerier querier;
-  private final PossessionRecoupee possessionRecoupee;
+  private final PossessionRecoupee<Possession> possessionRecoupee;
 
-  private DefaultListModel<Info> realisesModel;
+  private DefaultListModel<Info<Possession>> realisesModel;
   private final JPanel contentPanel;
   private MultiViews pageManager;
 
-  public PossessionRecoupeeRealisationsDialog(State state, PossessionRecoupee possessionRecoupee) {
+  public PossessionRecoupeeRealisationsDialog(
+      State state, PossessionRecoupee<Possession> possessionRecoupee) {
     super("Exécutions d'opération", 700, 600, false);
 
     this.state = state;
     this.pendingInfos = new HashSet<>();
-    this.writter = new PatriLangFileWritter();
+    this.writter = new PatriLangFileWriter();
     this.querier = new PatriLangFileQuerier();
     this.possessionRecoupee = possessionRecoupee;
 
@@ -135,7 +139,7 @@ public class PossessionRecoupeeRealisationsDialog extends Dialog {
     return panel;
   }
 
-  private Info buildInfoFromForm(AddRecoupementExecutionForm form) {
+  private Info<Possession> buildInfoFromForm(AddRecoupementExecutionForm form) {
     var generator = PossessionGeneratorFactory.make(possessionRecoupee.possession());
     Map<String, Object> args =
         switch (possessionRecoupee.possession()) {
@@ -149,7 +153,9 @@ public class PossessionRecoupeeRealisationsDialog extends Dialog {
           default -> throw new IllegalArgumentException("Type non supporté");
         };
     var newPossession = generator.apply(args);
-    return new Info(form.getDate(), form.getValeur(), newPossession);
+    // TODO: fix possession à corrigé
+    return new Info<>(
+        newPossession.nom(), form.getDate(), form.getValeur(), newPossession, newPossession);
   }
 
   private void addTitle() {
@@ -162,7 +168,7 @@ public class PossessionRecoupeeRealisationsDialog extends Dialog {
     add(title, BorderLayout.NORTH);
   }
 
-  private void register(Info info) {
+  private void register(Info<Possession> info) {
     if (alreadyExist(info)) {
       throw new IllegalArgumentException(
           String.format("L'exécution nom=%s est déjà utilisée", info.possession().nom()));
@@ -172,12 +178,12 @@ public class PossessionRecoupeeRealisationsDialog extends Dialog {
     realisesModel.addElement(info);
   }
 
-  private boolean alreadyExist(Info candiate) {
-    Set<Info> exists = new HashSet<>(possessionRecoupee.realises());
+  private boolean alreadyExist(Info<Possession> candidate) {
+    Set<Info<Possession>> exists = new HashSet<>(possessionRecoupee.realises());
     exists.addAll(pendingInfos);
 
     return exists.stream()
-        .anyMatch(info -> info.possession().nom().equals(candiate.possession().nom()));
+        .anyMatch(info -> info.possession().nom().equals(candidate.possession().nom()));
   }
 
   private void saveExecutions() {
@@ -190,7 +196,7 @@ public class PossessionRecoupeeRealisationsDialog extends Dialog {
                 })
             .collect(joining("\n"));
 
-    File casSet = FileSideBar.getDoneCasSetFile();
+    File casSet = getDoneCasSetFile();
     File selectedFile = state.get("selectedFile");
 
     AsyncTask.<Void>builder()
@@ -198,32 +204,26 @@ public class PossessionRecoupeeRealisationsDialog extends Dialog {
             () -> {
               var sectionOperation =
                   querier.query(
-                      selectedFile.getAbsolutePath(),
+                      new PatriLangFile(selectedFile),
                       document -> document.cas().sectionOperations());
               if (sectionOperation.isEmpty()) {
                 throw new RuntimeException("Section Operations introuvable dans le fichier");
               }
 
               writter.insertAtLine(
-                  FileWritterInput.builder()
+                  FileWriterInput.builder()
                       .content(lines)
-                      .file(selectedFile)
-                      .casSet(casSet)
+                      .file(new PatriLangFile(selectedFile))
+                      .casSet(new PatriLangFile(casSet))
                       .build(),
                   sectionOperation.get().endLine());
               return null;
             })
-        .onError(
-            error -> {
-              if (showExceptionMessageIfRecognizedException(error)) {
-                return;
-              }
-              showError("Erreur", "Une erreur est survenue lors de l'enregistrement");
-            })
+        .onError(MessageDialog::showError)
         .onSuccess(
             result -> {
               showInfo("Succès", "L'opération a été exécutée avec succès");
-              AppContext.getDefault().globalState().update("isAnyFileModified", true);
+              PatriLangFilesWatcher.dispatch();
               dispose();
             })
         .build()

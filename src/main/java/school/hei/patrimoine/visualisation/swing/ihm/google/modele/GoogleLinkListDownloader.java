@@ -1,10 +1,11 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.modele;
 
+import static java.nio.file.Files.createDirectories;
+import static java.nio.file.Files.walk;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.GoogleLinkList.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import lombok.extern.slf4j.Slf4j;
@@ -46,25 +47,10 @@ public record GoogleLinkListDownloader(FileNameExtractor fileNameExtractor, Driv
     return GoogleApiUtilities.getDownloadDirectoryPath() + "/justificatifs";
   }
 
-  public static String getPlannedStagedDirectoryPath() {
-    return GoogleApiUtilities.getStagingDirectoryPath() + "/planifies";
-  }
-
-  public static String getDoneStagedDirectoryPath() {
-    return GoogleApiUtilities.getStagingDirectoryPath() + "/realises";
-  }
-
-  public static String getJustificativeStagedDirectoryPath() {
-    return GoogleApiUtilities.getStagingDirectoryPath() + "/justificatifs";
-  }
-
   public static void setup() {
     resetDirectory(getPlannedDirectoryPath());
     resetDirectory(getDoneDirectoryPath());
     resetDirectory(getJustificativeDirectoryPath());
-    resetDirectory(getPlannedStagedDirectoryPath());
-    resetDirectory(getDoneStagedDirectoryPath());
-    resetDirectory(getJustificativeStagedDirectoryPath());
   }
 
   @SuppressWarnings("all")
@@ -74,9 +60,9 @@ public record GoogleLinkListDownloader(FileNameExtractor fileNameExtractor, Driv
 
     try {
       if (directory.exists()) {
-        Files.walk(path).map(Path::toFile).forEach(File::delete);
+        walk(path).map(Path::toFile).forEach(File::delete);
       }
-      Files.createDirectories(path);
+      createDirectories(path);
     } catch (IOException e) {
       throw new RuntimeException("Directory reset error : " + directoryPath, e);
     }

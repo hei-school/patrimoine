@@ -1,13 +1,6 @@
 package school.hei.patrimoine.visualisation.xchart;
 
-import static java.awt.Color.BLACK;
-import static java.awt.Color.BLUE;
-import static java.awt.Color.DARK_GRAY;
-import static java.awt.Color.GREEN;
-import static java.awt.Color.MAGENTA;
-import static java.awt.Color.RED;
-import static java.awt.Color.WHITE;
-import static java.awt.Color.YELLOW;
+import static java.awt.Color.*;
 import static java.nio.file.Files.createTempFile;
 import static java.util.Comparator.comparing;
 import static java.util.UUID.randomUUID;
@@ -15,11 +8,7 @@ import static org.knowm.xchart.BitmapEncoder.BitmapFormat.PNG;
 import static org.knowm.xchart.BitmapEncoder.saveBitmapWithDPI;
 import static org.knowm.xchart.style.Styler.LegendPosition.OutsideE;
 import static org.knowm.xchart.style.markers.SeriesMarkers.NONE;
-import static school.hei.patrimoine.modele.possession.TypeAgregat.CORRECTION;
-import static school.hei.patrimoine.modele.possession.TypeAgregat.IMMOBILISATION;
-import static school.hei.patrimoine.modele.possession.TypeAgregat.OBLIGATION;
-import static school.hei.patrimoine.modele.possession.TypeAgregat.PATRIMOINE;
-import static school.hei.patrimoine.modele.possession.TypeAgregat.TRESORERIE;
+import static school.hei.patrimoine.modele.possession.TypeAgregat.*;
 import static school.hei.patrimoine.visualisation.xchart.StyleSerie.SerieWidth.FAT;
 import static school.hei.patrimoine.visualisation.xchart.StyleSerie.SerieWidth.NORMAL;
 import static school.hei.patrimoine.visualisation.xchart.StyleSerie.SerieWidth.THIN;
@@ -105,6 +94,14 @@ public class GrapheurEvolutionPatrimoine
               p -> OBLIGATION.equals(p.typeAgregat())),
           new StyleSerie(YELLOW, FAT, DASH, false));
     }
+    if (grapheConf.avecValeurMarche()) {
+      addSerie(
+          chart,
+          "Valeur marché",
+          dates,
+          serieComptableTemporelle.serieValeursMarchePatrimoine(),
+          new StyleSerie(ORANGE, FAT, CONTINUOUS, false));
+    }
   }
 
   private void configureSerie(
@@ -189,7 +186,7 @@ public class GrapheurEvolutionPatrimoine
   }
 
   public File apply(EvolutionPatrimoine ep) {
-    return apply(ep, new GrapheConf(false, false, true, true, true));
+    return apply(ep, new GrapheConf(false, false, true, true, true, true));
   }
 
   private void configureStyle(XYChart chart) {

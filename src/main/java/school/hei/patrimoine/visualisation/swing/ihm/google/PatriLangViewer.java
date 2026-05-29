@@ -2,21 +2,20 @@ package school.hei.patrimoine.visualisation.swing.ihm.google;
 
 import static java.awt.Toolkit.getDefaultToolkit;
 import static javax.swing.SwingUtilities.invokeLater;
-import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.PatriLangStagingFileManager.getStagedDoneFiles;
-import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.PatriLangStagingFileManager.getStagedPlannedFiles;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.config.EnvironmentConfig.isOfflineMode;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.config.EnvironmentConfig.isOnlineMode;
 
 import com.formdev.flatlaf.FlatLightLaf;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.File;
-import java.util.List;
 import java.util.Set;
 import school.hei.patrimoine.google.GoogleApiUtilities;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.App;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.Page;
-import school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.builtin.SyncConfirmDialog;
-import school.hei.patrimoine.visualisation.swing.ihm.google.component.comment.LocalCommentManager;
+import school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.builtin.ExitConfirmDialog;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.GoogleLinkListDownloader;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.comment.PendingCommentManager;
+import school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangStagingFileManager;
 import school.hei.patrimoine.visualisation.swing.ihm.google.pages.*;
 
 public class PatriLangViewer extends App {
@@ -31,19 +30,20 @@ public class PatriLangViewer extends App {
         new WindowAdapter() {
           @Override
           public void windowClosing(WindowEvent e) {
-            LocalCommentManager localCommentManager = LocalCommentManager.getInstance();
-
-            List<File> plannedFiles = getStagedPlannedFiles();
-            List<File> doneFiles = getStagedDoneFiles();
-            boolean hasPendingComments = localCommentManager.hasAnyPendingComments();
-
-            if (plannedFiles.isEmpty() && doneFiles.isEmpty() && !hasPendingComments) {
+            if (isOfflineMode()) {
               dispose();
               return;
             }
 
-            boolean confirmed = SyncConfirmDialog.forQuit();
-            if (confirmed) {
+            var stagedFiles = PatriLangStagingFileManager.getFiles();
+            var pendingComments = PendingCommentManager.getPendings();
+            if (stagedFiles.isEmpty() && pendingComments.isEmpty()) {
+              dispose();
+              return;
+            }
+
+            var confirmDialog = new ExitConfirmDialog();
+            if (confirmDialog.isConfirmed()) {
               dispose();
             }
           }
@@ -52,11 +52,15 @@ public class PatriLangViewer extends App {
 
   @Override
   protected String defaultPageName() {
-    return LoginPage.PAGE_NAME;
+    return isOnlineMode() ? LoginPage.PAGE_NAME : PatriLangFilesPage.PAGE_NAME;
   }
 
   @Override
   protected Set<Page> pages() {
+    if (isOfflineMode()) {
+      return Set.of(new PatriLangFilesPage(), new RecoupementPage());
+    }
+
     return Set.of(
         new LoginPage(),
         new SubmitLinkPage(),
@@ -69,7 +73,11 @@ public class PatriLangViewer extends App {
     App.setup();
     FlatLightLaf.setup();
     GoogleApiUtilities.setup();
-    GoogleLinkListDownloader.setup();
+
+    if (isOnlineMode()) {
+      GoogleLinkListDownloader.setup();
+    }
+
     invokeLater(PatriLangViewer::new);
   }
 }

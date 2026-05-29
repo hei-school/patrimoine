@@ -1,7 +1,8 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.modele;
 
+import static java.nio.file.Files.*;
+
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
@@ -47,8 +48,8 @@ public record GoogleLinkListCacheManager() {
   private String loadLinksFromFile(String filePath) {
     var path = Path.of(filePath);
     try {
-      if (Files.exists(path)) {
-        return Files.readString(path);
+      if (exists(path)) {
+        return readString(path);
       }
     } catch (IOException e) {
       log.error("Error reading links from {}", filePath, e);
@@ -59,7 +60,7 @@ public record GoogleLinkListCacheManager() {
   private static void writeLinksToFile(String filePath, List<GoogleLinkList.NamedLink> namedLinks) {
     try {
       var lines = namedLinks.stream().map(link -> link.name() + ": " + link.link()).toList();
-      Files.write(Path.of(filePath), lines);
+      write(Path.of(filePath), lines);
     } catch (IOException e) {
       throw new RuntimeException("Error writing links to file: " + filePath, e);
     }

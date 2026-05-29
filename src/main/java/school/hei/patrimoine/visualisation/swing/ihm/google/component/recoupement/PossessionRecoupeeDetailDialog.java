@@ -4,16 +4,17 @@ import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import school.hei.patrimoine.modele.possession.Correction;
-import school.hei.patrimoine.modele.recouppement.PossessionRecoupee;
+import school.hei.patrimoine.modele.possession.Possession;
+import school.hei.patrimoine.modele.recouppement.model.PossessionRecoupee;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.Dialog;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.formatter.ArgentFormatter;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.formatter.DateFormatter;
 
 public class PossessionRecoupeeDetailDialog extends Dialog {
-  private final PossessionRecoupee possessionRecoupee;
+  private final PossessionRecoupee<Possession> possessionRecoupee;
 
-  public PossessionRecoupeeDetailDialog(PossessionRecoupee possessionRecoupee) {
+  public PossessionRecoupeeDetailDialog(PossessionRecoupee<Possession> possessionRecoupee) {
     super("Détails de l'opération", 900, 600, false);
     this.possessionRecoupee = possessionRecoupee;
 

@@ -5,9 +5,14 @@ import static school.hei.patrimoine.modele.possession.TypeAgregat.FLUX;
 
 import java.time.LocalDate;
 import java.util.Set;
+import lombok.Getter;
 import school.hei.patrimoine.modele.Argent;
 
+@Getter
 public final class RemboursementDette extends Possession {
+  private final Argent montant;
+  private final Compte remboursé;
+  private final Compte rembourseur;
   private final GroupePossession commeGroupe;
 
   public RemboursementDette(
@@ -26,17 +31,28 @@ public final class RemboursementDette extends Possession {
             Set.of(
                 new TransfertArgent(nom + " (transfert)", rembourseur, remboursé, t, montant),
                 new FluxArgent(nom + " (annulation dette)", dette, t, montant),
-                new FluxArgent(nom + " (annulation créance)", creance, t, montant.mult(-1)))));
+                new FluxArgent(nom + " (annulation créance)", creance, t, montant.mult(-1)))),
+        rembourseur,
+        remboursé,
+        montant);
   }
 
-  private RemboursementDette(GroupePossession commeGroupe) {
-    super(commeGroupe.nom, LocalDate.MIN, euro(0));
+  private RemboursementDette(
+      GroupePossession commeGroupe, Compte rembourseur, Compte remboursé, Argent montant) {
+    super(commeGroupe.nom, commeGroupe.t, euro(0), commeGroupe.valeursMarche);
     this.commeGroupe = commeGroupe;
+    this.rembourseur = rembourseur;
+    this.remboursé = remboursé;
+    this.montant = montant;
   }
 
   @Override
   public RemboursementDette projectionFuture(LocalDate tFutur) {
-    return new RemboursementDette(commeGroupe.projectionFuture(tFutur));
+    return new RemboursementDette(
+        commeGroupe.projectionFuture(tFutur),
+        rembourseur.projectionFuture(tFutur),
+        remboursé.projectionFuture(tFutur),
+        montant);
   }
 
   @Override

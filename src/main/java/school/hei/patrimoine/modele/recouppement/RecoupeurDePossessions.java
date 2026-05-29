@@ -2,178 +2,159 @@ package school.hei.patrimoine.modele.recouppement;
 
 import static java.util.function.Predicate.not;
 import static java.util.stream.Collectors.toSet;
-import static school.hei.patrimoine.modele.recouppement.RecoupementStatus.EXECUTE_AVEC_CORRECTION;
-import static school.hei.patrimoine.modele.recouppement.RecoupementStatus.EXECUTE_SANS_CORRECTION;
+import static school.hei.patrimoine.modele.decomposeur.IdRetriever.getPlannedIdFromRealisationId;
+import static school.hei.patrimoine.modele.recouppement.model.RecoupementStatus.*;
 
 import java.time.LocalDate;
 import java.util.*;
-import java.util.regex.Pattern;
-import school.hei.patrimoine.modele.Patrimoine;
-import school.hei.patrimoine.modele.decomposeur.PossessionDecomposeurFactory;
+import school.hei.patrimoine.cas.Cas;
+import school.hei.patrimoine.modele.decomposeur.PossessionDecomposeurFacade;
 import school.hei.patrimoine.modele.possession.CompteCorrection;
 import school.hei.patrimoine.modele.possession.Correction;
 import school.hei.patrimoine.modele.possession.Possession;
-import school.hei.patrimoine.modele.recouppement.CompteGetterFactory.CompteGetter;
-import school.hei.patrimoine.modele.recouppement.generateur.RecoupeurDePossessionFacade;
+import school.hei.patrimoine.modele.recouppement.generateur.correction.RecoupeurDePossessionFacade;
+import school.hei.patrimoine.modele.recouppement.generateur.info.InfoGetterFacade;
+import school.hei.patrimoine.modele.recouppement.model.CompteGetter;
+import school.hei.patrimoine.modele.recouppement.model.Info;
+import school.hei.patrimoine.modele.recouppement.model.PossessionRecoupee;
+import school.hei.patrimoine.modele.recouppement.model.RecoupementStatus;
 
 public class RecoupeurDePossessions {
-  private final LocalDate finSimulation;
-  private final Set<Possession> prevus;
-  private final Set<Possession> realises;
+  private final InfoGetterFacade infoGetterFacade;
+  private final Map<String, PossessionRecoupee<Possession>> recouped;
 
-  public static final Pattern MULTIPLE_REALISATION_PATTERN = Pattern.compile("\\[(.*)\\]__(.*)");
+  public static RecoupeurDePossessions of(LocalDate debut, LocalDate fin, Cas prevu, Cas realise) {
+    return RecoupeurDePossessions.of(debut, fin, prevu, realise, CompteGetter.make(realise));
+  }
 
-  private final RecoupeurDePossessionFacade recoupeurFacade;
-
-  public static RecoupeurDePossessions of(
-      LocalDate finSimulation, Patrimoine prevu, Patrimoine realise) {
-    return RecoupeurDePossessions.of(
-        finSimulation, prevu, realise, CompteGetterFactory.make(realise));
+  private static LocalDate getMinDate(LocalDate a, LocalDate b) {
+    return a.isBefore(b) ? a : b;
   }
 
   public static RecoupeurDePossessions of(
-      LocalDate finSimulation, Patrimoine prevu, Patrimoine realise, CompteGetter compteGetter) {
+      LocalDate debut, LocalDate fin, Cas prevu, Cas realise, CompteGetter compteGetter) {
     return new RecoupeurDePossessions(
-        finSimulation, prevu.getPossessions(), realise.getPossessions(), compteGetter);
+        debut,
+        getMinDate(fin, prevu.getFinSimulation()),
+        prevu.patrimoine().getPossessions(),
+        realise.patrimoine().getPossessions(),
+        compteGetter);
   }
 
   public RecoupeurDePossessions(
-      LocalDate finSimulation,
+      LocalDate debut,
+      LocalDate fin,
       Set<Possession> prevus,
       Set<Possession> realises,
       CompteGetter compteGetter) {
-    this.finSimulation = finSimulation;
-    this.prevus =
-        withoutCompteCorrections(prevus).stream()
-            .map(
-                p -> {
-                  var decomposeur = PossessionDecomposeurFactory.make(p, this.finSimulation);
-                  return decomposeur.apply(p);
-                })
-            .flatMap(Collection::stream)
-            .collect(toSet());
-
-    this.realises =
-        withoutCompteCorrections(realises).stream()
-            .map(
-                p -> {
-                  var decomposeur = PossessionDecomposeurFactory.make(p, finSimulation);
-                  return decomposeur.apply(p);
-                })
-            .flatMap(Collection::stream)
-            .collect(toSet());
-
-    this.recoupeurFacade = new RecoupeurDePossessionFacade(compteGetter);
+    this.infoGetterFacade = new InfoGetterFacade(compteGetter);
+    this.recouped = createRecouped(prevus, realises, debut, fin);
   }
 
-  public Set<Possession> getPossessionsExecutes() {
-    return prevus.stream().filter(not(p -> getRealises(p).isEmpty())).collect(toSet());
+  public Set<PossessionRecoupee<Possession>> getPossessionsExecutes() {
+    return getByStatus(Set.of(EXECUTE_AVEC_CORRECTION, EXECUTE_SANS_CORRECTION, IMPREVU));
   }
 
-  public Set<Possession> getPossessionsNonExecutes() {
-    return prevus.stream().filter(p -> getRealises(p).isEmpty()).collect(toSet());
+  public Set<PossessionRecoupee<Possession>> getByStatus(Set<RecoupementStatus> status) {
+    return recouped.values().stream()
+        .filter(possessionRecoupee -> status.contains(possessionRecoupee.status()))
+        .collect(toSet());
   }
 
-  public Set<Possession> getPossessionsNonPrevus() {
-    return realises.stream().filter(p -> getPrevu(p).isEmpty()).collect(toSet());
+  public Set<PossessionRecoupee<Possession>> getByStatus(RecoupementStatus status) {
+    return getByStatus(Set.of(status));
   }
 
-  public Set<PossessionRecoupee> getPossessionsRecoupees() {
-    Set<PossessionRecoupee> possessionRecoupees = new HashSet<>();
+  public Set<PossessionRecoupee<Possession>> getPossessionsNonExecutes() {
+    return getByStatus(NON_EXECUTE);
+  }
 
-    getPossessionsNonExecutes()
-        .forEach(
-            p -> {
-              var possessionRecoupeur = recoupeurFacade.getRecoupeur(p);
-              possessionRecoupees.add(possessionRecoupeur.nonExecute(p));
-            });
+  public Set<PossessionRecoupee<Possession>> getPossessionsImprevus() {
+    return getByStatus(IMPREVU);
+  }
 
-    getPossessionsNonPrevus()
-        .forEach(
-            p -> {
-              var possessionRecoupeur = recoupeurFacade.getRecoupeur(p);
-              possessionRecoupees.add(possessionRecoupeur.imprevu(p));
-            });
-
-    getPossessionsExecutes()
-        .forEach(
-            prevu -> {
-              var realises = getRealises(prevu);
-              var possessionRecoupeur = recoupeurFacade.getRecoupeur(prevu);
-              var possessionRecoupee = possessionRecoupeur.comparer(prevu, realises);
-              possessionRecoupees.add(possessionRecoupee);
-            });
-
-    return possessionRecoupees;
+  public Set<PossessionRecoupee<Possession>> getPossessionsRecoupees() {
+    return new HashSet<>(recouped.values());
   }
 
   public Set<Correction> getCorrections() {
-    return getPossessionsRecoupees().stream()
+    return getByStatus(Set.of(EXECUTE_AVEC_CORRECTION, IMPREVU, NON_EXECUTE)).stream()
         .map(PossessionRecoupee::corrections)
         .flatMap(Collection::stream)
         .collect(toSet());
   }
 
-  public Set<Possession> getPossessionsExecutesAvecCorrections() {
-    return getPossessionsExecutes().stream()
-        .filter(
-            prevu -> {
-              var realises = getRealises(prevu);
-              var possessionRecoupeur = recoupeurFacade.getRecoupeur(prevu);
-              var possessionRecoupee = possessionRecoupeur.comparer(prevu, realises);
-              return possessionRecoupee.status().equals(EXECUTE_AVEC_CORRECTION);
-            })
-        .collect(toSet());
+  public Set<PossessionRecoupee<Possession>> getPossessionsExecutesAvecCorrections() {
+    return getByStatus(EXECUTE_AVEC_CORRECTION);
   }
 
-  public Set<Possession> getPossessionsExecutesSansCorrections() {
-    return getPossessionsExecutes().stream()
-        .filter(
-            prevu -> {
-              var realises = getRealises(prevu);
-              var possessionRecoupeur = recoupeurFacade.getRecoupeur(prevu);
-              var possessionRecoupee = possessionRecoupeur.comparer(prevu, realises);
-              return possessionRecoupee.status().equals(EXECUTE_SANS_CORRECTION);
-            })
-        .collect(toSet());
+  public Set<PossessionRecoupee<Possession>> getPossessionsExecutesSansCorrections() {
+    return getByStatus(EXECUTE_SANS_CORRECTION);
   }
 
-  private Optional<Possession> getPrevu(Possession realise) {
-    return prevus.stream()
-        .filter(
-            p -> {
-              var prevuNom = realise.nom();
-              var matcher = MULTIPLE_REALISATION_PATTERN.matcher(realise.nom());
-              if (matcher.matches()) {
-                prevuNom = matcher.group(1);
-              }
-
-              if (!prevuNom.equals(p.nom())) {
-                return false;
-              }
-
-              return realise.getClass().equals(p.getClass());
-            })
-        .findFirst();
+  private static List<Possession> decompose(
+      Set<Possession> possessions, LocalDate debut, LocalDate fin) {
+    return possessions.stream()
+        .map(p -> PossessionDecomposeurFacade.decompose(p, debut, fin))
+        .flatMap(List::stream)
+        .toList();
   }
 
-  private Set<Possession> getRealises(Possession prevu) {
-    return realises.stream()
-        .filter(
-            realise -> {
-              var realiseBaseName = realise.nom();
-              var matcher = MULTIPLE_REALISATION_PATTERN.matcher(realise.nom());
-              if (matcher.matches()) {
-                realiseBaseName = matcher.group(1);
-              }
+  private List<Info<Possession>> toInfos(Collection<Possession> possessions) {
+    return possessions.stream().map(this.infoGetterFacade::get).toList();
+  }
 
-              if (!prevu.nom().equals(realiseBaseName)) {
-                return false;
-              }
+  private Map<String, PossessionRecoupee<Possession>> createRecouped(
+      Set<Possession> prevus, Set<Possession> realises, LocalDate debut, LocalDate fin) {
+    var map = createInfosMap(prevus, realises, debut, fin);
+    for (var entry : map.entrySet()) {
+      var afterRecoupement =
+          RecoupeurDePossessionFacade.recouper(
+              entry.getValue().prevu(), entry.getValue().realises());
+      entry.setValue(afterRecoupement);
+    }
+    return map;
+  }
 
-              return prevu.getClass().equals(realise.getClass());
-            })
-        .collect(toSet());
+  private Map<String, PossessionRecoupee<Possession>> createInfosMap(
+      Set<Possession> prevus, Set<Possession> realises, LocalDate debut, LocalDate fin) {
+    var decomposedPrevus = decompose(withoutCompteCorrections(prevus), debut, fin);
+    var decomposedRealises = decompose(withoutCompteCorrections(realises), debut, fin);
+    var prevusAsInfos = toInfos(decomposedPrevus);
+    var realisesAsInfos = toInfos(decomposedRealises);
+
+    Map<String, PossessionRecoupee<Possession>> map = new HashMap<>();
+
+    prevusAsInfos.forEach(
+        prevu -> {
+          map.putIfAbsent(
+              prevu.nom(),
+              PossessionRecoupee.builder()
+                  .prevu(prevu)
+                  .corrections(new HashSet<>())
+                  .realises(new HashSet<>())
+                  .build());
+        });
+
+    realisesAsInfos.forEach(
+        realise -> {
+          var plannedId = getPlannedIdFromRealisationId(realise.nom());
+          if (map.containsKey(plannedId)) {
+            map.get(plannedId).realises().add(realise);
+            return;
+          }
+
+          var newRealises = new HashSet<>(Set.of(realise));
+          map.put(
+              plannedId,
+              PossessionRecoupee.builder()
+                  .prevu(Info.empty())
+                  .corrections(new HashSet<>())
+                  .realises(newRealises)
+                  .build());
+        });
+
+    return map;
   }
 
   static Set<Possession> withoutCompteCorrections(Set<Possession> possessions) {

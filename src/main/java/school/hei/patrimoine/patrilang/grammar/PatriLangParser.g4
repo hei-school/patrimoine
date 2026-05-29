@@ -124,13 +124,33 @@ sectionPiecesJustificatives
     ;
 
 piecesJustificativesItem
-    :   MUL id COMMA? dateValue=date COMMA? URL_START URL_CONTENT URL_END
+    :   MUL id COMMA? dateValue=date COMMA? reference=referenceDoc COMMA? URL_START URL_CONTENT URL_END
+    ;
+
+referenceDoc
+    :   referenceSegment (MOINS referenceSegment)*
+    ;
+
+referenceSegment
+    :   TEXT
+    |   ENTIER
+    |   TEXT ENTIER
+    |   ENTIER TEXT
     ;
 
 compteElement
     :   compte
     |   MUL variable
     ;
+
+valeurMarche
+    :   MUL id COMMA? dateValue=variable COMMA? possession=variable MOT_VALANT valeur=variable
+    ;
+
+vente
+    :   MUL id COMMA? dateValue=variable COMMA? MOT_VENDRE possession=variable MOT_POUR prixVente=variable MOT_VERS compteBeneficiaire=variable
+    ;
+
 /* Opérations */
 sectionOperationTemplateDeclaration
     :   HASHES ENTETE_CONTSTRUCTEUR_D_OPERATIONS operationTemplate*
@@ -180,6 +200,8 @@ operation
     |   operationTemplateCall
     |   ligneVariableDeclaration
     |   ligneCasOperations
+    |   valeurMarche
+    |   vente
     ;
 
 ligneCasOperations

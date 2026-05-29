@@ -1,0 +1,72 @@
+package school.hei.patrimoine.modele.recouppement.model;
+
+import static java.util.stream.Collectors.toSet;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
+import lombok.RequiredArgsConstructor;
+import school.hei.patrimoine.cas.Cas;
+import school.hei.patrimoine.cas.CasSet;
+import school.hei.patrimoine.modele.possession.Compte;
+
+@RequiredArgsConstructor
+public class CompteGetter implements Function<String, Compte> {
+  private final Map<String, Compte> comptes;
+
+  public CompteGetter(Set<Compte> comptes) {
+    this.comptes = new HashMap<>();
+    for (var compte : comptes) {
+      this.comptes.put(compte.nom(), compte);
+    }
+  }
+
+  @Override
+  public Compte apply(String nom) {
+    if (comptes.containsKey(nom)) {
+      return comptes.get(nom);
+    }
+    throw new IllegalArgumentException(
+        String.format("%s n'a pas été trouvé lors du recoupement", nom));
+  }
+
+  public static CompteGetter make(Cas cas, Set<Compte> casSetComptes) {
+    return new CompteGetter(Set.of()) {
+      @Override
+      public Compte apply(String nom) {
+        try {
+          var casCompteGetter = make(cas);
+          return casCompteGetter.apply(nom);
+        } catch (IllegalArgumentException exception) {
+          var casSetCompteGetter = new CompteGetter(casSetComptes);
+          return casSetCompteGetter.apply(nom);
+        }
+      }
+    };
+  }
+
+  public static CompteGetter make(Cas cas) {
+    return new CompteGetter(getComptes(cas));
+  }
+
+  public static CompteGetter make(CasSet casSet) {
+    return new CompteGetter(getComptes(casSet));
+  }
+
+  public static Set<Compte> getComptes(CasSet casSet) {
+    return casSet.set().stream()
+        .map(cas -> cas.patrimoine().getPossessions())
+        .flatMap(Set::stream)
+        .filter(p -> p instanceof Compte)
+        .map(Compte.class::cast)
+        .collect(toSet());
+  }
+
+  public static Set<Compte> getComptes(Cas cas) {
+    return cas.patrimoine().getPossessions().stream()
+        .filter(p -> p instanceof Compte)
+        .map(Compte.class::cast)
+        .collect(toSet());
+  }
+}

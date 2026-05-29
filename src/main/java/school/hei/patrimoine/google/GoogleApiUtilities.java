@@ -41,10 +41,6 @@ public class GoogleApiUtilities {
     return getApplicationHomeDirectory() + "/cache";
   }
 
-  public static String getStagingDirectoryPath() {
-    return getApplicationHomeDirectory() + "/staged";
-  }
-
   public static String getApplicationHomeDirectory() {
     return getUserHome() + "/." + getApplicationName();
   }
@@ -63,11 +59,6 @@ public class GoogleApiUtilities {
     var cacheDirectory = new File(getCacheDirectoryPath());
     if (!cacheDirectory.exists() && !cacheDirectory.mkdirs()) {
       log.warn("Failed to create cache directory");
-    }
-
-    var stagedDirectory = new File(getStagingDirectoryPath());
-    if (!stagedDirectory.exists() && !stagedDirectory.mkdirs()) {
-      log.warn("Failed to create staged directory");
     }
   }
 }

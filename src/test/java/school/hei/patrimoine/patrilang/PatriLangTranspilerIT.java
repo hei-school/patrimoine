@@ -18,7 +18,7 @@ import school.hei.patrimoine.patrilang.famille_rakoto_cas.FamilleRakotoCasSet;
 
 class PatriLangTranspilerIT {
 
-  private static final String RESOURCE_PATH = "/famille_rakoto_cas/FamilleRakoto.patri.md";
+  private static final String RESOURCE_PATH = "/famille_rakoto_cas/FamilleRakoto.cas.md";
   private static final Path RESOURCE_FILE_PATH;
 
   static {

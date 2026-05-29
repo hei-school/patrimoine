@@ -46,7 +46,7 @@ class GrapheurEvolutionPatrimoinePatrimoineRicheTest {
 
     var imageGeneree =
         grapheurEvolutionPatrimoine.apply(
-            patrimoine, new GrapheConf(false, true, true, true, true));
+            patrimoine, new GrapheConf(false, true, true, true, true, true));
 
     assertTrue(
         areImagesEqual.apply(
@@ -64,7 +64,7 @@ class GrapheurEvolutionPatrimoinePatrimoineRicheTest {
 
     var imageGeneree =
         grapheurEvolutionPatrimoine.apply(
-            patrimoine, new GrapheConf(false, true, true, false, false));
+            patrimoine, new GrapheConf(false, true, true, false, false, true));
 
     assertTrue(
         areImagesEqual.apply(
@@ -83,7 +83,7 @@ class GrapheurEvolutionPatrimoinePatrimoineRicheTest {
 
     var imageGeneree =
         grapheurEvolutionPatrimoine.apply(
-            patrimoine, new GrapheConf(false, true, false, true, false));
+            patrimoine, new GrapheConf(false, true, false, true, false, true));
 
     assertTrue(
         areImagesEqual.apply(
@@ -102,7 +102,7 @@ class GrapheurEvolutionPatrimoinePatrimoineRicheTest {
 
     var imageGeneree =
         grapheurEvolutionPatrimoine.apply(
-            patrimoine, new GrapheConf(true, true, false, false, true));
+            patrimoine, new GrapheConf(true, true, false, false, true, true));
 
     assertTrue(
         areImagesEqual.apply(

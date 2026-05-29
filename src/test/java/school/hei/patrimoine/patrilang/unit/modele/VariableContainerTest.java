@@ -30,15 +30,15 @@ class VariableContainerTest {
   }
 
   @Test
-  void add_same_name_and_type_throws_exception() {
+  void add_same_name_and_type_keeps_first_value() {
     var v1 = new Variable<>("nom", PERSONNE, "Jean");
     var v2 = new Variable<>("nom", PERSONNE, "Marie");
 
     subject.add(v1);
+    subject.add(v2);
 
-    var error = assertThrows(IllegalArgumentException.class, () -> subject.add(v2));
-
-    assertTrue(error.getMessage().contains("déjà été définie"));
+    var actual = subject.find("nom", PERSONNE);
+    assertEquals(Optional.of(v1), actual);
   }
 
   @Test

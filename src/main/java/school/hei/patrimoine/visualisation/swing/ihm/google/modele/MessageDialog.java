@@ -3,7 +3,6 @@ package school.hei.patrimoine.visualisation.swing.ihm.google.modele;
 import static javax.swing.JOptionPane.showMessageDialog;
 
 import javax.swing.*;
-import org.antlr.v4.runtime.misc.ParseCancellationException;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.AppContext;
 
 public class MessageDialog {
@@ -18,13 +17,11 @@ public class MessageDialog {
     showMessageDialog(AppContext.getDefault().app(), message, title, JOptionPane.ERROR_MESSAGE);
   }
 
-  public static boolean showExceptionMessageIfRecognizedException(Exception error) {
-    if ((error instanceof IllegalArgumentException)
-        || (error instanceof ParseCancellationException)) {
-      showError("Erreur", error.getMessage());
-      return true;
-    }
+  public static void showError(Exception error) {
+    showError("Erreur", error.getMessage());
+  }
 
-    return false;
+  public static void showError(String message) {
+    showError("Erreur", message);
   }
 }

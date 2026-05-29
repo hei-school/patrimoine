@@ -93,6 +93,20 @@ public class SerieComptableTemporelle {
     return serie;
   }
 
+  public List<Integer> serieValeursMarchePatrimoine() {
+    var serie = new ArrayList<Integer>();
+    serieDates()
+        .forEach(
+            d ->
+                serie.add(
+                    parseMontant(
+                        ep.getEvolutionJournaliere()
+                            .get(d)
+                            .getValeurMarche()
+                            .convertir(devise, d))));
+    return serie;
+  }
+
   public static int parseMontant(Argent a) {
     // Argent::montant is PURPOSEFULLY private so that people do NOT manipulate it directly.
     // Indeed, operations such as those on Devise can only be handled correctly internally.
