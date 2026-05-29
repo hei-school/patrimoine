@@ -1,11 +1,11 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.pages.filters;
 
 public enum PossessionRecoupeeFilterStatus {
-  TOUT("Tout"),
+  TOUS("Tous"),
   IMPREVU("Imprévu"),
-  NON_EXECUTE("Non Éxecuté"),
-  EXECUTE_AVEC_CORRECTION("Éxecuté avec correction"),
-  EXECUTE_SANS_CORRECTION("Éxecuté sans correction");
+  NON_EXECUTE("Non Executé"),
+  EXECUTE_AVEC_CORRECTION("Executé avec correction"),
+  EXECUTE_SANS_CORRECTION("Executé sans correction");
 
   public final String label;
 

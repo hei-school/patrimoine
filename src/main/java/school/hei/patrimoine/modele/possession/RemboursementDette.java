@@ -49,10 +49,7 @@ public final class RemboursementDette extends Possession {
   @Override
   public RemboursementDette projectionFuture(LocalDate tFutur) {
     return new RemboursementDette(
-        commeGroupe.projectionFuture(tFutur),
-        rembourseur.projectionFuture(tFutur),
-        remboursé.projectionFuture(tFutur),
-        montant);
+        commeGroupe.projectionFuture(tFutur), rembourseur, remboursé, montant);
   }
 
   @Override
