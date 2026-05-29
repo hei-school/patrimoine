@@ -1,9 +1,9 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.pages.filters;
 
 public enum PossessionRecoupeeFilterPj {
-  TOUT(""),
-  AVEC_PJ("Avec PJ"),
-  SANS_PJ("Sans PJ");
+  TOUS("Tous"),
+  AVEC_PJ("Justifié"),
+  SANS_PJ("Non justifié");
 
   public final String label;
 
