@@ -13,6 +13,9 @@ public final class TransfertArgent extends Possession {
   private final Argent fluxMensuel;
   private final Compte depuisCompte;
   private final GroupePossession transfertCommeGroupe;
+  private final LocalDate fin;
+  private final LocalDate debut;
+  private final int dateOperation;
 
   public TransfertArgent(
       String nom,
@@ -26,6 +29,9 @@ public final class TransfertArgent extends Possession {
     this.depuisCompte = depuisCompte;
     this.versCompte = versCompte;
     this.fluxMensuel = fluxMensuel;
+    this.fin = fin;
+    this.debut = debut;
+    this.dateOperation = dateOperation;
     this.transfertCommeGroupe =
         new GroupePossession(
             nom,

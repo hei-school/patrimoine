@@ -35,4 +35,9 @@ public class InfoGetterBase<T extends Possession> implements InfoGetter<T> {
   public Argent getValeur(T possession) {
     return possession.valeurComptable();
   }
+
+  @Override
+  public Possession getPossessionACorrigerNegativement(T possession) {
+    return null;
+  }
 }
