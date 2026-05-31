@@ -23,11 +23,18 @@ public class AddRecoupementExecutionForm extends JPanel {
   private JComboBox<String> deviseCombo;
   private DatePicker executionDatePicker;
 
+  private JTextField linkPJField;
+  private JTextField referencePJField;
+  private JTextField commentField;
+
   public AddRecoupementExecutionForm(
       String defaultNom,
       Devise defaultDevise,
       Argent defaultValeur,
-      Set<Pair<String, JComponent>> components) {
+      Set<Pair<String, JComponent>> components,
+      String defaultLinkPJ,
+      String defaultReferencePJ,
+      String defaultComment) {
 
     setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
     setOpaque(true);
@@ -39,12 +46,35 @@ public class AddRecoupementExecutionForm extends JPanel {
     addValeurField(defaultValeur);
     addDeviseField(defaultDevise);
 
+    addLinkPJField(defaultLinkPJ);
+    addReferencePJField(buildDefaultRef(defaultNom));
+    addCommentField(defaultComment);
+
     components.forEach(component -> addField(component.first(), component.second()));
+  }
+
+  private String buildDefaultRef(String defaultNom) {
+    var prefix = defaultNom.trim().substring(0, Math.min(3, defaultNom.length())).toUpperCase();
+
+    if (defaultNom.contains("__du_")) {
+      var datePart = defaultNom.replaceAll("^.*__du_", "").replaceAll("_", "-");
+
+      return prefix + datePart;
+    }
+    return prefix + LocalDate.now().getYear();
+  }
+
+  public AddRecoupementExecutionForm(
+      String defaultNom,
+      Devise defaultDevise,
+      Argent defaultValeur,
+      Set<Pair<String, JComponent>> components) {
+    this(defaultNom, defaultDevise, defaultValeur, components, "", "", "");
   }
 
   public AddRecoupementExecutionForm(
       String defaultNom, Devise defaultDevise, Argent defaultValeur) {
-    this(defaultNom, defaultDevise, defaultValeur, Set.of());
+    this(defaultNom, defaultDevise, defaultValeur, Set.of(), "", "", "");
   }
 
   public Argent getValeur() {
@@ -70,6 +100,18 @@ public class AddRecoupementExecutionForm extends JPanel {
     }
 
     return nomField.getText().trim().replaceAll(" ", "_");
+  }
+
+  public String getLinkPJ() {
+    return linkPJField == null ? "" : linkPJField.getText().trim();
+  }
+
+  public String getReferencePJ() {
+    return referencePJField == null ? "" : referencePJField.getText().trim();
+  }
+
+  public String getComment() {
+    return commentField == null ? "" : commentField.getText().trim();
   }
 
   private void addNomField(String defaultNom) {
@@ -100,6 +142,21 @@ public class AddRecoupementExecutionForm extends JPanel {
     deviseCombo.setSelectedItem(defaultDevise.symbole());
 
     addField("Devise : ", deviseCombo);
+  }
+
+  private void addLinkPJField(String defaultLinkPJ) {
+    linkPJField = new JTextField(defaultLinkPJ == null ? "" : defaultLinkPJ);
+    addField("Lien de la pièce justificative : ", linkPJField);
+  }
+
+  private void addReferencePJField(String defaultReferencePJ) {
+    referencePJField = new JTextField(defaultReferencePJ == null ? "" : defaultReferencePJ);
+    addField("Référence de la pièce justificative : ", referencePJField);
+  }
+
+  private void addCommentField(String defaultComment) {
+    commentField = new JTextField(defaultComment == null ? "" : defaultComment);
+    addField("Commentaire : ", commentField);
   }
 
   private static JLabel styledLabel(String text) {
