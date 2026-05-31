@@ -1,7 +1,6 @@
 package school.hei.patrimoine.modele.recouppement.model;
 
 import static school.hei.patrimoine.modele.Argent.ariary;
-import static school.hei.patrimoine.modele.recouppement.model.RecoupementStatus.NON_EXECUTE;
 
 import java.util.Set;
 import lombok.Builder;
@@ -19,10 +18,6 @@ public record PossessionRecoupee<T extends Possession>(
     }
 
     return somme;
-  }
-
-  public boolean hasSupportingDocument() {
-    return !status.equals(NON_EXECUTE);
   }
 
   public Argent ecartValeurAvecRealises() {
