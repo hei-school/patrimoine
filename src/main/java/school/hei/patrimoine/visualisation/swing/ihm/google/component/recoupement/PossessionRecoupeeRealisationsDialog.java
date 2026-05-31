@@ -36,7 +36,7 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.modele.formatter.Dat
 public class PossessionRecoupeeRealisationsDialog extends Dialog {
   private final State state;
   private final Set<Info<Possession>> pendingInfos;
-  private final PatriLangFileWriter writter;
+  private final PatriLangFileWriter writer;
   private final PatriLangFileQuerier querier;
   private final PossessionRecoupee<Possession> possessionRecoupee;
 
@@ -53,7 +53,7 @@ public class PossessionRecoupeeRealisationsDialog extends Dialog {
     this.state = state;
     this.isExecuteMode = isExecuteMode;
     this.pendingInfos = new HashSet<>();
-    this.writter = new PatriLangFileWriter();
+    this.writer = new PatriLangFileWriter();
     this.querier = new PatriLangFileQuerier();
     this.possessionRecoupee = possessionRecoupee;
 
@@ -245,7 +245,7 @@ public class PossessionRecoupeeRealisationsDialog extends Dialog {
                 throw new RuntimeException("Section Operations introuvable dans le fichier");
               }
 
-              writter.insertAtLine(
+              writer.insertAtLine(
                   FileWriterInput.builder()
                       .content(lines)
                       .file(new PatriLangFile(selectedFile))
