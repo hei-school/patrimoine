@@ -44,11 +44,14 @@ public class PossessionRecoupeeRealisationsDialog extends Dialog {
   private final JPanel contentPanel;
   private MultiViews pageManager;
 
+  private final boolean isExecuteMode;
+
   public PossessionRecoupeeRealisationsDialog(
-      State state, PossessionRecoupee<Possession> possessionRecoupee) {
-    super("Exécutions d'opération", 700, 600, false);
+      State state, PossessionRecoupee<Possession> possessionRecoupee, boolean isExecuteMode) {
+    super("Exécutions d'opération", 700, 800, false);
 
     this.state = state;
+    this.isExecuteMode = isExecuteMode;
     this.pendingInfos = new HashSet<>();
     this.writter = new PatriLangFileWriter();
     this.querier = new PatriLangFileQuerier();
@@ -64,7 +67,21 @@ public class PossessionRecoupeeRealisationsDialog extends Dialog {
 
     initPageManager();
 
+    if (isExecuteMode) {
+      pageManager.navigate("add-form-view");
+    }
+
     setVisible(true);
+  }
+
+  public PossessionRecoupeeRealisationsDialog(
+      State state, PossessionRecoupee<Possession> possessionRecoupee, String initialView) {
+    this(state, possessionRecoupee, true);
+  }
+
+  public PossessionRecoupeeRealisationsDialog(
+      State state, PossessionRecoupee<Possession> possessionRecoupee) {
+    this(state, possessionRecoupee, false);
   }
 
   private void initPageManager() {
@@ -86,6 +103,7 @@ public class PossessionRecoupeeRealisationsDialog extends Dialog {
               new JLabel(
                   String.format(
                       "Date=%s, Valeur=%s, Nom=%s",
+                      "PJ=%, PieceRef=%",
                       DateFormatter.format(value.t()),
                       ArgentFormatter.format(value.valeur()),
                       value.possession().nom()));
@@ -121,19 +139,36 @@ public class PossessionRecoupeeRealisationsDialog extends Dialog {
     panel.add(form, BorderLayout.CENTER);
 
     var buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-    buttonPanel.add(
-        new Button(
-            "Valider",
-            e -> {
-              try {
-                var newInfo = buildInfoFromForm(form);
-                register(newInfo);
-                pageManager.navigate("list-view");
-              } catch (IllegalArgumentException ex) {
-                showError("Erreur", ex.getMessage());
-              }
-            }));
-    buttonPanel.add(new Button("Annuler", e -> pageManager.navigate("list-view")));
+
+    if (isExecuteMode) {
+      buttonPanel.add(
+          new Button(
+              "Valider",
+              e -> {
+                try {
+                  var newInfo = buildInfoFromForm(form);
+                  register(newInfo);
+                  saveExecutions();
+                } catch (IllegalArgumentException ex) {
+                  showError("Erreur", ex.getMessage());
+                }
+              }));
+      buttonPanel.add(new Button("Annuler", e -> dispose()));
+    } else {
+      buttonPanel.add(
+          new Button(
+              "Valider",
+              e -> {
+                try {
+                  var newInfo = buildInfoFromForm(form);
+                  register(newInfo);
+                  pageManager.navigate("list-view");
+                } catch (IllegalArgumentException ex) {
+                  showError("Erreur", ex.getMessage());
+                }
+              }));
+      buttonPanel.add(new Button("Annuler", e -> pageManager.navigate("list-view")));
+    }
 
     panel.add(buttonPanel, BorderLayout.SOUTH);
     return panel;

@@ -54,9 +54,9 @@ public class RecoupementPage extends LazyPage {
                 "totalPages",
                 1,
                 "filterStatus",
-                PossessionRecoupeeFilterStatus.TOUT,
+                PossessionRecoupeeFilterStatus.TOUS,
                 "filterPj",
-                PossessionRecoupeeFilterPj.TOUT,
+                PossessionRecoupeeFilterPj.TOUS,
                 "pagination",
                 new Pagination(1, RECOUPEMENT_ITEM_PER_PAGE)));
 
@@ -80,9 +80,10 @@ public class RecoupementPage extends LazyPage {
 
   private static JComboBox<PossessionRecoupeeFilterStatus> getStatusFilter(State state) {
     var statusFilter = new JComboBox<>(PossessionRecoupeeFilterStatus.values());
-    statusFilter.setSelectedItem(PossessionRecoupeeFilterStatus.TOUT);
+    statusFilter.setSelectedItem(PossessionRecoupeeFilterStatus.TOUS);
     statusFilter.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
     statusFilter.setCursor(new Cursor(Cursor.HAND_CURSOR));
+    statusFilter.setToolTipText("Filtrer par status");
     statusFilter.addActionListener(
         e -> state.update("filterStatus", statusFilter.getSelectedItem()));
 
@@ -100,7 +101,7 @@ public class RecoupementPage extends LazyPage {
 
   private static JComboBox<PossessionRecoupeeFilterPj> getPjFilter(State state) {
     var pjFilter = new JComboBox<>(PossessionRecoupeeFilterPj.values());
-    pjFilter.setSelectedItem(PossessionRecoupeeFilterPj.TOUT);
+    pjFilter.setSelectedItem(PossessionRecoupeeFilterPj.TOUS);
     pjFilter.setPreferredSize(new Dimension(120, 40));
     pjFilter.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
     pjFilter.setCursor(new Cursor(Cursor.HAND_CURSOR));
@@ -194,7 +195,7 @@ public class RecoupementPage extends LazyPage {
 
   private PossessionRecoupeeFilterPj getPjFilter() {
     PossessionRecoupeeFilterPj filter = state.get("filterPj");
-    return filter != null ? filter : PossessionRecoupeeFilterPj.TOUT;
+    return filter != null ? filter : PossessionRecoupeeFilterPj.TOUS;
   }
 
   private Map<String, PieceJustificative> buildPjMap(PatriLangFileContext selectedFile) {
@@ -228,7 +229,7 @@ public class RecoupementPage extends LazyPage {
     switch (getStatusFilter()) {
       case IMPREVU -> statusToKeep.add(RecoupementStatus.IMPREVU);
       case NON_EXECUTE -> statusToKeep.add(RecoupementStatus.NON_EXECUTE);
-      case TOUT -> statusToKeep.addAll(Set.of(RecoupementStatus.values()));
+      case TOUS -> statusToKeep.addAll(Set.of(RecoupementStatus.values()));
       case EXECUTE_AVEC_CORRECTION -> statusToKeep.add(RecoupementStatus.EXECUTE_AVEC_CORRECTION);
       case EXECUTE_SANS_CORRECTION -> statusToKeep.add(RecoupementStatus.EXECUTE_SANS_CORRECTION);
     }
@@ -258,7 +259,7 @@ public class RecoupementPage extends LazyPage {
           result.data().stream().filter(r -> pjMap.containsKey(r.possession().nom())).toList();
       case SANS_PJ ->
           result.data().stream().filter(r -> !pjMap.containsKey(r.possession().nom())).toList();
-      case TOUT -> result.data();
+      case TOUS -> result.data();
     };
   }
 

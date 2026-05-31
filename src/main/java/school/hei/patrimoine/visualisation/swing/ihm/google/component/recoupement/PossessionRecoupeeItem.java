@@ -105,10 +105,19 @@ public class PossessionRecoupeeItem extends JPanel {
   private void addActionsButton() {
     var panel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
     panel.setOpaque(false);
-    panel.add(
-        new Button(
-            "Exécutions",
-            e -> new PossessionRecoupeeRealisationsDialog(state, possessionRecoupee)));
+    if (possessionRecoupee.status() == RecoupementStatus.NON_EXECUTE) {
+      panel.add(
+          new Button(
+              "Exécuter",
+              e ->
+                  new PossessionRecoupeeRealisationsDialog(
+                      state, possessionRecoupee, "add-form-view")));
+    } else {
+      panel.add(
+          new Button(
+              "Exécutions",
+              e -> new PossessionRecoupeeRealisationsDialog(state, possessionRecoupee)));
+    }
     panel.add(
         new Button("Voir Details", e -> new PossessionRecoupeeDetailDialog(possessionRecoupee)));
 
