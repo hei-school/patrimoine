@@ -6,6 +6,8 @@ import static school.hei.patrimoine.modele.recouppement.model.RecoupementStatus.
 import static school.hei.patrimoine.visualisation.swing.ihm.google.component.app.ViewFactory.make;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.component.files.FileSideBar.getSelectedFile;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.MessageDialog.*;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangFileContentManager.clearAllTempContents;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangStagingFileManager.stage;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.providers.FilesProvider.getDoneCasSetFile;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.providers.FilesProvider.getPJ;
 
@@ -330,11 +332,15 @@ public class PossessionRecoupeeRealisationsDialog extends Dialog {
                   operations.endLine());
 
               if (optionalPjFile.isEmpty()) {
+                clearAllTempContents();
+                stage(selectedFile);
                 return null;
               }
 
               var pjLines = getPjLines();
               if (pjLines.isBlank()) {
+                clearAllTempContents();
+                stage(selectedFile);
                 return null;
               }
 
@@ -343,6 +349,9 @@ public class PossessionRecoupeeRealisationsDialog extends Dialog {
               writer.insertAtLine(
                   FileWriterInput.builder().content(pjLines).file(pjFile).casSet(casSet).build(),
                   pjs.endLine());
+              clearAllTempContents();
+              stage(selectedFile);
+              stage(pjFile);
               return null;
             })
         .onError(MessageDialog::showError)

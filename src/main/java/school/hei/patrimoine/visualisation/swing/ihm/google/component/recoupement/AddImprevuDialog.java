@@ -212,11 +212,15 @@ public class AddImprevuDialog extends Dialog {
                   operations.endLine());
 
               if (optionalPjFile.isEmpty()) {
+                clearAllTempContents();
+                stage(selectedFile);
                 return null;
               }
 
               var pjLines = getPjLine(newPossession);
               if (pjLines.isBlank()) {
+                clearAllTempContents();
+                stage(selectedFile);
                 return null;
               }
 
@@ -225,7 +229,9 @@ public class AddImprevuDialog extends Dialog {
               writer.insertAtLine(
                   FileWriterInput.builder().content(pjLines).file(pjFile).casSet(casSet).build(),
                   pjs.endLine());
+
               clearAllTempContents();
+              stage(pjFile);
               stage(selectedFile);
               return null;
             })
