@@ -33,7 +33,7 @@ public class FluxArgentExecutionGenerator implements ExecutionGenerator<FluxArge
     validateArgs(args);
 
     var nom = (String) args.get("nom");
-    var prevu = (FluxArgent) args.getOrDefault("prevu", null);
+    var prevu = (FluxArgent) args.getOrDefault("prévu", null);
     var realisationNom =
         prevu == null ? nom : String.format(MULTIPLE_EXECUTION_NOM_FORMAT, prevu.nom(), nom);
 

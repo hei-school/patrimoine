@@ -24,16 +24,14 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.modele.formatter.Dat
 @Slf4j
 public class PossessionRecoupeeItem extends JPanel {
   private final State state;
-  private final PieceJustificative pieceJustificative;
+  private final PieceJustificative pj;
   private final PossessionRecoupee<Possession> possessionRecoupee;
 
   public PossessionRecoupeeItem(
-      State state,
-      PossessionRecoupee<Possession> possessionRecoupee,
-      PieceJustificative pieceJustificative) {
+      State state, PossessionRecoupee<Possession> possessionRecoupee, PieceJustificative pj) {
     this.state = state;
     this.possessionRecoupee = possessionRecoupee;
-    this.pieceJustificative = pieceJustificative;
+    this.pj = pj;
 
     setOpaque(true);
     setLayout(new BorderLayout());
@@ -46,21 +44,21 @@ public class PossessionRecoupeeItem extends JPanel {
 
   private void addTitle() {
     var pjHtml =
-        pieceJustificative == null
+        pj == null
             ? ""
             : "<div style='margin-bottom: 8px;'>"
                 + "<b>Pièce justificative:</b> "
                 + "<a href='"
-                + pieceJustificative.link()
+                + pj.link()
                 + "'>"
-                + pieceJustificative.id()
+                + pj.id()
                 + "</a>"
                 + ",&nbsp&nbsp&nbsp"
                 + "<b>Référence:</b> "
-                + pieceJustificative.reference()
+                + pj.reference()
                 + ",&nbsp&nbsp&nbsp"
                 + "<b>Date d'insertion:</b> "
-                + DateFormatter.format(pieceJustificative.date())
+                + DateFormatter.format(pj.date())
                 + "</div>";
 
     var titleString =
@@ -134,7 +132,8 @@ public class PossessionRecoupeeItem extends JPanel {
     }
 
     panel.add(
-        new Button("Voir Details", e -> new PossessionRecoupeeDetailDialog(possessionRecoupee)));
+        new Button(
+            "Voir Details", e -> new PossessionRecoupeeDetailDialog(possessionRecoupee, pj)));
 
     add(panel, BorderLayout.EAST);
   }

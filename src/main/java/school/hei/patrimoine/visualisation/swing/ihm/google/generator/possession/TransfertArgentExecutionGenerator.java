@@ -37,7 +37,7 @@ public class TransfertArgentExecutionGenerator implements ExecutionGenerator<Tra
     validateArgs(args);
 
     var nom = (String) args.get("nom");
-    var prevu = (TransfertArgent) args.getOrDefault("prevu", null);
+    var prevu = (TransfertArgent) args.getOrDefault("prévu", null);
     var realisationNom =
         prevu == null ? nom : String.format(MULTIPLE_EXECUTION_NOM_FORMAT, prevu.nom(), nom);
 

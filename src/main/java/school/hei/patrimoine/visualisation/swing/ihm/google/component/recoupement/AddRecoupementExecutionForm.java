@@ -26,6 +26,7 @@ public class AddRecoupementExecutionForm extends JPanel {
   private JTextField linkPJField;
   private JTextField referencePJField;
   private JTextField commentField;
+  private final boolean authorizePj;
 
   public AddRecoupementExecutionForm(
       String defaultNom,
@@ -33,9 +34,10 @@ public class AddRecoupementExecutionForm extends JPanel {
       Argent defaultValeur,
       Set<Pair<String, JComponent>> components,
       String defaultLinkPJ,
-      String defaultReferencePJ,
-      String defaultComment) {
+      String defaultComment,
+      boolean authorizePj) {
 
+    this.authorizePj = authorizePj;
     setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
     setOpaque(true);
     setBorder(new EmptyBorder(15, 15, 15, 15));
@@ -47,34 +49,24 @@ public class AddRecoupementExecutionForm extends JPanel {
     addDeviseField(defaultDevise);
 
     addLinkPJField(defaultLinkPJ);
-    addReferencePJField(buildDefaultRef(defaultNom));
+    addReferencePJField(defaultNom);
     addCommentField(defaultComment);
 
     components.forEach(component -> addField(component.first(), component.second()));
-  }
-
-  private String buildDefaultRef(String defaultNom) {
-    var prefix = defaultNom.trim().substring(0, Math.min(3, defaultNom.length())).toUpperCase();
-
-    if (defaultNom.contains("__du_")) {
-      var datePart = defaultNom.replaceAll("^.*__du_", "").replaceAll("_", "-");
-
-      return prefix + datePart;
-    }
-    return prefix + LocalDate.now().getYear();
   }
 
   public AddRecoupementExecutionForm(
       String defaultNom,
       Devise defaultDevise,
       Argent defaultValeur,
-      Set<Pair<String, JComponent>> components) {
-    this(defaultNom, defaultDevise, defaultValeur, components, "", "", "");
+      Set<Pair<String, JComponent>> components,
+      boolean authorizePj) {
+    this(defaultNom, defaultDevise, defaultValeur, components, "", "", authorizePj);
   }
 
   public AddRecoupementExecutionForm(
-      String defaultNom, Devise defaultDevise, Argent defaultValeur) {
-    this(defaultNom, defaultDevise, defaultValeur, Set.of(), "", "", "");
+      String defaultNom, Devise defaultDevise, Argent defaultValeur, boolean authorizePj) {
+    this(defaultNom, defaultDevise, defaultValeur, Set.of(), "", "", authorizePj);
   }
 
   public Argent getValeur() {
@@ -146,12 +138,16 @@ public class AddRecoupementExecutionForm extends JPanel {
 
   private void addLinkPJField(String defaultLinkPJ) {
     linkPJField = new JTextField(defaultLinkPJ == null ? "" : defaultLinkPJ);
-    addField("Lien de la pièce justificative : ", linkPJField);
+    if (authorizePj) {
+      addField("Lien de la pièce justificative : ", linkPJField);
+    }
   }
 
   private void addReferencePJField(String defaultReferencePJ) {
     referencePJField = new JTextField(defaultReferencePJ == null ? "" : defaultReferencePJ);
-    addField("Référence de la pièce justificative : ", referencePJField);
+    if (authorizePj) {
+      addField("Référence de la pièce justificative : ", referencePJField);
+    }
   }
 
   private void addCommentField(String defaultComment) {

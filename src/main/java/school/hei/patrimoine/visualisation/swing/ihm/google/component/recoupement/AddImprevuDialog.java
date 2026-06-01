@@ -65,7 +65,8 @@ public class AddImprevuDialog extends Dialog {
             "",
             patrimoine.getDevise(),
             new Argent(0, patrimoine.getDevise()),
-            Set.of(Pair.of("Compte : ", compteSelect)));
+            Set.of(Pair.of("Compte : ", compteSelect)),
+            true);
 
     add(form, BorderLayout.CENTER);
   }
