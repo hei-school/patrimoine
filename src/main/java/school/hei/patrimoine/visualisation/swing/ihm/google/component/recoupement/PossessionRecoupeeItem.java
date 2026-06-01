@@ -1,13 +1,17 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.component.recoupement;
 
 import static javax.swing.event.HyperlinkEvent.EventType.ACTIVATED;
+import static school.hei.patrimoine.modele.recouppement.model.RecoupementStatus.IMPREVU;
+import static school.hei.patrimoine.modele.recouppement.model.RecoupementStatus.NON_EXECUTE;
 
 import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
+import school.hei.patrimoine.modele.possession.FluxArgent;
 import school.hei.patrimoine.modele.possession.Possession;
+import school.hei.patrimoine.modele.possession.TransfertArgent;
 import school.hei.patrimoine.modele.possession.pj.PieceJustificative;
 import school.hei.patrimoine.modele.recouppement.model.PossessionRecoupee;
 import school.hei.patrimoine.modele.recouppement.model.RecoupementStatus;
@@ -102,22 +106,33 @@ public class PossessionRecoupeeItem extends JPanel {
     return title;
   }
 
+  private boolean canBeExecuted() {
+    var possession = possessionRecoupee.possession();
+    if (IMPREVU.equals(possessionRecoupee.status())) {
+      return false;
+    }
+    return possession instanceof FluxArgent || possession instanceof TransfertArgent;
+  }
+
+  private Button executeButton() {
+    if (possessionRecoupee.status() == NON_EXECUTE) {
+      return new Button(
+          "Exécuter",
+          e -> new PossessionRecoupeeRealisationsDialog(state, possessionRecoupee, true));
+    }
+    return new Button(
+        "Exécutions",
+        e -> new PossessionRecoupeeRealisationsDialog(state, possessionRecoupee, false));
+  }
+
   private void addActionsButton() {
     var panel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
     panel.setOpaque(false);
-    if (possessionRecoupee.status() == RecoupementStatus.NON_EXECUTE) {
-      panel.add(
-          new Button(
-              "Exécuter",
-              e ->
-                  new PossessionRecoupeeRealisationsDialog(
-                      state, possessionRecoupee, "add-form-view")));
-    } else {
-      panel.add(
-          new Button(
-              "Exécutions",
-              e -> new PossessionRecoupeeRealisationsDialog(state, possessionRecoupee)));
+
+    if (canBeExecuted()) {
+      panel.add(executeButton());
     }
+
     panel.add(
         new Button("Voir Details", e -> new PossessionRecoupeeDetailDialog(possessionRecoupee)));
 

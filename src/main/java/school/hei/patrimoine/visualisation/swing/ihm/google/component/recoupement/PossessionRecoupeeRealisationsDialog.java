@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Set;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import org.jspecify.annotations.NonNull;
 import school.hei.patrimoine.modele.possession.FluxArgent;
 import school.hei.patrimoine.modele.possession.Possession;
 import school.hei.patrimoine.modele.recouppement.model.Info;
@@ -74,16 +75,6 @@ public class PossessionRecoupeeRealisationsDialog extends Dialog {
     setVisible(true);
   }
 
-  public PossessionRecoupeeRealisationsDialog(
-      State state, PossessionRecoupee<Possession> possessionRecoupee, String initialView) {
-    this(state, possessionRecoupee, true);
-  }
-
-  public PossessionRecoupeeRealisationsDialog(
-      State state, PossessionRecoupee<Possession> possessionRecoupee) {
-    this(state, possessionRecoupee, false);
-  }
-
   private void initPageManager() {
     var listView = make("list-view", buildListView());
     var addFormView = make("add-form-view", buildAddFormView());
@@ -96,21 +87,7 @@ public class PossessionRecoupeeRealisationsDialog extends Dialog {
     realisesModel = new DefaultListModel<>();
     possessionRecoupee.realises().forEach(realisesModel::addElement);
 
-    var realisesList = new JList<>(realisesModel);
-    realisesList.setCellRenderer(
-        (list, value, index, isSelected, cellHasFocus) -> {
-          var label =
-              new JLabel(
-                  String.format(
-                      "Date=%s, Valeur=%s, Nom=%s",
-                      "PJ=%, PieceRef=%",
-                      DateFormatter.format(value.t()),
-                      ArgentFormatter.format(value.valeur()),
-                      value.possession().nom()));
-          label.setBorder(new EmptyBorder(10, 5, 10, 5));
-          label.setFont(new Font("Arial", Font.PLAIN, 15));
-          return label;
-        });
+    var realisesList = getInfoJList();
 
     var panel = new JPanel(new BorderLayout());
     panel.setBorder(new EmptyBorder(10, 10, 10, 10));
@@ -126,6 +103,24 @@ public class PossessionRecoupeeRealisationsDialog extends Dialog {
 
     panel.add(buttonPanel, BorderLayout.SOUTH);
     return panel;
+  }
+
+  private @NonNull JList<Info<Possession>> getInfoJList() {
+    var realisesList = new JList<>(realisesModel);
+    realisesList.setCellRenderer(
+        (list, value, index, isSelected, cellHasFocus) -> {
+          var label =
+              new JLabel(
+                  String.format(
+                      "Date=%s, Valeur=%s, Nom=%s",
+                      DateFormatter.format(value.t()),
+                      ArgentFormatter.format(value.valeur()),
+                      value.possession().nom()));
+          label.setBorder(new EmptyBorder(10, 5, 10, 5));
+          label.setFont(new Font("Arial", Font.PLAIN, 15));
+          return label;
+        });
+    return realisesList;
   }
 
   private JPanel buildAddFormView() {
