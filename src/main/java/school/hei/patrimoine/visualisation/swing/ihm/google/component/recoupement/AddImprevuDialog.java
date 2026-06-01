@@ -2,17 +2,18 @@ package school.hei.patrimoine.visualisation.swing.ihm.google.component.recoupeme
 
 import static java.util.Objects.requireNonNull;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.component.files.FileSideBar.getSelectedFile;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.component.recoupement.PossessionRecoupeeRealisationsDialog.getSectionOperations;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.component.recoupement.PossessionRecoupeeRealisationsDialog.getSectionPieceJustificatives;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.MessageDialog.*;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangFileContentManager.clearAllTempContents;
-import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangFilesWatcher.getDoneCasSetComptes;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangFilesWatcher.*;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangStagingFileManager.stage;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.providers.FilesProvider.getDoneCasSetFile;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.providers.FilesProvider.getPJ;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.List;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import org.jetbrains.annotations.NotNull;
@@ -20,15 +21,19 @@ import school.hei.patrimoine.Pair;
 import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.Patrimoine;
 import school.hei.patrimoine.modele.possession.Compte;
-import school.hei.patrimoine.modele.possession.FluxArgent;
-import school.hei.patrimoine.patrilang.files.io.PatriLangFileQuerier;
+import school.hei.patrimoine.modele.possession.Possession;
 import school.hei.patrimoine.patrilang.files.io.PatriLangFileWriter;
 import school.hei.patrimoine.patrilang.files.io.PatriLangFileWriter.FileWriterInput;
 import school.hei.patrimoine.patrilang.generator.PatriLangGeneratorFactory;
+import school.hei.patrimoine.patrilang.generator.possession.CommentPatriLangGenerator;
+import school.hei.patrimoine.patrilang.generator.possession.PieceJustificativePatriLangGenerator;
 import school.hei.patrimoine.patrilang.modele.PatriLangCas;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.Dialog;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
+import school.hei.patrimoine.visualisation.swing.ihm.google.generator.possession.ExecutionGenerator;
 import school.hei.patrimoine.visualisation.swing.ihm.google.generator.possession.FluxArgentExecutionGenerator;
+import school.hei.patrimoine.visualisation.swing.ihm.google.generator.possession.PieceJustificativeGenerator;
+import school.hei.patrimoine.visualisation.swing.ihm.google.generator.possession.TransfertArgentExecutionGenerator;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.AsyncTask;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.MessageDialog;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
@@ -36,18 +41,18 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLa
 
 public class AddImprevuDialog extends Dialog {
   private final State state;
-  private final PatriLangFileWriter writer;
-  private final PatriLangFileQuerier querier;
 
   private AddRecoupementExecutionForm form;
-  private final JComboBox<NamedCompte> compteSelect;
+  private final JComboBox<OperationType> operationTypeSelect;
+
+  private JComboBox<NamedCompte> compteSelect;
+  private JComboBox<NamedCompte> depuisCompteSelect;
+  private JComboBox<NamedCompte> versCompteSelect;
 
   public AddImprevuDialog(State state) {
     super("Ajouter un imprévu", 800, 900, false);
     this.state = state;
-    this.querier = new PatriLangFileQuerier();
-    this.writer = new PatriLangFileWriter();
-    this.compteSelect = getCompteSelect();
+    this.operationTypeSelect = new JComboBox<>(OperationType.values());
 
     setLayout(new BorderLayout());
 
@@ -58,17 +63,54 @@ public class AddImprevuDialog extends Dialog {
     setVisible(true);
   }
 
+  private void initComptes() {
+    this.compteSelect = getCompteSelect();
+    this.depuisCompteSelect = getCompteSelect();
+    this.versCompteSelect = getCompteSelect();
+  }
+
+  private List<Pair<String, JComponent>> buildInputs() {
+    List<Pair<String, JComponent>> inputs = new ArrayList<>();
+
+    switch (getSelectedType()) {
+      case FLUX_ARGENT -> inputs.add(Pair.of("Compte :", compteSelect));
+      case TRANSFERT_ARGENT -> {
+        inputs.add(Pair.of("Depuis compte :", depuisCompteSelect));
+        inputs.add(Pair.of("Vers compte :", versCompteSelect));
+      }
+    }
+
+    return inputs;
+  }
+
   private void addForm() {
     var patrimoine = getDonePatrimoine();
+
+    initComptes();
+
     this.form =
         new AddRecoupementExecutionForm(
             "",
             patrimoine.getDevise(),
             new Argent(0, patrimoine.getDevise()),
-            Set.of(Pair.of("Compte : ", compteSelect)),
+            List.of(),
+            buildInputs(),
             true);
 
-    add(form, BorderLayout.CENTER);
+    add(new JScrollPane(form), BorderLayout.CENTER);
+    operationTypeSelect.addActionListener(e -> rebuildForm());
+  }
+
+  private void rebuildForm() {
+    remove(form);
+    addForm();
+
+    revalidate();
+    repaint();
+  }
+
+  private OperationType getSelectedType() {
+    return (OperationType) operationTypeSelect.getSelectedItem();
   }
 
   private Patrimoine getDonePatrimoine() {
@@ -121,35 +163,68 @@ public class AddImprevuDialog extends Dialog {
     return new JComboBox<>(array);
   }
 
-  private void addExecution() {
-    var generator = new FluxArgentExecutionGenerator();
-    var newPossession = generator.apply(getFluxArgentArgs());
-    saveExecutions(newPossession);
+  private ExecutionGenerator<? extends Possession> getExecutionGenerator() {
+    return switch (getSelectedType()) {
+      case FLUX_ARGENT -> new FluxArgentExecutionGenerator();
+      case TRANSFERT_ARGENT -> new TransfertArgentExecutionGenerator();
+    };
   }
 
-  private void saveExecutions(FluxArgent fluxArgent) {
-    var lineGenerator = PatriLangGeneratorFactory.make(fluxArgent);
-    var line = lineGenerator.apply(fluxArgent);
+  private String getCasLine(Possession possession) {
+    var lineGenerator = PatriLangGeneratorFactory.make(possession);
+    var line = lineGenerator.apply(possession);
+    var rawComment = form.getComment();
 
+    if (!rawComment.isBlank()) {
+      var commentGenerator = new CommentPatriLangGenerator();
+      line += " " + commentGenerator.apply(rawComment);
+    }
+
+    return line;
+  }
+
+  private String getPjLine(Possession possession) {
+    var pj = new PieceJustificativeGenerator().apply(getPjArgs(possession));
+    var generator = new PieceJustificativePatriLangGenerator();
+    return pj == null ? "" : generator.apply(pj);
+  }
+
+  private void addExecution() {
     var selectedFile = getSelectedFile(state).orElseThrow();
+    var generator = getExecutionGenerator();
+    var newPossession = generator.apply(getPossessionArgs());
+    var casLine = getCasLine(newPossession);
+    var casSet = getDoneCasSetFile();
+    var optionalPjFile = getPJ(selectedFile);
 
     AsyncTask.<Void>builder()
         .task(
             () -> {
-              var sectionOperation =
-                  querier.query(selectedFile, document -> document.cas().sectionOperations());
-              if (sectionOperation.isEmpty()) {
-                throw new RuntimeException("Section Operations introuvable dans le fichier");
+              var writer = new PatriLangFileWriter();
+              var operations = getSectionOperations(selectedFile);
+
+              writer.insertAtLine(
+                  FileWriterInput.builder()
+                      .content(casLine)
+                      .file(selectedFile)
+                      .casSet(casSet)
+                      .build(),
+                  operations.endLine());
+
+              if (optionalPjFile.isEmpty()) {
+                return null;
               }
 
-              var input =
-                  FileWriterInput.builder()
-                      .content(line)
-                      .file(selectedFile)
-                      .casSet(getDoneCasSetFile())
-                      .build();
+              var pjLines = getPjLine(newPossession);
+              if (pjLines.isBlank()) {
+                return null;
+              }
 
-              writer.insertAtLine(input, sectionOperation.get().endLine());
+              var pjFile = optionalPjFile.get();
+              var pjs = getSectionPieceJustificatives(pjFile);
+              writer.insertAtLine(
+                  FileWriterInput.builder().content(pjLines).file(pjFile).casSet(casSet).build(),
+                  pjs.endLine());
               clearAllTempContents();
               stage(selectedFile);
               return null;
@@ -165,16 +240,36 @@ public class AddImprevuDialog extends Dialog {
         .execute();
   }
 
-  private Map<String, Object> getFluxArgentArgs() {
-    var named = (NamedCompte) requireNonNull(compteSelect.getSelectedItem());
+  private Map<String, Object> getPjArgs(Possession possession) {
     return Map.of(
+        "id", possession.nom(),
         "date", form.getDate(),
-        "valeur", form.getValeur(),
-        "nom", form.getNom(),
-        "compte", named.compte(),
-        "linkPJ", form.getLinkPJ(),
-        "referencePJ", form.getReferencePJ(),
-        "comment", form.getComment());
+        "link", form.getLinkPJ(),
+        "ref", form.getReferencePJ());
+  }
+
+  private Map<String, Object> getPossessionArgs() {
+    Map<String, Object> args =
+        new HashMap<>(
+            Map.of(
+                "nom", form.getNom(),
+                "date", form.getDate(),
+                "valeur", form.getValeur()));
+
+    switch (getSelectedType()) {
+      case FLUX_ARGENT -> args.put("compte", getCompteSelected(compteSelect));
+      case TRANSFERT_ARGENT -> {
+        args.put("depuisCompte", getCompteSelected(depuisCompteSelect));
+        args.put("versCompte", getCompteSelected(versCompteSelect));
+      }
+      default -> throw new IllegalArgumentException("Type non supporté");
+    }
+    return args;
+  }
+
+  private Compte getCompteSelected(JComboBox<NamedCompte> select) {
+    var item = requireNonNull((NamedCompte) select.getSelectedItem());
+    return item.compte();
   }
 
   private record NamedCompte(Compte compte) {
@@ -182,5 +277,10 @@ public class AddImprevuDialog extends Dialog {
     public @NotNull String toString() {
       return compte.nom();
     }
+  }
+
+  public enum OperationType {
+    FLUX_ARGENT,
+    TRANSFERT_ARGENT
   }
 }

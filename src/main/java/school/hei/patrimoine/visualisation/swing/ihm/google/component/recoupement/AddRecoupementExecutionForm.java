@@ -6,7 +6,7 @@ import static school.hei.patrimoine.modele.Devise.*;
 
 import java.awt.*;
 import java.time.LocalDate;
-import java.util.Set;
+import java.util.List;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import school.hei.patrimoine.Pair;
@@ -32,7 +32,8 @@ public class AddRecoupementExecutionForm extends JPanel {
       String defaultNom,
       Devise defaultDevise,
       Argent defaultValeur,
-      Set<Pair<String, JComponent>> components,
+      List<Pair<String, JComponent>> startComponents,
+      List<Pair<String, JComponent>> endComponents,
       String defaultLinkPJ,
       String defaultComment,
       boolean authorizePj) {
@@ -43,30 +44,40 @@ public class AddRecoupementExecutionForm extends JPanel {
     setBorder(new EmptyBorder(15, 15, 15, 15));
     setBackground(Color.WHITE);
 
+    startComponents.forEach(component -> addField(component.first(), component.second()));
     addNomField(defaultNom);
     addDateField(LocalDate.now());
     addValeurField(defaultValeur);
     addDeviseField(defaultDevise);
 
+    endComponents.forEach(component -> addField(component.first(), component.second()));
+
     addLinkPJField(defaultLinkPJ);
     addReferencePJField(defaultNom);
     addCommentField(defaultComment);
-
-    components.forEach(component -> addField(component.first(), component.second()));
   }
 
   public AddRecoupementExecutionForm(
       String defaultNom,
       Devise defaultDevise,
       Argent defaultValeur,
-      Set<Pair<String, JComponent>> components,
+      List<Pair<String, JComponent>> startComponents,
+      List<Pair<String, JComponent>> endComponents,
       boolean authorizePj) {
-    this(defaultNom, defaultDevise, defaultValeur, components, "", "", authorizePj);
+    this(
+        defaultNom,
+        defaultDevise,
+        defaultValeur,
+        startComponents,
+        endComponents,
+        "",
+        "",
+        authorizePj);
   }
 
   public AddRecoupementExecutionForm(
       String defaultNom, Devise defaultDevise, Argent defaultValeur, boolean authorizePj) {
-    this(defaultNom, defaultDevise, defaultValeur, Set.of(), "", "", authorizePj);
+    this(defaultNom, defaultDevise, defaultValeur, List.of(), List.of(), "", "", authorizePj);
   }
 
   public Argent getValeur() {

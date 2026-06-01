@@ -45,8 +45,6 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.modele.formatter.Dat
 public class PossessionRecoupeeRealisationsDialog extends Dialog {
   private final State state;
   private final Set<PendingData> pendingData;
-  private final PatriLangFileWriter writer;
-  private final PatriLangFileQuerier querier;
   private final PossessionRecoupee<Possession> possessionRecoupee;
 
   private DefaultListModel<Info<Possession>> realisesModel;
@@ -62,8 +60,6 @@ public class PossessionRecoupeeRealisationsDialog extends Dialog {
     this.state = state;
     this.isExecuteMode = isExecuteMode;
     this.pendingData = new HashSet<>();
-    this.writer = new PatriLangFileWriter();
-    this.querier = new PatriLangFileQuerier();
     this.possessionRecoupee = possessionRecoupee;
 
     setLayout(new BorderLayout());
@@ -205,7 +201,6 @@ public class PossessionRecoupeeRealisationsDialog extends Dialog {
         "id", prevu.isEmpty() ? possession.nom() : prevu.nom(),
         "date", form.getDate(),
         "link", form.getLinkPJ(),
-        "prévu", possessionRecoupee.prevu().possession(),
         "ref", form.getReferencePJ());
   }
 
@@ -281,14 +276,15 @@ public class PossessionRecoupeeRealisationsDialog extends Dialog {
               var line = generator.apply(data.info().possession());
               var rawComment = data.comment();
               if (!rawComment.isBlank()) {
-                line = line + " " + commentGenerator.apply(rawComment);
+                line += " " + commentGenerator.apply(rawComment);
               }
               return line;
             })
         .collect(joining("\n"));
   }
 
-  private QueryResult<SectionOperationsContext> getSectionOperations(PatriLangFileContext file) {
+  static QueryResult<SectionOperationsContext> getSectionOperations(PatriLangFileContext file) {
+    var querier = new PatriLangFileQuerier();
     var sectionOperation = querier.query(file, document -> document.cas().sectionOperations());
     if (sectionOperation.isEmpty()) {
       throw new RuntimeException("Section Operations introuvable dans le fichier");
@@ -296,8 +292,9 @@ public class PossessionRecoupeeRealisationsDialog extends Dialog {
     return sectionOperation.get();
   }
 
-  private QueryResult<SectionPiecesJustificativesContext> getSectionPieceJustificatives(
+  static QueryResult<SectionPiecesJustificativesContext> getSectionPieceJustificatives(
       PatriLangFileContext pjFile) {
+    var querier = new PatriLangFileQuerier();
     var sectionOperation =
         querier.query(
             pjFile, document -> document.piecesJustificatives().sectionPiecesJustificatives());
@@ -321,6 +318,7 @@ public class PossessionRecoupeeRealisationsDialog extends Dialog {
         .task(
             () -> {
               var casLines = getCasLines();
+              var writer = new PatriLangFileWriter();
               var operations = getSectionOperations(selectedFile);
 
               writer.insertAtLine(
