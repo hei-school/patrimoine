@@ -2,9 +2,7 @@ package school.hei.patrimoine.modele.recouppement.generateur.info;
 
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
-import school.hei.patrimoine.modele.possession.FluxArgent;
-import school.hei.patrimoine.modele.possession.Possession;
-import school.hei.patrimoine.modele.possession.TransfertArgent;
+import school.hei.patrimoine.modele.possession.*;
 import school.hei.patrimoine.modele.recouppement.model.CompteGetter;
 import school.hei.patrimoine.modele.recouppement.model.Info;
 
@@ -23,6 +21,9 @@ public class InfoGetterFacade {
     return switch (possession) {
       case FluxArgent ignored -> (InfoGetter<T>) new FluxArgentInfoGetter(compteGetter);
       case TransfertArgent ignored -> (InfoGetter<T>) new TransfertArgentInfoGetter(compteGetter);
+      case Creance ignored -> (InfoGetter<T>) new CompteInfoGetter<Creance>(compteGetter);
+      case Dette ignored -> (InfoGetter<T>) new CompteInfoGetter<Dette>(compteGetter);
+      case Compte ignored -> (InfoGetter<T>) new CompteInfoGetter<Compte>(compteGetter);
       default -> new InfoGetterBase<>();
     };
   }

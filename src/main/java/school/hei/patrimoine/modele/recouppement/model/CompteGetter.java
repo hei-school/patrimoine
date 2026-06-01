@@ -39,7 +39,7 @@ public class CompteGetter implements Function<String, Compte> {
     }
 
     var message = String.format("%s n'a pas été trouvé lors du recoupement", nom);
-    if(throwIfNotFound) {
+    if (throwIfNotFound) {
       throw new IllegalArgumentException(message);
     }
 
