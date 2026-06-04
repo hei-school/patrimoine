@@ -5,6 +5,7 @@ import static java.util.Objects.requireNonNull;
 import static school.hei.patrimoine.modele.Devise.*;
 
 import java.awt.*;
+import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.util.List;
 import javax.swing.*;
@@ -91,18 +92,23 @@ public class AddRecoupementExecutionForm extends JPanel {
   }
 
   public LocalDate getDate() {
-    return LocalDate.of(
-        executionDatePicker.getModel().getYear(),
-        executionDatePicker.getModel().getMonth() + 1,
-        executionDatePicker.getModel().getDay());
+    var model = executionDatePicker.getModel();
+    if (model.getValue() == null) {
+      throw new IllegalArgumentException("La date est obligatoire.");
+    }
+    try {
+      return LocalDate.of(model.getYear(), model.getMonth() + 1, model.getDay());
+    } catch (DateTimeException e) {
+      throw new IllegalArgumentException("La date saisie est invalide : " + e.getMessage());
+    }
   }
 
   public String getNom() {
-    if (nomField.getText().trim().isBlank()) {
+    var normalized = nomField.getText().trim().replaceAll("[- ]+", "_");
+    if (normalized.isBlank()) {
       throw new IllegalArgumentException("Le champ 'Nom' est obligatoire.");
     }
-
-    return nomField.getText().trim().replaceAll(" ", "_");
+    return normalized;
   }
 
   public String getLinkPJ() {

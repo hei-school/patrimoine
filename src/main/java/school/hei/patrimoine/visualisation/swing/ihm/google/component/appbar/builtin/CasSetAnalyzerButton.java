@@ -1,5 +1,6 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.component.appbar.builtin;
 
+import static java.util.stream.Collectors.toSet;
 import static javax.swing.SwingUtilities.invokeLater;
 import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.MessageDialog.showError;
@@ -62,7 +63,7 @@ public class CasSetAnalyzerButton extends PopupMenuButton {
                         PatriLangFilesWatcher.getDoneCasSet())
                     .getRecouped())
         .onSuccess(result -> new CasSetAnalyzer(DISPOSE_ON_CLOSE).accept(result))
-        .onError(CasSetAnalyzerButton::handleError)
+        .onError(error -> handleError(error, List.of("Tout")))
         .build()
         .execute();
   }
@@ -78,10 +79,21 @@ public class CasSetAnalyzerButton extends PopupMenuButton {
   }
 
   private static void handleError(Exception error) {
+    handleError(error, List.of());
+  }
+
+  private static void handleError(Exception error, List<String> excludedNames) {
     error = error.getCause() == null ? error : (Exception) error.getCause();
     if (error instanceof ObjectifExeption exception) {
       var objectifs = exception.getObjectifNonAtteints();
-      invokeLater(() -> new ObjectifNonAtteintsDialog(objectifs));
+
+      var objectifsFiltrés =
+          objectifs.stream()
+              .filter(objectif -> !excludedNames.contains(objectif.objectivable().nom()))
+              .collect(toSet());
+      if (!objectifsFiltrés.isEmpty()) {
+        invokeLater(() -> new ObjectifNonAtteintsDialog(objectifsFiltrés));
+      }
       return;
     }
     showError(error);

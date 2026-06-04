@@ -1,6 +1,5 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.component.recoupement;
 
-import static java.util.Objects.requireNonNull;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.component.files.FileSideBar.getSelectedFile;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.component.recoupement.PossessionRecoupeeRealisationsDialog.getSectionOperations;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.component.recoupement.PossessionRecoupeeRealisationsDialog.getSectionPieceJustificatives;
@@ -184,12 +183,18 @@ public class AddImprevuDialog extends Dialog {
   }
 
   private String getPjLine(Possession possession) {
+    if (!PJFieldsValidator.hasPJ(form)) {
+      return "";
+    }
+
     var pj = new PieceJustificativeGenerator().apply(getPjArgs(possession));
     var generator = new PieceJustificativePatriLangGenerator();
     return pj == null ? "" : generator.apply(pj);
   }
 
   private void addExecution() {
+    PJFieldsValidator.validatePJ(form);
+
     var selectedFile = getSelectedFile(state).orElseThrow();
     var generator = getExecutionGenerator();
     var newPossession = generator.apply(getPossessionArgs());
@@ -274,7 +279,12 @@ public class AddImprevuDialog extends Dialog {
   }
 
   private Compte getCompteSelected(JComboBox<NamedCompte> select) {
-    var item = requireNonNull((NamedCompte) select.getSelectedItem());
+    var item = (NamedCompte) select.getSelectedItem();
+    if (item == null) {
+      throw new IllegalArgumentException(
+          "Aucun compte disponible. Veuillez créer un compte dans le patrimoine.");
+    }
+
     return item.compte();
   }
 

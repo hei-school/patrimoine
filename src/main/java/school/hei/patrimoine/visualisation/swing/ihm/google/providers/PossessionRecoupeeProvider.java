@@ -1,20 +1,25 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.providers;
 
 import static java.util.Comparator.comparing;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.pages.filters.PossessionRecoupeeFilterPj.AVEC_PJ;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.pages.filters.PossessionRecoupeeFilterPj.TOUS;
 
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import school.hei.patrimoine.cas.Cas;
 import school.hei.patrimoine.modele.possession.Compte;
 import school.hei.patrimoine.modele.possession.Possession;
+import school.hei.patrimoine.modele.possession.pj.PieceJustificative;
 import school.hei.patrimoine.modele.recouppement.RecoupeurDePossessions;
 import school.hei.patrimoine.modele.recouppement.model.CompteGetter;
 import school.hei.patrimoine.modele.recouppement.model.PossessionRecoupee;
 import school.hei.patrimoine.modele.recouppement.model.RecoupementStatus;
+import school.hei.patrimoine.visualisation.swing.ihm.google.pages.filters.PossessionRecoupeeFilterPj;
 import school.hei.patrimoine.visualisation.swing.ihm.google.providers.model.Pagination;
 
 @RequiredArgsConstructor
@@ -30,7 +35,9 @@ public class PossessionRecoupeeProvider {
       LocalDate debut,
       LocalDate fin,
       Pagination pagination,
-      Set<RecoupementStatus> statuses) {}
+      Set<RecoupementStatus> statuses,
+      PossessionRecoupeeFilterPj pjFilter,
+      Map<String, PieceJustificative> pjMap) {}
 
   @Builder(toBuilder = true)
   public record Result(List<PossessionRecoupee<Possession>> data, int totalPage) {}
@@ -68,6 +75,9 @@ public class PossessionRecoupeeProvider {
               if (!isIncludeInStatuses(recoupee, filter.statuses())) {
                 return false;
               }
+              if (!isIncludeInPj(recoupee, filter.pjFilter(), filter.pjMap())) {
+                return false;
+              }
               return includeNom(recoupee, filter.nom());
             })
         .sorted(
@@ -80,6 +90,24 @@ public class PossessionRecoupeeProvider {
     return nom == null
         || nom.isBlank()
         || recoupee.possession().nom().toLowerCase().contains(nom.toLowerCase());
+  }
+
+  private static boolean isIncludeInPj(
+      PossessionRecoupee<Possession> recoupee,
+      PossessionRecoupeeFilterPj pjFilter,
+      Map<String, PieceJustificative> pjMap) {
+
+    if (pjFilter == null || pjFilter == TOUS) {
+      return true;
+    }
+
+    var hasPj = pjMap != null && pjMap.containsKey(recoupee.possession().nom());
+
+    if (pjFilter == AVEC_PJ) {
+      return hasPj;
+    } else {
+      return !hasPj;
+    }
   }
 
   private static boolean isIncludeInStatuses(
