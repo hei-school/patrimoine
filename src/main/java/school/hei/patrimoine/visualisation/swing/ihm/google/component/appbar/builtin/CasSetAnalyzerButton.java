@@ -62,8 +62,22 @@ public class CasSetAnalyzerButton extends PopupMenuButton {
                         PatriLangFilesWatcher.getPlannedCasSet(),
                         PatriLangFilesWatcher.getDoneCasSet())
                     .getRecouped())
-        .onSuccess(result -> new CasSetAnalyzer(DISPOSE_ON_CLOSE).accept(result))
-        .onError(error -> handleError(error, List.of("Tout")))
+        .onSuccess(result -> new CasSetAnalyzer(DISPOSE_ON_CLOSE, false).accept(result))
+        .onError(
+            error ->
+                handleError(
+                    error,
+                    List.of("Tout"),
+                    () -> {
+                      var recouped =
+                          RecoupeurDeCasSet.of(
+                                  LocalDate.MIN,
+                                  LocalDate.MAX,
+                                  PatriLangFilesWatcher.getPlannedCasSet(),
+                                  PatriLangFilesWatcher.getDoneCasSet())
+                              .getRecouped();
+                      new CasSetAnalyzer(DISPOSE_ON_CLOSE, true).accept(recouped);
+                    }))
         .build()
         .execute();
   }
@@ -72,17 +86,17 @@ public class CasSetAnalyzerButton extends PopupMenuButton {
     AsyncTask.<CasSet>builder()
         .logError(false)
         .task(PatriLangFilesWatcher::getPlannedCasSet)
-        .onSuccess(result -> new CasSetAnalyzer(DISPOSE_ON_CLOSE).accept(result))
+        .onSuccess(result -> new CasSetAnalyzer(DISPOSE_ON_CLOSE, false).accept(result))
         .onError(CasSetAnalyzerButton::handleError)
         .build()
         .execute();
   }
 
   private static void handleError(Exception error) {
-    handleError(error, List.of());
+    handleError(error, List.of(), () -> {});
   }
 
-  private static void handleError(Exception error, List<String> excludedNames) {
+  private static void handleError(Exception error, List<String> excludedNames, Runnable rerun) {
     error = error.getCause() == null ? error : (Exception) error.getCause();
     if (error instanceof ObjectifExeption exception) {
       var objectifs = exception.getObjectifNonAtteints();
@@ -93,7 +107,13 @@ public class CasSetAnalyzerButton extends PopupMenuButton {
               .collect(toSet());
       if (!objectifsFiltrés.isEmpty()) {
         invokeLater(() -> new ObjectifNonAtteintsDialog(objectifsFiltrés));
+        return;
       }
+
+      if (!excludedNames.isEmpty()) {
+        rerun.run();
+      }
+
       return;
     }
     showError(error);

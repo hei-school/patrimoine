@@ -16,13 +16,14 @@ import school.hei.patrimoine.visualisation.swing.ihm.MainIHM;
 @RequiredArgsConstructor
 public class CasSetAnalyzer implements Consumer<CasSet> {
   private final int closeOperation;
+  private final boolean ignoreError;
 
   public static void main(String[] args) {
     new CasSetAnalyzer().accept(new CasSetSupplier().get());
   }
 
   public CasSetAnalyzer() {
-    this(EXIT_ON_CLOSE);
+    this(EXIT_ON_CLOSE, false);
   }
 
   @Override
@@ -34,9 +35,9 @@ public class CasSetAnalyzer implements Consumer<CasSet> {
   }
 
   @SneakyThrows
-  private static void verifie(ToutCas patrimoineTout) {
+  private void verifie(ToutCas patrimoineTout) {
     var objectifsNonAtteints = patrimoineTout.verifier();
-    if (!objectifsNonAtteints.isEmpty()) {
+    if (!objectifsNonAtteints.isEmpty() && !ignoreError) {
       throw new ObjectifExeption(objectifsNonAtteints);
     }
   }
