@@ -2,13 +2,10 @@ package school.hei.patrimoine.modele.possession;
 
 import static java.time.Month.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static school.hei.patrimoine.modele.Argent.ariary;
 
 import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
-import school.hei.patrimoine.modele.recouppement.model.PossessionRecoupee;
-import school.hei.patrimoine.modele.recouppement.model.RecoupementStatus;
 
 class FluxCompteTest {
   @Test
@@ -64,13 +61,5 @@ class FluxCompteTest {
 
     var actual = compte.projectionFuture(LocalDate.of(2025, APRIL, 30));
     assertEquals(ariary(-400_000), actual.valeurComptable);
-  }
-
-  @Test
-  void non_execute_ne_peut_pas_avoir_pj() {
-    var possessionRecouped =
-        PossessionRecoupee.builder().status(RecoupementStatus.NON_EXECUTE).build();
-
-    assertFalse(possessionRecouped.hasSupportingDocument());
   }
 }

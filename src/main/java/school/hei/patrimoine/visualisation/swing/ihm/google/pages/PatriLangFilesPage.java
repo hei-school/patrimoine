@@ -36,7 +36,6 @@ public class PatriLangFilesPage extends LazyPage {
   private static final int COMMENT_PAGE_SIZE = 100;
 
   private final State state;
-  private Button addImprevuButton;
   private final HtmlViewer htmlViewer;
   private CommentSideBar commentSideBar;
   private final FileSideBar fileSideBar;
@@ -57,12 +56,7 @@ public class PatriLangFilesPage extends LazyPage {
     this.fileSideBar = new FileSideBar(state);
     this.htmlViewer = new HtmlViewer(state, fileSideBar);
 
-    state.subscribe(
-        "selectedFile",
-        () -> {
-          this.updateCas();
-          this.updateAddImprevuButtonVisibility();
-        });
+    state.subscribe("selectedFile", this::updateCas);
 
     PatriLangFilesWatcher.addObserver(
         () -> {
@@ -70,10 +64,6 @@ public class PatriLangFilesPage extends LazyPage {
           this.htmlViewer.update();
 
           this.updateCas();
-
-          if (this.addImprevuButton != null) {
-            this.updateAddImprevuButtonVisibility();
-          }
         });
 
     setLayout(new BorderLayout());
@@ -98,7 +88,6 @@ public class PatriLangFilesPage extends LazyPage {
         new CasSetAnalyzerButton(),
         new SearchTextBar(state),
         recoupementButton(),
-        addImprevuButton,
         restoreButton());
   }
 
@@ -110,9 +99,6 @@ public class PatriLangFilesPage extends LazyPage {
   }
 
   private void addAppBar() {
-    this.addImprevuButton = new AddImprevuButton(state);
-    addImprevuButton.setVisible(false);
-
     add(new AppBar(leftAppBarControls(state), rightAppBarControls(state)), BorderLayout.NORTH);
   }
 
@@ -161,23 +147,6 @@ public class PatriLangFilesPage extends LazyPage {
             dispatch();
           }
         });
-  }
-
-  private void updateAddImprevuButtonVisibility() {
-    var optionalSelectedFile = getSelectedFile(state);
-
-    if (optionalSelectedFile.isEmpty()) {
-      addImprevuButton.setVisible(false);
-      return;
-    }
-
-    var selectedFile = optionalSelectedFile.get();
-    if (selectedFile.isTypePJ() || selectedFile.isTypeToutCas()) {
-      addImprevuButton.setVisible(false);
-      return;
-    }
-
-    addImprevuButton.setVisible(selectedFile.isDone());
   }
 
   private void updateCas() {

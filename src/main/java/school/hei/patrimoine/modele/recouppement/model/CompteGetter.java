@@ -1,21 +1,31 @@
 package school.hei.patrimoine.modele.recouppement.model;
 
+import static java.time.LocalDate.now;
 import static java.util.stream.Collectors.toSet;
+import static school.hei.patrimoine.modele.Argent.ariary;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import school.hei.patrimoine.cas.Cas;
 import school.hei.patrimoine.cas.CasSet;
 import school.hei.patrimoine.modele.possession.Compte;
 
+@Slf4j
 @RequiredArgsConstructor
 public class CompteGetter implements Function<String, Compte> {
   private final Map<String, Compte> comptes;
+  private final boolean throwIfNotFound;
 
   public CompteGetter(Set<Compte> comptes) {
+    this(comptes, true);
+  }
+
+  public CompteGetter(Set<Compte> comptes, boolean throwIfNotFound) {
+    this.throwIfNotFound = throwIfNotFound;
     this.comptes = new HashMap<>();
     for (var compte : comptes) {
       this.comptes.put(compte.nom(), compte);
@@ -27,8 +37,15 @@ public class CompteGetter implements Function<String, Compte> {
     if (comptes.containsKey(nom)) {
       return comptes.get(nom);
     }
-    throw new IllegalArgumentException(
-        String.format("%s n'a pas été trouvé lors du recoupement", nom));
+
+    var message = String.format("%s n'a pas été trouvé lors du recoupement", nom);
+    if (throwIfNotFound) {
+      throw new IllegalArgumentException(message);
+    }
+
+    log.warn(message);
+    comptes.put(nom, new Compte(nom, now(), ariary(0)));
+    return comptes.get(nom);
   }
 
   public static CompteGetter make(Cas cas, Set<Compte> casSetComptes) {
@@ -39,7 +56,7 @@ public class CompteGetter implements Function<String, Compte> {
           var casCompteGetter = make(cas);
           return casCompteGetter.apply(nom);
         } catch (IllegalArgumentException exception) {
-          var casSetCompteGetter = new CompteGetter(casSetComptes);
+          var casSetCompteGetter = new CompteGetter(casSetComptes, false);
           return casSetCompteGetter.apply(nom);
         }
       }

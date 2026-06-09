@@ -2,6 +2,7 @@
 target
 .DS_Store
 gen
+out
 
 # The following files are generated/updated by vaadin-maven-plugin or vaadin-gradle-plugin
 node_modules/

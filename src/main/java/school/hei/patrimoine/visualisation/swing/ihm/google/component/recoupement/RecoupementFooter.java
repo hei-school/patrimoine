@@ -93,9 +93,23 @@ public class RecoupementFooter extends JPanel {
     Pagination pagination = state.get("pagination");
     var currentPage = pagination.page();
 
+    var listeners = pageSelector.getActionListeners();
+    for (var listener : listeners) {
+      pageSelector.removeActionListener(listener);
+    }
+
     pageSelector.removeAllItems();
     IntStream.rangeClosed(1, totalPages).forEach(pageSelector::addItem);
-    pageSelector.setSelectedItem(currentPage);
+
+    if (currentPage <= totalPages && currentPage > 0) {
+      pageSelector.setSelectedItem(currentPage);
+    } else {
+      pageSelector.setSelectedItem(1);
+    }
+
+    for (var listener : listeners) {
+      pageSelector.addActionListener(listener);
+    }
 
     previousPageButton.setEnabled(currentPage > 1);
     nextPageButton.setEnabled(currentPage < totalPages);

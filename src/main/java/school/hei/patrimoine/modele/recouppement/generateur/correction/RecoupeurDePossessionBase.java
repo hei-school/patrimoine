@@ -1,5 +1,6 @@
 package school.hei.patrimoine.modele.recouppement.generateur.correction;
 
+import static java.util.function.Predicate.not;
 import static java.util.stream.Collectors.toSet;
 import static school.hei.patrimoine.modele.Argent.ariary;
 import static school.hei.patrimoine.modele.recouppement.generateur.correction.CorrectionNomGenerateur.make;
@@ -17,6 +18,8 @@ import school.hei.patrimoine.modele.recouppement.model.PossessionRecoupee;
 
 @RequiredArgsConstructor
 public class RecoupeurDePossessionBase<T extends Possession> implements RecoupeurDePossession<T> {
+  private static final String CORRECTION_SUFFIX_2 = "_2";
+
   protected Argent getValeur(Collection<Info<T>> possessions) {
     var somme = ariary(0);
     for (var possession : possessions) {
@@ -63,8 +66,8 @@ public class RecoupeurDePossessionBase<T extends Possession> implements Recoupeu
     var corrections =
         groupedByDate.entrySet().stream()
             .map(entry -> getCorrectionForDateT(entry.getKey(), prevu, entry.getValue()))
-            .filter(Optional::isPresent)
-            .map(Optional::get)
+            .filter(not(Set::isEmpty))
+            .flatMap(Set::stream)
             .collect(toSet());
 
     if (corrections.isEmpty()) {
@@ -84,13 +87,13 @@ public class RecoupeurDePossessionBase<T extends Possession> implements Recoupeu
         .build();
   }
 
-  protected Optional<Correction> getCorrectionForDateT(
+  protected Set<Correction> getCorrectionForDateT(
       LocalDate t, Info<T> prevu, Set<Info<T>> realises) {
     var correctionValeur =
         getCorrectionValeur(t.equals(prevu.t()) ? prevu : Info.empty(), realises);
 
     if (correctionValeur.equals(new Argent(0, correctionValeur.devise()))) {
-      return Optional.empty();
+      return Set.of();
     }
 
     String nom;
@@ -102,15 +105,36 @@ public class RecoupeurDePossessionBase<T extends Possession> implements Recoupeu
       nom = make(CorrectionNomType.VALEUR_DIFFERENTES, t, prevu.nom(), correctionValeur);
     }
 
-    return Optional.of(new Correction(prevu.possessionACorriger(), nom, t, correctionValeur));
+    return recouperCorrection(prevu, nom, t, correctionValeur);
   }
 
-  private Correction nonExecuteCorrection(Info<T> prevu) {
-    return new Correction(
-        prevu.possessionACorriger(),
-        make(CorrectionNomGenerateur.CorrectionNomType.NON_EXECUTE, prevu),
-        prevu.t(),
-        getCorrectionValeur(prevu, Set.of()));
+  private Set<Correction> recouperCorrection(
+      Info<T> prevu, String nom, LocalDate t, Argent valeur) {
+    var corrections =
+        new HashSet<>(Set.of(new Correction(prevu.possessionACorriger(), nom, t, valeur)));
+    if (prevu.possessionACorrigerNegativement() != null) {
+      corrections.add(
+          new Correction(
+              prevu.possessionACorrigerNegativement(),
+              nom + CORRECTION_SUFFIX_2,
+              t,
+              valeur.negate()));
+    }
+    return corrections;
+  }
+
+  private Set<Correction> nonExecuteCorrection(Info<T> prevu) {
+    var nom = make(CorrectionNomGenerateur.CorrectionNomType.NON_EXECUTE, prevu);
+    var valeur = getCorrectionValeur(prevu, Set.of());
+    var corrections =
+        new HashSet<>(Set.of(new Correction(prevu.possessionACorriger(), nom, prevu.t(), valeur)));
+
+    if (prevu.possessionACorrigerNegativement() != null) {
+      corrections.add(
+          new Correction(prevu.possessionACorrigerNegativement(), nom, prevu.t(), valeur.negate()));
+    }
+
+    return corrections;
   }
 
   protected PossessionRecoupee<T> nonExecute(Info<T> prevu) {
@@ -118,16 +142,27 @@ public class RecoupeurDePossessionBase<T extends Possession> implements Recoupeu
         .prevu(prevu)
         .realises(Set.of())
         .status(NON_EXECUTE)
-        .corrections(Set.of(nonExecuteCorrection(prevu)))
+        .corrections(nonExecuteCorrection(prevu))
         .build();
   }
 
-  protected Correction imprevuCorrection(Info<T> imprevu) {
-    return new Correction(
-        imprevu.possessionACorriger(),
-        make(CorrectionNomGenerateur.CorrectionNomType.IMPREVU, imprevu),
-        imprevu.t(),
-        getCorrectionValeur(Info.empty(), Set.of(imprevu)));
+  protected Set<Correction> imprevuCorrection(Info<T> imprevu) {
+    var nom = make(CorrectionNomGenerateur.CorrectionNomType.IMPREVU, imprevu);
+    var valeur = getCorrectionValeur(Info.empty(), Set.of(imprevu));
+    var corrections =
+        new HashSet<>(
+            Set.of(new Correction(imprevu.possessionACorriger(), nom, imprevu.t(), valeur)));
+
+    if (imprevu.possessionACorrigerNegativement() != null) {
+      corrections.add(
+          new Correction(
+              imprevu.possessionACorrigerNegativement(),
+              nom + CORRECTION_SUFFIX_2,
+              imprevu.t(),
+              valeur.negate()));
+    }
+
+    return corrections;
   }
 
   protected PossessionRecoupee<T> imprevu(Set<Info<T>> imprevus) {
@@ -145,7 +180,7 @@ public class RecoupeurDePossessionBase<T extends Possession> implements Recoupeu
         .prevu(Info.empty())
         .realises(Set.of(imprevu))
         .status(IMPREVU)
-        .corrections(Set.of(imprevuCorrection(imprevu)))
+        .corrections(imprevuCorrection(imprevu))
         .build();
   }
 }

@@ -161,7 +161,12 @@ public class RecoupementPage extends LazyPage {
             () -> {
               var selectedFile = fileList.getSelectedValue();
               if (selectedFile != null) {
-                state.update("selectedFile", selectedFile);
+                state.update(
+                    Map.of(
+                        "selectedFile",
+                        selectedFile,
+                        "pagination",
+                        new Pagination(1, RECOUPEMENT_ITEM_PER_PAGE)));
               }
             });
 
@@ -234,6 +239,9 @@ public class RecoupementPage extends LazyPage {
       case EXECUTE_SANS_CORRECTION -> statusToKeep.add(RecoupementStatus.EXECUTE_SANS_CORRECTION);
     }
 
+    var pjMap = buildPjMap(selectedFile);
+    state.update("currentPjMap", pjMap);
+
     var provider = new PossessionRecoupeeProvider(casSetComptes);
     var meta = new Meta(plannedCas, doneCas);
     var filter =
@@ -243,6 +251,8 @@ public class RecoupementPage extends LazyPage {
             .fin(LocalDate.MAX)
             .debut(LocalDate.MIN)
             .nom(getFilterName())
+            .pjFilter(getPjFilter())
+            .pjMap(pjMap)
             .pagination(getPagination())
             .build();
 
@@ -251,16 +261,7 @@ public class RecoupementPage extends LazyPage {
       state.update("totalPages", result.totalPage());
     }
 
-    var pjMap = buildPjMap(selectedFile);
-    state.update("currentPjMap", pjMap);
-
-    return switch (getPjFilter()) {
-      case AVEC_PJ ->
-          result.data().stream().filter(r -> pjMap.containsKey(r.possession().nom())).toList();
-      case SANS_PJ ->
-          result.data().stream().filter(r -> !pjMap.containsKey(r.possession().nom())).toList();
-      case TOUS -> result.data();
-    };
+    return result.data();
   }
 
   @Override

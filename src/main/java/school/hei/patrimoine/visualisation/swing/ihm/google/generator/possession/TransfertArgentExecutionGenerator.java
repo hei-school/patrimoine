@@ -6,9 +6,9 @@ import java.time.LocalDate;
 import java.util.Map;
 import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.possession.Compte;
-import school.hei.patrimoine.modele.possession.FluxArgent;
+import school.hei.patrimoine.modele.possession.TransfertArgent;
 
-public class FluxArgentExecutionGenerator implements ExecutionGenerator<FluxArgent> {
+public class TransfertArgentExecutionGenerator implements ExecutionGenerator<TransfertArgent> {
   @Override
   public void validateArgs(Map<String, Object> args) throws IllegalArgumentException {
     if (!args.containsKey("nom")) {
@@ -23,23 +23,28 @@ public class FluxArgentExecutionGenerator implements ExecutionGenerator<FluxArge
       throw new IllegalArgumentException("valeur is mandatory to create a fluxArgent");
     }
 
-    if (!args.containsKey("compte")) {
-      throw new IllegalArgumentException("compte is mandatory to create a fluxArgent");
+    if (!args.containsKey("depuisCompte")) {
+      throw new IllegalArgumentException("depuisCompte is mandatory to create a fluxArgent");
+    }
+
+    if (!args.containsKey("versCompte")) {
+      throw new IllegalArgumentException("versCompte is mandatory to create a fluxArgent");
     }
   }
 
   @Override
-  public FluxArgent apply(Map<String, Object> args) {
+  public TransfertArgent apply(Map<String, Object> args) {
     validateArgs(args);
 
     var nom = (String) args.get("nom");
-    var prevu = (FluxArgent) args.getOrDefault("prévu", null);
+    var prevu = (TransfertArgent) args.getOrDefault("prévu", null);
     var realisationNom =
         prevu == null ? nom : String.format(MULTIPLE_EXECUTION_NOM_FORMAT, prevu.nom(), nom);
 
-    return new FluxArgent(
+    return new TransfertArgent(
         realisationNom,
-        (Compte) args.get("compte"),
+        (Compte) args.get("depuisCompte"),
+        (Compte) args.get("versCompte"),
         (LocalDate) args.get("date"),
         (Argent) args.get("valeur"));
   }

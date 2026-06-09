@@ -1,8 +1,7 @@
 package school.hei.patrimoine.modele.recouppement.generateur.correction;
 
 import java.util.Set;
-import school.hei.patrimoine.modele.possession.FluxArgent;
-import school.hei.patrimoine.modele.possession.Possession;
+import school.hei.patrimoine.modele.possession.*;
 import school.hei.patrimoine.modele.recouppement.model.Info;
 import school.hei.patrimoine.modele.recouppement.model.PossessionRecoupee;
 
@@ -21,7 +20,11 @@ public class RecoupeurDePossessionFacade {
   private static <T extends Possession> RecoupeurDePossession<T> getRecoupeur(T possession) {
     var recoupeur =
         switch (possession) {
-          case FluxArgent ignored -> new RecoupeurDePossessionBase<>();
+          case FluxArgent ignored -> new RecoupeurDePossessionBase<FluxArgent>();
+          case TransfertArgent ignored -> new RecoupeurDePossessionBase<TransfertArgent>();
+          case Creance ignored -> new RecoupeurDePossessionBase<Creance>();
+          case Dette ignored -> new RecoupeurDePossessionBase<Dette>();
+          case Compte ignored -> new RecoupeurDePossessionBase<Compte>();
           default -> new NotSupportedRecoupeurDePossession();
         };
 
