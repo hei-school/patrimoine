@@ -105,6 +105,11 @@ ENTETE_DETTES
     :   'Dettes'
     ;
 
+/* operation comments */
+COMMENTAIRES
+    :   'Commentaires'
+    ;
+
 /* Pièces justificative  */
 LIEN_PIECE_JUSTIFICATIVE
     :   'Pièces Justificatives'
@@ -347,6 +352,6 @@ COMMENTAIRE
 
 mode URL;
 URL_END: '"' -> popMode;
-URL_CONTENT
+TEXT_CONTENT
     :   ~[^" \t\r\n]+
     ;

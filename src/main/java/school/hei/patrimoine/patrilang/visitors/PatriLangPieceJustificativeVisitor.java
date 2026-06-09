@@ -29,7 +29,7 @@ public class PatriLangPieceJustificativeVisitor
     var id = this.idVisitor.apply(ctx.id());
     var date = this.dateVisitor.apply(ctx.date());
     var reference = ctx.reference.getText().trim();
-    var link = ctx.URL_CONTENT().getText().trim();
+    var link = ctx.TEXT_CONTENT().getText().trim();
 
     return new PieceJustificative(id, date, reference, link);
   }
