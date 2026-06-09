@@ -119,7 +119,7 @@ class FluxArgentExecutionGeneratorTest {
             "date", date,
             "valeur", valeur,
             "compte", compte,
-            "prevu", prevu);
+            "prévu", prevu);
 
     FluxArgent actual = subject.apply(args);
 

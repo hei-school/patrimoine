@@ -5,8 +5,9 @@ import static java.util.Objects.requireNonNull;
 import static school.hei.patrimoine.modele.Devise.*;
 
 import java.awt.*;
+import java.time.DateTimeException;
 import java.time.LocalDate;
-import java.util.Set;
+import java.util.List;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import school.hei.patrimoine.Pair;
@@ -26,55 +27,58 @@ public class AddRecoupementExecutionForm extends JPanel {
   private JTextField linkPJField;
   private JTextField referencePJField;
   private JTextField commentField;
+  private final boolean authorizePj;
 
   public AddRecoupementExecutionForm(
       String defaultNom,
       Devise defaultDevise,
       Argent defaultValeur,
-      Set<Pair<String, JComponent>> components,
+      List<Pair<String, JComponent>> startComponents,
+      List<Pair<String, JComponent>> endComponents,
       String defaultLinkPJ,
-      String defaultReferencePJ,
-      String defaultComment) {
+      String defaultComment,
+      boolean authorizePj) {
 
+    this.authorizePj = authorizePj;
     setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
     setOpaque(true);
     setBorder(new EmptyBorder(15, 15, 15, 15));
     setBackground(Color.WHITE);
 
+    startComponents.forEach(component -> addField(component.first(), component.second()));
     addNomField(defaultNom);
     addDateField(LocalDate.now());
     addValeurField(defaultValeur);
     addDeviseField(defaultDevise);
 
+    endComponents.forEach(component -> addField(component.first(), component.second()));
+
     addLinkPJField(defaultLinkPJ);
-    addReferencePJField(buildDefaultRef(defaultNom));
+    addReferencePJField(defaultNom);
     addCommentField(defaultComment);
-
-    components.forEach(component -> addField(component.first(), component.second()));
-  }
-
-  private String buildDefaultRef(String defaultNom) {
-    var prefix = defaultNom.trim().substring(0, Math.min(3, defaultNom.length())).toUpperCase();
-
-    if (defaultNom.contains("__du_")) {
-      var datePart = defaultNom.replaceAll("^.*__du_", "").replaceAll("_", "-");
-
-      return prefix + datePart;
-    }
-    return prefix + LocalDate.now().getYear();
   }
 
   public AddRecoupementExecutionForm(
       String defaultNom,
       Devise defaultDevise,
       Argent defaultValeur,
-      Set<Pair<String, JComponent>> components) {
-    this(defaultNom, defaultDevise, defaultValeur, components, "", "", "");
+      List<Pair<String, JComponent>> startComponents,
+      List<Pair<String, JComponent>> endComponents,
+      boolean authorizePj) {
+    this(
+        defaultNom,
+        defaultDevise,
+        defaultValeur,
+        startComponents,
+        endComponents,
+        "",
+        "",
+        authorizePj);
   }
 
   public AddRecoupementExecutionForm(
-      String defaultNom, Devise defaultDevise, Argent defaultValeur) {
-    this(defaultNom, defaultDevise, defaultValeur, Set.of(), "", "", "");
+      String defaultNom, Devise defaultDevise, Argent defaultValeur, boolean authorizePj) {
+    this(defaultNom, defaultDevise, defaultValeur, List.of(), List.of(), "", "", authorizePj);
   }
 
   public Argent getValeur() {
@@ -88,18 +92,23 @@ public class AddRecoupementExecutionForm extends JPanel {
   }
 
   public LocalDate getDate() {
-    return LocalDate.of(
-        executionDatePicker.getModel().getYear(),
-        executionDatePicker.getModel().getMonth() + 1,
-        executionDatePicker.getModel().getDay());
+    var model = executionDatePicker.getModel();
+    if (model.getValue() == null) {
+      throw new IllegalArgumentException("La date est obligatoire.");
+    }
+    try {
+      return LocalDate.of(model.getYear(), model.getMonth() + 1, model.getDay());
+    } catch (DateTimeException e) {
+      throw new IllegalArgumentException("La date saisie est invalide : " + e.getMessage());
+    }
   }
 
   public String getNom() {
-    if (nomField.getText().trim().isBlank()) {
+    var normalized = nomField.getText().trim().replaceAll("[- ]+", "_");
+    if (normalized.isBlank()) {
       throw new IllegalArgumentException("Le champ 'Nom' est obligatoire.");
     }
-
-    return nomField.getText().trim().replaceAll(" ", "_");
+    return normalized;
   }
 
   public String getLinkPJ() {
@@ -146,12 +155,16 @@ public class AddRecoupementExecutionForm extends JPanel {
 
   private void addLinkPJField(String defaultLinkPJ) {
     linkPJField = new JTextField(defaultLinkPJ == null ? "" : defaultLinkPJ);
-    addField("Lien de la pièce justificative : ", linkPJField);
+    if (authorizePj) {
+      addField("Lien de la pièce justificative : ", linkPJField);
+    }
   }
 
   private void addReferencePJField(String defaultReferencePJ) {
     referencePJField = new JTextField(defaultReferencePJ == null ? "" : defaultReferencePJ);
-    addField("Référence de la pièce justificative : ", referencePJField);
+    if (authorizePj) {
+      addField("Référence de la pièce justificative : ", referencePJField);
+    }
   }
 
   private void addCommentField(String defaultComment) {

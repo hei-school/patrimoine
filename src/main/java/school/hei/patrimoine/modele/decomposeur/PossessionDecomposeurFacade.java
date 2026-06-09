@@ -5,6 +5,7 @@ import java.util.List;
 import school.hei.patrimoine.modele.possession.FluxArgent;
 import school.hei.patrimoine.modele.possession.GroupePossession;
 import school.hei.patrimoine.modele.possession.Possession;
+import school.hei.patrimoine.modele.possession.TransfertArgent;
 
 public class PossessionDecomposeurFacade {
   @SuppressWarnings("all")
@@ -20,8 +21,9 @@ public class PossessionDecomposeurFacade {
           ToDecompose possession, LocalDate debut, LocalDate fin) {
     var decomposeur =
         switch (possession) {
-          case FluxArgent flux -> new FluxArgentDecomposeur(debut, fin);
-          case GroupePossession groupe -> new GroupePossessionDecomposeur(debut, fin);
+          case FluxArgent ignored -> new FluxArgentDecomposeur(debut, fin);
+          case TransfertArgent ignored -> new TransfertArgentDecomposeur(debut, fin);
+          case GroupePossession ignored -> new GroupePossessionDecomposeur(debut, fin);
           default -> new PossessionDecomposeurBase<>(debut, fin);
         };
 

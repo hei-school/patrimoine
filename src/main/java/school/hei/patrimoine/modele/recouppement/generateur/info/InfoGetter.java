@@ -14,4 +14,6 @@ public interface InfoGetter<T extends Possession> extends Function<T, Info<T>> {
   LocalDate getDate(T possession);
 
   Possession getPossessionACorriger(T possession);
+
+  Possession getPossessionACorrigerNegativement(T possession);
 }

@@ -10,7 +10,12 @@ public final class Creance extends Compte {
   public Creance(String nom, LocalDate t, Argent valeurComptable) {
     super(nom, t, valeurComptable);
     if (valeurComptable.lt(0)) {
-      throw new IllegalArgumentException(this.toString());
+      throw new IllegalArgumentException(
+          "Créance invalide '"
+              + nom
+              + "' : la valeur comptable ne peut pas être négative ("
+              + valeurComptable
+              + ")");
     }
   }
 

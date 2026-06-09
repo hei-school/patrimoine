@@ -9,7 +9,11 @@ public class NombreValidator {
         throw new IllegalArgumentException();
       }
 
-      parseDouble(input.trim().replaceAll(" ", "").replaceAll("_", ""));
+      var value = parseDouble(input.trim().replaceAll(" ", "").replaceAll("_", ""));
+
+      if (Double.isNaN(value) || Double.isInfinite(value)) {
+        throw new IllegalArgumentException();
+      }
     } catch (IllegalArgumentException e) {
       throw new IllegalArgumentException(
           String.format("Nombre invalide '%s' (syntaxe incorrecte)", input));
