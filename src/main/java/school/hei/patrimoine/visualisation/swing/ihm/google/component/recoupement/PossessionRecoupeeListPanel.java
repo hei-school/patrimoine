@@ -39,7 +39,9 @@ public class PossessionRecoupeeListPanel extends JPanel {
   public JScrollPane toScrollPane() {
     var scroll =
         new JScrollPane(
-            this, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+            this,
+            JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+            JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
     scroll.getVerticalScrollBar().setUnitIncrement(20);
 
     return scroll;
