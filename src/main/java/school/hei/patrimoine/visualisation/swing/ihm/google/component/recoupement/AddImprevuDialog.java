@@ -15,6 +15,7 @@ import java.util.*;
 import java.util.List;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import school.hei.patrimoine.Pair;
 import school.hei.patrimoine.modele.Argent;
@@ -41,6 +42,7 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLa
 public class AddImprevuDialog extends Dialog {
   private final State state;
 
+  private JScrollPane scrollPane;
   private AddRecoupementExecutionForm form;
   private final JComboBox<OperationType> operationTypeSelect;
 
@@ -52,6 +54,7 @@ public class AddImprevuDialog extends Dialog {
     super("Ajouter un imprévu", 800, 900, false);
     this.state = state;
     this.operationTypeSelect = new JComboBox<>(OperationType.values());
+    operationTypeSelect.addActionListener(e -> rebuildForm());
 
     setLayout(new BorderLayout());
 
@@ -74,8 +77,8 @@ public class AddImprevuDialog extends Dialog {
     switch (getSelectedType()) {
       case FLUX_ARGENT -> inputs.add(Pair.of("Compte :", compteSelect));
       case TRANSFERT_ARGENT -> {
-        inputs.add(Pair.of("Depuis compte :", depuisCompteSelect));
-        inputs.add(Pair.of("Vers compte :", versCompteSelect));
+        inputs.add(Pair.of("Compte à débiter :", depuisCompteSelect));
+        inputs.add(Pair.of("Compte à créditer :", versCompteSelect));
       }
     }
 
@@ -84,7 +87,6 @@ public class AddImprevuDialog extends Dialog {
 
   private void addForm() {
     var patrimoine = getDonePatrimoine();
-
     initComptes();
 
     this.form =
@@ -92,16 +94,19 @@ public class AddImprevuDialog extends Dialog {
             "",
             patrimoine.getDevise(),
             new Argent(0, patrimoine.getDevise()),
-            List.of(),
+            List.of(Pair.of("Type d'opération financière : ", operationTypeSelect)),
             buildInputs(),
             true);
 
-    add(new JScrollPane(form), BorderLayout.CENTER);
-    operationTypeSelect.addActionListener(e -> rebuildForm());
+    this.scrollPane = new JScrollPane(form);
+
+    scrollPane.setBorder(null);
+    scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+    add(scrollPane, BorderLayout.CENTER);
   }
 
   private void rebuildForm() {
-    remove(form);
+    remove(scrollPane);
     addForm();
 
     revalidate();
@@ -295,8 +300,20 @@ public class AddImprevuDialog extends Dialog {
     }
   }
 
+  @Getter
   public enum OperationType {
-    FLUX_ARGENT,
-    TRANSFERT_ARGENT
+    FLUX_ARGENT("Flux d'argent"),
+    TRANSFERT_ARGENT("Transfert d'argent");
+
+    private final String label;
+
+    OperationType(String label) {
+      this.label = label;
+    }
+
+    @Override
+    public String toString() {
+      return label;
+    }
   }
 }

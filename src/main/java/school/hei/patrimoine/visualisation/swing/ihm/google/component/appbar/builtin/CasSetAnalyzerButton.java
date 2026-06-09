@@ -9,6 +9,7 @@ import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.
 import java.time.LocalDate;
 import java.util.List;
 import javax.swing.JMenuItem;
+import lombok.extern.slf4j.Slf4j;
 import school.hei.patrimoine.cas.CasSet;
 import school.hei.patrimoine.cas.CasSetAnalyzer;
 import school.hei.patrimoine.modele.objectif.ObjectifExeption;
@@ -19,6 +20,7 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.component.popup.Popu
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.AsyncTask;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangFilesWatcher;
 
+@Slf4j
 public class CasSetAnalyzerButton extends PopupMenuButton {
   public CasSetAnalyzerButton() {
     super("Évolution graphique", getItems());

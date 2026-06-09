@@ -207,7 +207,9 @@ public class PossessionRecoupeeRealisationsDialog extends Dialog {
   }
 
   private PendingData buildInfoFromForm(AddRecoupementExecutionForm form) {
-    PJFieldsValidator.validatePJ(form);
+    if (possessionRecoupee.realises().isEmpty()) {
+      PJFieldsValidator.validatePJ(form);
+    }
 
     var pjGenerator = new PieceJustificativeGenerator();
     var possessionGenerator = PossessionGeneratorFactory.make(possessionRecoupee.possession());

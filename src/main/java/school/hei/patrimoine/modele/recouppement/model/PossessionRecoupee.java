@@ -1,5 +1,6 @@
 package school.hei.patrimoine.modele.recouppement.model;
 
+import static java.time.LocalDate.now;
 import static school.hei.patrimoine.modele.Argent.ariary;
 
 import java.util.Set;
@@ -21,7 +22,9 @@ public record PossessionRecoupee<T extends Possession>(
   }
 
   public Argent ecartValeurAvecRealises() {
-    return valeurRealisee().minus(prevu.valeur(), prevu.t());
+    var valeurPrevu = prevu.isEmpty() ? ariary(0) : prevu.valeur();
+    var tPrevu = prevu.isEmpty() ? now() : prevu.t();
+    return valeurRealisee().minus(valeurPrevu, tPrevu);
   }
 
   public Possession possession() {
