@@ -353,5 +353,4 @@ COMMENTAIRE
 mode URL;
 URL_END: '"' -> popMode;
 TEXT_CONTENT
-    :   ~[^" \t\r\n]+
-    ;
+    :   ~[^"\t\r\n]+;

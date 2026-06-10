@@ -144,7 +144,7 @@ sectionComments
     ;
 
 commentItem
-    :   MUL id COMMA? dateValue=date COMMA? TEXT_CONTENT
+    :   MUL id COMMA? dateValue=date COMMA? URL_START content=TEXT_CONTENT URL_END
     ;
 
 compteElement
