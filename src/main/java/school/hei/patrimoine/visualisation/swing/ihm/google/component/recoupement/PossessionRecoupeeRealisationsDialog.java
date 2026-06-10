@@ -19,9 +19,11 @@ import org.jspecify.annotations.NonNull;
 import school.hei.patrimoine.modele.possession.FluxArgent;
 import school.hei.patrimoine.modele.possession.Possession;
 import school.hei.patrimoine.modele.possession.TransfertArgent;
+import school.hei.patrimoine.modele.possession.pj.OperationComments;
 import school.hei.patrimoine.modele.possession.pj.PieceJustificative;
 import school.hei.patrimoine.modele.recouppement.model.Info;
 import school.hei.patrimoine.modele.recouppement.model.PossessionRecoupee;
+import school.hei.patrimoine.patrilang.antlr.PatriLangParser.SectionCommentsContext;
 import school.hei.patrimoine.patrilang.antlr.PatriLangParser.SectionOperationsContext;
 import school.hei.patrimoine.patrilang.antlr.PatriLangParser.SectionPiecesJustificativesContext;
 import school.hei.patrimoine.patrilang.files.io.PatriLangFileQuerier;
@@ -30,6 +32,7 @@ import school.hei.patrimoine.patrilang.files.io.PatriLangFileWriter;
 import school.hei.patrimoine.patrilang.files.io.PatriLangFileWriter.FileWriterInput;
 import school.hei.patrimoine.patrilang.generator.PatriLangGeneratorFactory;
 import school.hei.patrimoine.patrilang.generator.possession.CommentPatriLangGenerator;
+import school.hei.patrimoine.patrilang.generator.possession.OperationCommentGenerator;
 import school.hei.patrimoine.patrilang.generator.possession.PieceJustificativePatriLangGenerator;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.Dialog;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.MultiViews;
@@ -231,6 +234,20 @@ public class PossessionRecoupeeRealisationsDialog extends Dialog {
     return new PendingData(comment, info, newPj);
   }
 
+  private String getCommentLines() {
+    var generator = new OperationCommentGenerator();
+    return pendingData.stream()
+        .filter(data -> !data.comment().isBlank())
+        .map(
+            data -> {
+              var comment =
+                  new OperationComments(
+                      data.info().possession().nom(), data.info().t(), data.comment());
+              return generator.apply(comment);
+            })
+        .collect(joining("\n"));
+  }
+
   private void addTitle() {
     var titleString =
         String.format("Exécutions de l'opération : %s", possessionRecoupee.possession().nom());
@@ -311,6 +328,16 @@ public class PossessionRecoupeeRealisationsDialog extends Dialog {
     return sectionOperation.get();
   }
 
+  static QueryResult<SectionCommentsContext> getSectionComments(PatriLangFileContext pjFile) {
+    var querier = new PatriLangFileQuerier();
+    var sectionComments =
+        querier.query(pjFile, document -> document.piecesJustificatives().sectionComments());
+    if (sectionComments.isEmpty()) {
+      throw new RuntimeException("Section Commentaires introuvable dans le fichier");
+    }
+    return sectionComments.get();
+  }
+
   private void saveExecutions() {
     var optionalSelectedFile = getSelectedFile(state);
     if (optionalSelectedFile.isEmpty()) {
@@ -342,18 +369,28 @@ public class PossessionRecoupeeRealisationsDialog extends Dialog {
                 return null;
               }
 
+              var pjFile = optionalPjFile.get();
+
               var pjLines = getPjLines();
-              if (pjLines.isBlank()) {
-                clearAllTempContents();
-                stage(selectedFile);
-                return null;
+              if (!pjLines.isBlank()) {
+                var pjs = getSectionPieceJustificatives(pjFile);
+                writer.insertAtLine(
+                    FileWriterInput.builder().content(pjLines).file(pjFile).casSet(casSet).build(),
+                    pjs.endLine());
               }
 
-              var pjFile = optionalPjFile.get();
-              var pjs = getSectionPieceJustificatives(pjFile);
-              writer.insertAtLine(
-                  FileWriterInput.builder().content(pjLines).file(pjFile).casSet(casSet).build(),
-                  pjs.endLine());
+              var commentLines = getCommentLines();
+              if (!commentLines.isBlank()) {
+                var sectionComments = getSectionComments(pjFile);
+                writer.insertAtLine(
+                    FileWriterInput.builder()
+                        .content(commentLines)
+                        .file(pjFile)
+                        .casSet(casSet)
+                        .build(),
+                    sectionComments.endLine());
+              }
+
               clearAllTempContents();
               stage(selectedFile);
               stage(pjFile);

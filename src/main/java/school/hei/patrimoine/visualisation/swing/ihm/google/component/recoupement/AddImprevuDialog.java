@@ -1,8 +1,7 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.component.recoupement;
 
 import static school.hei.patrimoine.visualisation.swing.ihm.google.component.files.FileSideBar.getSelectedFile;
-import static school.hei.patrimoine.visualisation.swing.ihm.google.component.recoupement.PossessionRecoupeeRealisationsDialog.getSectionOperations;
-import static school.hei.patrimoine.visualisation.swing.ihm.google.component.recoupement.PossessionRecoupeeRealisationsDialog.getSectionPieceJustificatives;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.component.recoupement.PossessionRecoupeeRealisationsDialog.*;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.MessageDialog.*;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangFileContentManager.clearAllTempContents;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangFilesWatcher.*;
@@ -22,10 +21,12 @@ import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.Patrimoine;
 import school.hei.patrimoine.modele.possession.Compte;
 import school.hei.patrimoine.modele.possession.Possession;
+import school.hei.patrimoine.modele.possession.pj.OperationComments;
 import school.hei.patrimoine.patrilang.files.io.PatriLangFileWriter;
 import school.hei.patrimoine.patrilang.files.io.PatriLangFileWriter.FileWriterInput;
 import school.hei.patrimoine.patrilang.generator.PatriLangGeneratorFactory;
 import school.hei.patrimoine.patrilang.generator.possession.CommentPatriLangGenerator;
+import school.hei.patrimoine.patrilang.generator.possession.OperationCommentGenerator;
 import school.hei.patrimoine.patrilang.generator.possession.PieceJustificativePatriLangGenerator;
 import school.hei.patrimoine.patrilang.modele.PatriLangCas;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.Dialog;
@@ -197,13 +198,21 @@ public class AddImprevuDialog extends Dialog {
     return pj == null ? "" : generator.apply(pj);
   }
 
+  private String getCommentLine(Possession possession) {
+    var rawComment = form.getComment();
+    if (rawComment.isBlank()) {
+      return "";
+    }
+    var comment = new OperationComments(possession.nom(), form.getDate(), rawComment);
+    return new OperationCommentGenerator().apply(comment);
+  }
+
   private void addExecution() {
     PJFieldsValidator.validatePJ(form);
 
     var selectedFile = getSelectedFile(state).orElseThrow();
     var generator = getExecutionGenerator();
     var newPossession = generator.apply(getPossessionArgs());
-    var casLine = getCasLine(newPossession);
     var casSet = getDoneCasSetFile();
     var optionalPjFile = getPJ(selectedFile);
 
@@ -215,7 +224,7 @@ public class AddImprevuDialog extends Dialog {
 
               writer.insertAtLine(
                   FileWriterInput.builder()
-                      .content(casLine)
+                      .content(getCasLine(newPossession))
                       .file(selectedFile)
                       .casSet(casSet)
                       .build(),
@@ -227,22 +236,31 @@ public class AddImprevuDialog extends Dialog {
                 return null;
               }
 
-              var pjLines = getPjLine(newPossession);
-              if (pjLines.isBlank()) {
-                clearAllTempContents();
-                stage(selectedFile);
-                return null;
+              var pjFile = optionalPjFile.get();
+
+              var pjLine = getPjLine(newPossession);
+              if (!pjLine.isBlank()) {
+                var pjs = getSectionPieceJustificatives(pjFile);
+                writer.insertAtLine(
+                    FileWriterInput.builder().content(pjLine).file(pjFile).casSet(casSet).build(),
+                    pjs.endLine());
               }
 
-              var pjFile = optionalPjFile.get();
-              var pjs = getSectionPieceJustificatives(pjFile);
-              writer.insertAtLine(
-                  FileWriterInput.builder().content(pjLines).file(pjFile).casSet(casSet).build(),
-                  pjs.endLine());
+              var commentLine = getCommentLine(newPossession);
+              if (!commentLine.isBlank()) {
+                var sectionComments = getSectionComments(pjFile);
+                writer.insertAtLine(
+                    FileWriterInput.builder()
+                        .content(commentLine)
+                        .file(pjFile)
+                        .casSet(casSet)
+                        .build(),
+                    sectionComments.endLine());
+              }
 
               clearAllTempContents();
-              stage(pjFile);
               stage(selectedFile);
+              stage(pjFile);
               return null;
             })
         .onError(MessageDialog::showError)
