@@ -56,7 +56,7 @@ sectionCasGeneral
 
 /* Pieces justificatives */
 piecesJustificatives
-    :   entetePiecesJustificatives NEWLINE? sectionPiecesJustificatives EOF
+    :   entetePiecesJustificatives NEWLINE? sectionPiecesJustificatives? NEWLINE? sectionComments? EOF
     ;
 
 entetePiecesJustificatives
@@ -124,7 +124,7 @@ sectionPiecesJustificatives
     ;
 
 piecesJustificativesItem
-    :   MUL id COMMA? dateValue=date COMMA? reference=referenceDoc COMMA? URL_START URL_CONTENT URL_END
+    :   MUL id COMMA? dateValue=date COMMA? reference=referenceDoc COMMA? STRING_START STRING_CONTENT STRING_END
     ;
 
 referenceDoc
@@ -136,6 +136,15 @@ referenceSegment
     |   ENTIER
     |   TEXT ENTIER
     |   ENTIER TEXT
+    ;
+
+/* Commentaires d'opérations */
+sectionComments
+    :   HASHES COMMENTAIRES commentItem*
+    ;
+
+commentItem
+    :   MUL id COMMA? dateValue=date COMMA? STRING_START content=STRING_CONTENT STRING_END
     ;
 
 compteElement

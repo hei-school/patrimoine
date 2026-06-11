@@ -16,7 +16,7 @@ fragment STRING
     :   ([\p{L}] | STRING_RAW_VALUE) (([\p{L}\p{N}_]) | STRING_RAW_VALUE)*
     ;
 
-URL_START : '"' -> pushMode(URL);
+STRING_START : '"' -> pushMode(STRING_MODE);
 
 /* -------------------- Base --------------------  */
 /* Cas */
@@ -103,6 +103,11 @@ ENTETE_CREANCES
 /* Dettes */
 ENTETE_DETTES
     :   'Dettes'
+    ;
+
+/* operation comments */
+COMMENTAIRES
+    :   'Commentaires'
     ;
 
 /* Pièces justificative  */
@@ -345,8 +350,7 @@ COMMENTAIRE
     :   BACKTICK DIV MUL .*? MUL DIV BACKTICK -> skip
     ;
 
-mode URL;
-URL_END: '"' -> popMode;
-URL_CONTENT
-    :   ~[^" \t\r\n]+
-    ;
+mode STRING_MODE;
+STRING_END: '"' -> popMode;
+STRING_CONTENT
+    :   ~[^"\t\r\n]+;
