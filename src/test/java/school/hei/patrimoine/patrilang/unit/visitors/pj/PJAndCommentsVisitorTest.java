@@ -17,8 +17,8 @@ import school.hei.patrimoine.patrilang.visitors.variable.VariableDateVisitor;
 import school.hei.patrimoine.patrilang.visitors.variable.VariableExpressionVisitor;
 import school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor;
 
-public class PJAndCommentsVisitorTest {
-  private PatriLangPJAndCommentsVisitor subject;
+class PJAndCommentsVisitorTest {
+  private PatriLangOperationSupportingInformationVisitor subject;
   private UnitTestVisitor visitor;
 
   @Getter(PRIVATE)
@@ -36,13 +36,13 @@ public class PJAndCommentsVisitorTest {
     expressionVisitor = new VariableExpressionVisitor(variableScope, this::getVariableDateVisitor);
     variableDateVisitor = new VariableDateVisitor(variableScope, this::getExpressionVisitor);
     subject =
-        new PatriLangPJAndCommentsVisitor(
+        new PatriLangOperationSupportingInformationVisitor(
             new PatriLangPieceJustificativeVisitor(idVisitor, this.getVariableDateVisitor()),
             new PatriLangCommentOperationVisitor(idVisitor, this.getVariableDateVisitor()));
     visitor =
         new UnitTestVisitor() {
           @Override
-          public PJAndComments visitPiecesJustificatives(
+          public OperationSupportingInformation visitPiecesJustificatives(
               PatriLangParser.PiecesJustificativesContext ctx) {
             return subject.apply(ctx);
           }
@@ -62,7 +62,8 @@ public class PJAndCommentsVisitorTest {
 * `paiementChauffeur + Dates:ajd`, le 25 décembre 2025, "Paiement en espèces"
 """;
 
-    PJAndComments result = visitor.visit(input, PatriLangParser::piecesJustificatives);
+    OperationSupportingInformation result =
+        visitor.visit(input, PatriLangParser::piecesJustificatives);
 
     assertEquals(1, result.piecesJustificatives().size());
     var pj = result.piecesJustificatives().getFirst();
@@ -87,7 +88,8 @@ public class PJAndCommentsVisitorTest {
 * `assuranceChauffeur + Dates:ajd`, le 25 décembre 2025, FAC102-156, "https://docs.google.com/document/d/abc"
 """;
 
-    PJAndComments result = visitor.visit(input, PatriLangParser::piecesJustificatives);
+    OperationSupportingInformation result =
+        visitor.visit(input, PatriLangParser::piecesJustificatives);
 
     assertEquals(1, result.piecesJustificatives().size());
     assertTrue(result.operationComments().isEmpty());
@@ -104,7 +106,8 @@ public class PJAndCommentsVisitorTest {
         * `paiementChauffeur + Dates:ajd`, le 25 décembre 2025, "Paiement en espèces"
         """;
 
-    PJAndComments result = visitor.visit(input, PatriLangParser::piecesJustificatives);
+    OperationSupportingInformation result =
+        visitor.visit(input, PatriLangParser::piecesJustificatives);
 
     assertTrue(result.piecesJustificatives().isEmpty());
     assertEquals(1, result.operationComments().size());
@@ -119,7 +122,8 @@ public class PJAndCommentsVisitorTest {
         * Cas de Taxi
         """;
 
-    PJAndComments result = visitor.visit(input, PatriLangParser::piecesJustificatives);
+    OperationSupportingInformation result =
+        visitor.visit(input, PatriLangParser::piecesJustificatives);
 
     assertTrue(result.piecesJustificatives().isEmpty());
     assertTrue(result.operationComments().isEmpty());
