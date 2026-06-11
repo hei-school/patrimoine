@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.possession.Compte;
 import school.hei.patrimoine.modele.possession.Correction;
-import school.hei.patrimoine.modele.possession.FluxArgent;
+import school.hei.patrimoine.modele.possession.FluxArgentCorrection;
 import school.hei.patrimoine.patrilang.visitors.IdVisitor;
 import school.hei.patrimoine.patrilang.visitors.SimpleVisitor;
 import school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor;
@@ -24,6 +24,6 @@ public class CorrectionVisitor implements SimpleVisitor<CorrectionContext, Corre
     LocalDate t = this.variableVisitor.asDate(ctx.dateValue);
     Compte compte = this.variableVisitor.asCompte(ctx.compteNom);
 
-    return new Correction(new FluxArgent(id, compte, t, valeurComptable));
+    return new Correction(new FluxArgentCorrection(id, compte, t, valeurComptable));
   }
 }

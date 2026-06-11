@@ -9,11 +9,7 @@ import java.time.LocalDate;
 import java.util.Set;
 import school.hei.patrimoine.modele.Devise;
 import school.hei.patrimoine.modele.Personne;
-import school.hei.patrimoine.modele.possession.Compte;
-import school.hei.patrimoine.modele.possession.Correction;
-import school.hei.patrimoine.modele.possession.FluxArgent;
-import school.hei.patrimoine.modele.possession.Materiel;
-import school.hei.patrimoine.modele.possession.Possession;
+import school.hei.patrimoine.modele.possession.*;
 
 public class EtudiantCas extends Cas {
 
@@ -55,6 +51,7 @@ public class EtudiantCas extends Cas {
 
   @Override
   protected void suivi() {
-    new Correction(new FluxArgent("Correction à la hausse", financeur, LocalDate.now(), ariary(0)));
+    new Correction(
+        new FluxArgentCorrection("Correction à la hausse", financeur, LocalDate.now(), ariary(0)));
   }
 }
