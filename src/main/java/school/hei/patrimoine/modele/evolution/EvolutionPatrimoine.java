@@ -1,5 +1,6 @@
 package school.hei.patrimoine.modele.evolution;
 
+import static java.util.function.Predicate.not;
 import static java.util.stream.Collectors.toSet;
 
 import java.time.LocalDate;
@@ -7,11 +8,7 @@ import java.util.*;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import school.hei.patrimoine.modele.Patrimoine;
-import school.hei.patrimoine.modele.possession.Compte;
-import school.hei.patrimoine.modele.possession.CompteCorrection;
-import school.hei.patrimoine.modele.possession.Dette;
-import school.hei.patrimoine.modele.possession.FluxArgent;
-import school.hei.patrimoine.modele.possession.Possession;
+import school.hei.patrimoine.modele.possession.*;
 import school.hei.patrimoine.modele.series.DateSeries;
 
 @Getter
@@ -46,8 +43,21 @@ public class EvolutionPatrimoine {
   private Set<FluxJournalier> fluxJournaliers() {
     var res = new HashSet<FluxJournalier>();
     evolutionJournaliere.forEach(
-        (date, patrimoine) -> patrimoine.getPossessions().forEach(p -> fluxDuJour(date, p, res)));
+        (date, patrimoine) ->
+            withoutCorrectionAndFluxArgentCorrection(patrimoine.getPossessions())
+                .forEach(p -> fluxDuJour(date, p, res)));
     return res;
+  }
+
+  private Set<Possession> withoutCorrectionAndFluxArgentCorrection(Set<Possession> possessions) {
+    return possessions.stream()
+        .filter(
+            not(
+                possession ->
+                    possession instanceof FluxArgentCorrection
+                        || possession instanceof Correction
+                        || possession instanceof CompteCorrection))
+        .collect(toSet());
   }
 
   private static void fluxDuJour(LocalDate date, Possession p, HashSet<FluxJournalier> res) {
