@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.function.Function;
 import school.hei.patrimoine.cas.Cas;
 import school.hei.patrimoine.cas.CasSet;
-import school.hei.patrimoine.modele.possession.pj.OperationComments;
+import school.hei.patrimoine.modele.possession.pj.OperationComment;
 import school.hei.patrimoine.modele.possession.pj.PieceJustificative;
 import school.hei.patrimoine.patrilang.files.PatriLangFile;
 import school.hei.patrimoine.patrilang.visitors.*;
@@ -49,7 +49,7 @@ public class PatriLangTranspiler implements Function<String, CasSet> {
     return patrilangVisitor.visitToutCas(tree);
   }
 
-  private static PJAndComments transpilePJAndComments(PatriLangFile file) {
+  private static OperationSupportingInformation transpileSupportingInfo(PatriLangFile file) {
     var tree = parsePieceJustificative(file);
     var variableVisitor = new VariableVisitor();
     var idVisitor = new IdVisitor(variableVisitor);
@@ -57,7 +57,7 @@ public class PatriLangTranspiler implements Function<String, CasSet> {
     var patrilangVisitor =
         PatriLangVisitor.builder()
             .pjAndCommentsVisitor(
-                new PatriLangPJAndCommentsVisitor(
+                new PatriLangOperationSupportingInformationVisitor(
                     new PatriLangPieceJustificativeVisitor(idVisitor, dateVisitor),
                     new PatriLangCommentOperationVisitor(idVisitor, dateVisitor)))
             .build();
@@ -65,11 +65,11 @@ public class PatriLangTranspiler implements Function<String, CasSet> {
   }
 
   public static List<PieceJustificative> transpilePieceJustificative(PatriLangFile file) {
-    return transpilePJAndComments(file).piecesJustificatives();
+    return transpileSupportingInfo(file).piecesJustificatives();
   }
 
-  public static List<OperationComments> transpileComments(PatriLangFile file) {
-    return transpilePJAndComments(file).operationComments();
+  public static List<OperationComment> transpileComments(PatriLangFile file) {
+    return transpileSupportingInfo(file).operationComments();
   }
 
   @Deprecated
@@ -83,7 +83,7 @@ public class PatriLangTranspiler implements Function<String, CasSet> {
   }
 
   @Deprecated
-  public static List<OperationComments> transpileComments(String pjFile) {
+  public static List<OperationComment> transpileComments(String pjFile) {
     return transpileComments(new PatriLangFile(pjFile));
   }
 }

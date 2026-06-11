@@ -124,7 +124,7 @@ sectionPiecesJustificatives
     ;
 
 piecesJustificativesItem
-    :   MUL id COMMA? dateValue=date COMMA? reference=referenceDoc COMMA? URL_START TEXT_CONTENT URL_END
+    :   MUL id COMMA? dateValue=date COMMA? reference=referenceDoc COMMA? STRING_START STRING_CONTENT STRING_END
     ;
 
 referenceDoc
@@ -144,7 +144,7 @@ sectionComments
     ;
 
 commentItem
-    :   MUL id COMMA? dateValue=date COMMA? URL_START content=TEXT_CONTENT URL_END
+    :   MUL id COMMA? dateValue=date COMMA? STRING_START content=STRING_CONTENT STRING_END
     ;
 
 compteElement

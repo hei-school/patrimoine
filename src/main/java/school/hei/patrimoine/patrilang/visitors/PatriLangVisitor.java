@@ -15,7 +15,7 @@ import school.hei.patrimoine.patrilang.antlr.PatriLangParserBaseVisitor;
 public class PatriLangVisitor extends PatriLangParserBaseVisitor<Object> {
   private final PatriLangToutCasVisitor toutCasVisitor;
   private final PatriLangCasVisitor casVisitor;
-  private final PatriLangPJAndCommentsVisitor pjAndCommentsVisitor;
+  private final PatriLangOperationSupportingInformationVisitor pjAndCommentsVisitor;
 
   @Override
   public Cas visitCas(CasContext ctx) {
@@ -28,7 +28,7 @@ public class PatriLangVisitor extends PatriLangParserBaseVisitor<Object> {
   }
 
   @Override
-  public PJAndComments visitPiecesJustificatives(PiecesJustificativesContext ctx) {
+  public OperationSupportingInformation visitPiecesJustificatives(PiecesJustificativesContext ctx) {
     return pjAndCommentsVisitor.apply(ctx);
   }
 }
