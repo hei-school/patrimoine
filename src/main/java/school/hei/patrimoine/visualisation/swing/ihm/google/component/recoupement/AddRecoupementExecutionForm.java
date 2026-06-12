@@ -54,7 +54,7 @@ public class AddRecoupementExecutionForm extends JPanel {
     endComponents.forEach(component -> addField(component.first(), component.second()));
 
     addLinkPJField(defaultLinkPJ);
-    addReferencePJField(defaultNom);
+    addReferencePJField("");
     addCommentField(defaultComment);
   }
 

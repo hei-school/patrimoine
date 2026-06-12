@@ -11,11 +11,7 @@ import java.util.Set;
 import school.hei.patrimoine.cas.Cas;
 import school.hei.patrimoine.modele.Devise;
 import school.hei.patrimoine.modele.Personne;
-import school.hei.patrimoine.modele.possession.Compte;
-import school.hei.patrimoine.modele.possession.Correction;
-import school.hei.patrimoine.modele.possession.FluxArgent;
-import school.hei.patrimoine.modele.possession.Materiel;
-import school.hei.patrimoine.modele.possession.Possession;
+import school.hei.patrimoine.modele.possession.*;
 
 public class EtudiantPireCas extends Cas {
 
@@ -59,6 +55,7 @@ public class EtudiantPireCas extends Cas {
 
   @Override
   protected void suivi() {
-    new Correction(new FluxArgent("Correction à la hausse", financeur, ajd, ariary(50_000)));
+    new Correction(
+        new FluxArgentCorrection("Correction à la hausse", financeur, ajd, ariary(50_000)));
   }
 }

@@ -22,6 +22,8 @@ public final class FluxJournaliersIHM extends FluxIHM {
 
   @Override
   protected Set<FluxJournalier> flux() {
-    return patrimoinesVisualisables.getEvolutionPatrimoine().getFluxJournaliers();
+    return patrimoinesVisualisables
+        .getEvolutionPatrimoine()
+        .fluxJournaliers(withCorrectionCheckBox.isSelected());
   }
 }

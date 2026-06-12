@@ -15,7 +15,7 @@ import school.hei.patrimoine.modele.vente.ValeurMarche;
 @ToString(callSuper = true)
 @Slf4j
 @Getter
-public final class FluxArgent extends Possession {
+public sealed class FluxArgent extends Possession permits FluxArgentCorrection {
   @ToString.Exclude private final Compte compte;
   private final LocalDate debut;
   private final LocalDate fin;

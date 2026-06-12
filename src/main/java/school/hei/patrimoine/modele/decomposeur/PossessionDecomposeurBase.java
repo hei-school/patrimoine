@@ -3,6 +3,9 @@ package school.hei.patrimoine.modele.decomposeur;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import school.hei.patrimoine.modele.possession.Compte;
+import school.hei.patrimoine.modele.possession.Creance;
+import school.hei.patrimoine.modele.possession.Dette;
 import school.hei.patrimoine.modele.possession.Possession;
 
 @RequiredArgsConstructor
@@ -38,5 +41,13 @@ public class PossessionDecomposeurBase<
   @Override
   public LocalDate getFin() {
     return fin;
+  }
+
+  public static Compte copyCompte(Compte compte, LocalDate t) {
+    return switch (compte) {
+      case Creance ignored -> new Creance(compte.nom(), t, compte.valeurComptable());
+      case Dette ignored -> new Dette(compte.nom(), t, compte.valeurComptable());
+      default -> new Compte(compte.nom(), t, compte.valeurComptable());
+    };
   }
 }

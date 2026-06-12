@@ -5,7 +5,6 @@ import static school.hei.patrimoine.modele.decomposeur.IdRetriever.getDecomposed
 import java.time.LocalDate;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
-import school.hei.patrimoine.modele.possession.Compte;
 import school.hei.patrimoine.modele.possession.FluxArgent;
 import school.hei.patrimoine.modele.series.DateSeries;
 
@@ -48,8 +47,7 @@ public class FluxArgentDecomposeur extends PossessionDecomposeurBase<FluxArgent,
             date ->
                 new FluxArgent(
                     getDecomposedId(fluxArgent.nom(), date),
-                    new Compte(
-                        compte.nom(), date, compte.valeurComptable()), // to avoid side effect
+                    copyCompte(compte, date),
                     date,
                     fluxArgent.getFluxMensuel()))
         .toList();

@@ -12,10 +12,7 @@ import java.util.Map;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
 import school.hei.patrimoine.modele.objectif.Objectif;
-import school.hei.patrimoine.modele.possession.Compte;
-import school.hei.patrimoine.modele.possession.Correction;
-import school.hei.patrimoine.modele.possession.FluxArgent;
-import school.hei.patrimoine.modele.possession.GroupePossession;
+import school.hei.patrimoine.modele.possession.*;
 
 class PatrimoineTest {
 
@@ -102,7 +99,7 @@ class PatrimoineTest {
             ariary(-100_000));
 
     new Correction(
-        new FluxArgent(
+        new FluxArgentCorrection(
             "Correction à la baisse", financeur, au13mai24.plusDays(99), ariary(-10_000)));
     var patrimoineIloAu13mai24 =
         Patrimoine.of("patrimoineIloAu13mai24", MGA, au13mai24, ilo, Set.of(financeur, trainDeVie));

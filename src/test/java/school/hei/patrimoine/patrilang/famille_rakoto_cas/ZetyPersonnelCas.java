@@ -77,6 +77,6 @@ public class ZetyPersonnelCas extends Cas {
   protected void suivi() {
     var t1 = LocalDate.of(2025, FEBRUARY, 2);
     new Objectif(zetyPersonnel, t1, ariary(2_000_000));
-    new Correction(new FluxArgent("correction1", zetyPersonnel, t1, ariary(540_000)));
+    new Correction(new FluxArgentCorrection("correction1", zetyPersonnel, t1, ariary(540_000)));
   }
 }
