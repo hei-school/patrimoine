@@ -3,6 +3,7 @@ package school.hei.patrimoine.patrilang.visitors.variable;
 import static java.util.Objects.nonNull;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.VariableContext;
 import static school.hei.patrimoine.patrilang.modele.variable.VariableType.DATE;
+import static school.hei.patrimoine.patrilang.modele.variable.VariableType.NOMBRE;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -106,7 +107,7 @@ public class VariableVisitor implements SimpleVisitor<VariableContext, Variable<
 
     if (nonNull(ctx.expression())) {
       var value = variableExpressionVisitor.apply(ctx.expression());
-      return new Variable<>(R_VALUE_VARIABLE_NAME, DATE, value);
+      return new Variable<>(R_VALUE_VARIABLE_NAME, NOMBRE, value);
     }
 
     var name = extractVariableName(ctx.VARIABLE().getText());

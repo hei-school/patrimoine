@@ -3,6 +3,7 @@ package school.hei.patrimoine.patrilang.unit.visitors;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.IdContext;
 import static school.hei.patrimoine.patrilang.modele.variable.VariableType.DATE;
+import static school.hei.patrimoine.patrilang.modele.variable.VariableType.NOMBRE;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -41,6 +42,18 @@ class IdVisitorTest {
     var expected = "id_value" + ajd.format(formatter);
 
     variableVisitor.addToScope("ajd", DATE, ajd);
+    var actual = visitor.visit(input, PatriLangParser::id);
+
+    assertEquals(expected, actual);
+  }
+
+  @Test
+  void parse_id_with_nombre_variable() {
+    var annee = 2005;
+    var input = "`id_value + Nombres:annee`";
+    var expected = "id_value" + annee;
+
+    variableVisitor.addToScope("annee", NOMBRE, annee);
     var actual = visitor.visit(input, PatriLangParser::id);
 
     assertEquals(expected, actual);
