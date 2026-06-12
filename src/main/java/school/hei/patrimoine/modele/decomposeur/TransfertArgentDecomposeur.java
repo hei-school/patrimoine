@@ -5,7 +5,6 @@ import static school.hei.patrimoine.modele.decomposeur.IdRetriever.getDecomposed
 import java.time.LocalDate;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
-import school.hei.patrimoine.modele.possession.Compte;
 import school.hei.patrimoine.modele.possession.TransfertArgent;
 import school.hei.patrimoine.modele.series.DateSeries;
 
@@ -50,8 +49,8 @@ public class TransfertArgentDecomposeur
             date ->
                 new TransfertArgent(
                     getDecomposedId(transfert.nom(), date),
-                    new Compte(depuisCompte.nom(), date, depuisCompte.valeurComptable()),
-                    new Compte(versCompte.nom(), date, versCompte.valeurComptable()),
+                    copyCompte(depuisCompte, date),
+                    copyCompte(versCompte, date),
                     date,
                     transfert.getFluxMensuel()))
         .toList();
