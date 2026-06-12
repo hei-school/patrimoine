@@ -108,6 +108,12 @@ public class VariableExpressionVisitor extends PatriLangParserBaseVisitor<Double
   @Override
   public Double visitNombreVariableExpr(NombreVariableExprContext ctx) {
     var name = extractVariableName(ctx.getText());
-    return (Double) variableScope.get(name, NOMBRE).value();
+    var value = variableScope.get(name, NOMBRE).value();
+
+    if (value instanceof Number number) {
+      return number.doubleValue();
+    }
+
+    throw new IllegalStateException("Expected numeric value for variable: " + name);
   }
 }
