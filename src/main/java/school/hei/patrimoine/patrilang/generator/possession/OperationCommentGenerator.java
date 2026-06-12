@@ -1,11 +1,11 @@
 package school.hei.patrimoine.patrilang.generator.possession;
 
-import school.hei.patrimoine.modele.possession.pj.OperationComments;
+import school.hei.patrimoine.modele.possession.pj.OperationComment;
 import school.hei.patrimoine.patrilang.generator.DatePatriLangGenerator;
 import school.hei.patrimoine.patrilang.generator.IdPatriLangGenerator;
 import school.hei.patrimoine.patrilang.generator.PatriLangGenerator;
 
-public class OperationCommentGenerator implements PatriLangGenerator<OperationComments> {
+public class OperationCommentGenerator implements PatriLangGenerator<OperationComment> {
   private final IdPatriLangGenerator idGenerator;
   private final DatePatriLangGenerator dateGenerator;
 
@@ -15,7 +15,7 @@ public class OperationCommentGenerator implements PatriLangGenerator<OperationCo
   }
 
   @Override
-  public String apply(OperationComments comment) {
+  public String apply(OperationComment comment) {
     var id = this.idGenerator.apply(comment.id());
     var date = this.dateGenerator.apply(comment.date());
 

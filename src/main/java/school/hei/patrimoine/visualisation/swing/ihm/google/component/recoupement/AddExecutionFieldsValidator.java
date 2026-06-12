@@ -1,20 +1,25 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.component.recoupement;
 
-public class PJFieldsValidator {
-  private PJFieldsValidator() {}
+public class AddExecutionFieldsValidator {
+  private AddExecutionFieldsValidator() {}
 
-  public static boolean hasLinkPJ(AddRecoupementExecutionForm form) {
+  static boolean hasLinkPJ(AddRecoupementExecutionForm form) {
     var linkPJ = form.getLinkPJ();
     return linkPJ != null && !linkPJ.isBlank();
   }
 
-  public static boolean hasReferencePJ(AddRecoupementExecutionForm form) {
+  static boolean hasReferencePJ(AddRecoupementExecutionForm form) {
     var referencePJ = form.getReferencePJ();
     return referencePJ != null && !referencePJ.isBlank();
   }
 
-  public static boolean hasPJ(AddRecoupementExecutionForm form) {
+  static boolean hasPJ(AddRecoupementExecutionForm form) {
     return hasLinkPJ(form) && hasReferencePJ(form);
+  }
+
+  static boolean hasComment(AddRecoupementExecutionForm form) {
+    var comment = form.getComment();
+    return comment != null && !comment.isBlank();
   }
 
   public static void validatePJ(AddRecoupementExecutionForm form) {
@@ -32,6 +37,10 @@ public class PJFieldsValidator {
     if (hasLinkPJ(form) && form.getLinkPJ().contains("\"")) {
       throw new IllegalArgumentException(
           "Le lien de la pièce justificative ne doit pas contenir de guillemets (\").");
+    }
+
+    if (hasComment(form) && form.getComment().contains("\"")) {
+      throw new IllegalArgumentException("Le commentaire ne doit pas contenir de guillemets (\").");
     }
   }
 }

@@ -19,7 +19,7 @@ import org.jspecify.annotations.NonNull;
 import school.hei.patrimoine.modele.possession.FluxArgent;
 import school.hei.patrimoine.modele.possession.Possession;
 import school.hei.patrimoine.modele.possession.TransfertArgent;
-import school.hei.patrimoine.modele.possession.pj.OperationComments;
+import school.hei.patrimoine.modele.possession.pj.OperationComment;
 import school.hei.patrimoine.modele.possession.pj.PieceJustificative;
 import school.hei.patrimoine.modele.recouppement.model.Info;
 import school.hei.patrimoine.modele.recouppement.model.PossessionRecoupee;
@@ -211,7 +211,7 @@ public class PossessionRecoupeeRealisationsDialog extends Dialog {
 
   private PendingData buildInfoFromForm(AddRecoupementExecutionForm form) {
     if (possessionRecoupee.realises().isEmpty()) {
-      PJFieldsValidator.validatePJ(form);
+      AddExecutionFieldsValidator.validatePJ(form);
     }
 
     var pjGenerator = new PieceJustificativeGenerator();
@@ -220,7 +220,9 @@ public class PossessionRecoupeeRealisationsDialog extends Dialog {
     var comment = form.getComment();
     var newPossession = possessionGenerator.apply(getPossessionArgs(form));
     var newPj =
-        PJFieldsValidator.hasPJ(form) ? pjGenerator.apply(getPjArgs(newPossession, form)) : null;
+        AddExecutionFieldsValidator.hasPJ(form)
+            ? pjGenerator.apply(getPjArgs(newPossession, form))
+            : null;
 
     var info =
         Info.builder()
@@ -241,7 +243,7 @@ public class PossessionRecoupeeRealisationsDialog extends Dialog {
         .map(
             data -> {
               var comment =
-                  new OperationComments(
+                  new OperationComment(
                       data.info().possession().nom(), data.info().t(), data.comment());
               return generator.apply(comment);
             })

@@ -21,7 +21,7 @@ import school.hei.patrimoine.modele.Argent;
 import school.hei.patrimoine.modele.Patrimoine;
 import school.hei.patrimoine.modele.possession.Compte;
 import school.hei.patrimoine.modele.possession.Possession;
-import school.hei.patrimoine.modele.possession.pj.OperationComments;
+import school.hei.patrimoine.modele.possession.pj.OperationComment;
 import school.hei.patrimoine.patrilang.files.io.PatriLangFileWriter;
 import school.hei.patrimoine.patrilang.files.io.PatriLangFileWriter.FileWriterInput;
 import school.hei.patrimoine.patrilang.generator.PatriLangGeneratorFactory;
@@ -189,7 +189,7 @@ public class AddImprevuDialog extends Dialog {
   }
 
   private String getPjLine(Possession possession) {
-    if (!PJFieldsValidator.hasPJ(form)) {
+    if (!AddExecutionFieldsValidator.hasPJ(form)) {
       return "";
     }
 
@@ -203,12 +203,12 @@ public class AddImprevuDialog extends Dialog {
     if (rawComment.isBlank()) {
       return "";
     }
-    var comment = new OperationComments(possession.nom(), form.getDate(), rawComment);
+    var comment = new OperationComment(possession.nom(), form.getDate(), rawComment);
     return new OperationCommentGenerator().apply(comment);
   }
 
   private void addExecution() {
-    PJFieldsValidator.validatePJ(form);
+    AddExecutionFieldsValidator.validatePJ(form);
 
     var selectedFile = getSelectedFile(state).orElseThrow();
     var generator = getExecutionGenerator();
