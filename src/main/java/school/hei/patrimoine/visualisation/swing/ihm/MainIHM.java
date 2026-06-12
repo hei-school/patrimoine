@@ -113,15 +113,16 @@ public class MainIHM extends JFrame implements Observer {
     var westPanel = new JPanel();
     westPanel.setLayout(new BoxLayout(westPanel, Y_AXIS));
     westPanel.setAlignmentY(TOP_ALIGNMENT);
-    var westMargin = 5;
+    var westMargin = 15;
     westPanel.setBorder(createEmptyBorder(westMargin, westMargin, westMargin, westMargin));
 
     westPanel.add(selecteurPatrimoineIHM);
     westPanel.add(selecteurGrapheConfIHM);
     westPanel.add(selecteurPeriodeIHM);
     westPanel.add(fluxImpossiblesIHM);
+    westPanel.add(Box.createVerticalStrut(15));
+    westPanel.add(fluxJournaliersIHM);
 
-    westPanel.add(getFluxJournaliersIHM());
     contentPane.add(westPanel, WEST);
     contentPane.add(evolutionPatrimoineSelectionnéIHM, CENTER);
   }

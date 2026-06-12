@@ -41,15 +41,23 @@ public class EvolutionPatrimoine {
   }
 
   private Set<FluxJournalier> fluxJournaliers() {
+    return fluxJournaliers(true);
+  }
+
+  public Set<FluxJournalier> fluxJournaliers(boolean withCorrection) {
     var res = new HashSet<FluxJournalier>();
     evolutionJournaliere.forEach(
-        (date, patrimoine) ->
-            withoutCorrectionAndFluxArgentCorrection(patrimoine.getPossessions())
-                .forEach(p -> fluxDuJour(date, p, res)));
+        (date, patrimoine) -> {
+          var possessions =
+              withCorrection
+                  ? patrimoine.getPossessions()
+                  : withoutCorrections(patrimoine.getPossessions());
+          possessions.forEach(p -> fluxDuJour(date, p, res));
+        });
     return res;
   }
 
-  private Set<Possession> withoutCorrectionAndFluxArgentCorrection(Set<Possession> possessions) {
+  private Set<Possession> withoutCorrections(Set<Possession> possessions) {
     return possessions.stream()
         .filter(
             not(
@@ -77,7 +85,12 @@ public class EvolutionPatrimoine {
   }
 
   public Set<FluxJournalier> fluxJournaliersImpossibles() {
-    return fluxJournaliers.stream()
+    return fluxJournaliersImpossibles(true);
+  }
+
+  public Set<FluxJournalier> fluxJournaliersImpossibles(boolean withCorrection) {
+    var flux = withCorrection ? fluxJournaliers : fluxJournaliers(false);
+    return flux.stream()
         .filter(fj -> !(fj.compte() instanceof Dette) && fj.compte().valeurComptable().lt(0))
         .collect(toSet());
   }

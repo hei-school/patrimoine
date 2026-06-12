@@ -1,6 +1,5 @@
 package school.hei.patrimoine.visualisation.swing.ihm.flux;
 
-import static java.awt.FlowLayout.LEFT;
 import static java.util.Comparator.comparing;
 import static java.util.stream.Collectors.joining;
 
@@ -15,18 +14,25 @@ import school.hei.patrimoine.visualisation.swing.modele.PatrimoinesVisualisables
 
 public abstract sealed class FluxIHM extends JPanel implements Observer
     permits FluxImpossiblesIHM, FluxJournaliersIHM {
-  protected final PatrimoinesVisualisables patrimoinesVisualisables;
   private final JTextPane fluxTextPane;
+  protected final PatrimoinesVisualisables patrimoinesVisualisables;
+  protected final JCheckBox withCorrectionCheckBox = new JCheckBox("Avec Correction");
 
   public FluxIHM(PatrimoinesVisualisables patrimoinesVisualisables) {
-    super(new FlowLayout(LEFT));
+    super(new BorderLayout(0, 5));
     this.patrimoinesVisualisables = patrimoinesVisualisables;
     this.patrimoinesVisualisables.addObserver(this);
+
+    withCorrectionCheckBox.addActionListener(e -> updateTextPane());
+    this.add(withCorrectionCheckBox, BorderLayout.NORTH);
 
     fluxTextPane = new JTextPane();
     fixPanelSize();
     updateTextPane();
-    this.add(new JScrollPane(fluxTextPane));
+
+    var scrollPane = new JScrollPane(fluxTextPane);
+    scrollPane.setPreferredSize(new Dimension(300, getIHMHeight()));
+    this.add(scrollPane, BorderLayout.CENTER);
   }
 
   private void fixPanelSize() {
