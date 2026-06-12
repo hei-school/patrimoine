@@ -133,7 +133,7 @@ class ValeurMarchePossessionProjectionTest {
   @Test
   void correction_projectionFuture_conserve_valeursMarche() {
     var compteCorr = new Compte("compteCorr", T0, ariary(5_000_000));
-    var flux = new FluxArgent("FluxCorr", compteCorr, T0, T_FUT, 1, ariary(-100_000));
+    var flux = new FluxArgentCorrection("FluxCorr", compteCorr, T0, T_FUT, 1, ariary(-100_000));
 
     var correction = new Correction(flux);
     var projection = correction.projectionFuture(T_FUT);
