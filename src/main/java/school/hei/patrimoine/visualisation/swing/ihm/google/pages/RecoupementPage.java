@@ -203,15 +203,18 @@ public class RecoupementPage extends LazyPage {
     return filter != null ? filter : PossessionRecoupeeFilterPj.TOUS;
   }
 
-  private Map<String, PieceJustificative> buildPjMap(PatriLangFileContext selectedFile) {
+  private void buildPjResult(PatriLangFileContext selectedFile) {
     try {
-      return new PJProvider().apply(selectedFile);
+      var result = new PJProvider().apply(selectedFile);
+      state.update("currentPjMap", result.piecesJustificatives());
+      state.update("operationComments", result.operationComments());
     } catch (Exception e) {
       log.warn(
           "Impossible de charger les PJ pour {}: {}",
           selectedFile.getBaseFileName(),
           e.getMessage());
-      return Map.of();
+      state.update("currentPjMap", Map.of());
+      state.update("operationComments", List.of());
     }
   }
 
@@ -239,8 +242,8 @@ public class RecoupementPage extends LazyPage {
       case EXECUTE_SANS_CORRECTION -> statusToKeep.add(RecoupementStatus.EXECUTE_SANS_CORRECTION);
     }
 
-    var pjMap = buildPjMap(selectedFile);
-    state.update("currentPjMap", pjMap);
+    buildPjResult(selectedFile);
+    Map<String, PieceJustificative> pjMap = state.get("currentPjMap");
 
     var provider = new PossessionRecoupeeProvider(casSetComptes);
     var meta = new Meta(plannedCas, doneCas);

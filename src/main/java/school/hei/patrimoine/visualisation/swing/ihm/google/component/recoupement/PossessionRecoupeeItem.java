@@ -133,7 +133,8 @@ public class PossessionRecoupeeItem extends JPanel {
 
     panel.add(
         new Button(
-            "Voir Details", e -> new PossessionRecoupeeDetailDialog(possessionRecoupee, pj)));
+            "Voir Details",
+            e -> new PossessionRecoupeeDetailDialog(state, possessionRecoupee, pj)));
 
     add(panel, BorderLayout.EAST);
   }
