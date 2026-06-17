@@ -8,12 +8,10 @@ import school.hei.patrimoine.modele.possession.Correction;
 import school.hei.patrimoine.modele.possession.Possession;
 import school.hei.patrimoine.modele.possession.pj.OperationComment;
 import school.hei.patrimoine.modele.possession.pj.PieceJustificative;
-import school.hei.patrimoine.modele.recouppement.model.Info;
 import school.hei.patrimoine.modele.recouppement.model.PossessionRecoupee;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.Dialog;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.button.Button;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.html.LinkOpener;
-import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.formatter.ArgentFormatter;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.formatter.DateFormatter;
 
@@ -23,14 +21,14 @@ public class PossessionRecoupeeDetailDialog extends Dialog {
   private final List<OperationComment> comments;
 
   public PossessionRecoupeeDetailDialog(
-      State state, PossessionRecoupee<Possession> possessionRecoupee, PieceJustificative pj) {
+      PossessionRecoupee<Possession> possessionRecoupee,
+      PieceJustificative pj,
+      List<OperationComment> comments) {
     super("Détails de l'opération", 1000, 600, false);
     this.pj = pj;
     this.possessionRecoupee = possessionRecoupee;
 
-    @SuppressWarnings("unchecked")
-    List<OperationComment> loaded = (List<OperationComment>) state.get("operationComments");
-    this.comments = loaded != null ? loaded : List.of();
+    this.comments = comments != null ? comments : List.of();
 
     setLayout(new BorderLayout());
     setBackground(Color.WHITE);
@@ -116,7 +114,15 @@ public class PossessionRecoupeeDetailDialog extends Dialog {
         .realises()
         .forEach(
             info -> {
-              cardsPanel.add(createRealisationCard(info));
+              var commentaire =
+                  comments.stream()
+                      .filter(c -> c.id().equals(info.possession().nom()))
+                      .map(OperationComment::content)
+                      .findFirst()
+                      .orElse(null);
+
+              cardsPanel.add(new CreateRealisationCard(info, commentaire));
+
               cardsPanel.add(Box.createVerticalStrut(8));
             });
 
@@ -136,44 +142,6 @@ public class PossessionRecoupeeDetailDialog extends Dialog {
             new Color(255, 245, 200)));
 
     return listPanel;
-  }
-
-  private JPanel createRealisationCard(Info<Possession> info) {
-    var card = new JPanel();
-    card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
-    card.setBackground(new Color(203, 203, 203));
-    card.setBorder(
-        BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(158, 158, 158)),
-            new EmptyBorder(8, 10, 8, 0)));
-    card.setAlignmentX(Component.LEFT_ALIGNMENT);
-    card.setMaximumSize(new Dimension(Integer.MAX_VALUE, 60));
-
-    card.add(Box.createVerticalStrut(5));
-
-    var detailLabel =
-        new JLabel(
-            String.format(
-                "<html><b>Opération:</b> %s,&nbsp;%s,&nbsp;%s</html>",
-                DateFormatter.format(info.t()),
-                ArgentFormatter.format(info.valeur()),
-                info.possession().nom()));
-    detailLabel.setFont(new Font("Arial", Font.PLAIN, 14));
-    card.add(detailLabel);
-
-    comments.stream()
-        .filter(c -> c.id().equals(info.possession().nom()))
-        .findFirst()
-        .ifPresent(
-            c -> {
-              card.add(Box.createVerticalStrut(5));
-              var commentLabel = new JLabel("<html><b>Commentaire:</b> " + c.content() + "</html>");
-              commentLabel.setFont(new Font("Arial", Font.PLAIN, 14));
-              card.add(commentLabel);
-              card.setMaximumSize(new Dimension(Integer.MAX_VALUE, 90));
-            });
-
-    return card;
   }
 
   private JPanel createList(String[] items, Color bgColor) {

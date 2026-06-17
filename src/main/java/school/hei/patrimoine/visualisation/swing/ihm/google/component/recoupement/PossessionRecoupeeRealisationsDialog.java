@@ -15,7 +15,6 @@ import java.awt.*;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import org.jspecify.annotations.NonNull;
 import school.hei.patrimoine.modele.possession.FluxArgent;
 import school.hei.patrimoine.modele.possession.Possession;
 import school.hei.patrimoine.modele.possession.TransfertArgent;
@@ -44,8 +43,6 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.modele.MessageDialog
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangFileContext;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangFilesWatcher;
-import school.hei.patrimoine.visualisation.swing.ihm.google.modele.formatter.ArgentFormatter;
-import school.hei.patrimoine.visualisation.swing.ihm.google.modele.formatter.DateFormatter;
 
 public class PossessionRecoupeeRealisationsDialog extends Dialog {
   private final State state;
@@ -96,11 +93,19 @@ public class PossessionRecoupeeRealisationsDialog extends Dialog {
     realisesModel = new DefaultListModel<>();
     possessionRecoupee.realises().forEach(realisesModel::addElement);
 
-    var realisesList = getInfoJList();
+    var cardsPanel = new JPanel();
+    cardsPanel.setLayout(new BoxLayout(cardsPanel, BoxLayout.Y_AXIS));
+    cardsPanel.setBackground(Color.WHITE);
+    cardsPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+
+    for (int i = 0; i < realisesModel.size(); i++) {
+      cardsPanel.add(new CreateRealisationCard(realisesModel.getElementAt(i), null));
+      cardsPanel.add(Box.createVerticalStrut(8));
+    }
 
     var panel = new JPanel(new BorderLayout());
     panel.setBorder(new EmptyBorder(10, 10, 10, 10));
-    panel.add(new JScrollPane(realisesList), BorderLayout.CENTER);
+    panel.add(new JScrollPane(cardsPanel), BorderLayout.CENTER);
 
     var buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
     if (!IMPREVU.equals(possessionRecoupee.status())) {
@@ -114,7 +119,7 @@ public class PossessionRecoupeeRealisationsDialog extends Dialog {
     return panel;
   }
 
-  private @NonNull JList<Info<Possession>> getInfoJList() {
+  /*private @NonNull JList<Info<Possession>> getInfoJList() {
     var realisesList = new JList<>(realisesModel);
     realisesList.setCellRenderer(
         (list, value, index, isSelected, cellHasFocus) -> {
@@ -130,7 +135,7 @@ public class PossessionRecoupeeRealisationsDialog extends Dialog {
           return label;
         });
     return realisesList;
-  }
+  }*/
 
   private JPanel buildAddFormView() {
     var form =

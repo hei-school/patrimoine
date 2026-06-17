@@ -5,6 +5,7 @@ import static school.hei.patrimoine.modele.recouppement.model.RecoupementStatus.
 import static school.hei.patrimoine.modele.recouppement.model.RecoupementStatus.NON_EXECUTE;
 
 import java.awt.*;
+import java.util.List;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +13,7 @@ import org.jspecify.annotations.NonNull;
 import school.hei.patrimoine.modele.possession.FluxArgent;
 import school.hei.patrimoine.modele.possession.Possession;
 import school.hei.patrimoine.modele.possession.TransfertArgent;
+import school.hei.patrimoine.modele.possession.pj.OperationComment;
 import school.hei.patrimoine.modele.possession.pj.PieceJustificative;
 import school.hei.patrimoine.modele.recouppement.model.PossessionRecoupee;
 import school.hei.patrimoine.modele.recouppement.model.RecoupementStatus;
@@ -134,7 +136,13 @@ public class PossessionRecoupeeItem extends JPanel {
     panel.add(
         new Button(
             "Voir Details",
-            e -> new PossessionRecoupeeDetailDialog(state, possessionRecoupee, pj)));
+            e -> {
+              @SuppressWarnings("unchecked")
+              List<OperationComment> comments =
+                  (List<OperationComment>) state.get("operationComments");
+              new PossessionRecoupeeDetailDialog(
+                  possessionRecoupee, pj, comments != null ? comments : List.of());
+            }));
 
     add(panel, BorderLayout.EAST);
   }
