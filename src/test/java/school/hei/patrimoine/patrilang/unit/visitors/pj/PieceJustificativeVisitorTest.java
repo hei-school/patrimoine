@@ -44,8 +44,8 @@ class PieceJustificativeVisitorTest {
     visitor =
         new UnitTestVisitor() {
           @Override
-          public List<PieceJustificative> visitPiecesJustificatives(
-              PatriLangParser.PiecesJustificativesContext ctx) {
+          public List<PieceJustificative> visitSupportingInfos(
+              PatriLangParser.SupportingInfosContext ctx) {
             return subject.apply(ctx);
           }
         };
@@ -64,7 +64,7 @@ class PieceJustificativeVisitorTest {
 * `assuranceVoiture + Dates:ajd`, le 24 décembre 2025, FAC102-157, "https://docs.google.com/document/d/1602Ett7xFepplxuCau_9aRGCRcDNwE5TLx7W3FuXyXI/edit?tab=t.0"
 """;
 
-    List<PieceJustificative> result = visitor.visit(input, PatriLangParser::piecesJustificatives);
+    List<PieceJustificative> result = visitor.visit(input, PatriLangParser::supportingInfos);
 
     assertEquals(2, result.size());
 
@@ -91,7 +91,7 @@ class PieceJustificativeVisitorTest {
         * Cas de Taxi
         """;
 
-    List<PieceJustificative> result = visitor.visit(input, PatriLangParser::piecesJustificatives);
+    List<PieceJustificative> result = visitor.visit(input, PatriLangParser::supportingInfos);
 
     assertTrue(result.isEmpty());
   }

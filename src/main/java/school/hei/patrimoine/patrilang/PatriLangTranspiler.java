@@ -18,7 +18,7 @@ import school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor;
 
 public class PatriLangTranspiler implements Function<String, CasSet> {
   // TODO: extension to change for pj
-  public static final String PJ_FILE_EXTENSION = ".pj.md";
+  public static final String INFO_FILE_EXTENSION = ".info.md";
   public static final String CAS_FILE_EXTENSION = ".cas.md";
   public static final String TOUT_CAS_FILE_EXTENSION = ".tout.md";
 
@@ -61,7 +61,7 @@ public class PatriLangTranspiler implements Function<String, CasSet> {
                     new PatriLangPieceJustificativeVisitor(idVisitor, dateVisitor),
                     new PatriLangCommentOperationVisitor(idVisitor, dateVisitor)))
             .build();
-    return patrilangVisitor.visitPiecesJustificatives(tree);
+    return patrilangVisitor.visitSupportingInfos(tree);
   }
 
   public static List<PieceJustificative> transpilePieceJustificative(PatriLangFile file) {

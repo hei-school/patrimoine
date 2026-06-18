@@ -28,7 +28,7 @@ public class PatriLangFileNameExtractor implements FileNameExtractor {
         for (var casPattern : CAS_FILE_NAME_PATTERNS) {
           var casNameMatcher = casPattern.matcher(code);
           if (casNameMatcher.find()) {
-            return casNameMatcher.group(1) + PJ_FILE_EXTENSION;
+            return casNameMatcher.group(1) + INFO_FILE_EXTENSION;
           }
         }
         throw new IllegalArgumentException("PJ file without 'Cas de ...' declaration.");

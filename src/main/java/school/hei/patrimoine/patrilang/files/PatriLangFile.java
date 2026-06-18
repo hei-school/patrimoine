@@ -24,13 +24,13 @@ public class PatriLangFile extends File {
 
   public String getBaseFileName() {
     return getName()
-        .replaceAll(PJ_FILE_EXTENSION, "")
+        .replaceAll(INFO_FILE_EXTENSION, "")
         .replaceAll(TOUT_CAS_FILE_EXTENSION, "")
         .replaceAll(CAS_FILE_EXTENSION, "");
   }
 
-  public boolean isTypePJ() {
-    return PatriLangFileType.PJ.equals(getType());
+  public boolean isTypeSupportingInfo() {
+    return PatriLangFileType.SUPPORTING_INFO.equals(getType());
   }
 
   public boolean isTypeCas() {
@@ -41,20 +41,20 @@ public class PatriLangFile extends File {
     return PatriLangFileType.TOUT_CAS.equals(getType());
   }
 
-  public static final String PJ_FILE_EXTENSION = ".pj.md";
+  public static final String INFO_FILE_EXTENSION = ".info.md";
   public static final String CAS_FILE_EXTENSION = ".cas.md";
   public static final String TOUT_CAS_FILE_EXTENSION = ".tout.md";
 
   public enum PatriLangFileType {
-    PJ,
+    SUPPORTING_INFO,
     CAS,
     TOUT_CAS;
 
     public static PatriLangFileType from(File file) {
       var filename = file.getName();
 
-      if (filename.endsWith(PJ_FILE_EXTENSION)) {
-        return PJ;
+      if (filename.endsWith(INFO_FILE_EXTENSION)) {
+        return SUPPORTING_INFO;
       }
 
       if (filename.endsWith(CAS_FILE_EXTENSION)) {
@@ -69,7 +69,7 @@ public class PatriLangFile extends File {
           "Type de fichier inconnu pour '"
               + filename
               + "'. Extensions attendues : "
-              + PJ_FILE_EXTENSION
+              + INFO_FILE_EXTENSION
               + ", "
               + CAS_FILE_EXTENSION
               + ", "

@@ -42,8 +42,8 @@ class PJAndCommentsVisitorTest {
     visitor =
         new UnitTestVisitor() {
           @Override
-          public OperationSupportingInformation visitPiecesJustificatives(
-              PatriLangParser.PiecesJustificativesContext ctx) {
+          public OperationSupportingInformation visitSupportingInfos(
+              PatriLangParser.SupportingInfosContext ctx) {
             return subject.apply(ctx);
           }
         };
@@ -62,8 +62,7 @@ class PJAndCommentsVisitorTest {
 * `paiementChauffeur + Dates:ajd`, le 25 décembre 2025, "Paiement en espèces"
 """;
 
-    OperationSupportingInformation result =
-        visitor.visit(input, PatriLangParser::piecesJustificatives);
+    OperationSupportingInformation result = visitor.visit(input, PatriLangParser::supportingInfos);
 
     assertEquals(1, result.piecesJustificatives().size());
     var pj = result.piecesJustificatives().getFirst();
@@ -88,8 +87,7 @@ class PJAndCommentsVisitorTest {
 * `assuranceChauffeur + Dates:ajd`, le 25 décembre 2025, FAC102-156, "https://docs.google.com/document/d/abc"
 """;
 
-    OperationSupportingInformation result =
-        visitor.visit(input, PatriLangParser::piecesJustificatives);
+    OperationSupportingInformation result = visitor.visit(input, PatriLangParser::supportingInfos);
 
     assertEquals(1, result.piecesJustificatives().size());
     assertTrue(result.operationComments().isEmpty());
@@ -106,8 +104,7 @@ class PJAndCommentsVisitorTest {
         * `paiementChauffeur + Dates:ajd`, le 25 décembre 2025, "Paiement en espèces"
         """;
 
-    OperationSupportingInformation result =
-        visitor.visit(input, PatriLangParser::piecesJustificatives);
+    OperationSupportingInformation result = visitor.visit(input, PatriLangParser::supportingInfos);
 
     assertTrue(result.piecesJustificatives().isEmpty());
     assertEquals(1, result.operationComments().size());
@@ -122,8 +119,7 @@ class PJAndCommentsVisitorTest {
         * Cas de Taxi
         """;
 
-    OperationSupportingInformation result =
-        visitor.visit(input, PatriLangParser::piecesJustificatives);
+    OperationSupportingInformation result = visitor.visit(input, PatriLangParser::supportingInfos);
 
     assertTrue(result.piecesJustificatives().isEmpty());
     assertTrue(result.operationComments().isEmpty());

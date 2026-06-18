@@ -5,17 +5,17 @@ import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 import school.hei.patrimoine.modele.possession.pj.OperationComment;
 import school.hei.patrimoine.patrilang.antlr.PatriLangParser.CommentItemContext;
-import school.hei.patrimoine.patrilang.antlr.PatriLangParser.PiecesJustificativesContext;
+import school.hei.patrimoine.patrilang.antlr.PatriLangParser.SupportingInfosContext;
 import school.hei.patrimoine.patrilang.visitors.variable.VariableDateVisitor;
 
 @RequiredArgsConstructor
 public class PatriLangCommentOperationVisitor
-    implements Function<PiecesJustificativesContext, List<OperationComment>> {
+    implements Function<SupportingInfosContext, List<OperationComment>> {
   private final IdVisitor idVisitor;
   private final VariableDateVisitor dateVisitor;
 
   @Override
-  public List<OperationComment> apply(PiecesJustificativesContext context) {
+  public List<OperationComment> apply(SupportingInfosContext context) {
     if (context == null || context.sectionComments() == null) {
       return List.of();
     }

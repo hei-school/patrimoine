@@ -65,7 +65,7 @@ public class FilesProvider {
     };
   }
 
-  public static Optional<PatriLangFileContext> getPJ(PatriLangFileContext file) {
+  public static Optional<PatriLangFileContext> getSupportingInfoFile(PatriLangFileContext file) {
     if (!CAS.equals(file.getType())) {
       return Optional.empty();
     }

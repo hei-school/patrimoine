@@ -7,7 +7,7 @@ import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangFilesWatcher.*;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangStagingFileManager.stage;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.providers.FilesProvider.getDoneCasSetFile;
-import static school.hei.patrimoine.visualisation.swing.ihm.google.providers.FilesProvider.getPJ;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.providers.FilesProvider.getSupportingInfoFile;
 
 import java.awt.*;
 import java.util.*;
@@ -214,7 +214,7 @@ public class AddImprevuDialog extends Dialog {
     var generator = getExecutionGenerator();
     var newPossession = generator.apply(getPossessionArgs());
     var casSet = getDoneCasSetFile();
-    var optionalPjFile = getPJ(selectedFile);
+    var optionalPjFile = getSupportingInfoFile(selectedFile);
 
     AsyncTask.<Void>builder()
         .task(
