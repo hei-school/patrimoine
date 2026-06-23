@@ -15,13 +15,14 @@ import java.awt.*;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import org.jspecify.annotations.NonNull;
 import school.hei.patrimoine.modele.possession.FluxArgent;
 import school.hei.patrimoine.modele.possession.Possession;
 import school.hei.patrimoine.modele.possession.TransfertArgent;
+import school.hei.patrimoine.modele.possession.pj.OperationComment;
 import school.hei.patrimoine.modele.possession.pj.PieceJustificative;
 import school.hei.patrimoine.modele.recouppement.model.Info;
 import school.hei.patrimoine.modele.recouppement.model.PossessionRecoupee;
+import school.hei.patrimoine.patrilang.antlr.PatriLangParser.SectionCommentsContext;
 import school.hei.patrimoine.patrilang.antlr.PatriLangParser.SectionOperationsContext;
 import school.hei.patrimoine.patrilang.antlr.PatriLangParser.SectionPiecesJustificativesContext;
 import school.hei.patrimoine.patrilang.files.io.PatriLangFileQuerier;
@@ -30,6 +31,7 @@ import school.hei.patrimoine.patrilang.files.io.PatriLangFileWriter;
 import school.hei.patrimoine.patrilang.files.io.PatriLangFileWriter.FileWriterInput;
 import school.hei.patrimoine.patrilang.generator.PatriLangGeneratorFactory;
 import school.hei.patrimoine.patrilang.generator.possession.CommentPatriLangGenerator;
+import school.hei.patrimoine.patrilang.generator.possession.OperationCommentGenerator;
 import school.hei.patrimoine.patrilang.generator.possession.PieceJustificativePatriLangGenerator;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.Dialog;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.app.MultiViews;
@@ -41,8 +43,6 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.modele.MessageDialog
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.State;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangFileContext;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangFilesWatcher;
-import school.hei.patrimoine.visualisation.swing.ihm.google.modele.formatter.ArgentFormatter;
-import school.hei.patrimoine.visualisation.swing.ihm.google.modele.formatter.DateFormatter;
 
 public class PossessionRecoupeeRealisationsDialog extends Dialog {
   private final State state;
@@ -93,11 +93,19 @@ public class PossessionRecoupeeRealisationsDialog extends Dialog {
     realisesModel = new DefaultListModel<>();
     possessionRecoupee.realises().forEach(realisesModel::addElement);
 
-    var realisesList = getInfoJList();
+    var cardsPanel = new JPanel();
+    cardsPanel.setLayout(new BoxLayout(cardsPanel, BoxLayout.Y_AXIS));
+    cardsPanel.setBackground(Color.WHITE);
+    cardsPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+
+    for (int i = 0; i < realisesModel.size(); i++) {
+      cardsPanel.add(new CreateRealisationCard(realisesModel.getElementAt(i), null));
+      cardsPanel.add(Box.createVerticalStrut(8));
+    }
 
     var panel = new JPanel(new BorderLayout());
     panel.setBorder(new EmptyBorder(10, 10, 10, 10));
-    panel.add(new JScrollPane(realisesList), BorderLayout.CENTER);
+    panel.add(new JScrollPane(cardsPanel), BorderLayout.CENTER);
 
     var buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
     if (!IMPREVU.equals(possessionRecoupee.status())) {
@@ -111,7 +119,7 @@ public class PossessionRecoupeeRealisationsDialog extends Dialog {
     return panel;
   }
 
-  private @NonNull JList<Info<Possession>> getInfoJList() {
+  /*private @NonNull JList<Info<Possession>> getInfoJList() {
     var realisesList = new JList<>(realisesModel);
     realisesList.setCellRenderer(
         (list, value, index, isSelected, cellHasFocus) -> {
@@ -127,7 +135,7 @@ public class PossessionRecoupeeRealisationsDialog extends Dialog {
           return label;
         });
     return realisesList;
-  }
+  }*/
 
   private JPanel buildAddFormView() {
     var form =
@@ -208,7 +216,7 @@ public class PossessionRecoupeeRealisationsDialog extends Dialog {
 
   private PendingData buildInfoFromForm(AddRecoupementExecutionForm form) {
     if (possessionRecoupee.realises().isEmpty()) {
-      PJFieldsValidator.validatePJ(form);
+      AddExecutionFieldsValidator.validatePJ(form);
     }
 
     var pjGenerator = new PieceJustificativeGenerator();
@@ -217,7 +225,9 @@ public class PossessionRecoupeeRealisationsDialog extends Dialog {
     var comment = form.getComment();
     var newPossession = possessionGenerator.apply(getPossessionArgs(form));
     var newPj =
-        PJFieldsValidator.hasPJ(form) ? pjGenerator.apply(getPjArgs(newPossession, form)) : null;
+        AddExecutionFieldsValidator.hasPJ(form)
+            ? pjGenerator.apply(getPjArgs(newPossession, form))
+            : null;
 
     var info =
         Info.builder()
@@ -229,6 +239,20 @@ public class PossessionRecoupeeRealisationsDialog extends Dialog {
             .build();
 
     return new PendingData(comment, info, newPj);
+  }
+
+  private String getCommentLines() {
+    var generator = new OperationCommentGenerator();
+    return pendingData.stream()
+        .filter(data -> !data.comment().isBlank())
+        .map(
+            data -> {
+              var comment =
+                  new OperationComment(
+                      data.info().possession().nom(), data.info().t(), data.comment());
+              return generator.apply(comment);
+            })
+        .collect(joining("\n"));
   }
 
   private void addTitle() {
@@ -311,6 +335,16 @@ public class PossessionRecoupeeRealisationsDialog extends Dialog {
     return sectionOperation.get();
   }
 
+  static QueryResult<SectionCommentsContext> getSectionComments(PatriLangFileContext pjFile) {
+    var querier = new PatriLangFileQuerier();
+    var sectionComments =
+        querier.query(pjFile, document -> document.piecesJustificatives().sectionComments());
+    if (sectionComments.isEmpty()) {
+      throw new RuntimeException("Section Commentaires introuvable dans le fichier");
+    }
+    return sectionComments.get();
+  }
+
   private void saveExecutions() {
     var optionalSelectedFile = getSelectedFile(state);
     if (optionalSelectedFile.isEmpty()) {
@@ -342,18 +376,28 @@ public class PossessionRecoupeeRealisationsDialog extends Dialog {
                 return null;
               }
 
+              var pjFile = optionalPjFile.get();
+
               var pjLines = getPjLines();
-              if (pjLines.isBlank()) {
-                clearAllTempContents();
-                stage(selectedFile);
-                return null;
+              if (!pjLines.isBlank()) {
+                var pjs = getSectionPieceJustificatives(pjFile);
+                writer.insertAtLine(
+                    FileWriterInput.builder().content(pjLines).file(pjFile).casSet(casSet).build(),
+                    pjs.endLine());
               }
 
-              var pjFile = optionalPjFile.get();
-              var pjs = getSectionPieceJustificatives(pjFile);
-              writer.insertAtLine(
-                  FileWriterInput.builder().content(pjLines).file(pjFile).casSet(casSet).build(),
-                  pjs.endLine());
+              var commentLines = getCommentLines();
+              if (!commentLines.isBlank()) {
+                var sectionComments = getSectionComments(pjFile);
+                writer.insertAtLine(
+                    FileWriterInput.builder()
+                        .content(commentLines)
+                        .file(pjFile)
+                        .casSet(casSet)
+                        .build(),
+                    sectionComments.endLine());
+              }
+
               clearAllTempContents();
               stage(selectedFile);
               stage(pjFile);

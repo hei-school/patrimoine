@@ -1,10 +1,12 @@
 package school.hei.patrimoine.visualisation.swing.ihm.google.component.recoupement;
 
 import java.awt.*;
+import java.util.List;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import school.hei.patrimoine.modele.possession.Correction;
 import school.hei.patrimoine.modele.possession.Possession;
+import school.hei.patrimoine.modele.possession.pj.OperationComment;
 import school.hei.patrimoine.modele.possession.pj.PieceJustificative;
 import school.hei.patrimoine.modele.recouppement.model.PossessionRecoupee;
 import school.hei.patrimoine.visualisation.swing.ihm.google.component.Dialog;
@@ -16,12 +18,17 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.modele.formatter.Dat
 public class PossessionRecoupeeDetailDialog extends Dialog {
   private final PieceJustificative pj;
   private final PossessionRecoupee<Possession> possessionRecoupee;
+  private final List<OperationComment> comments;
 
   public PossessionRecoupeeDetailDialog(
-      PossessionRecoupee<Possession> possessionRecoupee, PieceJustificative pj) {
+      PossessionRecoupee<Possession> possessionRecoupee,
+      PieceJustificative pj,
+      List<OperationComment> comments) {
     super("Détails de l'opération", 1000, 600, false);
     this.pj = pj;
     this.possessionRecoupee = possessionRecoupee;
+
+    this.comments = comments != null ? comments : List.of();
 
     setLayout(new BorderLayout());
     setBackground(Color.WHITE);
@@ -49,7 +56,9 @@ public class PossessionRecoupeeDetailDialog extends Dialog {
     mainPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
     mainPanel.setBackground(Color.WHITE);
 
-    mainPanel.add(createInfoPanel(), BorderLayout.WEST);
+    var infoPanel = createInfoPanel();
+    infoPanel.setPreferredSize(new Dimension(220, 0));
+    mainPanel.add(infoPanel, BorderLayout.WEST);
 
     var listsScrollPane = new JScrollPane(createListsPanel());
     listsScrollPane.setBorder(null);
@@ -65,6 +74,7 @@ public class PossessionRecoupeeDetailDialog extends Dialog {
     infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
     infoPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
     infoPanel.setBackground(Color.WHITE);
+    infoPanel.setAlignmentY(Component.TOP_ALIGNMENT);
 
     infoPanel.add(makeInfoRow("Type", possessionRecoupee.possession().getClass().getSimpleName()));
     infoPanel.add(Box.createVerticalStrut(10));
@@ -85,49 +95,80 @@ public class PossessionRecoupeeDetailDialog extends Dialog {
   private JPanel createListsPanel() {
     var listPanel = new JPanel();
     listPanel.setLayout(new BoxLayout(listPanel, BoxLayout.Y_AXIS));
-    listPanel.setBorder(new EmptyBorder(0, 10, 0, 10));
+    listPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
     listPanel.setBackground(Color.WHITE);
+    listPanel.setAlignmentY(Component.TOP_ALIGNMENT);
 
-    listPanel.add(
-        createList(
-            "Réalisations",
-            possessionRecoupee.realises().stream()
-                .map(
-                    info ->
-                        String.format(
-                            "%s , %s , %s",
-                            DateFormatter.format(info.t()),
-                            ArgentFormatter.format(info.valeur()),
-                            info.possession().nom()))
-                .toArray(String[]::new),
-            Color.WHITE));
+    var realisationsTitle = new JLabel("Réalisations");
+    realisationsTitle.setFont(new Font("Arial", Font.BOLD, 16));
+    realisationsTitle.setBorder(new EmptyBorder(0, 10, 5, 0));
+    realisationsTitle.setAlignmentX(Component.LEFT_ALIGNMENT);
+    listPanel.add(realisationsTitle);
+
+    var cardsPanel = new JPanel();
+    cardsPanel.setLayout(new BoxLayout(cardsPanel, BoxLayout.Y_AXIS));
+    cardsPanel.setBackground(Color.WHITE);
+    cardsPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+
+    possessionRecoupee
+        .realises()
+        .forEach(
+            info -> {
+              var commentaire =
+                  comments.stream()
+                      .filter(c -> c.id().equals(info.possession().nom()))
+                      .map(OperationComment::content)
+                      .findFirst()
+                      .orElse(null);
+
+              cardsPanel.add(new CreateRealisationCard(info, commentaire));
+
+              cardsPanel.add(Box.createVerticalStrut(8));
+            });
+
+    var scrollPane = new JScrollPane(cardsPanel);
+    scrollPane.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+    scrollPane.getViewport().setBackground(Color.WHITE);
+    scrollPane.setPreferredSize(new Dimension(600, 200));
+    scrollPane.setMaximumSize(new Dimension(Integer.MAX_VALUE, 200));
+    scrollPane.setAlignmentX(Component.LEFT_ALIGNMENT);
+    listPanel.add(scrollPane);
 
     listPanel.add(Box.createVerticalStrut(20));
 
     listPanel.add(
         createList(
-            "Corrections",
             possessionRecoupee.corrections().stream().map(Correction::nom).toArray(String[]::new),
             new Color(255, 245, 200)));
+
     return listPanel;
   }
 
-  private JPanel createList(String titleText, String[] items, Color bgColor) {
-    var panel = new JPanel(new BorderLayout());
+  private JPanel createList(String[] items, Color bgColor) {
+    var panel = new JPanel();
+    panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
     panel.setBackground(Color.WHITE);
-    panel.setBorder(new EmptyBorder(5, 0, 5, 0));
+    panel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-    var title = new JLabel(titleText);
+    var title = new JLabel("Corrections");
     title.setFont(new Font("Arial", Font.BOLD, 16));
-    title.setBorder(new EmptyBorder(0, 0, 5, 0));
-    panel.add(title, BorderLayout.NORTH);
+    title.setAlignmentX(Component.LEFT_ALIGNMENT);
+    title.setBorder(new EmptyBorder(0, 10, 5, 0));
+
+    panel.add(title);
 
     var list = new JList<>(items);
     list.setBackground(bgColor);
     list.setFont(list.getFont().deriveFont(14f));
     list.setFixedCellHeight(30);
     list.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
-    panel.add(new JScrollPane(list), BorderLayout.CENTER);
+
+    var scroll = new JScrollPane(list);
+    scroll.setPreferredSize(new Dimension(600, 150));
+    scroll.setMaximumSize(new Dimension(Integer.MAX_VALUE, 150));
+    scroll.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+    panel.add(scroll);
 
     return panel;
   }
@@ -138,13 +179,11 @@ public class PossessionRecoupeeDetailDialog extends Dialog {
     buttonPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 
     if (pj != null) {
-      var pjButton =
-          new Button("Voir la pièce justificative", e -> new LinkOpener().accept(pj.link()));
-      buttonPanel.add(pjButton);
+      buttonPanel.add(
+          new Button("Voir la pièce justificative", e -> new LinkOpener().accept(pj.link())));
     }
 
     buttonPanel.add(new Button("Fermer", e -> dispose()));
-
     add(buttonPanel, BorderLayout.SOUTH);
   }
 

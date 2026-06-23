@@ -9,22 +9,21 @@ import java.util.function.Function;
 import school.hei.patrimoine.modele.possession.pj.PieceJustificative;
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangFileContext;
 
-public class PJProvider implements Function<PatriLangFileContext, Map<String, PieceJustificative>> {
+public class PJProvider implements Function<PatriLangFileContext, SupportingInfoProviderResult> {
   @Override
-  public Map<String, PieceJustificative> apply(PatriLangFileContext casFile) {
+  public SupportingInfoProviderResult apply(PatriLangFileContext casFile) {
     var optionalPjFile = getPJ(casFile);
-
     if (optionalPjFile.isEmpty()) {
-      return Map.of();
+      return SupportingInfoProviderResult.empty();
     }
-
     var pjFile = optionalPjFile.get();
     try {
       Map<String, PieceJustificative> map = new HashMap<>();
       for (var pj : transpilePieceJustificative(pjFile)) {
         map.put(pj.id(), pj);
       }
-      return map;
+      var comments = transpileComments(pjFile);
+      return new SupportingInfoProviderResult(map, comments);
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
