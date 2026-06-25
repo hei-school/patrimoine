@@ -9,7 +9,7 @@ import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.Messag
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangFileContentManager.clearAllTempContents;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangStagingFileManager.stage;
 import static school.hei.patrimoine.visualisation.swing.ihm.google.providers.FilesProvider.getDoneCasSetFile;
-import static school.hei.patrimoine.visualisation.swing.ihm.google.providers.FilesProvider.getPJ;
+import static school.hei.patrimoine.visualisation.swing.ihm.google.providers.FilesProvider.getSupportingInfoFile;
 
 import java.awt.*;
 import java.util.*;
@@ -327,8 +327,7 @@ public class PossessionRecoupeeRealisationsDialog extends Dialog {
       PatriLangFileContext pjFile) {
     var querier = new PatriLangFileQuerier();
     var sectionOperation =
-        querier.query(
-            pjFile, document -> document.piecesJustificatives().sectionPiecesJustificatives());
+        querier.query(pjFile, document -> document.supportingInfos().sectionPiecesJustificatives());
     if (sectionOperation.isEmpty()) {
       throw new RuntimeException("Section Pièces Justificatives introuvable dans le fichier");
     }
@@ -338,7 +337,7 @@ public class PossessionRecoupeeRealisationsDialog extends Dialog {
   static QueryResult<SectionCommentsContext> getSectionComments(PatriLangFileContext pjFile) {
     var querier = new PatriLangFileQuerier();
     var sectionComments =
-        querier.query(pjFile, document -> document.piecesJustificatives().sectionComments());
+        querier.query(pjFile, document -> document.supportingInfos().sectionComments());
     if (sectionComments.isEmpty()) {
       throw new RuntimeException("Section Commentaires introuvable dans le fichier");
     }
@@ -353,7 +352,7 @@ public class PossessionRecoupeeRealisationsDialog extends Dialog {
 
     var casSet = getDoneCasSetFile();
     var selectedFile = optionalSelectedFile.get();
-    var optionalPjFile = getPJ(selectedFile);
+    var optionalPjFile = getSupportingInfoFile(selectedFile);
 
     AsyncTask.<Void>builder()
         .task(

@@ -9,7 +9,7 @@ import static school.hei.patrimoine.patrilang.antlr.PatriLangParser.ToutCasConte
 import java.io.IOException;
 import org.antlr.v4.runtime.CommonTokenStream;
 import school.hei.patrimoine.patrilang.antlr.PatriLangLexer;
-import school.hei.patrimoine.patrilang.antlr.PatriLangParser.PiecesJustificativesContext;
+import school.hei.patrimoine.patrilang.antlr.PatriLangParser.SupportingInfosContext;
 import school.hei.patrimoine.patrilang.files.PatriLangFile;
 import school.hei.patrimoine.patrilang.listener.PatrilangErrorListener;
 
@@ -34,15 +34,15 @@ public class PatriLangParser {
     return document.cas();
   }
 
-  public static PiecesJustificativesContext parsePieceJustificative(PatriLangFile pjFile) {
+  public static SupportingInfosContext parsePieceJustificative(PatriLangFile pjFile) {
     var document = parse(pjFile);
 
-    if (isNull(document.piecesJustificatives())) {
+    if (isNull(document.supportingInfos())) {
       throw new IllegalArgumentException(
           "Fichier PieceJustificative attendu, mais un autre type de fichier trouvé.");
     }
 
-    return document.piecesJustificatives();
+    return document.supportingInfos();
   }
 
   public static DocumentContext parse(PatriLangFile file) {

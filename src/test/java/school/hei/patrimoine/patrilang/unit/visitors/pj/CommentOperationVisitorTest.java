@@ -42,8 +42,8 @@ class CommentOperationVisitorTest {
     visitor =
         new UnitTestVisitor() {
           @Override
-          public List<OperationComment> visitPiecesJustificatives(
-              PatriLangParser.PiecesJustificativesContext ctx) {
+          public List<OperationComment> visitSupportingInfos(
+              PatriLangParser.SupportingInfosContext ctx) {
             return subject.apply(ctx);
           }
         };
@@ -61,7 +61,7 @@ class CommentOperationVisitorTest {
         * `paiementEssence + Dates:ajd`, le 24 décembre 2025, "Facture non disponible"
         """;
 
-    List<OperationComment> result = visitor.visit(input, PatriLangParser::piecesJustificatives);
+    List<OperationComment> result = visitor.visit(input, PatriLangParser::supportingInfos);
 
     assertEquals(2, result.size());
 
@@ -85,7 +85,7 @@ class CommentOperationVisitorTest {
         * Cas de Taxi
         """;
 
-    List<OperationComment> result = visitor.visit(input, PatriLangParser::piecesJustificatives);
+    List<OperationComment> result = visitor.visit(input, PatriLangParser::supportingInfos);
 
     assertTrue(result.isEmpty());
   }

@@ -9,13 +9,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import school.hei.patrimoine.patrilang.files.PatriLangFile;
 
-class PJFileValidatorTest {
-  private final PJFileValidator subject = new PJFileValidator();
+class SupportingInfoFileValidatorTest {
+  private final SupportingInfoFileValidator subject = new SupportingInfoFileValidator();
 
   @TempDir Path tempDir;
 
   private PatriLangFile writePjFile(String content) throws IOException {
-    var file = tempDir.resolve("test.pj.md").toFile();
+    var file = tempDir.resolve("test.info.md").toFile();
     Files.writeString(file.toPath(), content);
     return new PatriLangFile(file);
   }

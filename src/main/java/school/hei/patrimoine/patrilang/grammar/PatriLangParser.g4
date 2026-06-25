@@ -10,7 +10,7 @@ options { tokenVocab=PatriLangLexer; }
 document
     :   cas
     |   toutCas
-    |   piecesJustificatives
+    |   supportingInfos
     ;
 
 /* ToutCas */
@@ -54,12 +54,12 @@ sectionCasGeneral
     :   HASHES ENTETE_GENERAL ligneDateSpecification ligneDateFinSimulation ligneCasNom ligneDevise
     ;
 
-/* Pieces justificatives */
-piecesJustificatives
-    :   entetePiecesJustificatives NEWLINE? sectionPiecesJustificatives? NEWLINE? sectionComments? EOF
+/* Supporting Informations */
+supportingInfos
+    :   enteteSupportingInfos NEWLINE? sectionPiecesJustificatives? NEWLINE? sectionComments? EOF
     ;
 
-entetePiecesJustificatives
+enteteSupportingInfos
     :   HASHES ENTETE_GENERAL ligneDateSpecification ligneCasNom? NEWLINE?
     ;
 

@@ -32,9 +32,9 @@ import school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLa
 import school.hei.patrimoine.visualisation.swing.ihm.google.modele.files.PatriLangFilesWatcher;
 import school.hei.patrimoine.visualisation.swing.ihm.google.pages.filters.PossessionRecoupeeFilterPj;
 import school.hei.patrimoine.visualisation.swing.ihm.google.pages.filters.PossessionRecoupeeFilterStatus;
-import school.hei.patrimoine.visualisation.swing.ihm.google.providers.PJProvider;
 import school.hei.patrimoine.visualisation.swing.ihm.google.providers.PossessionRecoupeeProvider;
 import school.hei.patrimoine.visualisation.swing.ihm.google.providers.PossessionRecoupeeProvider.*;
+import school.hei.patrimoine.visualisation.swing.ihm.google.providers.SupportingInfoProvider;
 import school.hei.patrimoine.visualisation.swing.ihm.google.providers.model.Pagination;
 
 @Slf4j
@@ -205,7 +205,7 @@ public class RecoupementPage extends LazyPage {
 
   private void buildPjResult(PatriLangFileContext selectedFile) {
     try {
-      var result = new PJProvider().apply(selectedFile);
+      var result = new SupportingInfoProvider().apply(selectedFile);
       state.update("currentPjMap", result.piecesJustificatives());
       state.update("operationComments", result.operationComments());
     } catch (Exception e) {

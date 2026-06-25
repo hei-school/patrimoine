@@ -99,7 +99,7 @@ class PatriLangFileNameExtractorTest {
 
     var subject = new PatriLangFileNameExtractor();
 
-    assertEquals("Taxi.pj.md", subject.apply(code));
+    assertEquals("Taxi.info.md", subject.apply(code));
   }
 
   @Test

@@ -4,18 +4,18 @@ import java.util.List;
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 import school.hei.patrimoine.modele.possession.pj.PieceJustificative;
-import school.hei.patrimoine.patrilang.antlr.PatriLangParser.PiecesJustificativesContext;
 import school.hei.patrimoine.patrilang.antlr.PatriLangParser.PiecesJustificativesItemContext;
+import school.hei.patrimoine.patrilang.antlr.PatriLangParser.SupportingInfosContext;
 import school.hei.patrimoine.patrilang.visitors.variable.VariableDateVisitor;
 
 @RequiredArgsConstructor
 public class PatriLangPieceJustificativeVisitor
-    implements Function<PiecesJustificativesContext, List<PieceJustificative>> {
+    implements Function<SupportingInfosContext, List<PieceJustificative>> {
   private final IdVisitor idVisitor;
   private final VariableDateVisitor dateVisitor;
 
   @Override
-  public List<PieceJustificative> apply(PiecesJustificativesContext context) {
+  public List<PieceJustificative> apply(SupportingInfosContext context) {
     if (context == null || context.sectionPiecesJustificatives() == null) {
       return List.of();
     }

@@ -9,7 +9,7 @@ import java.util.function.Consumer;
 import school.hei.patrimoine.modele.possession.pj.PieceJustificative;
 import school.hei.patrimoine.patrilang.files.PatriLangFile;
 
-public class PJFileValidator implements Consumer<PatriLangFile> {
+public class SupportingInfoFileValidator implements Consumer<PatriLangFile> {
   @Override
   public void accept(PatriLangFile pj) {
     var pieces = transpilePieceJustificative(pj);

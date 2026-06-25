@@ -7,7 +7,7 @@ import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import school.hei.patrimoine.cas.Cas;
 import school.hei.patrimoine.cas.CasSet;
-import school.hei.patrimoine.patrilang.antlr.PatriLangParser.PiecesJustificativesContext;
+import school.hei.patrimoine.patrilang.antlr.PatriLangParser.SupportingInfosContext;
 import school.hei.patrimoine.patrilang.antlr.PatriLangParserBaseVisitor;
 
 @Builder
@@ -28,7 +28,7 @@ public class PatriLangVisitor extends PatriLangParserBaseVisitor<Object> {
   }
 
   @Override
-  public OperationSupportingInformation visitPiecesJustificatives(PiecesJustificativesContext ctx) {
+  public OperationSupportingInformation visitSupportingInfos(SupportingInfosContext ctx) {
     return pjAndCommentsVisitor.apply(ctx);
   }
 }

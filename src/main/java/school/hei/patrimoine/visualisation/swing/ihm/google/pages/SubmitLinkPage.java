@@ -82,7 +82,7 @@ public class SubmitLinkPage extends Page {
     doneScroll.setMaximumSize(new Dimension(Integer.MAX_VALUE, 300));
     formPanel.add(doneScroll);
 
-    var justificativeLabel = new JLabel("Liens vers les pièces justificatives :");
+    var justificativeLabel = new JLabel("Liens vers les supports de justification :");
     justificativeLabel.setFont(new Font("Arial", Font.BOLD, 18));
     justificativeLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
     formPanel.add(justificativeLabel);
