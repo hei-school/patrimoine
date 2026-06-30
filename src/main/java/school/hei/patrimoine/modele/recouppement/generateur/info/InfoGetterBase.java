@@ -13,7 +13,8 @@ public class InfoGetterBase<T extends Possession> implements InfoGetter<T> {
         getDate(possession),
         getValeur(possession),
         possession,
-        getPossessionACorriger(possession));
+        getPossessionACorriger(possession),
+        getPossessionACorrigerNegativement(possession));
   }
 
   @Override

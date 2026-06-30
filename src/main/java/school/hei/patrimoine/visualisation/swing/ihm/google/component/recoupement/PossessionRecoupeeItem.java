@@ -5,6 +5,7 @@ import static school.hei.patrimoine.modele.recouppement.model.RecoupementStatus.
 import static school.hei.patrimoine.modele.recouppement.model.RecoupementStatus.NON_EXECUTE;
 
 import java.awt.*;
+import java.time.Period;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import lombok.extern.slf4j.Slf4j;
@@ -42,6 +43,27 @@ public class PossessionRecoupeeItem extends JPanel {
     addActionsButton();
   }
 
+  private String getSources() {
+    var info = possessionRecoupee.info();
+    var possession = possessionRecoupee.possession();
+
+    var content =
+        switch (possession) {
+          case FluxArgent flux -> {
+            var amount = flux.getFluxMensuel().montant();
+            var label = amount < 0 ? "Source" : "Destination";
+            yield "<b>" + label + ":</b> " + info.possessionACorriger().nom();
+          }
+          case TransfertArgent ignored ->
+              "<b>Source:</b> "
+                  + info.possessionACorrigerNegativement().nom()
+                  + ",&nbsp&nbsp&nbsp<b>Destination:</b> "
+                  + info.possessionACorriger().nom();
+          default -> "";
+        };
+    return content.isEmpty() ? "" : "<div style='margin-bottom: 8px;'>" + content + "</div>";
+  }
+
   private void addTitle() {
     var pjHtml =
         pj == null
@@ -69,21 +91,48 @@ public class PossessionRecoupeeItem extends JPanel {
                 + "</div>"
                 + "<div style='margin-bottom: 8px; '>"
                 + "<b>Type:</b> %s,&nbsp&nbsp&nbsp"
-                + "<b>Date:</b> %s,&nbsp&nbsp&nbsp"
+                + "<b>Date prévue:</b> %s,&nbsp&nbsp&nbsp"
+                + "<b>Retard:</b> %s, &nbsp&nbsp&nbsp"
                 + "<b>Valeur prévue:</b> %s,&nbsp&nbsp&nbsp"
                 + "<b>Valeur réalisée:</b> %s"
                 + "</div>"
+                + getSources()
                 + pjHtml
                 + "</html>",
             possessionRecoupee.possession().nom(),
             possessionRecoupee.possession().getClass().getSimpleName(),
             DateFormatter.format(possessionRecoupee.possession().t()),
+            formatEcartDate(possessionRecoupee.ecartDateAvecRealises()),
             ArgentFormatter.format(possessionRecoupee.prevu().valeur()),
             ArgentFormatter.format(possessionRecoupee.valeurRealisee()));
 
     var title = getJEditorPane(titleString);
 
     add(title, BorderLayout.WEST);
+  }
+
+  private String formatEcartDate(Period period) {
+    if (period.isZero()) {
+      return "0j";
+    }
+
+    var inAdvance = period.isNegative();
+    var absPeriod = inAdvance ? period.negated() : period;
+
+    var result = new StringBuilder(inAdvance ? "-" : "+");
+
+    if (absPeriod.getYears() > 0) {
+      var unit = absPeriod.getYears() > 1 ? "ans" : "an";
+      result.append(absPeriod.getYears()).append(unit);
+    }
+    if (absPeriod.getMonths() > 0) {
+      result.append(absPeriod.getMonths()).append("mois");
+    }
+    if (absPeriod.getDays() > 0) {
+      result.append(absPeriod.getDays()).append("j");
+    }
+
+    return result.toString();
   }
 
   private static @NonNull JEditorPane getJEditorPane(String titleString) {

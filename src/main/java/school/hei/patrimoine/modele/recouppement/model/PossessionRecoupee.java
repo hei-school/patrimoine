@@ -3,6 +3,9 @@ package school.hei.patrimoine.modele.recouppement.model;
 import static java.time.LocalDate.now;
 import static school.hei.patrimoine.modele.Argent.ariary;
 
+import java.time.LocalDate;
+import java.time.Period;
+import java.util.Comparator;
 import java.util.Set;
 import lombok.Builder;
 import school.hei.patrimoine.modele.Argent;
@@ -25,6 +28,19 @@ public record PossessionRecoupee<T extends Possession>(
     var valeurPrevu = prevu.isEmpty() ? ariary(0) : prevu.valeur();
     var tPrevu = prevu.isEmpty() ? now() : prevu.t();
     return valeurRealisee().minus(valeurPrevu, tPrevu);
+  }
+
+  public LocalDate dateRealisee() {
+    return realises.stream().map(Info::t).min(Comparator.naturalOrder()).orElse(null);
+  }
+
+  public Period ecartDateAvecRealises() {
+    var tPrevu = prevu.t();
+    var tRealisee = dateRealisee();
+    if (prevu.isEmpty() || tRealisee == null) {
+      return Period.ZERO;
+    }
+    return Period.between(tPrevu, tRealisee);
   }
 
   public Possession possession() {
