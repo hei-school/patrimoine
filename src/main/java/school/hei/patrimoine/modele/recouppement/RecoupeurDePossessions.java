@@ -92,7 +92,24 @@ public class RecoupeurDePossessions {
     return getByStatus(EXECUTE_SANS_CORRECTION);
   }
 
-  private static List<Possession> decompose(
+  private static void validateId(Possession possession) {
+    if (possession.nom().contains("[") || possession.nom().contains("]")) {
+      throw new IllegalArgumentException(
+          "Une possession avec un ID contenant des crochets n'est pas autorisée : "
+              + possession.nom());
+    }
+  }
+
+  private static List<Possession> decomposePlanned(
+      Set<Possession> possessions, LocalDate debut, LocalDate fin) {
+    return possessions.stream()
+        .peek(RecoupeurDePossessions::validateId)
+        .map(p -> PossessionDecomposeurFacade.decompose(p, debut, fin))
+        .flatMap(List::stream)
+        .toList();
+  }
+
+  private static List<Possession> decomposeDone(
       Set<Possession> possessions, LocalDate debut, LocalDate fin) {
     return possessions.stream()
         .map(p -> PossessionDecomposeurFacade.decompose(p, debut, fin))
@@ -118,8 +135,8 @@ public class RecoupeurDePossessions {
 
   private Map<String, PossessionRecoupee<Possession>> createInfosMap(
       Set<Possession> prevus, Set<Possession> realises, LocalDate debut, LocalDate fin) {
-    var decomposedPrevus = decompose(withoutCompteCorrections(prevus), debut, fin);
-    var decomposedRealises = decompose(withoutCompteCorrections(realises), debut, fin);
+    var decomposedPrevus = decomposePlanned(withoutCompteCorrections(prevus), debut, fin);
+    var decomposedRealises = decomposeDone(withoutCompteCorrections(realises), debut, fin);
     var prevusAsInfos = toInfos(decomposedPrevus);
     var realisesAsInfos = toInfos(decomposedRealises);
 
