@@ -12,13 +12,15 @@ import school.hei.patrimoine.modele.possession.AchatMaterielAuComptant;
 import school.hei.patrimoine.modele.possession.Compte;
 import school.hei.patrimoine.patrilang.antlr.PatriLangParser;
 import school.hei.patrimoine.patrilang.utils.UnitTestVisitor;
+import school.hei.patrimoine.patrilang.visitors.IdVisitor;
 import school.hei.patrimoine.patrilang.visitors.possession.AchatMaterielVisitor;
 import school.hei.patrimoine.patrilang.visitors.variable.VariableVisitor;
 
 class AchatMaterielVisitorTest {
   private static final VariableVisitor variableVisitor = new VariableVisitor();
   private static final Compte MON_COMPTE = new Compte("monCompte", LocalDate.MIN, ariary(200_000));
-  AchatMaterielVisitor subject = new AchatMaterielVisitor(variableVisitor);
+  AchatMaterielVisitor subject =
+      new AchatMaterielVisitor(variableVisitor, new IdVisitor(variableVisitor));
 
   UnitTestVisitor visitor =
       new UnitTestVisitor() {
@@ -34,7 +36,7 @@ class AchatMaterielVisitorTest {
 
   @Test
   void parse_normal_achat_materiel() {
-    var expectedFluxArgentName = "Financement AchatMaterielAuComptant: ordinateur";
+    var expectedFluxArgentName = "Financement AchatMaterielAuComptant: achatOrdinateur";
     var input =
         "`achatOrdinateur` le 01 du 01-2025, acheter ordinateur, valant 300000Ar, depuis"
             + " Trésoreries:monCompte, s'appréciant annuellement de 1%";
