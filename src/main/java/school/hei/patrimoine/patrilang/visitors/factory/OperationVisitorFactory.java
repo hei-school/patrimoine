@@ -12,7 +12,7 @@ public class OperationVisitorFactory {
         .variableVisitor(variableVisitor)
         .remboursementDetteVisitor(new RemboursementDetteVisitor(variableVisitor, idVisitor))
         .groupPossessionVisitor(new GroupPossessionVisitor(variableVisitor))
-        .achatMaterielVisitor(new AchatMaterielVisitor(variableVisitor))
+        .achatMaterielVisitor(new AchatMaterielVisitor(variableVisitor, idVisitor))
         .correctionVisitor(new CorrectionVisitor(variableVisitor, idVisitor))
         .materielVisitor(new MaterielVisitor(variableVisitor))
         .objectifVisitor(new ObjectifVisitor(variableVisitor))
